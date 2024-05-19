@@ -1,4 +1,4 @@
 package DomainLayer.User;
 
-public class User {
+public class State {
 }
