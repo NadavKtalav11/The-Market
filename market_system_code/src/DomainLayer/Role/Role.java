@@ -1,4 +1,5 @@
-package com.company.DomainLayer.Role;
+package DomainLayer.Role;
 
-public class Role {
+interface Role {
+
 }
