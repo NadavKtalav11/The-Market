@@ -11,10 +11,14 @@ public class Market {
     private UserFacade userFacade;
     private RoleFacade roleFacade;
 
-    Market(){
+    public Market(){
       this.storeFacade = StoreFacade.getInstance();
       this.userFacade = UserFacade.getInstance();
       this.roleFacade = RoleFacade.getInstance();
+    }
+
+    public UserFacade getUserFacade(){
+        return userFacade;
     }
   
     public void addProductToStore(String username, int storeID, String productName, int price, int quantity) throws Exception {

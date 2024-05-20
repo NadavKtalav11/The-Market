@@ -16,7 +16,8 @@ public class Member extends State{
         this.member_ID = member_ID;
     }
 
-    public void logout(User user) {
+    public void Logout(User user)
+    {
         // todo save data if needed
         user.setState(new Guest());
     }
