@@ -29,6 +29,7 @@ public class StoreFacade {
     public int openStore()
     {
         Store newStore = new Store(currentStoreID); //todo: add this to list in repository
+        this.allStores.put(currentStoreID, newStore);
         this.currentStoreID++;
         return newStore.getStoreID();
     }
