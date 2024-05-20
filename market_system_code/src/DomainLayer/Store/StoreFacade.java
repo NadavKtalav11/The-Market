@@ -41,6 +41,10 @@ public class StoreFacade {
         allStores.get(storeID).removeProduct(productName);
     }
 
+    public void updateProductInStore(int storeID, String productName, int price, int quantity){
+        allStores.get(storeID).updateProduct(productName, price,quantity);
+    }
+
     public boolean verifyStoreExist(int storeID)
     {
         return getStoreByID(storeID) != null;

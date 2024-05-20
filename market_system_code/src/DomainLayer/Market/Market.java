@@ -33,6 +33,14 @@ public class Market {
         }
     }
 
+    public void updateProductInStore(String username, int storeID, String productName, int price, int quantity) throws Exception {
+        if (roleFacade.verifyStoreOwner(storeID, username)) {
+            storeFacade.updateProductInStore(storeID, productName, price, quantity);
+        } else {
+            throw new Exception("User is not the Store owner");
+        }
+    }
+
     public void closeStore(int member_ID, int store_ID) throws Exception 
     {
         if(roleFacade.verifyStoreOwner(store_ID, member_ID) && roleFacade.verifyStoreOwnerIsFounder(store_ID, member_ID))
