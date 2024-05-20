@@ -16,7 +16,13 @@ public class Member extends State{
         this.member_ID = member_ID;
     }
 
-    public void openStore() {
+    public void logout(User user) {
+        // todo save data if needed
+        user.setState(new Guest());
+    }
+
+    public void openStore()
+    {
         int store_ID = this.storeFacade.openStore();
         this.roleFacade.createStoreOwner(member_ID, store_ID, true);
     }
