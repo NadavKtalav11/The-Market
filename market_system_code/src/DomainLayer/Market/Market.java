@@ -5,6 +5,7 @@ import DomainLayer.Store.StoreFacade;
 import DomainLayer.User.UserFacade;
 
 import java.util.List;
+import java.util.Map;
 
 public class Market {
     private StoreFacade storeFacade;
@@ -102,7 +103,8 @@ public class Market {
             if (roleFacade.verifyStoreOwner(store_ID, member_ID) && roleFacade.verifyStoreOwnerIsFounder(store_ID, member_ID)) {
                 if (storeFacade.verifyStoreExist(store_ID)) {
                     storeFacade.closeStore(store_ID);
-                    List<Integer> storeRoles = roleFacade.getAllStoreRoles(store_ID);
+                    List<Integer> storeOwners = roleFacade.getAllStoreOwners(store_ID);
+                    List<Integer> storeManagers = roleFacade.getAllStoreManagers(store_ID);
                     //todo: add function which send notification to all store roles (notification component).
                     //todo: update use-case parameters
                 } else {
@@ -115,4 +117,45 @@ public class Market {
         else throw new IllegalArgumentException("User is not logged in, so he cannot close a store");
       
     }
+
+    public Map<Integer, String> getInformationAboutRolesInStore(int user_ID, int store_ID) throws Exception {
+        Map<Integer, String> information = null;
+
+        if (userFacade.isUserLoggedIn(user_ID)) {
+            int member_ID = this.userFacade.getUsernameByUserID(user_ID);
+            if (roleFacade.verifyStoreOwner(store_ID, member_ID)) {
+                if (storeFacade.verifyStoreExist(store_ID)) {
+                    information = roleFacade.getInformationAboutStoreRoles(store_ID);
+                }else {
+                    throw new Exception("Store does not exist");
+                }
+            } else {
+                throw new IllegalArgumentException("Only store owner get information about his store workers");
+            }
+        } else{
+            throw new IllegalArgumentException("User is not logged in, so he get information about the roles int his store");
+        }
+        return information;
+    }
+
+    public Map<Integer, List<Integer>> getAuthorizationsOfManagersInStore(int user_ID, int store_ID) throws Exception {
+        Map<Integer, List<Integer>> managersAuthorizations;
+
+        if (userFacade.isUserLoggedIn(user_ID)) {
+            int member_ID = this.userFacade.getUsernameByUserID(user_ID);
+            if (roleFacade.verifyStoreOwner(store_ID, member_ID)) {
+                if (storeFacade.verifyStoreExist(store_ID)) {
+                    managersAuthorizations = roleFacade.getStoreManagersAuthorizations(store_ID);
+                }else {
+                    throw new Exception("Store does not exist");
+                }
+            } else {
+                throw new IllegalArgumentException("Only store owner get authorizations of his store managers");
+            }
+        } else{
+            throw new IllegalArgumentException("User is not logged in, so he get the authorizations of his store managers");
+        }
+        return managersAuthorizations;
+    }
+
 }

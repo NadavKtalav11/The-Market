@@ -1,7 +1,9 @@
 package DomainLayer.Role;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class RoleFacade {
 
@@ -51,20 +53,56 @@ public class RoleFacade {
         return null;
     }
 
-    public List<Integer> getAllStoreRoles(int storeID)
+    public List<Integer> getAllStoreManagers(int storeID)
     {
-        List<Integer> rolesList = new ArrayList<>();
-        for (StoreOwner storeOwner : storeOwnersList)
-        {
-            if (storeOwner.getStore_ID() == storeID)
-                rolesList.add(storeOwner.getMember_ID());
-        }
+        List<Integer> storeManagers = new ArrayList<>();
         for (StoreManager storeManager: storeManagerList)
         {
             if(storeManager.getStore_ID() == storeID)
-                rolesList.add(storeManager.getMember_ID());
+                storeManagers.add(storeManager.getMember_ID());
         }
-        return rolesList;
+        return storeManagers;
+    }
+
+    public List<Integer> getAllStoreOwners(int storeID)
+    {
+        List<Integer> storeOwners = new ArrayList<>();
+        for (StoreOwner storeOwner : storeOwnersList)
+        {
+            if (storeOwner.getStore_ID() == storeID)
+                storeOwners.add(storeOwner.getMember_ID());
+        }
+        return storeOwners;
+    }
+
+    public Map<Integer, String> getInformationAboutStoreRoles(int store_ID)
+    {
+        List<Integer> storeManagers = getAllStoreManagers(store_ID);
+        List<Integer> storeOwners = getAllStoreOwners(store_ID);
+
+        Map<Integer, String> storeRoles = new HashMap<>();
+
+        for (Integer managerId : storeManagers) {
+            storeRoles.put(managerId, "manager");
+        }
+
+        for (Integer ownerId : storeOwners) {
+            storeRoles.put(ownerId, "owner");
+        }
+
+        return storeRoles;
+    }
+
+    public Map<Integer, List<Integer>> getStoreManagersAuthorizations(int storeID)
+    {
+        Map<Integer, List<Integer>> managersAuthorizations = new HashMap<>();
+        for (StoreManager storeManager: storeManagerList)
+        {
+            if(storeManager.getStore_ID() == storeID)
+                managersAuthorizations.put(storeManager.getMember_ID(), storeManager.getAuthorizations());
+        }
+        return managersAuthorizations;
+
     }
 
     public boolean verifyStoreOwnerIsFounder(int storeID, int memberID){

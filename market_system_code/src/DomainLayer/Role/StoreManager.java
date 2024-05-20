@@ -1,9 +1,13 @@
 package DomainLayer.Role;
 
+import java.util.List;
+
 public class StoreManager implements Role {
 
     private int member_ID;
     private int store_ID;
+    private List<Integer> authorizations;
+
 
     StoreManager(int member_ID, int store_ID)
     {
@@ -21,4 +25,7 @@ public class StoreManager implements Role {
         return this.member_ID;
     }
 
+    public List<Integer> getAuthorizations(){
+        return this.authorizations;
+    }
 }
