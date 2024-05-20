@@ -29,8 +29,17 @@ public class StoreFacade {
     public int openStore()
     {
         Store newStore = new Store(currentStoreID); //todo: add this to list in repository
+        this.allStores.put(currentStoreID, newStore);
         this.currentStoreID++;
         return newStore.getStoreID();
+    }
+
+    public boolean checkQuantityAndPolicies(int productId, int quantity, int storeId, int userId)
+    {
+        Store store = getStoreByID(storeId);
+        return store.checkProductQuantity(productId, quantity);
+
+        //Not sure if purchase and discount policies should be checked now
     }
 
     public void addProductToStore(int storeID, String productName, int price, int quantity){
