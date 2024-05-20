@@ -60,7 +60,7 @@ public class Market {
                 throw new Exception("Only store founder can close a store");
             }
         }
-        else throw new IllegalArgumentException("User is not logged in, so he cannot close a store")
+        else throw new IllegalArgumentException("User is not logged in, so he cannot close a store");
       
     }
 }
