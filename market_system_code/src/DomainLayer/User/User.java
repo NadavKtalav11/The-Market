@@ -3,9 +3,11 @@ package DomainLayer.User;
 public class User {
 
     private State state;
+    private Cart cart;
 
     public User(){
         this.state = new Guest(); //default state
+        this.cart = new Cart();
     }
 
     public void setState(State state) {
@@ -18,6 +20,12 @@ public class User {
         }
     }
 
+    public void updateCart(int productId, int quantity, int storeId)
+    {
+        cart.addItemsToCart(productId, quantity, storeId);
+
+    }
+    
     public boolean isLoggedIn()
     {
         return state instanceof Member;

@@ -6,11 +6,13 @@ import DomainLayer.Role.RoleFacade;
 public class Member extends State{
 
     private int member_ID;
+    private int productIdCounter;
     private boolean isLogin;
-
+  
     Member(int member_ID)
     {
         this.member_ID = member_ID;
+        this.productIdCounter = 0;
     }
 
     public void logout(User user) {
