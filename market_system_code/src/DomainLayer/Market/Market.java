@@ -37,7 +37,7 @@ public class Market {
         if (roleFacade.verifyStoreOwner(storeID, username)) {
             storeFacade.updateProductInStore(storeID, productName, price, quantity);
         } else {
-            throw new Exception("User is not the Store owner");
+            throw new Exception("Only store owner can update product in store");
         }
     }
 
