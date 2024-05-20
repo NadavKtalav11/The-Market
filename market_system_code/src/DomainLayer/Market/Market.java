@@ -17,13 +17,14 @@ public class Market {
       this.roleFacade = RoleFacade.getInstance();
     }
   
-    public void addProductToStore(String username, int storeID, String productName, int price, int quantity) throws Exception {
-        if (roleFacade.verifyStoreOwner(storeID, username)) {
+    public void addProductToStore(int memberID, int storeID, String productName, int price, int quantity) throws Exception {
+        if (roleFacade.verifyStoreOwner(storeID, memberID)) {
             storeFacade.addProductToStore(storeID, productName, price, quantity);
         } else {
-            throw new Exception("User is not the Store owner");
+            throw new Exception("Only store owner can add product to store");
         }
     }
+
 
     public void addProductToBasket(int productId, int quantity, int storeId, int userId)
     {
@@ -53,7 +54,19 @@ public class Market {
         if (roleFacade.verifyStoreOwner(storeID, username)) {
             storeFacade.removeProductFromStore(storeID, productName);
         } else {
-            throw new Exception("User is not the Store owner");
+            throw new Exception("Only store owner can remove product from store");
+        }
+    }
+
+    public void AppointStoreOwner(int firstMemberID, int secondMemberID, int storeID) throws Exception {
+        if (roleFacade.verifyStoreOwner(storeID, firstMemberID)) {
+            if (!roleFacade.verifyStoreOwner(storeID, secondMemberID)) {
+                roleFacade.createStoreOwner(secondMemberID, storeID, false);
+            } else {
+                throw new Exception("Member is already store owner");
+            }
+        } else {
+            throw new Exception("Only store owner can appoint new store owner");
         }
     }
     
