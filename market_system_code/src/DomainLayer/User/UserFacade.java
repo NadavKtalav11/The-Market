@@ -27,4 +27,14 @@ public class UserFacade {
         return allUsers.get(userID);
     }
 
+    public boolean isUserLoggedIn(int userID){
+        return getUserByID(userID).isLoggedIn();
+    }
+
+    public int getUsernameByUserID(int userID)
+    {
+        User user = getUserByID(userID);
+        return ((Member)user.getState()).getMemberID();
+    }
+
 }

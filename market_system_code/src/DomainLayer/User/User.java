@@ -17,4 +17,14 @@ public class User {
             state.Logout(this);
         }
     }
+
+    public boolean isLoggedIn()
+    {
+        return state instanceof Member;
+    }
+
+    public State getState()
+    {
+        return state;
+    }
 }

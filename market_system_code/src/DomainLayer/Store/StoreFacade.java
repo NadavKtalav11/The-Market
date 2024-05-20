@@ -29,8 +29,17 @@ public class StoreFacade {
     public int openStore()
     {
         Store newStore = new Store(currentStoreID); //todo: add this to list in repository
+        this.allStores.put(currentStoreID, newStore);
         this.currentStoreID++;
         return newStore.getStoreID();
+    }
+
+    public void addProductToStore(int storeID, String productName, int price, int quantity){
+        allStores.get(storeID).addProduct(productName, price, quantity);
+    }
+
+    public void removeProductFromStore(int storeID, String productName){
+        allStores.get(storeID).removeProduct(productName);
     }
 
     public boolean verifyStoreExist(int storeID)

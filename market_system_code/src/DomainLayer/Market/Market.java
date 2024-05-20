@@ -12,22 +12,35 @@ public class Market {
     private RoleFacade roleFacade;
 
     Market(){
-        this.roleFacade = RoleFacade.getInstance();
-        this.storeFacade = StoreFacade.getInstance();
+      this.storeFacade = StoreFacade.getInstance();
+      this.userFacade = UserFacade.getInstance();
+      this.roleFacade = RoleFacade.getInstance();
     }
   
-    public void addProductToStore(int storeName , String username, String itemName , int quantity)
-    {
-        int userId = userFacade.getUserID(username);
-        int storeId = StoreFacade.getStoreId(storeName);
-        boolean canAdd = roleFacade.verifyStoreOwner(userId, storeId);
-        if (canAdd){
-            storeFacade.addItemToStore(itemName, quantity);
+    public void addProductToStore(String username, int storeID, String productName, int price, int quantity) throws Exception {
+        if (roleFacade.verifyStoreOwner(storeID, username)) {
+            storeFacade.addProductToStore(storeID, productName, price, quantity);
+        } else {
+            throw new Exception("User is not the Store owner");
         }
-        else {
-            throw new IllegalArgumentException("the user is not store owner in the specific store so he cannot add an item");
-        }
+    }
 
+    public void openStore(int user_ID) {
+        if (userFacade.isUserLoggedIn(user_ID)) {
+            int store_ID = this.storeFacade.openStore();   //todo: compare to use case parameters
+            int member_ID = this.userFacade.getUsernameByUserID(user_ID);
+            this.roleFacade.createStoreOwner(member_ID, store_ID, true);
+        } else {
+            throw new IllegalArgumentException("The user is not logged in so he cannot open a store");
+        }
+    }
+
+    public void removeProductFromStore(String username, int storeID, String productName) throws Exception {
+        if (roleFacade.verifyStoreOwner(storeID, username)) {
+            storeFacade.removeProductFromStore(storeID, productName);
+        } else {
+            throw new Exception("User is not the Store owner");
+        }
     }
     
     public void closeStore(int user_ID, int store_ID) throws Exception
@@ -50,5 +63,4 @@ public class Market {
         else throw new IllegalArgumentException("User is not logged in, so he cannot close a store")
       
     }
-
 }
