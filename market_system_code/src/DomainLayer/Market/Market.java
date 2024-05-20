@@ -11,10 +11,15 @@ public class Market {
     private UserFacade userFacade;
     private RoleFacade roleFacade;
 
-    Market(){
+    public Market(){
       this.storeFacade = StoreFacade.getInstance();
       this.userFacade = UserFacade.getInstance();
       this.roleFacade = RoleFacade.getInstance();
+    }
+
+    public void Logout(int memberID){
+        //todo add condition if the user is logged in
+        userFacade.getUserByID(memberID).Logout();
     }
   
     public void addProductToStore(int memberID, int storeID, String productName, int price, int quantity) throws Exception {

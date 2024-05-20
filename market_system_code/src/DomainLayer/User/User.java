@@ -15,9 +15,7 @@ public class User {
     }
 
     public void Logout() {
-        if (state instanceof Member) {
-            state.Logout(this);
-        }
+        state.Logout(this);
     }
 
     public void updateCart(int productId, int quantity, int storeId)

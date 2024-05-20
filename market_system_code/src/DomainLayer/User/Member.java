@@ -15,7 +15,8 @@ public class Member extends State{
         this.productIdCounter = 0;
     }
 
-    public void logout(User user) {
+    public void Logout(User user)
+    {
         // todo save data if needed
         user.setState(new Guest());
         isLogin = false;
