@@ -8,6 +8,7 @@ public class Member extends State{
     private StoreFacade storeFacade;
     public RoleFacade roleFacade;
     private int member_ID;
+    private boolean isLogin;
 
     Member(int member_ID)
     {
@@ -19,12 +20,7 @@ public class Member extends State{
     public void logout(User user) {
         // todo save data if needed
         user.setState(new Guest());
-    }
-
-    public void openStore()
-    {
-        int store_ID = this.storeFacade.openStore();
-        this.roleFacade.createStoreOwner(member_ID, store_ID, true);
+        isLogin = false;
     }
 
     public void addProductToStore(int storeID, String productName, int price, int quantity){
@@ -32,5 +28,15 @@ public class Member extends State{
             Store store = storeFacade.getStoreByID(storeID);
             store.addProduct(productName, price, quantity);
         }
+    }
+
+    public boolean isLogin()
+    {
+        return this.isLogin;
+    }
+
+    public int getMemberID()
+    {
+        return this.member_ID;
     }
 }

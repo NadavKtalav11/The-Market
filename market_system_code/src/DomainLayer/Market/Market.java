@@ -19,7 +19,19 @@ public class Market {
         else {
             throw new IllegalArgumentException("the user is not store owner in the specific store so he cannot add an item");
         }
+    }
 
+    public void openStore(int user_ID)
+    {
+        if(userFacade.isUserLoggedIn(user_ID))
+        {
+            int store_ID = this.storeFacade.openStore();   //todo: compare to use case parameters
+            int member_ID = this.userFacade.getUsernameByUserID(user_ID);
+            this.roleFacade.createStoreOwner(member_ID, store_ID, true);
+        }
+        else {
+            throw new IllegalArgumentException("The user is not logged in so he cannot open a store");
+        }
     }
 
 }
