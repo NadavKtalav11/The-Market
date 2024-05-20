@@ -83,10 +83,11 @@ public class Market {
         }
     }
 
-    public void AppointStoreManager(int firstMemberID, int secondMemberID, int storeID) throws Exception {
+    public void AppointStoreManager(int firstMemberID, int secondMemberID, int storeID,
+                                    boolean inventoryPermissions, boolean purchasePermissions) throws Exception {
         if (roleFacade.verifyStoreOwner(storeID, firstMemberID)) {
             if (!roleFacade.verifyStoreManager(storeID, secondMemberID)) {
-                roleFacade.createStoreManager(secondMemberID, storeID);
+                roleFacade.createStoreManager(secondMemberID, storeID, inventoryPermissions, purchasePermissions);
             } else {
                 throw new Exception("Member is already manager of this store");
             }
