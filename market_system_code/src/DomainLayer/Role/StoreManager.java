@@ -5,7 +5,7 @@ public class StoreManager implements Role {
     private int member_ID;
     private int store_ID;
 
-    StoreManager(int member_ID, int store_ID, boolean founder)
+    StoreManager(int member_ID, int store_ID)
     {
         this.member_ID = member_ID;
         this.store_ID = store_ID;

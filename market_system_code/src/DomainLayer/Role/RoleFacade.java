@@ -21,7 +21,6 @@ public class RoleFacade {
         return roleFacadeInstance;
     }
 
-
    public boolean verifyStoreOwner(int storeID, int memberID){
         return getStoreOwner(storeID, memberID) != null;
    }
@@ -32,6 +31,21 @@ public class RoleFacade {
             if(storeOwnersList.get(i).getStore_ID() == storeID &&
                     storeOwnersList.get(i).getMember_ID() == memberID){
                 return storeOwnersList.get(i);
+            }
+        }
+        return null;
+    }
+
+    public boolean verifyStoreManager(int storeID, int memberID){
+        return getStoreManager(storeID, memberID) != null;
+    }
+
+    public StoreManager getStoreManager(int storeID, int memberID)
+    {
+        for(int i=0 ; i<storeManagerList.size(); i++){
+            if(storeManagerList.get(i).getStore_ID() == storeID &&
+                    storeManagerList.get(i).getMember_ID() == memberID){
+                return storeManagerList.get(i);
             }
         }
         return null;
@@ -64,9 +78,19 @@ public class RoleFacade {
         addNewStoreOwnerToTheMarket(newStoreOwner);
     }
 
+    public void createStoreManager(int member_ID, int store_ID)
+    {
+        StoreManager newStoreManager = new StoreManager(member_ID, store_ID);
+        addNewStoreManagerToTheMarket(newStoreManager);
+    }
+
     private void addNewStoreOwnerToTheMarket(StoreOwner storeOwner)
     {
         storeOwnersList.add(storeOwner);
+    }
+    private void addNewStoreManagerToTheMarket(StoreManager storeManager)
+    {
+        storeManagerList.add(storeManager);
     }
 
 }

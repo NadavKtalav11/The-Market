@@ -55,16 +55,16 @@ public class Market {
         }
     }
 
-    public void removeProductFromStore(String username, int storeID, String productName) throws Exception {
-        if (roleFacade.verifyStoreOwner(storeID, username)) {
+    public void removeProductFromStore(int memberID, int storeID, String productName) throws Exception {
+        if (roleFacade.verifyStoreOwner(storeID, memberID)) {
             storeFacade.removeProductFromStore(storeID, productName);
         } else {
             throw new Exception("Only store owner can remove product from store");
         }
     }
 
-    public void updateProductInStore(String username, int storeID, String productName, int price, int quantity) throws Exception {
-        if (roleFacade.verifyStoreOwner(storeID, username)) {
+    public void updateProductInStore(int memberID, int storeID, String productName, int price, int quantity) throws Exception {
+        if (roleFacade.verifyStoreOwner(storeID, memberID)) {
             storeFacade.updateProductInStore(storeID, productName, price, quantity);
         } else {
             throw new Exception("Only store owner can update product in store");
@@ -76,10 +76,22 @@ public class Market {
             if (!roleFacade.verifyStoreOwner(storeID, secondMemberID)) {
                 roleFacade.createStoreOwner(secondMemberID, storeID, false);
             } else {
-                throw new Exception("Member is already store owner");
+                throw new Exception("Member is already owner of this store");
             }
         } else {
             throw new Exception("Only store owner can appoint new store owner");
+        }
+    }
+
+    public void AppointStoreManager(int firstMemberID, int secondMemberID, int storeID) throws Exception {
+        if (roleFacade.verifyStoreOwner(storeID, firstMemberID)) {
+            if (!roleFacade.verifyStoreManager(storeID, secondMemberID)) {
+                roleFacade.createStoreManager(secondMemberID, storeID);
+            } else {
+                throw new Exception("Member is already manager of this store");
+            }
+        } else {
+            throw new Exception("Only store owner can appoint new store manager");
         }
     }
     
