@@ -116,9 +116,10 @@ public class RoleFacade {
         addNewStoreOwnerToTheMarket(newStoreOwner);
     }
 
-    public void createStoreManager(int member_ID, int store_ID)
+    public void createStoreManager(int member_ID, int store_ID,
+                            boolean inventoryPermissions, boolean purchasePermissions)
     {
-        StoreManager newStoreManager = new StoreManager(member_ID, store_ID);
+        StoreManager newStoreManager = new StoreManager(member_ID, store_ID, inventoryPermissions, purchasePermissions);
         addNewStoreManagerToTheMarket(newStoreManager);
     }
 
