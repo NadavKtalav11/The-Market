@@ -23,13 +23,6 @@ public class Member extends State{
         isLogin = false;
     }
 
-    public void addProductToStore(int storeID, String productName, int price, int quantity){
-        if (roleFacade.verifyStoreOwner(storeID, member_ID)){
-            Store store = storeFacade.getStoreByID(storeID);
-            store.addProduct(productName, price, quantity);
-        }
-    }
-
     public boolean isLogin()
     {
         return this.isLogin;
@@ -39,4 +32,5 @@ public class Member extends State{
     {
         return this.member_ID;
     }
+
 }
