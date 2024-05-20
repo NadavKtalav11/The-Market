@@ -5,15 +5,12 @@ import DomainLayer.Role.RoleFacade;
 
 public class Member extends State{
 
-    private StoreFacade storeFacade;
-    public RoleFacade roleFacade;
     private int member_ID;
     private int productIdCounter;
-
+    private boolean isLogin;
+  
     Member(int member_ID)
     {
-        this.storeFacade = StoreFacade.getInstance();
-        this.roleFacade = RoleFacade.getInstance();
         this.member_ID = member_ID;
         this.productIdCounter = 0;
     }
@@ -21,19 +18,17 @@ public class Member extends State{
     public void logout(User user) {
         // todo save data if needed
         user.setState(new Guest());
+        isLogin = false;
     }
 
-    public void openStore()
+    public boolean isLogin()
     {
-        int store_ID = this.storeFacade.openStore();
-        this.roleFacade.createStoreOwner(member_ID, store_ID, true);
+        return this.isLogin;
     }
 
-    public void addProductToStore(int storeID, String productName, int price, int quantity){
-        if (roleFacade.verifyStoreOwner(storeID, member_ID)){
-            Store store = storeFacade.getStoreByID(storeID);
-            store.addProduct(productName, price, quantity, productIdCounter);
-            productIdCounter++;
-        }
+    public int getMemberID()
+    {
+        return this.member_ID;
     }
+
 }

@@ -23,5 +23,16 @@ public class User {
     public void updateCart(int productId, int quantity, int storeId)
     {
         cart.addItemsToCart(productId, quantity, storeId);
+
+    }
+    
+    public boolean isLoggedIn()
+    {
+        return state instanceof Member;
+    }
+
+    public State getState()
+    {
+        return state;
     }
 }

@@ -4,20 +4,24 @@ import DomainLayer.Role.RoleFacade;
 import DomainLayer.Store.StoreFacade;
 import DomainLayer.User.UserFacade;
 
+import java.util.List;
+
 public class Market {
     private StoreFacade storeFacade;
     private UserFacade userFacade;
     private RoleFacade roleFacade;
 
-    public void addProductToStore(int storeName , String username, String itemName , int quantity){
-        int userId = userFacade.getUserID(username);
-        int storeId = StoreFacade.getStoreId(storeName);
-        boolean canAdd = roleFacade.verifyStoreOwner(userId, storeId);
-        if (canAdd){
-            storeFacade.addItemToStore(itemName, quantity);
-        }
-        else {
-            throw new IllegalArgumentException("the user is not store owner in the specific store so he cannot add an item");
+    Market(){
+      this.storeFacade = StoreFacade.getInstance();
+      this.userFacade = UserFacade.getInstance();
+      this.roleFacade = RoleFacade.getInstance();
+    }
+  
+    public void addProductToStore(String username, int storeID, String productName, int price, int quantity) throws Exception {
+        if (roleFacade.verifyStoreOwner(storeID, username)) {
+            storeFacade.addProductToStore(storeID, productName, price, quantity);
+        } else {
+            throw new Exception("User is not the Store owner");
         }
     }
 
@@ -32,5 +36,45 @@ public class Market {
         {
             throw new IllegalArgumentException("The product you try to add doesn't meet the store policies");
         }
+
+    }
+
+    public void openStore(int user_ID) {
+        if (userFacade.isUserLoggedIn(user_ID)) {
+            int store_ID = this.storeFacade.openStore();   //todo: compare to use case parameters
+            int member_ID = this.userFacade.getUsernameByUserID(user_ID);
+            this.roleFacade.createStoreOwner(member_ID, store_ID, true);
+        } else {
+            throw new IllegalArgumentException("The user is not logged in so he cannot open a store");
+        }
+    }
+
+    public void removeProductFromStore(String username, int storeID, String productName) throws Exception {
+        if (roleFacade.verifyStoreOwner(storeID, username)) {
+            storeFacade.removeProductFromStore(storeID, productName);
+        } else {
+            throw new Exception("User is not the Store owner");
+        }
+    }
+    
+    public void closeStore(int user_ID, int store_ID) throws Exception
+    {
+        if (userFacade.isUserLoggedIn(user_ID)) {
+            int member_ID = this.userFacade.getUsernameByUserID(user_ID);
+            if (roleFacade.verifyStoreOwner(store_ID, member_ID) && roleFacade.verifyStoreOwnerIsFounder(store_ID, member_ID)) {
+                if (storeFacade.verifyStoreExist(store_ID)) {
+                    storeFacade.closeStore(store_ID);
+                    List<Integer> storeRoles = roleFacade.getAllStoreRoles(store_ID);
+                    //todo: add function which send notification to all store roles (notification component).
+                    //todo: update use-case parameters
+                } else {
+                    throw new Exception("Store does not exist");
+                }
+            } else {
+                throw new Exception("Only store founder can close a store");
+            }
+        }
+        else throw new IllegalArgumentException("User is not logged in, so he cannot close a store");
+      
     }
 }

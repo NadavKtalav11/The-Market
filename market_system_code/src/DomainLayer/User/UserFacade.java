@@ -31,5 +31,15 @@ public class UserFacade {
         User user = getUserByID(userId);
         user.updateCart(productId, quantity, storeId);
     }
+  
+    public boolean isUserLoggedIn(int userID){
+        return getUserByID(userID).isLoggedIn();
+    }
+
+    public int getUsernameByUserID(int userID)
+    {
+        User user = getUserByID(userID);
+        return ((Member)user.getState()).getMemberID();
+    }
 
 }
