@@ -21,16 +21,12 @@ public class RoleFacade {
         return roleFacadeInstance;
     }
 
-    public boolean verifyStoreOwner(int storeID, int memberID){
-        for(int i=0 ; i<storeOwnersList.size(); i++){
-            if(storeOwnersList.get(i).getStore_ID() == storeID &&
-                        storeOwnersList.get(i).getMember_ID() == memberID){
-                return true;
-            }
-        }
-        return false;
-    }
-    public StoreOwner getStoreOwner(int storeID, int memberID)
+
+   public boolean verifyStoreOwner(int storeID, int memberID){
+        return getStoreOwner(storeID, memberID) != null;
+   }
+  
+  public StoreOwner getStoreOwner(int storeID, int memberID)
     {
         for(int i=0 ; i<storeOwnersList.size(); i++){
             if(storeOwnersList.get(i).getStore_ID() == storeID &&
