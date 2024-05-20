@@ -13,7 +13,8 @@ public class StoreOwner implements Role{
         this.founder = founder;
     }
 
-    public int getStore_ID(){
+    public int getStore_ID()
+    {
         return this.store_ID;
     }
 
@@ -21,4 +22,8 @@ public class StoreOwner implements Role{
         return this.username;
     }
 
+    public boolean verifyStoreOwnerIsFounder()
+    {
+        return founder;
+    }
 }

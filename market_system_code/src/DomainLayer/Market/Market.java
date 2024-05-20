@@ -5,16 +5,40 @@ import DomainLayer.Store.StoreFacade;
 import DomainLayer.User.UserFacade;
 
 public class Market {
-    private StoreFacade storeFacade = StoreFacade.getInstance();
-    private UserFacade userFacade = UserFacade.getInstance();
-    private RoleFacade roleFacade = RoleFacade.getInstance();
+    private StoreFacade storeFacade;
+    private UserFacade userFacade;
+    private RoleFacade roleFacade;
 
+    Market(){
+      this.storeFacade = StoreFacade.getInstance();
+      this.userFacade = StoreFacade.getInstance();
+      this.roleFacade = RoleFacade.getInstance();
+    }
+  
     public void addProductToStore(String username, int storeID, String productName, int price, int quantity){
         if (roleFacade.verifyStoreOwner(storeID, username)){
             storeFacade.addProductToStore(storeID, productName, price, quantity);
         }
         else {
-            throw new IllegalArgumentException("the user is not store owner in the specific store so he cannot add an item");
+                throw new Exception("User is not the Store owner");
         }
+    public void closeStore(int member_ID, int store_ID) throws Exception 
+    {
+        if(roleFacade.verifyStoreOwner(store_ID, member_ID) && roleFacade.verifyStoreOwnerIsFounder(store_ID, member_ID))
+        {
+            if(storeFacade.verifyStoreExist(store_ID)) {
+                storeFacade.closeStore(store_ID);
+                List<Integer> storeRoles = roleFacade.getAllStoreRoles(store_ID);
+                //todo: add function which send notification to all store roles (notification component).
+                //todo: update use-case parameters
+            }
+            else {
+                throw new Exception("Store does not exist");
+            }
+        }
+        else {
+            throw new Exception("Only store founder can close a store");
+        }
+      
     }
 }

@@ -36,4 +36,14 @@ public class StoreFacade {
     public void addProductToStore(int storeID, String productName, int price, int quantity){
         allStores.get(storeID).addProduct(productName, price, quantity);
     }
+    public boolean verifyStoreExist(int storeID)
+    {
+        return getStoreByID(storeID) != null;
+    }
+
+    public void closeStore(int store_ID)
+    {
+        Store storeToClose = this.getStoreByID(store_ID);
+        storeToClose.closeStore();
+    }
 }
