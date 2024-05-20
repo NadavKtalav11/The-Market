@@ -32,4 +32,15 @@ public class StoreFacade {
         this.currentStoreID++;
         return newStore.getStoreID();
     }
+
+    public boolean verifyStoreExist(int storeID)
+    {
+        return getStoreByID(storeID) != null;
+    }
+
+    public void closeStore(int store_ID)
+    {
+        Store storeToClose = this.getStoreByID(store_ID);
+        storeToClose.closeStore();
+    }
 }
