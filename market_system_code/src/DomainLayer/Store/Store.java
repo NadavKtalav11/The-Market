@@ -1,11 +1,13 @@
 package DomainLayer.Store;
 
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 public class Store {
     private int store_ID;
-    private List<Product> storeProducts = new LinkedList<Product>();
+    private Map<String, Product> storeProducts = new HashMap<String, Product>();
     private boolean isOpened;
 
     Store(int store_ID)
@@ -20,7 +22,11 @@ public class Store {
     }
 
     public void addProduct(String productName, int price, int quantity){
-        storeProducts.add(new Product(productName, price, quantity));
+        storeProducts.put(productName, new Product(productName, price, quantity));
+    }
+
+    public void removeProduct(String productName){
+        storeProducts.remove(productName);
     }
 
     public void closeStore()
