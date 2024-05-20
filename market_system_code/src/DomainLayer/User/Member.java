@@ -6,14 +6,17 @@ import DomainLayer.Role.RoleFacade;
 public class Member extends State{
 
     private int member_ID;
+    private int productIdCounter;
     private boolean isLogin;
-
+  
     Member(int member_ID)
     {
         this.member_ID = member_ID;
+        this.productIdCounter = 0;
     }
 
-    public void logout(User user) {
+    public void Logout(User user)
+    {
         // todo save data if needed
         user.setState(new Guest());
         isLogin = false;

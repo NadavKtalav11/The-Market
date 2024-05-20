@@ -34,12 +34,24 @@ public class StoreFacade {
         return newStore.getStoreID();
     }
 
+    public boolean checkQuantityAndPolicies(int productId, int quantity, int storeId, int userId)
+    {
+        Store store = getStoreByID(storeId);
+        return store.checkProductQuantity(productId, quantity);
+
+        //Not sure if purchase and discount policies should be checked now
+    }
+
     public void addProductToStore(int storeID, String productName, int price, int quantity){
         allStores.get(storeID).addProduct(productName, price, quantity);
     }
 
     public void removeProductFromStore(int storeID, String productName){
         allStores.get(storeID).removeProduct(productName);
+    }
+
+    public void updateProductInStore(int storeID, String productName, int price, int quantity){
+        allStores.get(storeID).updateProduct(productName, price,quantity);
     }
 
     public boolean verifyStoreExist(int storeID)

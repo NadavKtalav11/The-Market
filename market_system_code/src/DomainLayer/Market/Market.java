@@ -11,18 +11,38 @@ public class Market {
     private UserFacade userFacade;
     private RoleFacade roleFacade;
 
-    Market(){
+    public Market(){
       this.storeFacade = StoreFacade.getInstance();
       this.userFacade = UserFacade.getInstance();
       this.roleFacade = RoleFacade.getInstance();
     }
+
+    public void Logout(int memberID){
+        //todo add condition if the user is logged in
+        userFacade.getUserByID(memberID).Logout();
+    }
   
-    public void addProductToStore(String username, int storeID, String productName, int price, int quantity) throws Exception {
-        if (roleFacade.verifyStoreOwner(storeID, username)) {
+    public void addProductToStore(int memberID, int storeID, String productName, int price, int quantity) throws Exception {
+        if (roleFacade.verifyStoreOwner(storeID, memberID)) {
             storeFacade.addProductToStore(storeID, productName, price, quantity);
         } else {
-            throw new Exception("User is not the Store owner");
+            throw new Exception("Only store owner can add product to store");
         }
+    }
+
+
+    public void addProductToBasket(int productId, int quantity, int storeId, int userId)
+    {
+        boolean canAddToBasket = storeFacade.checkQuantityAndPolicies(productId, quantity, storeId, userId);
+        if (canAddToBasket)
+        {
+            userFacade.addItemsToBasket(productId, quantity, storeId, userId);
+        }
+        else
+        {
+            throw new IllegalArgumentException("The product you try to add doesn't meet the store policies");
+        }
+
     }
 
     public void openStore(int user_ID) {
@@ -39,7 +59,42 @@ public class Market {
         if (roleFacade.verifyStoreOwner(storeID, username)) {
             storeFacade.removeProductFromStore(storeID, productName);
         } else {
-            throw new Exception("User is not the Store owner");
+            throw new Exception("Only store owner can remove product from store");
+        }
+    }
+
+    public void updateProductInStore(String username, int storeID, String productName, int price, int quantity) throws Exception {
+        if (roleFacade.verifyStoreOwner(storeID, username)) {
+            storeFacade.updateProductInStore(storeID, productName, price, quantity);
+        } else {
+            throw new Exception("Only store owner can update product in store");
+        }
+    }
+
+    public void closeStore(int member_ID, int store_ID) throws Exception 
+    {
+        if(roleFacade.verifyStoreOwner(store_ID, member_ID) && roleFacade.verifyStoreOwnerIsFounder(store_ID, member_ID))
+        {
+            if(storeFacade.verifyStoreExist(store_ID)) {
+                storeFacade.closeStore(store_ID);
+                List<Integer> storeRoles = roleFacade.getAllStoreRoles(store_ID);
+                //todo: add function which send notification to all store roles (notification component).
+                //todo: update use-case parameters
+            }
+            else {
+                throw new Exception("Store does not exist");
+            }
+        }
+    }
+    public void AppointStoreOwner(int firstMemberID, int secondMemberID, int storeID) throws Exception {
+        if (roleFacade.verifyStoreOwner(storeID, firstMemberID)) {
+            if (!roleFacade.verifyStoreOwner(storeID, secondMemberID)) {
+                roleFacade.createStoreOwner(secondMemberID, storeID, false);
+            } else {
+                throw new Exception("Member is already store owner");
+            }
+        } else {
+            throw new Exception("Only store owner can appoint new store owner");
         }
     }
     

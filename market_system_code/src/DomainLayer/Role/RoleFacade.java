@@ -21,7 +21,12 @@ public class RoleFacade {
         return roleFacadeInstance;
     }
 
-    public StoreOwner getStoreOwner(int storeID, int memberID)
+
+   public boolean verifyStoreOwner(int storeID, int memberID){
+        return getStoreOwner(storeID, memberID) != null;
+   }
+  
+  public StoreOwner getStoreOwner(int storeID, int memberID)
     {
         for(int i=0 ; i<storeOwnersList.size(); i++){
             if(storeOwnersList.get(i).getStore_ID() == storeID &&
@@ -46,10 +51,6 @@ public class RoleFacade {
                 rolesList.add(storeManager.getMember_ID());
         }
         return rolesList;
-    }
-
-    public boolean verifyStoreOwner(int storeID, int memberID){
-        return getStoreOwner(storeID, memberID) != null;
     }
 
     public boolean verifyStoreOwnerIsFounder(int storeID, int memberID){
