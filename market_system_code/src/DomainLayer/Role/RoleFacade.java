@@ -20,6 +20,16 @@ public class RoleFacade {
         return roleFacadeInstance;
     }
 
+    public boolean verifyStoreOwner(int storeID, int memberID){
+        for(int i=0 ; i<storeOwnersList.size(); i++){
+            if(storeOwnersList.get(i).getStore_ID() == storeID &&
+                        storeOwnersList.get(i).getMember_ID() == memberID){
+                return true;
+            }
+        }
+        return false;
+    }
+
     public void createStoreOwner(int member_ID, int store_ID, boolean founder)
     {
         StoreOwner newStoreOwner = new StoreOwner(member_ID, store_ID, founder);
