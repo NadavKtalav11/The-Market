@@ -19,7 +19,18 @@ public class Market {
         else {
             throw new IllegalArgumentException("the user is not store owner in the specific store so he cannot add an item");
         }
-
     }
 
+    public void addProductToBasket(int productId, int quantity, int storeId, int userId)
+    {
+        boolean canAddToBasket = storeFacade.checkQuantityAndPolicies(productId, quantity, storeId, userId);
+        if (canAddToBasket)
+        {
+            userFacade.addItemsToBasket(productId, quantity, storeId, userId);
+        }
+        else
+        {
+            throw new IllegalArgumentException("The product you try to add doesn't meet the store policies");
+        }
+    }
 }

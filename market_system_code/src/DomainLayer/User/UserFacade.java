@@ -1,6 +1,5 @@
 package DomainLayer.User;
 
-import DomainLayer.Store.Store;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -25,6 +24,12 @@ public class UserFacade {
 
     public User getUserByID(int userID){
         return allUsers.get(userID);
+    }
+
+    public void addItemsToBasket(int productId, int quantity, int storeId, int userId)
+    {
+        User user = getUserByID(userId);
+        user.updateCart(productId, quantity, storeId);
     }
 
 }

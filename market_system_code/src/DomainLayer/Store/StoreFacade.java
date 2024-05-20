@@ -32,4 +32,16 @@ public class StoreFacade {
         this.currentStoreID++;
         return newStore.getStoreID();
     }
+
+    public boolean checkQuantityAndPolicies(int productId, int quantity, int storeId, int userId)
+    {
+        Store store = getStoreByID(storeId);
+        return store.checkProductQuantity(productId, quantity);
+
+        //Not sure if purchase and discount policies should be checked now
+
+
+    }
+
+
 }
