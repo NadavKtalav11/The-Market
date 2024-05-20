@@ -21,14 +21,6 @@ public class RoleFacade {
         return roleFacadeInstance;
     }
 
-    public boolean verifyStoreOwner(int storeID, String username){
-        for(int i=0 ; i<storeOwnersList.size(); i++){
-            if(storeOwnersList.get(i).getStore_ID() == storeID &&
-                        storeOwnersList.get(i).getUsername() == username){
-                return true;
-            }
-        }
-    }
     public StoreOwner getStoreOwner(int storeID, int memberID)
     {
         for(int i=0 ; i<storeOwnersList.size(); i++){
