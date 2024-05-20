@@ -4,6 +4,8 @@ import DomainLayer.Role.RoleFacade;
 import DomainLayer.Store.StoreFacade;
 import DomainLayer.User.UserFacade;
 
+import java.util.List;
+
 public class Market {
     private StoreFacade storeFacade;
     private UserFacade userFacade;
@@ -11,17 +13,17 @@ public class Market {
 
     Market(){
       this.storeFacade = StoreFacade.getInstance();
-      this.userFacade = StoreFacade.getInstance();
+      this.userFacade = UserFacade.getInstance();
       this.roleFacade = RoleFacade.getInstance();
     }
   
-    public void addProductToStore(String username, int storeID, String productName, int price, int quantity){
-        if (roleFacade.verifyStoreOwner(storeID, username)){
+    public void addProductToStore(String username, int storeID, String productName, int price, int quantity) throws Exception {
+        if (roleFacade.verifyStoreOwner(storeID, username)) {
             storeFacade.addProductToStore(storeID, productName, price, quantity);
+        } else {
+            throw new Exception("User is not the Store owner");
         }
-        else {
-                throw new Exception("User is not the Store owner");
-        }
+    }
     public void closeStore(int member_ID, int store_ID) throws Exception 
     {
         if(roleFacade.verifyStoreOwner(store_ID, member_ID) && roleFacade.verifyStoreOwnerIsFounder(store_ID, member_ID))
