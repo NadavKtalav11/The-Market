@@ -16,16 +16,8 @@ public class Member extends State{
         this.member_ID = member_ID;
     }
 
-    public void openStore()
-    {
+    public void openStore() {
         int store_ID = this.storeFacade.openStore();
         this.roleFacade.createStoreOwner(member_ID, store_ID, true);
-    }
-
-    public void addProductToStore(int storeID, String productName, int price, int quantity){
-        if (roleFacade.verifyStoreOwner(storeID, member_ID)){
-            Store store = storeFacade.getStoreByID(storeID);
-            store.addProduct(productName, price, quantity);
-        }
     }
 }

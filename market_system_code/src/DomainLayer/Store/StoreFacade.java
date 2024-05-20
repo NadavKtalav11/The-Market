@@ -32,4 +32,8 @@ public class StoreFacade {
         this.currentStoreID++;
         return newStore.getStoreID();
     }
+
+    public void addProductToStore(int storeID, String productName, int price, int quantity){
+        allStores.get(storeID).addProduct(productName, price, quantity);
+    }
 }

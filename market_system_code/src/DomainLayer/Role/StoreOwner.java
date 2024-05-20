@@ -2,13 +2,13 @@ package DomainLayer.Role;
 
 public class StoreOwner implements Role{
 
-    private int member_ID;
+    private String username;
     private int store_ID;
     public boolean founder;
 
-    StoreOwner(int member_ID, int store_ID, boolean founder)
+    StoreOwner(String username, int store_ID, boolean founder)
     {
-        this.member_ID = member_ID;
+        this.username = username;
         this.store_ID = store_ID;
         this.founder = founder;
     }
@@ -17,8 +17,8 @@ public class StoreOwner implements Role{
         return this.store_ID;
     }
 
-    public int getMember_ID() {
-        return this.member_ID;
+    public String getUsername() {
+        return this.username;
     }
 
 }
