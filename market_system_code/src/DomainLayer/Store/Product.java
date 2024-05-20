@@ -3,6 +3,15 @@ package DomainLayer.Store;
 public class Product {
     private int productId;
     private String productName;
+
+    public void setPrice(int price) {
+        this.price = price;
+    }
+
+    public void setQuantity(int quantity) {
+        this.quantity = quantity;
+    }
+
     private int price;
     private int quantity;
 

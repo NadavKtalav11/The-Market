@@ -49,6 +49,11 @@ public class Store {
         storeProducts.remove(productName);
     }
 
+    public void updateProduct(String productName, int price, int quantity){
+        storeProducts.get(productName).setPrice(price);
+        storeProducts.get(productName).setQuantity(quantity);
+    }
+
     public void closeStore()
     {
         this.isOpened = false;

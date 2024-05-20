@@ -58,6 +58,29 @@ public class Market {
         }
     }
 
+    public void updateProductInStore(String username, int storeID, String productName, int price, int quantity) throws Exception {
+        if (roleFacade.verifyStoreOwner(storeID, username)) {
+            storeFacade.updateProductInStore(storeID, productName, price, quantity);
+        } else {
+            throw new Exception("Only store owner can update product in store");
+        }
+    }
+
+    public void closeStore(int member_ID, int store_ID) throws Exception 
+    {
+        if(roleFacade.verifyStoreOwner(store_ID, member_ID) && roleFacade.verifyStoreOwnerIsFounder(store_ID, member_ID))
+        {
+            if(storeFacade.verifyStoreExist(store_ID)) {
+                storeFacade.closeStore(store_ID);
+                List<Integer> storeRoles = roleFacade.getAllStoreRoles(store_ID);
+                //todo: add function which send notification to all store roles (notification component).
+                //todo: update use-case parameters
+            }
+            else {
+                throw new Exception("Store does not exist");
+            }
+        }
+    }
     public void AppointStoreOwner(int firstMemberID, int secondMemberID, int storeID) throws Exception {
         if (roleFacade.verifyStoreOwner(storeID, firstMemberID)) {
             if (!roleFacade.verifyStoreOwner(storeID, secondMemberID)) {
