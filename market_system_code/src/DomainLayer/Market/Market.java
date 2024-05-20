@@ -17,8 +17,9 @@ public class Market {
       this.roleFacade = RoleFacade.getInstance();
     }
 
-    public UserFacade getUserFacade(){
-        return userFacade;
+    public void Logout(int memberID){
+        //todo add condition if the user is logged in
+        userFacade.getUserByID(memberID).Logout();
     }
   
     public void addProductToStore(String username, int storeID, String productName, int price, int quantity) throws Exception {

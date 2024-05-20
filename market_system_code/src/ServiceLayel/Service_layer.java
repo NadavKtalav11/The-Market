@@ -11,7 +11,7 @@ public class Service_layer {
 
     public void Logout(int memberID){
         try{
-            market.getUserFacade().getUserByID(memberID).Logout();
+            market.Logout(memberID);
         }
         catch (Exception e){
             System.out.println(e);
