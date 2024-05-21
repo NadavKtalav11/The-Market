@@ -1,21 +1,68 @@
 package DomainLayer.Market;
 
+import DomainLayer.PaymentServices.PaymentServicesFacade;
 import DomainLayer.Role.RoleFacade;
 import DomainLayer.Store.StoreFacade;
 import DomainLayer.User.UserFacade;
+import DomainLayer.SupplyServices.SupplyServicesFacade;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Set;
 
 public class Market {
+    private static Market MarketInstance;
+    private PaymentServicesFacade paymentServicesFacade;
+    private SupplyServicesFacade supplyServicesFacade;
+    private Set<Integer> systemManagerIds;
     private StoreFacade storeFacade;
     private UserFacade userFacade;
     private RoleFacade roleFacade;
+    private boolean initialized= false;
 
-    public Market(){
-      this.storeFacade = StoreFacade.getInstance();
-      this.userFacade = UserFacade.getInstance();
-      this.roleFacade = RoleFacade.getInstance();
+    public static Market getInstance() {
+        if (MarketInstance == null) {
+            MarketInstance = new Market();
+        }
+        return MarketInstance;
     }
+
+
+
+    private Market(){
+        this.storeFacade = StoreFacade.getInstance();
+         this.userFacade = UserFacade.getInstance();
+          this.roleFacade = RoleFacade.getInstance();
+          this.paymentServicesFacade = PaymentServicesFacade.getInstance();
+    }
+
+    public void init(String userName, String password, int licensedDealerNumber,
+                     String paymentServiceName, String url, int licensedDealerNumber1, String supplyServiceName, String address){
+        if(initialized==true){
+            return;
+        }
+
+        // userFacade.register(username, password)
+       // int systemMangerId = userFacade.getByUserName();
+       // systemManagerIds.add(systemMangerId);
+        paymentServicesFacade.addExternalService(licensedDealerNumber,paymentServiceName,url);
+        supplyServicesFacade.addExternalService(licensedDealerNumber1,supplyServiceName, address);
+
+        initialized = true;
+    }
+
+    public boolean payWithExternalPaymentService(){
+        //HashMap<Integer, Integer>  productIdAndAmount= userFacade.payWithExternalPaymentService(userId);
+        return true;
+    }
+
+
+
+
+
+//    public Market(){
+//
+//    }
 
     public void Logout(int memberID){
         //todo add condition if the user is logged in
