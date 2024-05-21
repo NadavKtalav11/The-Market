@@ -21,30 +21,32 @@ public class Store {
         return store_ID;
     }
 
-    public void addProduct(String productName, int price, int quantity, int productId){
-        storeProducts.put(productName, new Product(productName, price, quantity, productId));
+    public void addProduct(String productName, int price, int quantity){
+        storeProducts.put(productName, new Product(productName, price, quantity));
     }
 
-    public Product getProductById(int productId)
+    public Product getProductByName(String productName)
     {
-        for (String productName : storeProducts.keySet()) {
-            Product product = storeProducts.get(productName);
-            if (product != null) {
-                if (product.getProductId() == productId) {
-                    return product;
-                }
-            }
+        return storeProducts.get(productName);
+    }
+
+    public boolean checkProductQuantity(String productName, int quantity)
+    {
+        if (storeProducts.containsKey(productName))
+        {
+            Product productToCheck = getProductByName(productName);
+            return productToCheck.getQuantity() >= quantity; //true if the quantity in the store is bigger than the quantity a user want to add
         }
-        throw new IllegalArgumentException("Product with ID " + productId + " not found");
+        return false;
     }
 
-    public boolean checkProductQuantity(int productId, int quantity)
+    public int calcPriceInStore(String productName, int quantity, int userId)
     {
-        Product p = getProductById(productId);
-        return p.getQuantity() >= quantity; //true if the quantity in the store is bigger than the quantity a user want to add
-    }
-  
+        Product productToCalc = getProductByName(productName);
+        return productToCalc.getPrice() * quantity;
 
+        //in the future, add check for discount using the discount policy
+    }
 
     public void removeProduct(String productName){
         storeProducts.remove(productName);

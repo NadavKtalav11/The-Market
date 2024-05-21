@@ -1,9 +1,10 @@
 package DomainLayer.User;
 
-public class State {
+public interface State {
 
 
-    public void Logout(User user) {
-        // No operation, since guest cannot log out
-    }
+    void Logout(User user);
+    void Exit(User user);
+    void Register(User user, String username, String password, String birthday, String address) throws Exception;
+
 }

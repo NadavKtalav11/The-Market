@@ -1,17 +1,11 @@
 package DomainLayer.AuthorizationsAndSecurity;
-import java.time.Instant;
-import java.util.HashMap;
-import java.util.Map;
-import java.security.SecureRandom;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
+
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
-import io.jsonwebtoken.Claims.*;
-
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
 
 import java.util.Date;
-
 
 public class TokensService {
     private static final String SECRET_KEY = "your-256-bit-secret"; // Use a strong secret key
@@ -20,7 +14,7 @@ public class TokensService {
     public TokensService() {
         // Constructor
     }
-/*
+
     public String generateToken(int guestId) {
         long now = System.currentTimeMillis();
         Date expiryDate = new Date(now + TOKEN_VALIDITY_DURATION);
@@ -35,16 +29,16 @@ public class TokensService {
 
     public boolean validateToken(String token) {
         try {
-            Jwts.parser().setSigningKey(SECRET_KEY).build().parseSignedClaims(token).getPayload();
-            return true;
+            Claims claims = Jwts.parser().setSigningKey(SECRET_KEY).build().parseClaimsJws(token).getBody();
+            Date expiration = claims.getExpiration();
+            return expiration.after(new Date());
         } catch (JwtException | IllegalArgumentException e) {
             return false;
         }
     }
 
     public int getGuestId(String token) {
-        Claims claims = Jwts.parser().setSigningKey(SECRET_KEY).build().parseSignedClaims(token).getPayload();
-
+        Claims claims = Jwts.parser().setSigningKey(SECRET_KEY).build().parseClaimsJws(token).getBody();
         return Integer.parseInt(claims.getSubject());
-    }*/
+    }
 }
