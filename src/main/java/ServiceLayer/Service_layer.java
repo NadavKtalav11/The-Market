@@ -62,5 +62,15 @@ public class Service_layer {
         }
     }
 
+    //todo think about where we get the userID
+    public void Login(int userID, String username, String password){
+        try{
+            market.Login(userID, username, password);
+        }
+        catch (Exception e){
+            System.out.println(e);
+        }
+    }
+
 
 }
