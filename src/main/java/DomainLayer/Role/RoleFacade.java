@@ -1,7 +1,9 @@
 package DomainLayer.Role;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class RoleFacade {
 
@@ -102,9 +104,64 @@ public class RoleFacade {
         return getStoreManager(store_ID, member_ID).hasPurchasePermissions();
     }
 
+    private void addNewStoreManagerToTheMarket(StoreManager storeManager)
+    {
+        storeManagerList.add(storeManager);
+    }
+
     private void addNewStoreOwnerToTheMarket(StoreOwner storeOwner)
     {
         storeOwnersList.add(storeOwner);
     }
 
+    public Map<Integer, String> getInformationAboutStoreRoles(int store_ID)
+    {
+        List<Integer> storeManagers = getAllStoreManagers(store_ID);
+        List<Integer> storeOwners = getAllStoreOwners(store_ID);
+
+        Map<Integer, String> storeRoles = new HashMap<>();
+
+        for (Integer managerId : storeManagers) {
+            storeRoles.put(managerId, "manager");
+        }
+
+        for (Integer ownerId : storeOwners) {
+            storeRoles.put(ownerId, "owner");
+        }
+
+        return storeRoles;
+    }
+
+    public Map<Integer, List<Integer>> getStoreManagersAuthorizations(int storeID)
+    {
+        Map<Integer, List<Integer>> managersAuthorizations = new HashMap<>();
+        for (StoreManager storeManager: storeManagerList)
+        {
+            if(storeManager.getStore_ID() == storeID)
+                managersAuthorizations.put(storeManager.getMember_ID(), storeManager.getAuthorizations());
+        }
+        return managersAuthorizations;
+    }
+
+    public List<Integer> getAllStoreManagers(int storeID)
+    {
+        List<Integer> storeManagers = new ArrayList<>();
+        for (StoreManager storeManager: storeManagerList)
+        {
+            if(storeManager.getStore_ID() == storeID)
+                storeManagers.add(storeManager.getMember_ID());
+        }
+        return storeManagers;
+    }
+
+    public List<Integer> getAllStoreOwners(int storeID)
+    {
+        List<Integer> storeOwners = new ArrayList<>();
+        for (StoreOwner storeOwner : storeOwnersList)
+        {
+            if (storeOwner.getStore_ID() == storeID)
+                storeOwners.add(storeOwner.getMember_ID());
+        }
+        return storeOwners;
+    }
 }
