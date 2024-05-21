@@ -21,7 +21,7 @@ public class Market {
         //todo add condition if the user is logged in
         userFacade.getUserByID(memberID).Logout();
     }
-  
+
     public void addProductToStore(int memberID, int storeID, String productName, int price, int quantity) throws Exception {
         if (roleFacade.verifyStoreOwner(storeID, memberID)) {
             storeFacade.addProductToStore(storeID, productName, price, quantity);
@@ -29,7 +29,6 @@ public class Market {
             throw new Exception("Only store owner can add product to store");
         }
     }
-
 
     public void addProductToBasket(int productId, int quantity, int storeId, int userId)
     {
@@ -55,16 +54,16 @@ public class Market {
         }
     }
 
-    public void removeProductFromStore(String username, int storeID, String productName) throws Exception {
-        if (roleFacade.verifyStoreOwner(storeID, username)) {
+    public void removeProductFromStore(int memberID, int storeID, String productName) throws Exception {
+        if (roleFacade.verifyStoreOwner(storeID, memberID)) {
             storeFacade.removeProductFromStore(storeID, productName);
         } else {
             throw new Exception("Only store owner can remove product from store");
         }
     }
 
-    public void updateProductInStore(String username, int storeID, String productName, int price, int quantity) throws Exception {
-        if (roleFacade.verifyStoreOwner(storeID, username)) {
+    public void updateProductInStore(int memberID, int storeID, String productName, int price, int quantity) throws Exception {
+        if (roleFacade.verifyStoreOwner(storeID, memberID)) {
             storeFacade.updateProductInStore(storeID, productName, price, quantity);
         } else {
             throw new Exception("Only store owner can update product in store");
@@ -91,13 +90,26 @@ public class Market {
             if (!roleFacade.verifyStoreOwner(storeID, secondMemberID)) {
                 roleFacade.createStoreOwner(secondMemberID, storeID, false);
             } else {
-                throw new Exception("Member is already store owner");
+                throw new Exception("Member is already owner of this store");
             }
         } else {
             throw new Exception("Only store owner can appoint new store owner");
         }
     }
-    
+
+    public void AppointStoreManager(int firstMemberID, int secondMemberID, int storeID,
+                                    boolean inventoryPermissions, boolean purchasePermissions) throws Exception {
+        if (roleFacade.verifyStoreOwner(storeID, firstMemberID)) {
+            if (!roleFacade.verifyStoreManager(storeID, secondMemberID)) {
+                roleFacade.createStoreManager(secondMemberID, storeID, inventoryPermissions, purchasePermissions);
+            } else {
+                throw new Exception("Member is already manager of this store");
+            }
+        } else {
+            throw new Exception("Only store owner can appoint new store manager");
+        }
+    }
+
     public void closeStore(int user_ID, int store_ID) throws Exception
     {
         if (userFacade.isUserLoggedIn(user_ID)) {
