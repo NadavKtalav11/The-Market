@@ -89,9 +89,17 @@ public class RoleFacade {
     public void updateStoreManagerPermissions(int member_ID, int store_ID,
                                    boolean inventoryPermissions, boolean purchasePermissions)
     {
-        StoreManager newStoreManager = new StoreManager(member_ID, store_ID, inventoryPermissions, purchasePermissions);
-        addNewStoreManagerToTheMarket(newStoreManager);
         getStoreManager(store_ID, member_ID).setPermissions(inventoryPermissions, purchasePermissions);
+    }
+
+    public boolean managerHasInventoryPermissions(int member_ID, int store_ID)
+    {
+        return getStoreManager(store_ID, member_ID).hasInventoryPermissions();
+    }
+
+    public boolean managerHasPurchasePermissions(int member_ID, int store_ID)
+    {
+        return getStoreManager(store_ID, member_ID).hasPurchasePermissions();
     }
 
     private void addNewStoreOwnerToTheMarket(StoreOwner storeOwner)
