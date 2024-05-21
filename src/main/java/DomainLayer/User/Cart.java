@@ -1,23 +1,74 @@
 package DomainLayer.User;
 
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 public class Cart {
-    private List<Basket> baskets;
+    Map<Integer, Basket> baskets = new HashMap<>();
+    private int cartPrice;
 
     public Cart() {
-        this.baskets = new LinkedList<>();
+        this.cartPrice = 0;
     }
 
-    public void addItemsToCart(int productId, int quantity, int storeId)
+    public int getCartPrice()
     {
-        for (Basket basket : baskets) {
-            if (basket.getId() == storeId) {
-                basket.addProduct(productId, quantity);
-                break;
-            }
-        }
-        throw new IllegalArgumentException("Product with ID " + productId + " not found");
+        return this.cartPrice;
     }
+
+    public void setCartPrice(int price)
+    {
+        this.cartPrice = price;
+    }
+
+    public void addItemsToCart(String productName, int quantity, int storeId, int totalPrice)
+    {
+        if (baskets.containsKey(storeId))
+        {
+            Basket basket = baskets.get(storeId);
+            basket.addProduct(productName, quantity, totalPrice);
+        }
+        else
+        {
+            Basket basket = new Basket(storeId);
+            baskets.put(storeId, basket);
+            basket.addProduct(productName, quantity, totalPrice);
+        }
+    }
+
+    public void calcCartTotal()
+    {
+        int totalCartPrice = 0;
+        for (Integer storeId : baskets.keySet()) {
+            Basket basket = baskets.get(storeId);
+            basket.calcBasketPrice();
+            totalCartPrice += basket.getBasketPrice();
+        }
+
+        setCartPrice(totalCartPrice);
+    }
+
+    public boolean checkIfProductInCart(String productName, int storeId)
+    {
+        if (baskets.containsKey(storeId))
+        {
+            return baskets.get(storeId).checkIfProductInBasket(productName);
+        }
+
+        throw new IllegalArgumentException("The store id" + storeId + "you entered is invalid");
+    }
+
+    public void removeItemFromCart(String productName, int storeId)
+    {
+        if (baskets.containsKey(storeId))
+        {
+            baskets.get(storeId).removeItemFromBasket(productName);
+        }
+
+        throw new IllegalArgumentException("The store id" + storeId + "you entered is invalid");
+    }
+
+
 }

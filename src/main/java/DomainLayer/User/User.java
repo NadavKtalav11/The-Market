@@ -26,11 +26,16 @@ public class User {
 
     public void Exit() {state.Exit(this);}
 
-    public void updateCart(int productId, int quantity, int storeId)
+    public void addToCart(String productName, int quantity, int storeId, int totalPrice)
     {
-        cart.addItemsToCart(productId, quantity, storeId);
-
+        cart.addItemsToCart(productName, quantity, storeId, totalPrice);
     }
+
+    public void updateCartPrice()
+    {
+        this.cart.calcCartTotal();
+    }
+
 
     public void Register(String username, String password, String birthday, String address) throws Exception {
         state.Register(this,username,password, birthday,address);
@@ -40,6 +45,7 @@ public class User {
         state.Login(this,username,password);
     }
     
+
     public boolean isLoggedIn()
     {
         return state instanceof Member;
@@ -48,5 +54,15 @@ public class User {
     public State getState()
     {
         return state;
+    }
+
+    public boolean checkIfProductInUserCart(String productName, int storeId)
+    {
+        return cart.checkIfProductInCart(productName, storeId);
+    }
+
+    public void removeItemFromUserCart(String productName, int storeId)
+    {
+        cart.removeItemFromCart(productName, storeId);
     }
 }
