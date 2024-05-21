@@ -20,7 +20,7 @@ public class TokensService {
     public TokensService() {
         // Constructor
     }
-
+/*
     public String generateToken(int guestId) {
         long now = System.currentTimeMillis();
         Date expiryDate = new Date(now + TOKEN_VALIDITY_DURATION);
@@ -46,5 +46,5 @@ public class TokensService {
         Claims claims = Jwts.parser().setSigningKey(SECRET_KEY).build().parseSignedClaims(token).getPayload();
 
         return Integer.parseInt(claims.getSubject());
-    }
+    }*/
 }
