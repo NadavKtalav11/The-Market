@@ -35,19 +35,33 @@ public class Market {
         }
     }
 
-    public void addProductToBasket(int productId, int quantity, int storeId, int userId)
+    public void addProductToBasket(String productName, int quantity, int storeId, int userId)
     {
-        boolean canAddToBasket = storeFacade.checkQuantityAndPolicies(productId, quantity, storeId, userId);
+        boolean canAddToBasket = storeFacade.checkQuantityAndPolicies(productName, quantity, storeId, userId);
         if (canAddToBasket)
         {
-            userFacade.addItemsToBasket(productId, quantity, storeId, userId);
+            int totalPrice = storeFacade.calcPrice(productName, quantity, storeId, userId);
+            userFacade.addItemsToBasket(productName, quantity, storeId, userId, totalPrice);
         }
         else
         {
             throw new IllegalArgumentException("The product you try to add doesn't meet the store policies");
         }
-
     }
+
+    public void removeProductFromBasket(String productName, int storeId, int userId)
+    {
+        boolean canRemoveFromBasket = userFacade.checkIfCanRemove(productName, storeId, userId);
+        if (canRemoveFromBasket)
+        {
+            userFacade.removeItemFromUserCart(productName, storeId, userId);
+        }
+        else
+        {
+            throw new IllegalArgumentException("The product you try to remove is not in the basket");
+        }
+    }
+
 
     public void openStore(int user_ID) {
         if (userFacade.isUserLoggedIn(user_ID)) {

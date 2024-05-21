@@ -34,14 +34,24 @@ public class StoreFacade {
         return newStore.getStoreID();
     }
 
-    public boolean checkQuantityAndPolicies(int productId, int quantity, int storeId, int userId)
-    //todo fix this
+    public boolean checkQuantityAndPolicies(String productName, int quantity, int storeId, int userId)
     {
         Store store = getStoreByID(storeId);
-        return store.checkProductQuantity(productId, quantity);
+        if (!store.checkProductQuantity(productName, quantity))
+        {
+            throw new IllegalArgumentException("The product you try to add isn't in the store");
+        }
 
-        //Not sure if purchase and discount policies should be checked now
+        //Check here all policies
+        return true;
     }
+
+    public int calcPrice(String productName, int quantity, int storeId, int userId)
+    {
+        Store store = getStoreByID(storeId);
+        return store.calcPriceInStore(productName, quantity, userId);
+    }
+
 
     public void addProductToStore(int storeID, String productName, int price, int quantity){
         allStores.get(storeID).addProduct(productName, price, quantity);
