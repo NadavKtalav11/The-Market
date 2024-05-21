@@ -52,6 +52,13 @@ public class UserFacade {
         user.updateCartPrice();
     }
 
+    public void modifyBasketProduct(String productName, int quantity, int storeId, int userId, int totalPrice)
+    {
+        User user = getUserByID(userId);
+        user.modifyProductInCart(productName, quantity, storeId, totalPrice);
+        user.updateCartPrice();
+    }
+
     public boolean checkIfCanRemove(String productName, int storeId, int userId)
     {
         User user = getUserByID(userId);

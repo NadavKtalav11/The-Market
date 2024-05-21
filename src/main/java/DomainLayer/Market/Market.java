@@ -267,4 +267,18 @@ public class Market {
         return storeProducts;
     }
 
+    public void modifyShoppingCart(String productName, int quantity, int storeId, int userId)
+    {
+        boolean canModify = storeFacade.checkQuantityAndPolicies(productName, quantity, storeId, userId);
+        if (canModify)
+        {
+            int totalPrice = storeFacade.calcPrice(productName, quantity, storeId, userId);
+            userFacade.modifyBasketProduct(productName, quantity, storeId, userId, totalPrice);
+        }
+        else
+        {
+            throw new IllegalArgumentException("The product you try to add doesn't meet the store policies");
+        }
+    }
+
 }

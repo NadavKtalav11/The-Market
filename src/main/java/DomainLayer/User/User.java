@@ -31,6 +31,11 @@ public class User {
         cart.addItemsToCart(productName, quantity, storeId, totalPrice);
     }
 
+    public void modifyProductInCart(String productName, int quantity, int storeId, int totalPrice)
+    {
+        cart.modifyProductInCart(productName, quantity, storeId, totalPrice);
+    }
+
     public void updateCartPrice()
     {
         this.cart.calcCartTotal();
