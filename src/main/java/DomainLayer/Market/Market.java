@@ -6,6 +6,7 @@ import DomainLayer.Store.StoreFacade;
 import DomainLayer.User.UserFacade;
 import DomainLayer.SupplyServices.SupplyServicesFacade;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
@@ -57,14 +58,6 @@ public class Market {
         //HashMap<Integer, Integer>  productIdAndAmount= userFacade.payWithExternalPaymentService(userId);
         return true;
 
-
-
-
-
-
-//    public Market(){
-//
-//    }
 
     public void Logout(int memberID){
         //todo add condition if the user is logged in
@@ -141,21 +134,6 @@ public class Market {
         }
     }
 
-    //    public void closeStore(int member_ID, int store_ID) throws Exception
-//    {
-//        if(roleFacade.verifyStoreOwner(store_ID, member_ID) && roleFacade.verifyStoreOwnerIsFounder(store_ID, member_ID))
-//        {
-//            if(storeFacade.verifyStoreExist(store_ID)) {
-//                storeFacade.closeStore(store_ID);
-//                List<Integer> storeRoles = roleFacade.getAllStoreRoles(store_ID);
-//                //todo: add function which send notification to all store roles (notification component).
-//                //todo: update use-case parameters
-//            }
-//            else {
-//                throw new Exception("Store does not exist");
-//            }
-//        }
-//    }
     public void AppointStoreOwner(int firstMemberID, int secondMemberID, int storeID) throws Exception {
         if (roleFacade.verifyStoreOwner(storeID, firstMemberID)) {
             if (!roleFacade.verifyStoreOwner(storeID, secondMemberID)) {
@@ -201,7 +179,8 @@ public class Market {
             if (roleFacade.verifyStoreOwner(store_ID, member_ID) && roleFacade.verifyStoreOwnerIsFounder(store_ID, member_ID)) {
                 if (storeFacade.verifyStoreExist(store_ID)) {
                     storeFacade.closeStore(store_ID);
-                    List<Integer> storeRoles = roleFacade.getAllStoreRoles(store_ID);
+                    List<Integer> storeManagers = roleFacade.getAllStoreManagers(store_ID);
+                    List<Integer> storeOwners = roleFacade.getAllStoreOwners(store_ID);
                     //todo: add function which send notification to all store roles (notification component).
                     //todo: update use-case parameters
                 } else {
@@ -256,5 +235,36 @@ public class Market {
 
     }
 
+    public List<Integer> getInformationAboutStores(int user_ID)
+    {
+        List<Integer> openedStores = storeFacade.getInformationAboutOpenStores(); // open stores available for everyone
+        List<Integer> closedStores = storeFacade.getInformationAboutClosedStores(); //closed stores available only for owners/ system managers
+        List<Integer> closedStoreAvailable = null;
+
+        if (userFacade.isUserLoggedIn(user_ID)) {
+            int member_ID = this.userFacade.getUsernameByUserID(user_ID);
+            if (!this.roleFacade.verifyMemberIsSystemManager(user_ID))
+                closedStoreAvailable = roleFacade.getStoresByOwner(closedStores, member_ID);
+            else
+                closedStoreAvailable = closedStores;
+        }
+
+        List<Integer> allAvailableStores = new ArrayList<>(openedStores);
+        if (closedStoreAvailable != null) {
+            allAvailableStores.addAll(closedStoreAvailable);
+        }
+
+        return allAvailableStores;
+    }
+
+    public List<String> getInformationAboutProductInStore(int user_ID, int store_ID) throws Exception {
+        List<String> storeProducts = null;
+        if (storeFacade.verifyStoreExist(store_ID)) {
+            storeProducts = storeFacade.getStoreProducts(store_ID);
+        }else {
+            throw new Exception("Store does not exist");
+        }
+        return storeProducts;
+    }
 
 }

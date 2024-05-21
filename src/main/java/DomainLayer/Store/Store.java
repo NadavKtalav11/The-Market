@@ -1,9 +1,7 @@
 package DomainLayer.Store;
 
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.ArrayList;
 
 public class Store {
     private int store_ID;
@@ -60,5 +58,17 @@ public class Store {
     public void closeStore()
     {
         this.isOpened = false;
+    }
+
+    public boolean getIsOpened()
+    {
+        return this.isOpened;
+    }
+
+    public List<String> getProducts()
+    {
+        Set<String> productsSet = storeProducts.keySet();
+        List<String> productsList = new ArrayList<>(productsSet);
+        return productsList;
     }
 }
