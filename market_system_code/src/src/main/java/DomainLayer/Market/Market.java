@@ -70,21 +70,21 @@ public class Market {
         }
     }
 
-    public void closeStore(int member_ID, int store_ID) throws Exception 
-    {
-        if(roleFacade.verifyStoreOwner(store_ID, member_ID) && roleFacade.verifyStoreOwnerIsFounder(store_ID, member_ID))
-        {
-            if(storeFacade.verifyStoreExist(store_ID)) {
-                storeFacade.closeStore(store_ID);
-                List<Integer> storeRoles = roleFacade.getAllStoreRoles(store_ID);
-                //todo: add function which send notification to all store roles (notification component).
-                //todo: update use-case parameters
-            }
-            else {
-                throw new Exception("Store does not exist");
-            }
-        }
-    }
+//    public void closeStore(int member_ID, int store_ID) throws Exception
+//    {
+//        if(roleFacade.verifyStoreOwner(store_ID, member_ID) && roleFacade.verifyStoreOwnerIsFounder(store_ID, member_ID))
+//        {
+//            if(storeFacade.verifyStoreExist(store_ID)) {
+//                storeFacade.closeStore(store_ID);
+//                List<Integer> storeRoles = roleFacade.getAllStoreRoles(store_ID);
+//                //todo: add function which send notification to all store roles (notification component).
+//                //todo: update use-case parameters
+//            }
+//            else {
+//                throw new Exception("Store does not exist");
+//            }
+//        }
+//    }
     public void AppointStoreOwner(int firstMemberID, int secondMemberID, int storeID) throws Exception {
         if (roleFacade.verifyStoreOwner(storeID, firstMemberID)) {
             if (!roleFacade.verifyStoreOwner(storeID, secondMemberID)) {
@@ -107,6 +107,19 @@ public class Market {
             }
         } else {
             throw new Exception("Only store owner can appoint new store manager");
+        }
+    }
+
+    public void UpdateStoreManagerPermissions(int firstMemberID, int secondMemberID, int storeID,
+                                    boolean inventoryPermissions, boolean purchasePermissions) throws Exception {
+        if (roleFacade.verifyStoreOwner(storeID, firstMemberID)) {
+            if (roleFacade.verifyStoreManager(storeID, secondMemberID)) {
+                roleFacade.createStoreManager(secondMemberID, storeID, inventoryPermissions, purchasePermissions);
+            } else {
+                throw new Exception("Member is not a manager of this store");
+            }
+        } else {
+            throw new Exception("Only store owner can update store manager permissions");
         }
     }
 
