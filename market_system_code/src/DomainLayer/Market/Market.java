@@ -156,6 +156,7 @@ public class Market {
             throw new IllegalArgumentException("User is not logged in, so he get the authorizations of his store managers");
         }
         return managersAuthorizations;
+        
     }
 
 }
