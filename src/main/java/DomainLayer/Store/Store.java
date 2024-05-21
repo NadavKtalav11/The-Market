@@ -7,6 +7,8 @@ public class Store {
     private int store_ID;
     private Map<String, Product> storeProducts = new HashMap<String, Product>();
     private boolean isOpened;
+    private DiscountPolicy discountPolicy;
+    private PurchasePolicy purchasePolicy;
 
     Store(int store_ID)
     {
@@ -28,14 +30,15 @@ public class Store {
         return storeProducts.get(productName);
     }
 
+    public boolean checkProductExists(String productName)
+    {
+        return storeProducts.containsKey(productName);
+    }
+
     public boolean checkProductQuantity(String productName, int quantity)
     {
-        if (storeProducts.containsKey(productName))
-        {
-            Product productToCheck = getProductByName(productName);
-            return productToCheck.getQuantity() >= quantity; //true if the quantity in the store is bigger than the quantity a user want to add
-        }
-        return false;
+        Product productToCheck = getProductByName(productName);
+        return productToCheck.getQuantity() >= quantity; //true if the quantity in the store is bigger than the quantity a user want to add
     }
 
     public int calcPriceInStore(String productName, int quantity, int userId)
@@ -70,5 +73,15 @@ public class Store {
         Set<String> productsSet = storeProducts.keySet();
         List<String> productsList = new ArrayList<>(productsSet);
         return productsList;
+    }
+
+    public boolean checkDiscountPolicy(int userId, String productName)
+    {
+        return this.discountPolicy.checkDiscountPolicy(userId, productName);
+    }
+
+    public boolean checkPurchasePolicy(int userId, String productName)
+    {
+        return this.purchasePolicy.checkPurchasePolicy(userId, productName);
     }
 }

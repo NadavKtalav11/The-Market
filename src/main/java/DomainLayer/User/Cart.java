@@ -25,17 +25,26 @@ public class Cart {
 
     public void addItemsToCart(String productName, int quantity, int storeId, int totalPrice)
     {
+        Basket basket;
         if (baskets.containsKey(storeId))
         {
-            Basket basket = baskets.get(storeId);
-            basket.addProduct(productName, quantity, totalPrice);
+            basket = baskets.get(storeId);
         }
         else
         {
-            Basket basket = new Basket(storeId);
+            basket = new Basket(storeId);
             baskets.put(storeId, basket);
-            basket.addProduct(productName, quantity, totalPrice);
         }
+        basket.addProduct(productName, quantity, totalPrice);
+    }
+
+    public void modifyProductInCart(String productName, int quantity, int storeId, int totalPrice)
+    {
+        if (!baskets.containsKey(storeId))
+        {
+            throw new IllegalArgumentException("You can only modify items in your cart from existing store's basket.");
+        }
+
     }
 
     public void calcCartTotal()

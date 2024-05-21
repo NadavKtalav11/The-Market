@@ -34,12 +34,27 @@ public class StoreFacade {
     public boolean checkQuantityAndPolicies(String productName, int quantity, int storeId, int userId)
     {
         Store store = getStoreByID(storeId);
-        if (!store.checkProductQuantity(productName, quantity))
+        if (!store.checkProductExists(productName))
         {
             throw new IllegalArgumentException("The product you try to add isn't in the store");
         }
 
+        if (!store.checkProductQuantity(productName, quantity))
+        {
+            throw new IllegalArgumentException("The quantity you entered isn't available in the store");
+        }
+
         //Check here all policies
+        if (!store.checkPurchasePolicy(userId, productName))
+        {
+            throw new IllegalArgumentException("The product doesnt meet the store purchase policy");
+        }
+
+        if (!store.checkDiscountPolicy(userId, productName))
+        {
+            throw new IllegalArgumentException("The product doesnt meet the store discount policy");
+        }
+
         return true;
     }
 
