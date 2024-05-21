@@ -1,23 +1,63 @@
 package DomainLayer.Market;
 
+import DomainLayer.PaymentServices.PaymentServicesFacade;
 import DomainLayer.Role.RoleFacade;
 import DomainLayer.Store.StoreFacade;
 import DomainLayer.User.UserFacade;
+import DomainLayer.SupplyServices.SupplyServicesFacade;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Set;
 import java.util.Map;
 
+
 public class Market {
+    private static Market MarketInstance;
+    private PaymentServicesFacade paymentServicesFacade;
+    private SupplyServicesFacade supplyServicesFacade;
+    private Set<Integer> systemManagerIds;
     private StoreFacade storeFacade;
     private UserFacade userFacade;
     private RoleFacade roleFacade;
+    private boolean initialized= false;
 
-    public Market(){
-        this.storeFacade = StoreFacade.getInstance();
-        this.userFacade = UserFacade.getInstance();
-        this.roleFacade = RoleFacade.getInstance();
+    public static Market getInstance() {
+        if (MarketInstance == null) {
+            MarketInstance = new Market();
+        }
+        return MarketInstance;
     }
+
+
+
+    private Market(){
+        this.storeFacade = StoreFacade.getInstance();
+         this.userFacade = UserFacade.getInstance();
+          this.roleFacade = RoleFacade.getInstance();
+          this.paymentServicesFacade = PaymentServicesFacade.getInstance();
+    }
+
+    public void init(String userName, String password, int licensedDealerNumber,
+                     String paymentServiceName, String url, int licensedDealerNumber1, String supplyServiceName, String address){
+        if(initialized==true){
+            return;
+        }
+
+        // userFacade.register(username, password)
+       // int systemMangerId = userFacade.getByUserName();
+       // systemManagerIds.add(systemMangerId);
+        paymentServicesFacade.addExternalService(licensedDealerNumber,paymentServiceName,url);
+        supplyServicesFacade.addExternalService(licensedDealerNumber1,supplyServiceName, address);
+
+        initialized = true;
+    }
+
+    public boolean payWithExternalPaymentService(){
+        //HashMap<Integer, Integer>  productIdAndAmount= userFacade.payWithExternalPaymentService(userId);
+        return true;
+
 
     public void Logout(int memberID){
         //todo add condition if the user is logged in
@@ -28,6 +68,10 @@ public class Market {
         userFacade.Exit(userID);
     }
 
+    public void Register(int userID,String username, String password, String birthday, String address){
+        userFacade.Register(userID, username,password,birthday,address);
+    }
+
     public void addProductToStore(int memberID, int storeID, String productName, int price, int quantity) throws Exception {
         if (roleFacade.verifyStoreOwner(storeID, memberID)) {
             storeFacade.addProductToStore(storeID, productName, price, quantity);
@@ -36,19 +80,33 @@ public class Market {
         }
     }
 
-    public void addProductToBasket(int productId, int quantity, int storeId, int userId)
+    public void addProductToBasket(String productName, int quantity, int storeId, int userId)
     {
-        boolean canAddToBasket = storeFacade.checkQuantityAndPolicies(productId, quantity, storeId, userId);
+        boolean canAddToBasket = storeFacade.checkQuantityAndPolicies(productName, quantity, storeId, userId);
         if (canAddToBasket)
         {
-            userFacade.addItemsToBasket(productId, quantity, storeId, userId);
+            int totalPrice = storeFacade.calcPrice(productName, quantity, storeId, userId);
+            userFacade.addItemsToBasket(productName, quantity, storeId, userId, totalPrice);
         }
         else
         {
             throw new IllegalArgumentException("The product you try to add doesn't meet the store policies");
         }
-
     }
+
+    public void removeProductFromBasket(String productName, int storeId, int userId)
+    {
+        boolean canRemoveFromBasket = userFacade.checkIfCanRemove(productName, storeId, userId);
+        if (canRemoveFromBasket)
+        {
+            userFacade.removeItemFromUserCart(productName, storeId, userId);
+        }
+        else
+        {
+            throw new IllegalArgumentException("The product you try to remove is not in the basket");
+        }
+    }
+
 
     public void openStore(int user_ID) {
         if (userFacade.isUserLoggedIn(user_ID)) {

@@ -1,4 +1,4 @@
 package DomainLayer.SupplyServices;
 
-public class SupplyServices {
+public class SupplyServicesFacade {
 }

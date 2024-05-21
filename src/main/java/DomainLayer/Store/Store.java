@@ -23,26 +23,28 @@ public class Store {
         storeProducts.put(productName, new Product(productName, price, quantity));
     }
 
-//    public Product getProductById(int productId)
-//    {
-//        for (String productName : storeProducts.keySet()) {
-//            Product product = storeProducts.get(productName);
-//            if (product != null) {
-//                if (product.getProductId() == productId) {
-//                    return product;
-//                }
-//            }
-//        }
-//        throw new IllegalArgumentException("Product with ID " + productId + " not found");
-//    }
+    public Product getProductByName(String productName)
+    {
+        return storeProducts.get(productName);
+    }
 
-//    public boolean checkProductQuantity(int productId, int quantity)
-//    {
-//        Product p = getProductById(productId);
-//        return p.getQuantity() >= quantity; //true if the quantity in the store is bigger than the quantity a user want to add
-//    }
+    public boolean checkProductQuantity(String productName, int quantity)
+    {
+        if (storeProducts.containsKey(productName))
+        {
+            Product productToCheck = getProductByName(productName);
+            return productToCheck.getQuantity() >= quantity; //true if the quantity in the store is bigger than the quantity a user want to add
+        }
+        return false;
+    }
 
+    public int calcPriceInStore(String productName, int quantity, int userId)
+    {
+        Product productToCalc = getProductByName(productName);
+        return productToCalc.getPrice() * quantity;
 
+        //in the future, add check for discount using the discount policy
+    }
 
     public void removeProduct(String productName){
         storeProducts.remove(productName);

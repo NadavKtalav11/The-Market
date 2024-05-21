@@ -28,4 +28,10 @@ public class Product {
     {
         return this.quantity;
     }
+
+    public int getPrice()
+    {
+        return this.price;
+    }
+
 }
