@@ -15,6 +15,10 @@ public class StoreManager implements Role {
         this.store_ID = store_ID;
     }
 
+    public void setPermissions(boolean inventoryPermissions, boolean purchasePermissions){
+        this.permissions.put("inventory", inventoryPermissions);
+        this.permissions.put("purchase", purchasePermissions);
+    }
 
     public int getStore_ID()
     {
