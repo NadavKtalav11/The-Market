@@ -42,4 +42,10 @@ public class UserFacade {
         return ((Member)user.getState()).getMemberID();
     }
 
+    public void Exit(int userID){
+        //todo remove token when Nadav finish.
+        allUsers.remove(userID);
+        allUsers.get(userID).Exit();
+    }
+
 }
