@@ -54,10 +54,10 @@ public class Market {
         initialized = true;
     }
 
-    public boolean payWithExternalPaymentService(){
+    public boolean payWithExternalPaymentService() {
         //HashMap<Integer, Integer>  productIdAndAmount= userFacade.payWithExternalPaymentService(userId);
         return true;
-
+    }
 
     public void Logout(int memberID){
         //todo add condition if the user is logged in
