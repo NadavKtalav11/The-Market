@@ -35,6 +35,10 @@ public class User {
     public void Register(String username, String password, String birthday, String address) throws Exception {
         state.Register(this,username,password, birthday,address);
     }
+
+    public void Login(String username, String password) throws Exception {
+        state.Login(this,username,password);
+    }
     
     public boolean isLoggedIn()
     {

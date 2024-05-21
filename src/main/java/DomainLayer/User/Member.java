@@ -49,4 +49,10 @@ public class Member implements State{
         throw new Exception("The user is already registered");
     }
 
+    @Override
+    public void Login(User user, String username, String password) throws Exception {
+        throw new Exception("The user is already logged in");
+
+    }
+
 }
