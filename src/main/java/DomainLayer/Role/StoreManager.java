@@ -7,19 +7,20 @@ public class StoreManager implements Role {
 
     private int member_ID;
     private int store_ID;
-    private Map<String, Boolean> permissions = new HashMap<String, Boolean>();
+    private boolean inventoryPermissions;
+    private boolean purchasePermissions;
 
     StoreManager(int member_ID, int store_ID, boolean inventoryPermissions, boolean purchasePermissions)
     {
         this.member_ID = member_ID;
         this.store_ID = store_ID;
-        this.permissions.put("inventory", inventoryPermissions);
-        this.permissions.put("purchase", purchasePermissions);
+        this.inventoryPermissions = inventoryPermissions;
+        this.purchasePermissions = purchasePermissions;
     }
 
     public void setPermissions(boolean inventoryPermissions, boolean purchasePermissions){
-        this.permissions.put("inventory", inventoryPermissions);
-        this.permissions.put("purchase", purchasePermissions);
+        this.inventoryPermissions = inventoryPermissions;
+        this.purchasePermissions = purchasePermissions;
     }
 
     public int getStore_ID()
@@ -32,4 +33,11 @@ public class StoreManager implements Role {
         return this.member_ID;
     }
 
+    public boolean hasInventoryPermissions(){
+        return this.inventoryPermissions;
+    }
+
+    public boolean hasPurchasePermissions(){
+        return this.purchasePermissions;
+    }
 }

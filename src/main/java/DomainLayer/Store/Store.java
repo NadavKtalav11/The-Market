@@ -21,29 +21,29 @@ public class Store {
         return store_ID;
     }
 
-    public void addProduct(String productName, int price, int quantity, int productId){
-        storeProducts.put(productName, new Product(productName, price, quantity, productId));
+    public void addProduct(String productName, int price, int quantity){
+        storeProducts.put(productName, new Product(productName, price, quantity));
     }
 
-    public Product getProductById(int productId)
-    {
-        for (String productName : storeProducts.keySet()) {
-            Product product = storeProducts.get(productName);
-            if (product != null) {
-                if (product.getProductId() == productId) {
-                    return product;
-                }
-            }
-        }
-        throw new IllegalArgumentException("Product with ID " + productId + " not found");
-    }
+//    public Product getProductById(int productId)
+//    {
+//        for (String productName : storeProducts.keySet()) {
+//            Product product = storeProducts.get(productName);
+//            if (product != null) {
+//                if (product.getProductId() == productId) {
+//                    return product;
+//                }
+//            }
+//        }
+//        throw new IllegalArgumentException("Product with ID " + productId + " not found");
+//    }
 
-    public boolean checkProductQuantity(int productId, int quantity)
-    {
-        Product p = getProductById(productId);
-        return p.getQuantity() >= quantity; //true if the quantity in the store is bigger than the quantity a user want to add
-    }
-  
+//    public boolean checkProductQuantity(int productId, int quantity)
+//    {
+//        Product p = getProductById(productId);
+//        return p.getQuantity() >= quantity; //true if the quantity in the store is bigger than the quantity a user want to add
+//    }
+
 
 
     public void removeProduct(String productName){
