@@ -27,6 +27,10 @@ public class Market {
         userFacade.Exit(userID);
     }
 
+    public void Register(int userID,String username, String password, String birthday, String address){
+        userFacade.Register(userID, username,password,birthday,address);
+    }
+
     public void addProductToStore(int memberID, int storeID, String productName, int price, int quantity) throws Exception {
         if (roleFacade.verifyStoreOwner(storeID, memberID)) {
             storeFacade.addProductToStore(storeID, productName, price, quantity);

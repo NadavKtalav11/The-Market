@@ -48,4 +48,14 @@ public class UserFacade {
         allUsers.get(userID).Exit();
     }
 
+    public void Register(int userID, String username, String password, String birthday,String address){
+        //todo check validation of the username.
+        //todo check validation of the password.
+        //todo check validation of the birthday.
+        //todo check validation od the address.
+        allUsers.get(userID).Register(username,password,birthday,address);
+    }
+
+
+
 }

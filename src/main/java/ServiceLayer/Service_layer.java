@@ -27,5 +27,15 @@ public class Service_layer {
         }
     }
 
+    //todo think about where we get the userID
+    public void Register(int userID,String username, String password, String birthday, String address){
+        try{
+            market.Register(userID, username, password,birthday, address);
+        }
+        catch (Exception e){
+            System.out.println(e);
+        }
+    }
+
 
 }
