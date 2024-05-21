@@ -22,6 +22,21 @@ public class Market {
         userFacade.getUserByID(memberID).Logout();
     }
 
+
+    public void Exit(int userID){
+        userFacade.Exit(userID);
+    }
+
+//todo Nitzan fix this
+//    public void addProductToStore(int memberID, int storeID, String productName, int price, int quantity) throws Exception {
+//        if (roleFacade.verifyStoreOwner(storeID, memberID)) {
+//            storeFacade.addProductToStore(storeID, productName, price, quantity);
+//        } else {
+//            throw new Exception("Only store owner can add product to store");
+//        }
+//    }
+
+
     public void addProductToBasket(int productId, int quantity, int storeId, int userId)
     {
         boolean canAddToBasket = storeFacade.checkQuantityAndPolicies(productId, quantity, storeId, userId);

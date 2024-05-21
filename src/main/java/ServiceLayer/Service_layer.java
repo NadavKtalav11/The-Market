@@ -18,5 +18,14 @@ public class Service_layer {
         }
     }
 
+    public void Exit(int userID){
+        try{
+            market.Exit(userID);
+        }
+        catch (Exception e){
+            System.out.println(e);
+        }
+    }
+
 
 }
