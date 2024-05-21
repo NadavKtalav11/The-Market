@@ -15,6 +15,7 @@ public class StoreManager implements Role {
         this.store_ID = store_ID;
     }
 
+
     public int getStore_ID()
     {
         return this.store_ID;
