@@ -1,12 +1,14 @@
 package DomainLayer.Role;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class StoreManager implements Role {
 
     private int member_ID;
     private int store_ID;
+    private List<Integer> authorizations;
     private boolean inventoryPermissions;
     private boolean purchasePermissions;
 
@@ -31,6 +33,10 @@ public class StoreManager implements Role {
     public int getMember_ID()
     {
         return this.member_ID;
+    }
+
+    public List<Integer> getAuthorizations(){
+        return this.authorizations;
     }
 
     public boolean hasInventoryPermissions(){
