@@ -1,14 +1,18 @@
 package DomainLayer.User;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class Basket {
     private final int storeId;
-    Map<Integer, Integer> products = new HashMap<>();
+    Map<String, List<Integer>> products = new HashMap<>();
+    int basketPrice;
 
     public Basket(int storeId) {
         this.storeId = storeId;
+        this.basketPrice = 0;
     }
 
     public int getId()
@@ -16,8 +20,44 @@ public class Basket {
         return this.storeId;
     }
 
-    public void addProduct(int productId, int quantity)
+    public int getBasketPrice()
     {
-        products.put(productId, quantity);
+        return this.basketPrice;
     }
+
+    public void setBasketPrice(int price)
+    {
+        this.basketPrice = price;
+    }
+
+
+    public void addProduct(String productName, int quantity, int totalPrice)
+    {
+        List<Integer> quantityAndPrice = new ArrayList<>();
+        quantityAndPrice.add(quantity);
+        quantityAndPrice.add(totalPrice);
+        products.put(productName, quantityAndPrice);
+    }
+
+    public void calcBasketPrice()
+    {
+        int totalPrice = 0;
+        for (String productName : products.keySet()) {
+            int totalItemPrice = products.get(productName).get(1);
+            totalPrice += totalItemPrice;
+        }
+
+        setBasketPrice(totalPrice);
+    }
+
+    public boolean checkIfProductInBasket(String productName)
+    {
+        return products.containsKey(productName);
+    }
+
+    public void removeItemFromBasket(String productName)
+    {
+        products.remove(productName);
+    }
+
 }

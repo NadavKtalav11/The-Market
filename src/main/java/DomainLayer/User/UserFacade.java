@@ -26,12 +26,8 @@ public class UserFacade {
         return allUsers.get(userID);
     }
 
-    public void addItemsToBasket(int productId, int quantity, int storeId, int userId)
-    {
-        User user = getUserByID(userId);
-        user.updateCart(productId, quantity, storeId);
-    }
-  
+
+
     public boolean isUserLoggedIn(int userID){
         return getUserByID(userID).isLoggedIn();
     }
@@ -48,6 +44,26 @@ public class UserFacade {
         allUsers.get(userID).Exit();
     }
 
+
+    public void addItemsToBasket(String productName, int quantity, int storeId, int userId, int totalPrice)
+    {
+        User user = getUserByID(userId);
+        user.addToCart(productName, quantity, storeId, totalPrice);
+        user.updateCartPrice();
+    }
+
+    public boolean checkIfCanRemove(String productName, int storeId, int userId)
+    {
+        User user = getUserByID(userId);
+        return user.checkIfProductInUserCart(productName, storeId); //Need to check policies, why?
+    }
+
+    public void removeItemFromUserCart(String productName, int storeId, int userId)
+    {
+        User user = getUserByID(userId);
+        user.removeItemFromUserCart(productName, storeId);
+    }
+
     public void Register(int userID, String username, String password, String birthday,String address){
         //todo check validation of the username.
         //todo check validation of the password.
@@ -55,6 +71,7 @@ public class UserFacade {
         //todo check validation od the address.
         allUsers.get(userID).Register(username,password,birthday,address);
     }
+
 
 
 
