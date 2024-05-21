@@ -17,6 +17,7 @@ public class StoreManager implements Role {
         this.permissions.put("purchase", purchasePermissions);
     }
 
+
     public int getStore_ID()
     {
         return this.store_ID;
