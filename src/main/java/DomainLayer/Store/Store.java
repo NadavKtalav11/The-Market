@@ -22,14 +22,17 @@ public class Store {
     }
 
     public void addProduct(String productName, int price, int quantity, int productId){
-        storeProducts.add(new Product(productName, price, quantity, productId));
+        storeProducts.put(productName, new Product(productName, price, quantity, productId));
     }
 
     public Product getProductById(int productId)
     {
-        for (Product product : storeProducts) {
-            if (product.getProductId() == productId) {
-                return product;
+        for (String productName : storeProducts.keySet()) {
+            Product product = storeProducts.get(productName);
+            if (product != null) {
+                if (product.getProductId() == productId) {
+                    return product;
+                }
             }
         }
         throw new IllegalArgumentException("Product with ID " + productId + " not found");
@@ -41,9 +44,7 @@ public class Store {
         return p.getQuantity() >= quantity; //true if the quantity in the store is bigger than the quantity a user want to add
     }
   
-    public void addProduct(String productName, int price, int quantity){
-        storeProducts.put(productName, new Product(productName, price, quantity));
-    }
+
 
     public void removeProduct(String productName){
         storeProducts.remove(productName);

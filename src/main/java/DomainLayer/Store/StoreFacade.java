@@ -41,10 +41,10 @@ public class StoreFacade {
 
         //Not sure if purchase and discount policies should be checked now
     }
-
-    public void addProductToStore(int storeID, String productName, int price, int quantity){
-        allStores.get(storeID).addProduct(productName, price, quantity);
-    }
+//todo Nitzan fix this
+//    public void addProductToStore(int storeID, String productName, int price, int quantity){
+//        allStores.get(storeID).addProduct(productName, price, quantity);
+//    }
 
     public void removeProductFromStore(int storeID, String productName){
         allStores.get(storeID).removeProduct(productName);
