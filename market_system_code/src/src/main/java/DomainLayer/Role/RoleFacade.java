@@ -2,6 +2,7 @@ package DomainLayer.Role;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public class RoleFacade {
 
@@ -20,7 +21,6 @@ public class RoleFacade {
         }
         return roleFacadeInstance;
     }
-
 
    public boolean verifyStoreOwner(int storeID, int memberID){
         return getStoreOwner(storeID, memberID) != null;
@@ -80,7 +80,7 @@ public class RoleFacade {
     }
 
     public void createStoreManager(int member_ID, int store_ID,
-                                   boolean inventoryPermissions, boolean purchasePermissions)
+                            boolean inventoryPermissions, boolean purchasePermissions)
     {
         StoreManager newStoreManager = new StoreManager(member_ID, store_ID, inventoryPermissions, purchasePermissions);
         addNewStoreManagerToTheMarket(newStoreManager);
@@ -89,6 +89,10 @@ public class RoleFacade {
     private void addNewStoreOwnerToTheMarket(StoreOwner storeOwner)
     {
         storeOwnersList.add(storeOwner);
+    }
+    private void addNewStoreManagerToTheMarket(StoreManager storeManager)
+    {
+        storeManagerList.add(storeManager);
     }
 
 }
