@@ -1,9 +1,6 @@
 package DomainLayer.Store;
 
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class StoreFacade {
     private static StoreFacade storeFacadeInstance;
@@ -64,5 +61,35 @@ public class StoreFacade {
     {
         Store storeToClose = this.getStoreByID(store_ID);
         storeToClose.closeStore();
+    }
+
+    public List<Integer> getInformationAboutOpenStores()
+    {
+        List<Integer> openStoreInformation = new ArrayList<>();
+        for (Map.Entry<Integer, Store> entry : allStores.entrySet()) {
+            int storeId = entry.getKey();
+            Store store = entry.getValue();
+            if(store.getIsOpened())
+                openStoreInformation.add(storeId);
+        }
+        return openStoreInformation;
+    }
+
+    public List<Integer> getInformationAboutClosedStores()
+    {
+        List<Integer> closedStoreInformation = new ArrayList<>();
+        for (Map.Entry<Integer, Store> entry : allStores.entrySet()) {
+            int storeId = entry.getKey();
+            Store store = entry.getValue();
+            if(!store.getIsOpened())
+                closedStoreInformation.add(storeId);
+        }
+        return closedStoreInformation;
+    }
+
+    public List<String> getStoreProducts(int store_ID)
+    {
+        Store store = getStoreByID(store_ID);
+        return store.getProducts();
     }
 }
