@@ -22,6 +22,11 @@ public class Member extends State{
         isLogin = false;
     }
 
+    public void Exit(User user){
+        //todo understand what happens after user press x.
+        user.Logout();
+    }
+
     public boolean isLogin()
     {
         return this.isLogin;

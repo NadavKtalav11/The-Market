@@ -18,6 +18,8 @@ public class User {
         state.Logout(this);
     }
 
+    public void Exit() {state.Exit(this);}
+
     public void updateCart(int productId, int quantity, int storeId)
     {
         cart.addItemsToCart(productId, quantity, storeId);
