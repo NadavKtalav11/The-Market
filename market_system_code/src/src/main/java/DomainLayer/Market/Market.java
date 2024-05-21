@@ -114,7 +114,7 @@ public class Market {
                                     boolean inventoryPermissions, boolean purchasePermissions) throws Exception {
         if (roleFacade.verifyStoreOwner(storeID, firstMemberID)) {
             if (roleFacade.verifyStoreManager(storeID, secondMemberID)) {
-                roleFacade.createStoreManager(secondMemberID, storeID, inventoryPermissions, purchasePermissions);
+                roleFacade.updateStoreManagerPermissions(secondMemberID, storeID, inventoryPermissions, purchasePermissions);
             } else {
                 throw new Exception("Member is not a manager of this store");
             }
