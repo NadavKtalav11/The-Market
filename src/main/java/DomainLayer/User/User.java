@@ -70,4 +70,12 @@ public class User {
     {
         cart.removeItemFromCart(productName, storeId);
     }
+    public void setCart(Cart cart) {
+        this.cart = cart;
+    }
+
+    public Cart getCart() {
+        return cart;
+    }
+
 }

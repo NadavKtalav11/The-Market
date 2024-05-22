@@ -25,4 +25,6 @@ public class Guest implements State{
         String address = ""; //todo implement get userID
         user.setState(new Member(memberID, username, password, birthday, address));
     }
+
+
 }
