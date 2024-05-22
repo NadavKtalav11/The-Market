@@ -35,6 +35,22 @@ public class Member implements State{
         user.Logout();
     }
 
+    public String getUsername(){
+        return username;
+    }
+
+    public String getAddress() {
+        return address;
+    }
+
+    public String getBirthday() {
+        return birthday;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
     public boolean isLogin()
     {
         return this.isLogin;
@@ -45,14 +61,20 @@ public class Member implements State{
         return this.member_ID;
     }
 
-    public void Register(User user, String username, String password, String birthday, String address) throws Exception {
-        throw new Exception("The user is already registered");
+    public String getUsername()
+    {
+        return this.username;
     }
 
     @Override
     public void Login(User user, String username, String password) throws Exception {
         throw new Exception("The user is already logged in");
 
+    }
+
+    @Override
+    public boolean isMember() {
+        return true;
     }
 
 }
