@@ -65,4 +65,7 @@ public class Product {
         return this.description;
     }
 
+    public String getProductName() {
+        return productName;
+    }
 }
