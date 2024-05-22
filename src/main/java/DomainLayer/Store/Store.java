@@ -57,9 +57,12 @@ public class Store {
         storeProducts.remove(productName);
     }
 
-    public void updateProduct(String productName, int price, int quantity){
+    public void updateProduct(String productName, int price, int quantity, String description, String categoryStr){
         storeProducts.get(productName).setPrice(price);
         storeProducts.get(productName).setQuantity(quantity);
+        storeProducts.get(productName).setDescription(description);
+        Category category = Category.fromString(categoryStr);
+        storeProducts.get(productName).setCategory(category);
     }
 
     public void closeStore()

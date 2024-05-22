@@ -82,5 +82,63 @@ public class Service_layer {
         }
     }
 
+    public void addProductToStore(int memberID, int storeID, String productName, int price, int quantity,
+                                                                        String description, String categoryStr){
+        try{
+            market.addProductToStore(memberID, storeID, productName, price, quantity, description, categoryStr);
+        }
+        catch (Exception e){
+            System.out.println(e);
+        }
+    }
 
+    public void removeProductFromStore(int memberID, int storeID, String productName){
+        try{
+            market.removeProductFromStore(memberID, storeID, productName);
+        }
+        catch (Exception e){
+            System.out.println(e);
+        }
+    }
+
+    public void updateProductInStore(int memberID, int storeID, String productName, int price, int quantity,
+                                     String description, String categoryStr){
+        try{
+            market.updateProductInStore(memberID, storeID, productName, price, quantity, description, categoryStr);
+        }
+        catch (Exception e){
+            System.out.println(e);
+        }
+    }
+
+    public void appointStoreOwner(int firstMemberID, int secondMemberID, int storeID){
+        try{
+            market.appointStoreOwner(firstMemberID, secondMemberID, storeID);
+        }
+        catch (Exception e){
+            System.out.println(e);
+        }
+    }
+
+    public void appointStoreManager(int firstMemberID, int secondMemberID, int storeID,
+                                        boolean inventoryPermissions, boolean purchasePermissions){
+        try{
+            market.appointStoreManager(firstMemberID, secondMemberID, storeID,
+                                                                    inventoryPermissions, purchasePermissions);
+        }
+        catch (Exception e) {
+            System.out.println(e);
+        }
+    }
+
+    public void updateStoreManagerPermissions(int firstMemberID, int secondMemberID, int storeID,
+                                              boolean inventoryPermissions, boolean purchasePermissions){
+        try{
+            market.updateStoreManagerPermissions(firstMemberID, secondMemberID, storeID,
+                                                                    inventoryPermissions, purchasePermissions);
+        }
+        catch (Exception e) {
+            System.out.println(e);
+        }
+    }
 }
