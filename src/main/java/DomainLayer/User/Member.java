@@ -30,7 +30,7 @@ public class Member implements State{
         isLogin = false;
     }
 
-    public void Exit(User user){
+    public void exitMarketSystem(User user){
         //todo understand what happens after user press x.
         user.Logout();
     }

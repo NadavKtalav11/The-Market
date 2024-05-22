@@ -35,7 +35,7 @@ public class User {
         state.Logout(this);
     }
 
-    public void Exit() {state.Exit(this);}
+    public void exitMarketSystem() {state.exitMarketSystem(this);}
 
     public void addToCart(String productName, int quantity, int storeId, int totalPrice)
     {
@@ -83,6 +83,7 @@ public class User {
     public Cart getCart() {
         return cart;
     }
+
 
 
     public Map<String, List<Integer>> getCartProductsByStore(int storeId)

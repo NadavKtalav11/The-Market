@@ -41,7 +41,7 @@ public class GuestTest {
 
     @Test
     public void testExit() {
-        assertDoesNotThrow(() -> guest.Exit(mockUser));
+        assertDoesNotThrow(() -> guest.exitMarketSystem(mockUser));
         // No state change or other behavior to verify in Exit method for Guest
     }
 }

@@ -50,8 +50,8 @@ public class UserTest {
     @Test
     public void testExit() {
         user.setState(mockState);
-        user.Exit();
-        verify(mockState).Exit(user);
+        user.exitMarketSystem();
+        verify(mockState).exitMarketSystem(user);
     }
 
     @Test
