@@ -9,6 +9,10 @@ public enum Category {
     TOYS;
 
     public static Category fromString(String categoryStr) {
-        return Category.valueOf(categoryStr.toUpperCase());
+        try {
+            return Category.valueOf(categoryStr.toUpperCase());
+        } catch (IllegalArgumentException e) {
+            return null; // or handle the error as appropriate
+        }
     }
 }

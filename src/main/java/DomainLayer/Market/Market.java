@@ -379,17 +379,65 @@ public class Market {
     }
 
 
-    public List<String> inStoreProductSearch(String productName, String categoryStr, List<String> keywords, int minPrice, int maxPrice, Double minRating, int storeId) {
+    public List<String> inStoreProductSearch(String productName, String categoryStr, List<String> keywords, int storeId) {
         List<String> filteredProductNames;
+        if (categoryStr != null)
+            storeFacade.checkCategory(categoryStr);
+
         if (storeFacade.verifyStoreExist(storeId))
         {
-            filteredProductNames = storeFacade.inStoreProductSearch(productName, categoryStr, keywords, minPrice, maxPrice, minRating, storeId);
+            if (categoryStr != null)
+                storeFacade.checkProductExistInStore(productName, storeId);
+            filteredProductNames = storeFacade.inStoreProductSearch(productName, categoryStr, keywords, storeId);
         }
         else
             throw new IllegalArgumentException("The store you try to search in doesnt exist.");
 
         return filteredProductNames;
+    }
 
+    public List<String> generalProductSearch(String productName, String categoryStr, List<String> keywords) {
+        List<String> filteredProductNames = new ArrayList<>();
+
+        List<Integer> stores = this.storeFacade.getStores();
+        for(Integer store_ID: stores)
+        {
+            filteredProductNames.addAll(inStoreProductSearch(productName, categoryStr, keywords,store_ID));
+        }
+        return filteredProductNames;
+    }
+
+        public List<String> inStoreProductFilter(String categoryStr, List<String> keywords, int minPrice, int maxPrice, Double productMinRating, int storeId, List<String> productsFromSearch, Double storeMinRating) {
+        List<String> filteredProductNames = null;
+        if (minPrice <= maxPrice)
+        {
+            if(storeMinRating <= 5 && storeMinRating >= 0) {
+                if (productMinRating <= 5 && productMinRating >= 0) {
+                    if (categoryStr != null)
+                        storeFacade.checkCategory(categoryStr);
+                    if (storeFacade.verifyStoreExist(storeId)) {
+                        filteredProductNames = storeFacade.inStoreProductFilter(categoryStr, keywords, minPrice, maxPrice, productMinRating, storeId, productsFromSearch, storeMinRating);
+                    } else
+                        throw new IllegalArgumentException("The store you try to search in doesnt exist.");
+                } else
+                    throw new IllegalArgumentException("The rating you entered is invalid");
+            }
+        }
+        else
+            throw new IllegalArgumentException("The price range you entered is invalid");
+
+        return filteredProductNames;
+    }
+
+    public List<String> generalProductFilter(String categoryStr, List<String> keywords, int minPrice, int maxPrice, Double productMinRating, List<String> productsFromSearch, Double storeMinRating) {
+        List<String> filteredProductNames = new ArrayList<>();
+
+        List<Integer> stores = this.storeFacade.getStores();
+        for(Integer store_ID: stores)
+        {
+            filteredProductNames.addAll(inStoreProductFilter(categoryStr, keywords, minPrice, maxPrice, productMinRating, store_ID, productsFromSearch, storeMinRating));
+        }
+        return filteredProductNames;
     }
 
     public boolean isInitialized() {
