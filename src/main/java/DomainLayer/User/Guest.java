@@ -24,4 +24,5 @@ public class Guest implements State{
     public boolean isMember() {
         return false;
     }
+
 }

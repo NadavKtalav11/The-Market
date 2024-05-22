@@ -4,10 +4,12 @@ package DomainLayer.PaymentServices;
 public class ProductDetail {
     private String productName;
     private int amount;
+    private int price;
 
-    public ProductDetail(String productName, int amount) {
+    public ProductDetail(String productName, int amount, int price) {
         this.productName = productName;
         this.amount = amount;
+        this.price = price;
     }
 
     // Getters and Setters
@@ -25,5 +27,9 @@ public class ProductDetail {
 
     public void setAmount(int amount) {
         this.amount = amount;
+    }
+
+    public int getPrice() {
+        return price;
     }
 }

@@ -29,8 +29,6 @@ public class UserFacade {
         return allUsers.get(userID);
     }
 
-
-
     public boolean isUserLoggedIn(int userID){
         return getUserByID(userID).isLoggedIn();
     }
@@ -45,6 +43,11 @@ public class UserFacade {
         //todo remove token when Nadav finish.
         allUsers.remove(userID);
         allUsers.get(userID).Exit();
+    }
+
+
+    public void addUser(){
+        allUsers.put(currentUserID+1, new User(currentUserID+1));
     }
 
 
@@ -74,6 +77,7 @@ public class UserFacade {
         user.removeItemFromUserCart(productName, storeId);
     }
 
+
     public void register(int userID, String username, String password, String birthday,String address) throws Exception {
         if (allUsers.get(userID).isMember()){
             throw new Exception("member cannot register");
@@ -85,6 +89,7 @@ public class UserFacade {
             //todo pass the user to login page.
         }
     }
+
 
     private void validateRegistrationDetails(String username, String password, String birthDate, String address) throws Exception {
         if (username == null || password == null || birthDate == null || address == null) {

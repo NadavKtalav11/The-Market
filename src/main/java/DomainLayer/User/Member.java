@@ -35,6 +35,22 @@ public class Member implements State{
         user.Logout();
     }
 
+    public String getUsername(){
+        return username;
+    }
+
+    public String getAddress() {
+        return address;
+    }
+
+    public String getBirthday() {
+        return birthday;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
     public boolean isLogin()
     {
         return this.isLogin;
