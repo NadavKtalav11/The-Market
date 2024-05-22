@@ -56,9 +56,9 @@ public class UserFacadeTest {
 
     @Test
     public void testExit() {
-        doNothing().when(mockUser).Exit();
-        userFacade.Exit(userId);
-        verify(mockUser).Exit();
+        doNothing().when(mockUser).exitMarketSystem();
+        userFacade.exitMarketSystem(userId);
+        verify(mockUser).exitMarketSystem();
         assertNull(userFacade.allUsers.get(userId));
     }
 

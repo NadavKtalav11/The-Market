@@ -24,7 +24,7 @@ public class User {
         state.Logout(this);
     }
 
-    public void Exit() {state.Exit(this);}
+    public void exitMarketSystem() {state.exitMarketSystem(this);}
 
     public void addToCart(String productName, int quantity, int storeId, int totalPrice)
     {

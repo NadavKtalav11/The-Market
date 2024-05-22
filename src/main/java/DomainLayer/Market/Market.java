@@ -64,8 +64,8 @@ public class Market {
         userFacade.getUserByID(memberID).Logout();
     }
 
-    public void Exit(int userID){
-        userFacade.Exit(userID);
+    public void exitMarketSystem(int userID){
+        userFacade.exitMarketSystem(userID);
     }
 
     public void enterMarketSystem(){userFacade.addUser();}

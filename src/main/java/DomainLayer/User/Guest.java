@@ -8,7 +8,7 @@ public class Guest implements State{
     }
 
     @Override
-    public void Exit(User user) {
+    public void exitMarketSystem(User user) {
         //todo think if we need to do here something
     }
 
