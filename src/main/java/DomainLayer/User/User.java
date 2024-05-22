@@ -4,10 +4,14 @@ public class User {
 
     private int userID;
     private State state;
+    private String birthday;
+    private String address;
     private Cart cart;
 
     public User(int userID){
         this.userID = userID;
+        this.birthday = null;
+        this.address = null;
         this.state = new Guest(); //default state
         this.cart = new Cart();
     }
@@ -19,6 +23,8 @@ public class User {
     public void setState(State state) {
         this.state = state;
     }
+
+    public boolean isMember(){ return this.state.isMember();}
 
     public void Logout() {
         state.Logout(this);
@@ -39,11 +45,6 @@ public class User {
     public void updateCartPrice()
     {
         this.cart.calcCartTotal();
-    }
-
-
-    public void Register(String username, String password, String birthday, String address) throws Exception {
-        state.Register(this,username,password, birthday,address);
     }
 
     public void Login(String username, String password) throws Exception {
