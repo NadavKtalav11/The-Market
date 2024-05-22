@@ -65,8 +65,8 @@ public class StoreFacade {
     }
 
 
-    public void addProductToStore(int storeID, String productName, int price, int quantity){
-        allStores.get(storeID).addProduct(productName, price, quantity);
+    public void addProductToStore(int storeID, String productName, int price, int quantity, String description, String categoryStr){
+        allStores.get(storeID).addProduct(productName, price, quantity, description, categoryStr);
     }
 
     public void removeProductFromStore(int storeID, String productName){
@@ -116,5 +116,12 @@ public class StoreFacade {
     {
         Store store = getStoreByID(store_ID);
         return store.getProducts();
+    }
+
+    public List<String> inStoreProductSearch(String productName, String categoryStr, List<String> keywords, int minPrice, int maxPrice, Double minRating, int storeId)
+    {
+        Store storeToSearchIn = getStoreByID(storeId);
+        List<String> filteredProducts = storeToSearchIn.matchProducts(productName, categoryStr, keywords, minPrice, maxPrice, minRating);
+        return filteredProducts;
     }
 }
