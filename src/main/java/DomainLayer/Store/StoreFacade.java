@@ -65,7 +65,8 @@ public class StoreFacade {
     }
 
 
-    public void addProductToStore(int storeID, String productName, int price, int quantity, String description, String categoryStr){
+    public void addProductToStore(int storeID, String productName, int price, int quantity,
+                                                                String description, String categoryStr){
         allStores.get(storeID).addProduct(productName, price, quantity, description, categoryStr);
     }
 
@@ -73,8 +74,9 @@ public class StoreFacade {
         allStores.get(storeID).removeProduct(productName);
     }
 
-    public void updateProductInStore(int storeID, String productName, int price, int quantity){
-        allStores.get(storeID).updateProduct(productName, price, quantity);
+    public void updateProductInStore(int storeID, String productName, int price, int quantity,
+                                                                String description, String categoryStr){
+        allStores.get(storeID).updateProduct(productName, price, quantity, description, categoryStr);
     }
 
     public boolean verifyStoreExist(int storeID)

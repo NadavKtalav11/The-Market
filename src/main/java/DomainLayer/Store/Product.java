@@ -9,6 +9,13 @@ public class Product {
     private Category category;
     private String description;
 
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public void setCategory(Category category) {
+        this.category = category;
+    }
 
     public void setPrice(int price) {
         this.price = price;
