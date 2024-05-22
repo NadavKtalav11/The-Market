@@ -37,7 +37,7 @@ public class MemberTest {
     @Test
     public void testExit() {
         // Exit method should simply call Logout, so we just need to verify if isLogin becomes false
-        member.Exit(null); // No need to pass user since it's not used in Exit method
+        member.exitMarketSystem(null); // No need to pass user since it's not used in Exit method
         assertFalse(member.isLogin());
     }
 

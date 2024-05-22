@@ -41,7 +41,7 @@ public class Service_layer {
     //todo think about the userID and the purpose of this function.
     public void exitMarketSystem(int userID){
         try{
-            market.Exit(userID);
+            market.exitMarketSystem(userID);
         }
         catch (Exception e){
             System.out.println(e);

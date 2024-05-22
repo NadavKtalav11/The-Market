@@ -64,8 +64,8 @@ public class Market {
         userFacade.getUserByID(memberID).Logout();
     }
 
-    public void Exit(int userID){
-        userFacade.Exit(userID);
+    public void exitMarketSystem(int userID){
+        userFacade.exitMarketSystem(userID);
     }
 
 
@@ -368,16 +368,45 @@ public class Market {
     }
 
 
-    public List<String> inStoreProductSearch(String productName, String categoryStr, List<String> keywords, int minPrice, int maxPrice, Double minRating, int storeId) {
+    public List<String> inStoreProductSearch(String productName, String categoryStr, List<String> keywords, int storeId) {
         List<String> filteredProductNames;
+        if (categoryStr != null)
+            storeFacade.checkCategory(categoryStr);
+
         if (storeFacade.verifyStoreExist(storeId))
         {
-            filteredProductNames = storeFacade.inStoreProductSearch(productName, categoryStr, keywords, minPrice, maxPrice, minRating, storeId);
+            if (categoryStr != null)
+                storeFacade.checkProductExistInStore(productName, storeId);
+            filteredProductNames = storeFacade.inStoreProductSearch(productName, categoryStr, keywords, storeId);
         }
         else
             throw new IllegalArgumentException("The store you try to search in doesnt exist.");
 
         return filteredProductNames;
+    }
+
+    public List<String> inStoreProductFilter(String categoryStr, List<String> keywords, int minPrice, int maxPrice, Double minRating, int storeId, List<String> productsFromSearch) {
+        List<String> filteredProductNames;
+        if (minPrice <= maxPrice)
+        {
+            if (minRating <= 5 && minRating >= 0)
+            {
+                if (categoryStr != null)
+                    storeFacade.checkCategory(categoryStr);
+                if (storeFacade.verifyStoreExist(storeId))
+                {
+                    filteredProductNames = storeFacade.inStoreProductFilter(categoryStr, keywords, minPrice, maxPrice, minRating, storeId, productsFromSearch);
+                }
+                else
+                    throw new IllegalArgumentException("The store you try to search in doesnt exist.");
+
+                return filteredProductNames;
+            }
+            else
+                throw new IllegalArgumentException("The rating you entered is invalid");
+        }
+        else
+            throw new IllegalArgumentException("The price range you entered is invalid");
 
     }
 
