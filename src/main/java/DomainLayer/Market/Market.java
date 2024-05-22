@@ -68,9 +68,11 @@ public class Market {
         userFacade.Exit(userID);
     }
 
+
     public void enterMarketSystem(){userFacade.addUser();}
     public void Register(int userID,String username, String password, String birthday, String address) throws Exception {
         userFacade.Register(userID, username,password,birthday,address);
+
     }
 
     public void Login(int userID,String username, String password) throws Exception {
