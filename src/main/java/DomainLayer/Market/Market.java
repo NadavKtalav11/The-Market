@@ -287,23 +287,42 @@ public class Market {
 
     public Map<Integer, Integer> marketManagerAskInfo(int user_ID)
     {
-        Map<Integer, Integer> marketPurchasesById; //
         if (userFacade.isUserLoggedIn(user_ID)) {
-            int member_ID = this.userFacade.getUsernameByUserID(user_ID);
             if (this.roleFacade.verifyMemberIsSystemManager(user_ID))
             {
-                return paymentServicesFacade.getStorePurchaseInfo();
+                return paymentServicesFacade.getStorePurchaseInfo(); //returns StoreId and amount of purchases in the store
             }
             else
             {
                 throw new IllegalArgumentException("You are not the system manager, so you can do this action.");
             }
         }
-
         else
         {
             throw new IllegalArgumentException("You are not logged in.");
         }
     }
 
+    public Map<Integer, Integer> storeOwnerGetInfoAboutStore(int user_ID, int store_ID) throws Exception //return receiptId and total amount in the receipt for the specific store
+    {
+        Map<Integer, Integer> storeReceiptsAndTotalAmount = new HashMap<>();
+
+        if (userFacade.isUserLoggedIn(user_ID)) {
+            int member_ID = this.userFacade.getUsernameByUserID(user_ID);
+            if (roleFacade.verifyStoreOwner(store_ID, member_ID)) {
+                if (storeFacade.verifyStoreExist(store_ID)) {
+                    storeReceiptsAndTotalAmount = paymentServicesFacade.getStoreReceiptsAndTotalAmount(store_ID);
+                }else {
+                    throw new Exception("Store does not exist");
+                }
+            } else {
+                throw new IllegalArgumentException("Only store owner get authorizations of his purchases");
+            }
+        } else{
+            throw new IllegalArgumentException("User is not logged in, so he get the authorizations of his store managers");
+        }
+        if (storeReceiptsAndTotalAmount.isEmpty())
+            throw new IllegalArgumentException("There are no purchases in the store");
+        return storeReceiptsAndTotalAmount;
+    }
 }
