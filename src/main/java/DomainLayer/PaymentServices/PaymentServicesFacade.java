@@ -32,11 +32,22 @@ public class PaymentServicesFacade {
 
         for (Integer receiptId : IdAndReceipt.keySet()) {
             Receipt receipt = IdAndReceipt.get(receiptId);
-            for (Integer store : receipt.getPriceAndProductNameAndAmount().keySet()) {
+            for (Integer store : receipt.getStoreIdAndProductDetails().keySet()) {
                 storePurchaseStats.put(store, storePurchaseStats.getOrDefault(store, 0) + 1);
             }
         }
 
         return storePurchaseStats;
+    }
+
+    public Map<Integer, Integer> getStoreReceiptsAndTotalAmount(int storeId)
+    {
+        Map<Integer, Integer> receiptAndTotalPrice = new HashMap<>();
+        for (Integer receiptId : IdAndReceipt.keySet()) {
+            Receipt receipt = IdAndReceipt.get(receiptId);
+            if (receipt.getStoreIdAndProductDetails().containsKey(storeId))
+                receiptAndTotalPrice.put(receiptId, receipt.getTotalPriceOfStoreInReceipt(storeId));
+        }
+        return receiptAndTotalPrice;
     }
 }

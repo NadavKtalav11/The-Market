@@ -1,14 +1,16 @@
 package DomainLayer.PaymentServices;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class Receipt {
     private int userId;
     private int totalPrice;
     private LocalDate date;
-    private HashMap<Integer, ProductDetail> storeIdAndProductDetails; //<storeId, details>
+    private HashMap<Integer, List<ProductDetail>> storeIdAndProductDetails; //<storeId, List<details>>
 
     public Receipt(int userId, int totalPrice, LocalDate date) {
         this.userId = userId;
@@ -42,11 +44,28 @@ public class Receipt {
         this.date = date;
     }
 
-    public Map<Integer, ProductDetail> getPriceAndProductNameAndAmount() {
+    public Map<Integer, List<ProductDetail>> getStoreIdAndProductDetails() {
         return storeIdAndProductDetails;
     }
 
     public void addProduct(int storeId, String productName, int amount, int price) {
-        this.storeIdAndProductDetails.put(storeId, new ProductDetail(productName, amount, price));
+        if (storeIdAndProductDetails.containsKey(storeId))
+            this.storeIdAndProductDetails.get(storeId).add(new ProductDetail(productName, amount, price));
+        else
+        {
+            List<ProductDetail> productDetailList = new ArrayList<>();
+            productDetailList.add(new ProductDetail(productName, amount, price));
+            this.storeIdAndProductDetails.put(storeId, productDetailList);
+        }
+    }
+
+
+    public int getTotalPriceOfStoreInReceipt(int storeId)
+    {
+        int storePrice = 0;
+        for (ProductDetail productDetail : storeIdAndProductDetails.get(storeId)) {
+            storePrice += productDetail.getPrice();
+        }
+        return storePrice;
     }
 }

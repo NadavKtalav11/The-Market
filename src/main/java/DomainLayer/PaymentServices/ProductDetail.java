@@ -28,4 +28,8 @@ public class ProductDetail {
     public void setAmount(int amount) {
         this.amount = amount;
     }
+
+    public int getPrice() {
+        return price;
+    }
 }
