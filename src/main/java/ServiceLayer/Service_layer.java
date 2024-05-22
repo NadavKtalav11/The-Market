@@ -1,8 +1,11 @@
 package ServiceLayer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import DomainLayer.Market.Market;
 
 public class Service_layer {
+    private static final Logger logger = LoggerFactory.getLogger(Service_layer.class);
     private Market market;
 
     public Service_layer() {
@@ -13,22 +16,25 @@ public class Service_layer {
 
     public void init(String userName, String password, int licensedDealerNumber,
                      String paymentServiceName, String url, int licensedDealerNumber1, String supplyServiceName, String address){
+        logger.info("Starting the initialization of the system.");
         try{
             market.init(userName, password,licensedDealerNumber,paymentServiceName,
                     url, licensedDealerNumber1, supplyServiceName, address);
         }
         catch (Exception e){
-            System.out.println(e);
+            logger.error("Error occurred during the initialization: {}", e.getMessage(), e);
         }
+
     }
 
     public void payWithExternalPaymentService(){
+        logger.info("Reaching for the payment service in order to complete the purchase.");
         try {
             market.payWithExternalPaymentService();
         }
 
         catch (Exception e){
-        System.out.println(e);
+            logger.error("Error occurred with the payment service company: {}", e.getMessage(), e);
         }
     }
 

@@ -4,6 +4,7 @@ DomainLayer\PaymentServices\PaymentServicesFacade.class
 DomainLayer\Role\StoreOwner.class
 DomainLayer\User\Member.class
 DomainLayer\Store\Product.class
+DomainLayer\Store\Category.class
 DomainLayer\Store\Purchase.class
 DomainLayer\Role\RoleFacade.class
 DomainLayer\User\Basket.class

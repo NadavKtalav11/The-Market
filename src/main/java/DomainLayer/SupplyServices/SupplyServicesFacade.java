@@ -26,18 +26,19 @@ public class SupplyServicesFacade {
         return externalSupplyService.size()==size_before+1;
     }
 
-    public ExternalSupplyService checkAvailableExternalSupplyService(String userAddress, HashMap<Integer,Integer> ProductIdAndAmount) {
+    public boolean checkAvailableExternalSupplyService(String userAddress,
+                                                       HashMap<Integer,Integer> ProductIdAndAmount) {
         //   (private Map<Integer, ExternalSupplyService>  ExternalSupplyService)
         for (Map.Entry<Integer, ExternalSupplyService> entry : externalSupplyService.entrySet()) {
             Integer externalSupplyServiceId = entry.getKey();
             ExternalSupplyService externalSupplyService1 = entry.getValue();
             if (externalSupplyService1.checkAreaAvailability(userAddress)) {
                 if (externalSupplyService1.checkServiceAvailability(ProductIdAndAmount)) {
-                    return externalSupplyService1;
+                    return true;
                 }
             }
         }
-        return null;
+        return false;
     }
 
         // Check if the product exists in the instance's map and if the amount is sufficient
