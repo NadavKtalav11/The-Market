@@ -292,7 +292,7 @@ public class Market {
             if (this.roleFacade.verifyMemberIsSystemManager(user_ID))
             {
                 marketPurchasesById = paymentServicesFacade.getStorePurchaseInfo();
-                return marketPurchasesById;
+                return marketPurchasesById; 
             }
             else
             {
