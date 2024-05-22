@@ -180,4 +180,32 @@ public class Service_layer {
         return totalPrice;
     }
 
+    public int checkingCartValidationBeforePurchase(int user_ID)
+    {
+        logger.info("Starting cart validation and price calculation before purchase.");
+
+        int totalPrice = 0;
+        try {
+            totalPrice = market.checkingCartValidationBeforePurchase(user_ID);
+        } catch (Exception e) {
+            logger.error("Error occurred during the validation of the cart: {}", e.getMessage(), e);
+        }
+
+        return totalPrice;
+    }
+
+    public List<Integer> getInformationAboutStores(int user_ID)
+    {
+        logger.info("Starting reviewing information about stores in the market.");
+
+        List<Integer> allAvailableStores = null;
+        try {
+            allAvailableStores = market.getInformationAboutStores(user_ID);
+        } catch (Exception e) {
+            logger.error("Error occurred during reviewing information about stores in the market: {}", e.getMessage(), e);
+        }
+
+        return allAvailableStores;
+    }
+
 }
