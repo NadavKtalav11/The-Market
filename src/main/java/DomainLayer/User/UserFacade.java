@@ -27,8 +27,6 @@ public class UserFacade {
         return allUsers.get(userID);
     }
 
-
-
     public boolean isUserLoggedIn(int userID){
         return getUserByID(userID).isLoggedIn();
     }
@@ -43,6 +41,10 @@ public class UserFacade {
         //todo remove token when Nadav finish.
         allUsers.remove(userID);
         allUsers.get(userID).Exit();
+    }
+
+    public void addUser(){
+        allUsers.put(currentUserID+1, new User(currentUserID+1));
     }
 
     public void addItemsToBasket(String productName, int quantity, int storeId, int userId, int totalPrice)
@@ -71,7 +73,7 @@ public class UserFacade {
         user.removeItemFromUserCart(productName, storeId);
     }
 
-    public void Register(int userID, String username, String password, String birthday,String address)    throws Exception {
+    public void Register(int userID, String username, String password, String birthday,String address) throws Exception {
 
         //todo check validation of the username.
         //todo check validation of the password.

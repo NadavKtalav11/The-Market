@@ -65,16 +65,18 @@ public class StoreFacade {
     }
 
 
-    public void addProductToStore(int storeID, String productName, int price, int quantity){
-        allStores.get(storeID).addProduct(productName, price, quantity);
+    public void addProductToStore(int storeID, String productName, int price, int quantity,
+                                                                String description, String categoryStr){
+        allStores.get(storeID).addProduct(productName, price, quantity, description, categoryStr);
     }
 
     public void removeProductFromStore(int storeID, String productName){
         allStores.get(storeID).removeProduct(productName);
     }
 
-    public void updateProductInStore(int storeID, String productName, int price, int quantity){
-        allStores.get(storeID).updateProduct(productName, price, quantity);
+    public void updateProductInStore(int storeID, String productName, int price, int quantity,
+                                                                String description, String categoryStr){
+        allStores.get(storeID).updateProduct(productName, price, quantity, description, categoryStr);
     }
 
     public boolean verifyStoreExist(int storeID)
@@ -121,5 +123,11 @@ public class StoreFacade {
     public int calculateTotalCartPriceAfterDiscount(int store_ID, Map<String, List<Integer>> products, int totalPriceBeforeDiscount)
     {
         return 0; //In the future - check discount and calculate price by policies
+
+    public List<String> inStoreProductSearch(String productName, String categoryStr, List<String> keywords, int minPrice, int maxPrice, Double minRating, int storeId)
+    {
+        Store storeToSearchIn = getStoreByID(storeId);
+        List<String> filteredProducts = storeToSearchIn.matchProducts(productName, categoryStr, keywords, minPrice, maxPrice, minRating);
+        return filteredProducts;
     }
 }

@@ -2,6 +2,7 @@ package DomainLayer.Store;
 
 import java.util.*;
 import java.util.ArrayList;
+import java.util.stream.Collectors;
 
 public class Store {
     private int store_ID;
@@ -9,6 +10,8 @@ public class Store {
     private boolean isOpened;
     private DiscountPolicy discountPolicy;
     private PurchasePolicy purchasePolicy;
+    private double rating;
+    private int numOfRatings;
 
     Store(int store_ID)
     {
@@ -21,8 +24,9 @@ public class Store {
         return store_ID;
     }
 
-    public void addProduct(String productName, int price, int quantity){
-        storeProducts.put(productName, new Product(productName, price, quantity));
+    public void addProduct(String productName, int price, int quantity, String description, String categoryStr){
+        Category category = Category.fromString(categoryStr);
+        storeProducts.put(productName, new Product(productName, price, quantity, description, category));
     }
 
     public Product getProductByName(String productName)
@@ -53,9 +57,12 @@ public class Store {
         storeProducts.remove(productName);
     }
 
-    public void updateProduct(String productName, int price, int quantity){
+    public void updateProduct(String productName, int price, int quantity, String description, String categoryStr){
         storeProducts.get(productName).setPrice(price);
         storeProducts.get(productName).setQuantity(quantity);
+        storeProducts.get(productName).setDescription(description);
+        Category category = Category.fromString(categoryStr);
+        storeProducts.get(productName).setCategory(category);
     }
 
     public void closeStore()
@@ -83,5 +90,19 @@ public class Store {
     public boolean checkPurchasePolicy(int userId, String productName)
     {
         return this.purchasePolicy.checkPurchasePolicy(userId, productName);
+    }
+
+    public List<String> matchProducts(String productName, String categoryStr, List<String> keywords, Integer minPrice, Integer maxPrice, Double minRating)
+    {
+        List<Product> products = storeProducts.values().stream().toList();
+        return products.stream()
+                .filter(product -> productName == null || product.getProductName().toLowerCase().contains(productName.toLowerCase()))
+                .filter(product -> categoryStr == null || product.getCategoryName().equals(categoryStr))
+                .filter(product -> keywords == null || keywords.stream().anyMatch(keyword -> product.getDescription().toLowerCase().contains(keyword.toLowerCase())))
+                .filter(product -> minPrice == null || product.getPrice() >= minPrice)
+                .filter(product -> maxPrice == null || product.getPrice() <= maxPrice)
+                .filter(product -> minRating == null || product.getRating() >= minRating)
+                .map(Product::getProductName)
+                .collect(Collectors.toList());
     }
 }
