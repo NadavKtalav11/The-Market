@@ -43,7 +43,8 @@ public class UserFacade {
     }
 
     public void addUser(){
-        allUsers.put(currentUserID+1, new User(currentUserID+1));
+        allUsers.put(currentUserID, new User(currentUserID));
+        currentUserID++;
     }
 
     public void addItemsToBasket(String productName, int quantity, int storeId, int userId, int totalPrice)
