@@ -208,4 +208,18 @@ public class Service_layer {
         return allAvailableStores;
     }
 
+    public List<String> getInformationAboutProductInStore(int user_ID, int store_ID)
+    {
+        logger.info("Starting reviewing information about products in store.");
+
+        List<String> storeProducts = null;
+        try {
+            storeProducts = market.getInformationAboutProductInStore(user_ID, store_ID);
+        } catch (Exception e) {
+            logger.error("Error occurred during eviewing information about products in store: {}", e.getMessage(), e);
+        }
+
+        return storeProducts;
+    }
+
 }
