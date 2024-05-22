@@ -10,7 +10,6 @@ public class User {
     private String birthday;
     private String address;
     private Cart cart;
-    private String address;
 
     public User(int userID, String address){
         this.userID = userID;
