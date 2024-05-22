@@ -5,6 +5,7 @@ import org.slf4j.LoggerFactory;
 import DomainLayer.Market.Market;
 
 import java.util.List;
+import java.util.Map;
 
 public class Service_layer {
     private static final Logger logger = LoggerFactory.getLogger(Service_layer.class);
@@ -216,10 +217,59 @@ public class Service_layer {
         try {
             storeProducts = market.getInformationAboutProductInStore(user_ID, store_ID);
         } catch (Exception e) {
-            logger.error("Error occurred during eviewing information about products in store: {}", e.getMessage(), e);
+            logger.error("Error occurred during reviewing information about products in store: {}", e.getMessage(), e);
         }
 
         return storeProducts;
     }
 
+    public Map<Integer, String> getInformationAboutRolesInStore(int user_ID, int store_ID)
+    {
+        logger.info("Store owner stared reviewing information about employees in.");
+
+        Map<Integer, String> information = null;
+        try {
+            information = market.getInformationAboutRolesInStore(user_ID, store_ID);
+        } catch (Exception e) {
+            logger.error("Error occurred during reviewing information about products in store: {}", e.getMessage(), e);
+        }
+
+        return information;
+    }
+
+    public Map<Integer, List<Integer>> getAuthorizationsOfManagersInStore(int user_ID, int store_ID)
+    {
+        logger.info("Store owner stared reviewing authorizations of managers in store.");
+
+        Map<Integer, List<Integer>> managersAuthorizations = null;
+        try {
+            managersAuthorizations = market.getAuthorizationsOfManagersInStore(user_ID, store_ID);
+        } catch (Exception e) {
+            logger.error("Error occurred during store owner reviewing authorizations of managers in store: {}", e.getMessage(), e);
+        }
+
+        return managersAuthorizations;
+    }
+
+    public void closeStore(int user_ID, int store_ID)
+    {
+        logger.info("Store owner stared store closing.");
+
+        try {
+            market.closeStore(user_ID, store_ID);
+        } catch (Exception e) {
+            logger.error("Error occurred during store owner was trying to close a store: {}", e.getMessage(), e);
+        }
+    }
+
+    public void openStore(int user_ID)
+    {
+        logger.info("Store owner stared store opening.");
+
+        try {
+            market.openStore(user_ID);
+        } catch (Exception e) {
+            logger.error("Error occurred during store owner was trying to open a store: {}", e.getMessage(), e);
+        }
+    }
 }
