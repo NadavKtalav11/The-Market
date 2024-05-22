@@ -130,10 +130,10 @@ public class StoreFacade {
         return filteredProducts;
     }
 
-    public List<String> inStoreProductFilter(String categoryStr, List<String> keywords, Integer minPrice, Integer maxPrice, Double minRating, Integer storeId, List<String> productsFromSearch)
+    public List<String> inStoreProductFilter(String categoryStr, List<String> keywords, Integer minPrice, Integer maxPrice, Double minRating, Integer storeId, List<String> productsFromSearch, Double storeMinRating)
     {
         Store storeToSearchIn = getStoreByID(storeId);
-        List<String> filteredProducts = storeToSearchIn.filterProducts(categoryStr, keywords, minPrice, maxPrice, minRating, productsFromSearch);
+        List<String> filteredProducts = storeToSearchIn.filterProducts(categoryStr, keywords, minPrice, maxPrice, minRating, productsFromSearch, storeMinRating);
         return filteredProducts;
     }
 
@@ -150,6 +150,11 @@ public class StoreFacade {
         {
             throw new IllegalArgumentException("The product you try to add isn't in the store");
         }
+    }
+
+    public List<Integer> getStores()
+    {
+        return new ArrayList<>(this.allStores.keySet());
     }
 
 }
