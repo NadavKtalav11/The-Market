@@ -7,4 +7,5 @@ public interface State {
     void exitMarketSystem(User user);
     void Register(User user, String username, String password, String birthday, String address) throws Exception;
     void Login(User user, String username, String password) throws Exception;
+    boolean isMember();
 }
