@@ -7,11 +7,14 @@ public class User {
 
     private int userID;
     private State state;
-    private Cart cart;
+    private String birthday;
     private String address;
+    private Cart cart;
 
     public User(int userID, String address){
         this.userID = userID;
+        this.birthday = null;
+        this.address = null;
         this.state = new Guest(); //default state
         this.cart = new Cart();
         this.address = address;
@@ -25,11 +28,13 @@ public class User {
         this.state = state;
     }
 
+    public boolean isMember(){ return this.state.isMember();}
+
     public void Logout() {
         state.Logout(this);
     }
 
-    public void Exit() {state.Exit(this);}
+    public void exitMarketSystem() {state.exitMarketSystem(this);}
 
     public void addToCart(String productName, int quantity, int storeId, int totalPrice)
     {
@@ -44,11 +49,6 @@ public class User {
     public void updateCartPrice()
     {
         this.cart.calcCartTotal();
-    }
-
-
-    public void Register(String username, String password, String birthday, String address) throws Exception {
-        state.Register(this,username,password, birthday,address);
     }
 
     public void Login(String username, String password) throws Exception {
@@ -82,6 +82,7 @@ public class User {
     public Cart getCart() {
         return cart;
     }
+
 
 
     public Map<String, List<Integer>> getCartProductsByStore(int storeId)

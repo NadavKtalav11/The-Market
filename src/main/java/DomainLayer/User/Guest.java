@@ -8,14 +8,8 @@ public class Guest implements State{
     }
 
     @Override
-    public void Exit(User user) {
+    public void exitMarketSystem(User user) {
         //todo think if we need to do here something
-    }
-
-    @Override
-    public void Register(User user, String username, String password, String birthday, String address) throws Exception {
-        //todo think if the user is immediately being member or passed to login.
-        user.setState(new Member(user.getUserID(), username,password,birthday,address));
     }
 
     @Override
@@ -26,5 +20,9 @@ public class Guest implements State{
         user.setState(new Member(memberID, username, password, birthday, address));
     }
 
+    @Override
+    public boolean isMember() {
+        return false;
+    }
 
 }

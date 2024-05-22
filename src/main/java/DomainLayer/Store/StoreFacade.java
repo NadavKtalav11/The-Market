@@ -123,10 +123,38 @@ public class StoreFacade {
     public int calculateTotalCartPriceAfterDiscount(int store_ID, Map<String, List<Integer>> products, int totalPriceBeforeDiscount) {
         return 0; //In the future - check discount and calculate price by policies
     }
-    public List<String> inStoreProductSearch(String productName, String categoryStr, List<String> keywords, int minPrice, int maxPrice, Double minRating, int storeId)
+    public List<String> inStoreProductSearch(String productName, String categoryStr, List<String> keywords, int storeId)
     {
         Store storeToSearchIn = getStoreByID(storeId);
-        List<String> filteredProducts = storeToSearchIn.matchProducts(productName, categoryStr, keywords, minPrice, maxPrice, minRating);
+        List<String> filteredProducts = storeToSearchIn.matchProducts(productName, categoryStr, keywords);
         return filteredProducts;
     }
+
+    public List<String> inStoreProductFilter(String categoryStr, List<String> keywords, Integer minPrice, Integer maxPrice, Double minRating, Integer storeId, List<String> productsFromSearch, Double storeMinRating)
+    {
+        Store storeToSearchIn = getStoreByID(storeId);
+        List<String> filteredProducts = storeToSearchIn.filterProducts(categoryStr, keywords, minPrice, maxPrice, minRating, productsFromSearch, storeMinRating);
+        return filteredProducts;
+    }
+
+    public void checkCategory(String categoryStr)
+    {
+        if (Category.fromString(categoryStr) == null)
+            throw new IllegalArgumentException("The category you entered doesn't exist.");
+    }
+
+    public void checkProductExistInStore(String productName, int storeId)
+    {
+        Store store = getStoreByID(storeId);
+        if (!store.checkProductExists(productName))
+        {
+            throw new IllegalArgumentException("The product you try to add isn't in the store");
+        }
+    }
+
+    public List<Integer> getStores()
+    {
+        return new ArrayList<>(this.allStores.keySet());
+    }
+
 }
