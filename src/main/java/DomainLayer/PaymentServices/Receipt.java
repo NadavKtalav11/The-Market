@@ -8,13 +8,13 @@ public class Receipt {
     private int userId;
     private int totalPrice;
     private LocalDate date;
-    private HashMap<Integer, ProductDetail> priceAndProductNameAndAmount;
+    private HashMap<Integer, ProductDetail> storeIdAndProductDetails; //<storeId, details>
 
     public Receipt(int userId, int totalPrice, LocalDate date) {
         this.userId = userId;
         this.totalPrice = totalPrice;
         this.date = date;
-        this.priceAndProductNameAndAmount = new HashMap<>();
+        this.storeIdAndProductDetails = new HashMap<>();
     }
 
     // Getters and Setters
@@ -43,10 +43,10 @@ public class Receipt {
     }
 
     public Map<Integer, ProductDetail> getPriceAndProductNameAndAmount() {
-        return priceAndProductNameAndAmount;
+        return storeIdAndProductDetails;
     }
 
-    public void addProduct(int price, String productName, int amount) {
-        this.priceAndProductNameAndAmount.put(price, new ProductDetail(productName, amount));
+    public void addProduct(int storeId, String productName, int amount, int price) {
+        this.storeIdAndProductDetails.put(storeId, new ProductDetail(productName, amount, price));
     }
 }

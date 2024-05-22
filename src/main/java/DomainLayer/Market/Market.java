@@ -285,4 +285,25 @@ public class Market {
         }
     }
 
+    public Map<Integer, Integer> marketManagerAskInfo(int user_ID)
+    {
+        Map<Integer, Integer> marketPurchasesById; //
+        if (userFacade.isUserLoggedIn(user_ID)) {
+            int member_ID = this.userFacade.getUsernameByUserID(user_ID);
+            if (this.roleFacade.verifyMemberIsSystemManager(user_ID))
+            {
+                return paymentServicesFacade.getStorePurchaseInfo();
+            }
+            else
+            {
+                throw new IllegalArgumentException("You are not the system manager, so you can do this action.");
+            }
+        }
+
+        else
+        {
+            throw new IllegalArgumentException("You are not logged in.");
+        }
+    }
+
 }
