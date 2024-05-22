@@ -1,5 +1,6 @@
 package DomainLayer.Market;
 
+import DomainLayer.AuthorizationsAndSecurity.AuthorizationAndSecurityFacade;
 import DomainLayer.PaymentServices.PaymentServicesFacade;
 import DomainLayer.Role.RoleFacade;
 import DomainLayer.Store.StoreFacade;
@@ -18,6 +19,7 @@ public class Market {
     private PaymentServicesFacade paymentServicesFacade;
     private SupplyServicesFacade supplyServicesFacade;
     private Set<Integer> systemManagerIds;
+    private AuthorizationAndSecurityFacade authorizationAndSecurityFacade;
     private StoreFacade storeFacade;
     private UserFacade userFacade;
     private RoleFacade roleFacade;
@@ -37,6 +39,7 @@ public class Market {
          this.userFacade = UserFacade.getInstance();
           this.roleFacade = RoleFacade.getInstance();
           this.paymentServicesFacade = PaymentServicesFacade.getInstance();
+          this.authorizationAndSecurityFacade = AuthorizationAndSecurityFacade.getInstance();
     }
 
     public void init(String userName, String password, int licensedDealerNumber,
@@ -69,14 +72,22 @@ public class Market {
     }
 
 
-    public void enterMarketSystem(){userFacade.addUser();}
-    public void Register(int userID,String username, String password, String birthday, String address) throws Exception {
-        userFacade.Register(userID, username,password,birthday,address);
+    public void enterMarketSystem(){
+
+        int userId = userFacade.addUser();
+        authorizationAndSecurityFacade.generateToken(userId);
+    }
+    public void register(int userID,String username, String password, String birthday, String address) throws Exception {
+        authorizationAndSecurityFacade.validateToken(authorizationAndSecurityFacade.getToken(userID));
+        //check validation
+        String encryptedPassword = authorizationAndSecurityFacade.encodePassword(password);
+        userFacade.register(userID, username,encryptedPassword,birthday,address);
 
     }
 
     public void Login(int userID,String username, String password) throws Exception {
-        userFacade.Login(userID, username,password);
+        String encryptedPassword = authorizationAndSecurityFacade.encodePassword(password);
+        userFacade.Login(userID, username,encryptedPassword);
     }
 
     public void addProductToBasket(String productName, int quantity, int storeId, int userId)

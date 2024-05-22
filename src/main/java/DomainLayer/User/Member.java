@@ -61,10 +61,6 @@ public class Member implements State{
         return this.member_ID;
     }
 
-    public String getUsername()
-    {
-        return this.username;
-    }
 
     @Override
     public void Login(User user, String username, String password) throws Exception {

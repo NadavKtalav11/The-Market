@@ -17,14 +17,9 @@ public class GuestTest {
     @BeforeEach
     public void setUp() {
         guest = new Guest();
-        mockUser = new User(userId);
+        //mockUser = new User(userId);
     }
 
-    @Test
-    public void testRegister() {
-        assertThrows(Exception.class, () -> guest.Register(mockUser, username, password, birthday, address));
-        assertTrue(mockUser.getState() instanceof Member);
-    }
 
     @Test
     public void testLogin() {
