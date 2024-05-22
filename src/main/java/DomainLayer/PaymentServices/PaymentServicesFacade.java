@@ -25,4 +25,18 @@ public class PaymentServicesFacade {
             allPaymentServices.put(licensedDealerNumber, externalPaymentService);
             return allPaymentServices.size()==size_before+1;
     }
+
+    public Map<Integer, Integer> getStorePurchaseInfo()
+    {
+        Map<Integer, Integer> storePurchaseStats = new HashMap<>();
+
+        for (Integer receiptId : IdAndReceipt.keySet()) {
+            Receipt receipt = IdAndReceipt.get(receiptId);
+            for (Integer store : receipt.getPriceAndProductNameAndAmount().keySet()) {
+                storePurchaseStats.put(store, storePurchaseStats.getOrDefault(store, 0) + 1);
+            }
+        }
+
+        return storePurchaseStats;
+    }
 }
