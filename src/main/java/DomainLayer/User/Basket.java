@@ -15,7 +15,7 @@ public class Basket {
         this.basketPrice = 0;
     }
 
-    public int getId()
+    public int getStoreId()
     {
         return this.storeId;
     }

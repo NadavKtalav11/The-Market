@@ -345,4 +345,8 @@ public class Market {
         return filteredProductNames;
 
     }
+
+    public boolean isInitialized() {
+        return initialized;
+    }
 }
