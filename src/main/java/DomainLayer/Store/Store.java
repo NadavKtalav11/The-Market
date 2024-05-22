@@ -92,11 +92,25 @@ public class Store {
         return this.purchasePolicy.checkPurchasePolicy(userId, productName);
     }
 
-    public List<String> matchProducts(String productName, String categoryStr, List<String> keywords, Integer minPrice, Integer maxPrice, Double minRating)
+    public List<String> matchProducts(String productName, String categoryStr, List<String> keywords)
     {
         List<Product> products = storeProducts.values().stream().toList();
         return products.stream()
                 .filter(product -> productName == null || product.getProductName().toLowerCase().contains(productName.toLowerCase()))
+                .filter(product -> categoryStr == null || product.getCategoryName().equals(categoryStr))
+                .filter(product -> keywords == null || keywords.stream().anyMatch(keyword -> product.getDescription().toLowerCase().contains(keyword.toLowerCase())))
+                .map(Product::getProductName)
+                .collect(Collectors.toList());
+    }
+
+    public List<String> filterProducts(String categoryStr, List<String> keywords, Integer minPrice, Integer maxPrice, Double minRating, List<String> productsFromSearch)
+    {
+        List<Product> products = new ArrayList<>();
+
+        for (String productName : productsFromSearch) {
+            products.add(storeProducts.get(productName));
+        }
+        return products.stream()
                 .filter(product -> categoryStr == null || product.getCategoryName().equals(categoryStr))
                 .filter(product -> keywords == null || keywords.stream().anyMatch(keyword -> product.getDescription().toLowerCase().contains(keyword.toLowerCase())))
                 .filter(product -> minPrice == null || product.getPrice() >= minPrice)
