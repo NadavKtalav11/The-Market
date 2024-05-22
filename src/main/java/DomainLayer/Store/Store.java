@@ -103,7 +103,7 @@ public class Store {
                 .collect(Collectors.toList());
     }
 
-    public List<String> filterProducts(String categoryStr, List<String> keywords, Integer minPrice, Integer maxPrice, Double minRating, List<String> productsFromSearch)
+    public List<String> filterProducts(String categoryStr, List<String> keywords, Integer minPrice, Integer maxPrice, Double minRating, List<String> productsFromSearch, Double storeMinRating)
     {
         List<Product> products = new ArrayList<>();
 
@@ -116,6 +116,7 @@ public class Store {
                 .filter(product -> minPrice == null || product.getPrice() >= minPrice)
                 .filter(product -> maxPrice == null || product.getPrice() <= maxPrice)
                 .filter(product -> minRating == null || product.getRating() >= minRating)
+                .filter(product -> storeMinRating == null || this.rating >= storeMinRating)
                 .map(Product::getProductName)
                 .collect(Collectors.toList());
     }
