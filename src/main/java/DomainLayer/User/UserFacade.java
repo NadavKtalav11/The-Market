@@ -2,6 +2,7 @@ package DomainLayer.User;
 
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class UserFacade {
@@ -44,9 +45,6 @@ public class UserFacade {
         allUsers.get(userID).Exit();
     }
 
-
-      
-
     public void addItemsToBasket(String productName, int quantity, int storeId, int userId, int totalPrice)
     {
         User user = getUserByID(userId);
@@ -87,7 +85,37 @@ public class UserFacade {
         allUsers.get(userID).Login(username,password);
     }
 
+    public List<Integer> getCartStoresByUser(int user_ID)
+    {
+        User user = getUserByID(user_ID);
+        if(user != null)
+            return user.getCartStores();
+        else
+            return null;
+    }
 
+    public Map<String, List<Integer>> getCartProductsByStoreAndUser(int store_ID, int user_ID)
+    {
+        User user = getUserByID(user_ID);
+        if(user != null)
+            return user.getCartProductsByStore(store_ID);
+        else
+            return null;
+    }
 
+    public boolean isUserCartEmpty(int user_ID)
+    {
+        return getUserByID(user_ID).isCartEmpty();
+    }
 
+    public String getUserAddress(int user_ID)
+    {
+        return getUserByID(user_ID).getAddress();
+    }
+
+    public int getCartPriceByUser(int user_ID)
+    {
+        /*this function returns the cart total price before discounts, of a specific user*/
+        return getUserByID(user_ID).getCartTotalPriceBeforeDiscount();
+    }
 }

@@ -1,15 +1,20 @@
 package DomainLayer.User;
 
+import java.util.List;
+import java.util.Map;
+
 public class User {
 
     private int userID;
     private State state;
     private Cart cart;
+    private String address;
 
-    public User(int userID){
+    public User(int userID, String address){
         this.userID = userID;
         this.state = new Guest(); //default state
         this.cart = new Cart();
+        this.address = address;
     }
 
     public int getUserID(){
@@ -69,5 +74,29 @@ public class User {
     public void removeItemFromUserCart(String productName, int storeId)
     {
         cart.removeItemFromCart(productName, storeId);
+    }
+
+    public Map<String, List<Integer>> getCartProductsByStore(int storeId)
+    {
+        return cart.getProductsDetailsByStore(storeId);
+    }
+
+    public List<Integer> getCartStores()
+    {
+        return cart.getCartStores();
+    }
+
+    public boolean isCartEmpty()
+    {
+        return this.cart.isCartEmpty();
+    }
+
+    public String getAddress(){
+        return this.address;
+    }
+
+    public int getCartTotalPriceBeforeDiscount()
+    {
+        return this.cart.getCartPrice();
     }
 }
