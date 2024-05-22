@@ -117,4 +117,9 @@ public class StoreFacade {
         Store store = getStoreByID(store_ID);
         return store.getProducts();
     }
+
+    public int calculateTotalCartPriceAfterDiscount(int store_ID, Map<String, List<Integer>> products, int totalPriceBeforeDiscount)
+    {
+        return 0; //In the future - check discount and calculate price by policies
+    }
 }
