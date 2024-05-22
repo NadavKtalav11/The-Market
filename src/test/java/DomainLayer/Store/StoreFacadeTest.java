@@ -23,14 +23,14 @@ public class StoreFacadeTest {
     @Test
     public void testAddProductToStore() {
         int storeId = storeFacade.openStore();
-        storeFacade.addProductToStore(storeId, "TestProduct", 100, 10);
+        storeFacade.addProductToStore(storeId, "TestProduct", 100, 10, "", " ");
         assertTrue(storeFacade.getStoreProducts(storeId).contains("TestProduct"));
     }
 
     @Test
     public void testRemoveProductFromStore() {
         int storeId = storeFacade.openStore();
-        storeFacade.addProductToStore(storeId, "TestProduct", 100, 10);
+        storeFacade.addProductToStore(storeId, "TestProduct", 100, 10, " ", "");
         storeFacade.removeProductFromStore(storeId, "TestProduct");
         assertFalse(storeFacade.getStoreProducts(storeId).contains("TestProduct"));
     }
@@ -38,8 +38,8 @@ public class StoreFacadeTest {
     @Test
     public void testUpdateProductInStore() {
         int storeId = storeFacade.openStore();
-        storeFacade.addProductToStore(storeId, "TestProduct", 100, 10);
-        storeFacade.updateProductInStore(storeId, "TestProduct", 150, 20);
+        storeFacade.addProductToStore(storeId, "TestProduct", 100, 10, "", "");
+        storeFacade.updateProductInStore(storeId, "TestProduct", 150, 20, "", "");
         Product product = storeFacade.getStoreByID(storeId).getProductByName("TestProduct");
         assertEquals(150, product.getPrice());
         assertEquals(20, product.getQuantity());
@@ -48,14 +48,14 @@ public class StoreFacadeTest {
     @Test
     public void testCheckQuantityAndPolicies() {
         int storeId = storeFacade.openStore();
-        storeFacade.addProductToStore(storeId, "TestProduct", 100, 10);
+        storeFacade.addProductToStore(storeId, "TestProduct", 100, 10,"", "");
         assertDoesNotThrow(() -> storeFacade.checkQuantityAndPolicies("TestProduct", 5, storeId, 123));
     }
 
     @Test
     public void testCalcPrice() {
         int storeId = storeFacade.openStore();
-        storeFacade.addProductToStore(storeId, "TestProduct", 100, 10);
+        storeFacade.addProductToStore(storeId, "TestProduct", 100, 10, "", "");
         assertEquals(500, storeFacade.calcPrice("TestProduct", 5, storeId, 123));
     }
 

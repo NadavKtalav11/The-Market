@@ -46,9 +46,11 @@ public class UserFacade {
     }
 
 
-    public void addUser(){
-        allUsers.put(currentUserID, new User(currentUserID));
+    public int addUser(){
+        int userId = currentUserID;
+        allUsers.put(currentUserID, new User(currentUserID, ""));
         currentUserID++;
+        return userId;
     }
 
 
