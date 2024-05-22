@@ -239,10 +239,10 @@ public class Market {
                     throw new Exception("Store does not exist");
                 }
             } else {
-                throw new IllegalArgumentException("Only store owner get authorizations of his store managers");
+                throw new IllegalArgumentException("Only store owner can get authorizations of his store managers");
             }
         } else{
-            throw new IllegalArgumentException("User is not logged in, so he get the authorizations of his store managers");
+            throw new IllegalArgumentException("User is not logged in, so he can't get the authorizations of his store managers");
         }
         return managersAuthorizations;
 
@@ -330,14 +330,39 @@ public class Market {
                     throw new Exception("Store does not exist");
                 }
             } else {
-                throw new IllegalArgumentException("Only store owner get authorizations of his purchases");
+                throw new IllegalArgumentException("Only store owner can get information of his purchases");
             }
         } else{
-            throw new IllegalArgumentException("User is not logged in, so he get the authorizations of his store managers");
+            throw new IllegalArgumentException("User is not logged in, so he can't get purchase history");
         }
         if (storeReceiptsAndTotalAmount.isEmpty())
             throw new IllegalArgumentException("There are no purchases in the store");
         return storeReceiptsAndTotalAmount;
+    }
+
+    public int checkingCartValidationBeforePurchase(int user_ID) throws Exception {
+        int totalPrice = 0;
+        if(this.userFacade.isUserCartEmpty(user_ID))  //todo: verify if needed
+            throw new Exception("User cart is empty, there's nothing to purchase");
+        else {
+            List<Integer> stores = this.userFacade.getCartStoresByUser(user_ID);
+            for(Integer store_ID: stores)
+            {
+                Map<String, List<Integer>> products = this.userFacade.getCartProductsByStoreAndUser(user_ID, store_ID);
+                int quantity;
+                for(String productName: products.keySet()) {
+                    quantity = products.get(productName).get(0);
+                    if(!this.storeFacade.checkQuantityAndPolicies(productName, quantity, store_ID, user_ID))
+                        throw new Exception("Item is not available or policy conditions are not met");
+                    else if(!this.supplyServicesFacade.checkAvailableExternalSupplyService(this.userFacade.getUserAddress(user_ID)))
+                        throw new Exception("Unfortunately, there is no shipping for the user address");
+                }
+                int storeTotalPriceBeforeDiscount = this.userFacade.getCartPriceByUser(user_ID);
+                int storeTotalPrice = this.storeFacade.calculateTotalCartPriceAfterDiscount(store_ID, products, storeTotalPriceBeforeDiscount);
+                totalPrice += storeTotalPrice;
+            }
+        }
+        return totalPrice;
     }
 
 
