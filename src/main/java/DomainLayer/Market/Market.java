@@ -44,7 +44,6 @@ public class Market {
         if(initialized==true){
             return;
         }
-
         // userFacade.register(username, password)
        // int systemMangerId = userFacade.getByUserName();
        // systemManagerIds.add(systemMangerId);
