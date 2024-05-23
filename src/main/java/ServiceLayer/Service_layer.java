@@ -294,5 +294,63 @@ public class Service_layer {
         }
     }
 
+    public Map<Integer, Integer> marketManagerAskInfo(int user_ID)
+    {
+        logger.info("Market manager tries to get info about purchases in the market");
+
+        Map<Integer, Integer> marketPurchases = null;
+        try {
+            marketPurchases = market.marketManagerAskInfo(user_ID);
+        } catch (Exception e) {
+            logger.error("Error occurred during the request of the market manager getting the purchase information: {}", e.getMessage(), e);
+        }
+
+        return marketPurchases;
+    }
+
+    public Map<Integer, Integer> storeOwnerGetInfoAboutStore(int user_ID, int store_ID) throws Exception //return receiptId and total amount in the receipt for the specific store
+    {
+        logger.info("Store owner tries to get info about purchases in the store");
+
+        Map<Integer, Integer> storePurchases = null;
+        try {
+            storePurchases = market.storeOwnerGetInfoAboutStore(user_ID, store_ID);
+        } catch (Exception e) {
+            logger.error("Error occurred during the request of the store owner getting the purchase information: {}", e.getMessage(), e);
+        }
+
+        return storePurchases;
+    }
+
+    public List<String> inStoreProductFilter(String categoryStr, List<String> keywords, int minPrice, int maxPrice, Double productMinRating, int storeId, List<String> productsFromSearch, Double storeMinRating)
+    {
+        logger.info("Starting in-store product search filter in the system.");
+
+        List<String> filteredProductNames = null;
+
+        try {
+            filteredProductNames = market.inStoreProductFilter(categoryStr, keywords, minPrice, maxPrice, productMinRating, storeId, productsFromSearch, storeMinRating);
+        } catch (Exception e) {
+            logger.error("Error occurred during the in-store product search filter: {}", e.getMessage(), e);
+        }
+
+        return filteredProductNames;
+    }
+
+    public List<String> inStoreProductSearch(String productName, String categoryStr, List<String> keywords, int storeId)
+    {
+        logger.info("Starting in-store product search in the system.");
+
+        List<String> filteredProductNames = null;
+
+        try {
+            filteredProductNames = market.inStoreProductSearch(productName, categoryStr, keywords, storeId);
+        } catch (Exception e) {
+            logger.error("Error occurred during the in-store product search: {}", e.getMessage(), e);
+        }
+
+        return filteredProductNames;
+    }
+
 
 }
