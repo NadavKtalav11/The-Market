@@ -51,6 +51,11 @@ public class TokensService {
             return tokens.get(userId);
         }
     }
+    public void removeToken(int userId){
+        synchronized (tokensLock){
+            tokens.remove(userId);
+        }
+    }
 
     public int getUserId(String token) {
         Claims claims = Jwts.parser().setSigningKey(SECRET_KEY).build().parseClaimsJws(token).getBody();

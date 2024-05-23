@@ -18,7 +18,7 @@ public class SupplyServicesFacade {
     }
 
 
-    public static SupplyServicesFacade getInstance() {
+    public synchronized static SupplyServicesFacade getInstance() {
         if (supplyServicesFacade == null) {
             supplyServicesFacade = new SupplyServicesFacade();
         }
