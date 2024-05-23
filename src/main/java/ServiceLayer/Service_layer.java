@@ -182,19 +182,6 @@ public class Service_layer {
         return totalPrice;
     }
 
-    public int checkingCartValidationBeforePurchase(int user_ID)
-    {
-        logger.info("Starting cart validation and price calculation before purchase.");
-
-        int totalPrice = 0;
-        try {
-            totalPrice = market.checkingCartValidationBeforePurchase(user_ID);
-        } catch (Exception e) {
-            logger.error("Error occurred during the validation of the cart: {}", e.getMessage(), e);
-        }
-
-        return totalPrice;
-    }
 
     public List<Integer> getInformationAboutStores(int user_ID)
     {
@@ -273,4 +260,28 @@ public class Service_layer {
             logger.error("Error occurred during store owner was trying to open a store: {}", e.getMessage(), e);
         }
     }
+
+    public void addProductToBasket(String productName, int quantity, int storeId, int userId)
+    {
+        logger.info("User try to add a new product to his basket");
+
+        try {
+            market.addProductToBasket(productName, quantity, storeId, userId);
+        } catch (Exception e) {
+            logger.error("Error occurred during adding new product to the basket: {}", e.getMessage(), e);
+        }
+    }
+
+    public void removeProductFromBasket(String productName, int storeId, int userId)
+    {
+        logger.info("User try to remove a product from his basket");
+
+        try {
+            market.removeProductFromBasket(productName, storeId, userId);
+        } catch (Exception e) {
+            logger.error("Error occurred during removing a product from the basket: {}", e.getMessage(), e);
+        }
+    }
+
+
 }
