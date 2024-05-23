@@ -13,9 +13,11 @@ public class TokensService {
     private static final String SECRET_KEY = "your-256-bit-secret"; // Use a strong secret key
     private static final long TOKEN_VALIDITY_DURATION = 3600 * 1000; // 1 hour in milliseconds
     private Map<Integer , String > tokens ;
+    private Object tokensLock;
 
     public TokensService() {
         tokens = new HashMap<>();
+        tokensLock = new Object();
         // Constructor
     }
 
@@ -28,7 +30,9 @@ public class TokensService {
                 .setExpiration(expiryDate)
                 .signWith(SignatureAlgorithm.HS256, SECRET_KEY)
                 .compact();
-        tokens.put(userId, currToken);
+        synchronized (tokensLock) {
+            tokens.put(userId, currToken);
+        }
         return currToken;
     }
 
@@ -43,7 +47,9 @@ public class TokensService {
     }
 
     public String getToken(int userId){
-        return tokens.get(userId);
+        synchronized (tokensLock) {
+            return tokens.get(userId);
+        }
     }
 
     public int getUserId(String token) {
