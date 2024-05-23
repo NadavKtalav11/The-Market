@@ -1,5 +1,6 @@
 package DomainLayer.Market;
 
+import DomainLayer.AuthorizationsAndSecurity.AuthorizationAndSecurityFacade;
 import DomainLayer.PaymentServices.PaymentServicesFacade;
 import DomainLayer.Role.RoleFacade;
 import DomainLayer.Store.StoreFacade;
@@ -18,6 +19,7 @@ public class Market {
     private PaymentServicesFacade paymentServicesFacade;
     private SupplyServicesFacade supplyServicesFacade;
     private Set<Integer> systemManagerIds;
+    private AuthorizationAndSecurityFacade authorizationAndSecurityFacade;
     private StoreFacade storeFacade;
     private UserFacade userFacade;
     private RoleFacade roleFacade;
@@ -37,6 +39,7 @@ public class Market {
          this.userFacade = UserFacade.getInstance();
           this.roleFacade = RoleFacade.getInstance();
           this.paymentServicesFacade = PaymentServicesFacade.getInstance();
+          this.authorizationAndSecurityFacade = AuthorizationAndSecurityFacade.getInstance();
     }
 
     public void init(String userName, String password, int licensedDealerNumber,
@@ -64,24 +67,27 @@ public class Market {
         userFacade.getUserByID(memberID).Logout();
     }
 
-    public void Exit(int userID){
-        userFacade.Exit(userID);
+    public void exitMarketSystem(int userID){
+        userFacade.exitMarketSystem(userID);
     }
 
-    public void Register(int userID,String username, String password, String birthday, String address) throws Exception {
-        userFacade.Register(userID, username,password,birthday,address);
+
+    public void enterMarketSystem(){
+
+        int userId = userFacade.addUser();
+        authorizationAndSecurityFacade.generateToken(userId);
+    }
+    public void register(int userID,String username, String password, String birthday, String address) throws Exception {
+        authorizationAndSecurityFacade.validateToken(authorizationAndSecurityFacade.getToken(userID));
+        //check validation
+        String encryptedPassword = authorizationAndSecurityFacade.encodePassword(password);
+        userFacade.register(userID, username,encryptedPassword,birthday,address);
+
     }
 
     public void Login(int userID,String username, String password) throws Exception {
-        userFacade.Login(userID, username,password);
-    }
-
-    public void addProductToStore(int memberID, int storeID, String productName, int price, int quantity) throws Exception {
-        if (roleFacade.verifyStoreOwner(storeID, memberID)) {
-            storeFacade.addProductToStore(storeID, productName, price, quantity);
-        } else {
-            throw new Exception("Only store owner can add product to store");
-        }
+        String encryptedPassword = authorizationAndSecurityFacade.encodePassword(password);
+        userFacade.Login(userID, username,encryptedPassword);
     }
 
     public void addProductToBasket(String productName, int quantity, int storeId, int userId)
@@ -122,23 +128,39 @@ public class Market {
         }
     }
 
+    public void addProductToStore(int memberID, int storeID, String productName, int price, int quantity,
+                                                        String description, String categoryStr) throws Exception {
+        if (roleFacade.verifyStoreOwner(storeID, memberID) ||
+                (roleFacade.verifyStoreManager(storeID, memberID) &&
+                        roleFacade.managerHasInventoryPermissions(memberID, storeID))) {
+            storeFacade.addProductToStore(storeID, productName, price, quantity, description, categoryStr);
+        } else {
+            throw new Exception("User has no inventory permissions");
+        }
+    }
+
     public void removeProductFromStore(int memberID, int storeID, String productName) throws Exception {
-        if (roleFacade.verifyStoreOwner(storeID, memberID)) {
+        if (roleFacade.verifyStoreOwner(storeID, memberID) ||
+                (roleFacade.verifyStoreManager(storeID, memberID) &&
+                        roleFacade.managerHasInventoryPermissions(memberID, storeID))) {
             storeFacade.removeProductFromStore(storeID, productName);
         } else {
-            throw new Exception("Only store owner can remove product from store");
+            throw new Exception("User has no inventory permissions");
         }
     }
 
-    public void updateProductInStore(int memberID, int storeID, String productName, int price, int quantity) throws Exception {
-        if (roleFacade.verifyStoreOwner(storeID, memberID)) {
-            storeFacade.updateProductInStore(storeID, productName, price, quantity);
+    public void updateProductInStore(int memberID, int storeID, String productName, int price, int quantity,
+                                                        String description, String categoryStr) throws Exception {
+        if (roleFacade.verifyStoreOwner(storeID, memberID) ||
+                (roleFacade.verifyStoreManager(storeID, memberID) &&
+                        roleFacade.managerHasInventoryPermissions(memberID, storeID))) {
+            storeFacade.updateProductInStore(storeID, productName, price, quantity, description, categoryStr);
         } else {
-            throw new Exception("Only store owner can update product in store");
+            throw new Exception("User has no inventory permissions");
         }
     }
 
-    public void AppointStoreOwner(int firstMemberID, int secondMemberID, int storeID) throws Exception {
+    public void appointStoreOwner(int firstMemberID, int secondMemberID, int storeID) throws Exception {
         if (roleFacade.verifyStoreOwner(storeID, firstMemberID)) {
             if (!roleFacade.verifyStoreOwner(storeID, secondMemberID)) {
                 roleFacade.createStoreOwner(secondMemberID, storeID, false);
@@ -150,7 +172,7 @@ public class Market {
         }
     }
 
-    public void AppointStoreManager(int firstMemberID, int secondMemberID, int storeID,
+    public void appointStoreManager(int firstMemberID, int secondMemberID, int storeID,
                                     boolean inventoryPermissions, boolean purchasePermissions) throws Exception {
         if (roleFacade.verifyStoreOwner(storeID, firstMemberID)) {
             if (!roleFacade.verifyStoreManager(storeID, secondMemberID)) {
@@ -163,8 +185,8 @@ public class Market {
         }
     }
 
-    public void UpdateStoreManagerPermissions(int firstMemberID, int secondMemberID, int storeID,
-                                              boolean inventoryPermissions, boolean purchasePermissions) throws Exception {
+    public void updateStoreManagerPermissions(int firstMemberID, int secondMemberID, int storeID,
+                                    boolean inventoryPermissions, boolean purchasePermissions) throws Exception {
         if (roleFacade.verifyStoreOwner(storeID, firstMemberID)) {
             if (roleFacade.verifyStoreManager(storeID, secondMemberID)) {
                 roleFacade.updateStoreManagerPermissions(secondMemberID, storeID, inventoryPermissions, purchasePermissions);
@@ -230,10 +252,10 @@ public class Market {
                     throw new Exception("Store does not exist");
                 }
             } else {
-                throw new IllegalArgumentException("Only store owner get authorizations of his store managers");
+                throw new IllegalArgumentException("Only store owner can get authorizations of his store managers");
             }
         } else{
-            throw new IllegalArgumentException("User is not logged in, so he get the authorizations of his store managers");
+            throw new IllegalArgumentException("User is not logged in, so he can't get the authorizations of his store managers");
         }
         return managersAuthorizations;
 
@@ -273,15 +295,20 @@ public class Market {
 
     public void modifyShoppingCart(String productName, int quantity, int storeId, int userId)
     {
-        boolean canModify = storeFacade.checkQuantityAndPolicies(productName, quantity, storeId, userId);
-        if (canModify)
-        {
-            int totalPrice = storeFacade.calcPrice(productName, quantity, storeId, userId);
-            userFacade.modifyBasketProduct(productName, quantity, storeId, userId, totalPrice);
-        }
+        if (quantity == 0)
+            removeProductFromBasket(productName, storeId, userId);
         else
         {
-            throw new IllegalArgumentException("The product you try to add doesn't meet the store policies");
+            boolean canModify = storeFacade.checkQuantityAndPolicies(productName, quantity, storeId, userId);
+            if (canModify)
+            {
+                int totalPrice = storeFacade.calcPrice(productName, quantity, storeId, userId);
+                userFacade.modifyBasketProduct(productName, quantity, storeId, userId, totalPrice);
+            }
+            else
+            {
+                throw new IllegalArgumentException("The product you try to add doesn't meet the store policies");
+            }
         }
     }
 
@@ -316,13 +343,104 @@ public class Market {
                     throw new Exception("Store does not exist");
                 }
             } else {
-                throw new IllegalArgumentException("Only store owner get authorizations of his purchases");
+                throw new IllegalArgumentException("Only store owner can get information of his purchases");
             }
         } else{
-            throw new IllegalArgumentException("User is not logged in, so he get the authorizations of his store managers");
+            throw new IllegalArgumentException("User is not logged in, so he can't get purchase history");
         }
         if (storeReceiptsAndTotalAmount.isEmpty())
             throw new IllegalArgumentException("There are no purchases in the store");
         return storeReceiptsAndTotalAmount;
+    }
+
+    public int checkingCartValidationBeforePurchase(int user_ID) throws Exception {
+        int totalPrice = 0;
+        if(this.userFacade.isUserCartEmpty(user_ID))  //todo: verify if needed
+            throw new Exception("User cart is empty, there's nothing to purchase");
+        else {
+            List<Integer> stores = this.userFacade.getCartStoresByUser(user_ID);
+            for(Integer store_ID: stores)
+            {
+                Map<String, List<Integer>> products = this.userFacade.getCartProductsByStoreAndUser(user_ID, store_ID);
+                int quantity;
+                for(String productName: products.keySet()) {
+                    quantity = products.get(productName).get(0);
+                    if(!this.storeFacade.checkQuantityAndPolicies(productName, quantity, store_ID, user_ID))
+                        throw new Exception("Item is not available or policy conditions are not met");
+                    else if(!this.supplyServicesFacade.checkAvailableExternalSupplyService(this.userFacade.getUserAddress(user_ID), null))
+                        throw new Exception("Unfortunately, there is no shipping for the user address");
+                }
+                int storeTotalPriceBeforeDiscount = this.userFacade.getCartPriceByUser(user_ID);
+                int storeTotalPrice = this.storeFacade.calculateTotalCartPriceAfterDiscount(store_ID, products, storeTotalPriceBeforeDiscount);
+                totalPrice += storeTotalPrice;
+            }
+        }
+        return totalPrice;
+    }
+
+
+    public List<String> inStoreProductSearch(String productName, String categoryStr, List<String> keywords, int storeId) {
+        List<String> filteredProductNames;
+        if (categoryStr != null)
+            storeFacade.checkCategory(categoryStr);
+
+        if (storeFacade.verifyStoreExist(storeId))
+        {
+            if (categoryStr != null)
+                storeFacade.checkProductExistInStore(productName, storeId);
+            filteredProductNames = storeFacade.inStoreProductSearch(productName, categoryStr, keywords, storeId);
+        }
+        else
+            throw new IllegalArgumentException("The store you try to search in doesnt exist.");
+
+        return filteredProductNames;
+    }
+
+    public List<String> generalProductSearch(String productName, String categoryStr, List<String> keywords) {
+        List<String> filteredProductNames = new ArrayList<>();
+
+        List<Integer> stores = this.storeFacade.getStores();
+        for(Integer store_ID: stores)
+        {
+            filteredProductNames.addAll(inStoreProductSearch(productName, categoryStr, keywords,store_ID));
+        }
+        return filteredProductNames;
+    }
+
+        public List<String> inStoreProductFilter(String categoryStr, List<String> keywords, int minPrice, int maxPrice, Double productMinRating, int storeId, List<String> productsFromSearch, Double storeMinRating) {
+        List<String> filteredProductNames = null;
+        if (minPrice <= maxPrice)
+        {
+            if(storeMinRating <= 5 && storeMinRating >= 0) {
+                if (productMinRating <= 5 && productMinRating >= 0) {
+                    if (categoryStr != null)
+                        storeFacade.checkCategory(categoryStr);
+                    if (storeFacade.verifyStoreExist(storeId)) {
+                        filteredProductNames = storeFacade.inStoreProductFilter(categoryStr, keywords, minPrice, maxPrice, productMinRating, storeId, productsFromSearch, storeMinRating);
+                    } else
+                        throw new IllegalArgumentException("The store you try to search in doesnt exist.");
+                } else
+                    throw new IllegalArgumentException("The rating you entered is invalid");
+            }
+        }
+        else
+            throw new IllegalArgumentException("The price range you entered is invalid");
+
+        return filteredProductNames;
+    }
+
+    public List<String> generalProductFilter(String categoryStr, List<String> keywords, int minPrice, int maxPrice, Double productMinRating, List<String> productsFromSearch, Double storeMinRating) {
+        List<String> filteredProductNames = new ArrayList<>();
+
+        List<Integer> stores = this.storeFacade.getStores();
+        for(Integer store_ID: stores)
+        {
+            filteredProductNames.addAll(inStoreProductFilter(categoryStr, keywords, minPrice, maxPrice, productMinRating, store_ID, productsFromSearch, storeMinRating));
+        }
+        return filteredProductNames;
+    }
+
+    public boolean isInitialized() {
+        return initialized;
     }
 }
