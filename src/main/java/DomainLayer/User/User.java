@@ -1,5 +1,6 @@
 package DomainLayer.User;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -11,7 +12,9 @@ public class User {
     private String country;
     private String city;
     private String address;
+    private String name;
     private Cart cart;
+    private Map<Integer,Integer> paymentServiceIDReceiptID;
 
     public User(int userID, String country, String city,String address){
         this.userID = userID;
@@ -22,6 +25,7 @@ public class User {
         this.address = address;
         this.city = city;
         this.country = country;
+        this.paymentServiceIDReceiptID = new HashMap<>();
     }
 
     public int getUserID(){
@@ -31,6 +35,14 @@ public class User {
     public void setState(State state) {
         this.state = state;
     }
+
+    public String getCountry(){
+        return this.country;
+    }
+
+    public String getName(){return this.name;}
+
+    public String getCity(){return this.city;}
 
     public boolean isMember(){ return this.state.isMember();}
 

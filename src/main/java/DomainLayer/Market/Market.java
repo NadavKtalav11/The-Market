@@ -64,16 +64,16 @@ public class Market {
         }
     }
 
-    public void payWithExternalPaymentService(int price, int cvv, int month, int year, String holderID, int Userid) {
-
-        // int reciptNumber = paymentServicesFacade.getService().paywithcard;
-        //if (reciptNumber==-1){
-        //List<Integer> stores = this.userFacade.getCartStoresByUser(user_ID);
-        // returnStock(getPuchaseList())
-        //print (purchsde successed)
-
-
-
+    public void payWithExternalPaymentService(int price,int creditCard, int cvv, int month, int year, String holderID, int userId) {
+        try {
+            //Map<Integer,Integer> receiptNumber = paymentServicesFacade.paywithcard(price, creditCard, cvv,month,year,holderID,getPurchaseList(userId));
+            //todo add this to the map of the user.
+            //print (purchsde successed)
+        }
+        catch (Exception e){
+            //List<Integer> stores = this.userFacade.getCartStoresByUser(user_ID);
+            // returnStock(getPuchaseList(userId))
+        }
     }
 
     public void returnStock(Map<Integer, Map<String, Integer>> products){
@@ -401,13 +401,18 @@ public class Market {
             {
                 Map<String, List<Integer>> products = this.userFacade.getCartProductsByStoreAndUser(user_ID, store_ID);
                 int quantity;
+                String country = this.userFacade.getUserByID(user_ID).getCountry();
+                String city = this.userFacade.getUserByID(user_ID).getCity();
+                String address = this.userFacade.getUserAddress(user_ID);
                 for(String productName: products.keySet()) {
                     quantity = products.get(productName).get(0);
                     if(!this.storeFacade.checkQuantityAndPolicies(productName, quantity, store_ID, user_ID))
                         throw new Exception("Item is not available or policy conditions are not met");
-                    else if(!this.supplyServicesFacade.checkAvailableExternalSupplyService(this.userFacade.getUserAddress(user_ID), null))
-                        throw new Exception("Unfortunately, there is no shipping for the user address");
+                    //todo remove comment after david
+                    //else if(!this.supplyServicesFacade.checkAvailableExternalSupplyService(country,city))
+                    //    throw new Exception("Unfortunately, there is no shipping for the user address");
                     //todo remove items from stock
+                    //supplyServicesFacade.shiftingDetails(country,city,address, this.userFacade.getUserByID(user_ID).getName());
                 }
                 int storeTotalPriceBeforeDiscount = this.userFacade.getCartPriceByUser(user_ID);
                 int storeTotalPrice = this.storeFacade.calculateTotalCartPriceAfterDiscount(store_ID, products, storeTotalPriceBeforeDiscount);

@@ -8,8 +8,9 @@ import java.util.Map;
 
 public class PaymentServicesFacade {
     private static PaymentServicesFacade paymentServicesFacadeInstance;
-   private Map<Integer, ExternalPaymentService>  allPaymentServices = new HashMap<Integer, ExternalPaymentService>();
-   private Map<Integer, Receipt> IdAndReceipt = new HashMap<>();
+    private Map<Integer, ExternalPaymentService>  allPaymentServices = new HashMap<Integer, ExternalPaymentService>();
+    private Map<Integer, Receipt> IdAndReceipt = new HashMap<>();
+
 
 
     public static PaymentServicesFacade getInstance() {
