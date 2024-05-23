@@ -65,7 +65,7 @@ public class UserFacade {
             userId = currentUserID;
         }
         synchronized (allUserLock) {
-            allUsers.put(currentUserID, new User(currentUserID, ""));
+            allUsers.put(currentUserID, new User(currentUserID, "", "", ""));
         }
         synchronized (userIdLock) {
             currentUserID++;

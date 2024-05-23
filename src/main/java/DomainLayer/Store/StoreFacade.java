@@ -19,6 +19,10 @@ public class StoreFacade {
         return storeFacadeInstance;
     }
 
+    public void returnProductToStore(Map<String, Integer> products , int storeId){
+        getStoreByID(storeId).returnProductToStore(products);
+    }
+
     public Store getStoreByID(int storeID){
         return allStores.get(storeID);
     }

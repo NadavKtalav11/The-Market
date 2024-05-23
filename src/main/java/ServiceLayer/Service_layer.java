@@ -30,10 +30,10 @@ public class Service_layer {
 
     }
 
-    public void payWithExternalPaymentService() {
+    public void payWithExternalPaymentService(int price, int cvv, int month, int year, String holderID, int userID) {
         logger.info("Reaching for the payment service in order to complete the purchase.");
         try {
-            market.payWithExternalPaymentService();
+            market.payWithExternalPaymentService( price,  cvv,  month,  year,  holderID,  userID);
         } catch (Exception e) {
             logger.error("Error occurred with the payment service company: {}", e.getMessage(), e);
         }

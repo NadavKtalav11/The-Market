@@ -65,5 +65,9 @@ public class Product {
         return this.description;
     }
 
+    public void addToStock(int amount){
+        this.quantity = quantity+amount;
+    }
+
 
 }

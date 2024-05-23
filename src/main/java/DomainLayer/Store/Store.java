@@ -19,6 +19,13 @@ public class Store {
         this.isOpened = true;
     }
 
+
+    public void returnProductToStore(Map<String, Integer> products){
+        for (String product : products.keySet()){
+            storeProducts.get(product).addToStock(products.get(product));
+        }
+    }
+
     public int getStoreID()
     {
         return store_ID;
