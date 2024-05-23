@@ -20,10 +20,6 @@ public class StoreOwner implements Role{
 
     @Override
     public int getMember_ID() {
-        return 0;
-    }
-
-    public int getUsername() {
         return this.member_ID;
     }
 

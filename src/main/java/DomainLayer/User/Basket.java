@@ -7,7 +7,7 @@ import java.util.Map;
 
 public class Basket {
     private final int storeId;
-    Map<String, List<Integer>> products = new HashMap<>();
+    Map<String, List<Integer>> products = new HashMap<>(); //key = product name, value = [quantity, products total price]
     int basketPrice;
 
     public Basket(int storeId) {
@@ -15,7 +15,7 @@ public class Basket {
         this.basketPrice = 0;
     }
 
-    public int getId()
+    public int getStoreId()
     {
         return this.storeId;
     }
@@ -30,6 +30,10 @@ public class Basket {
         this.basketPrice = price;
     }
 
+    public Map<String, List<Integer>> getProducts()
+    {
+        return products;
+    }
 
     public void addProduct(String productName, int quantity, int totalPrice)
     {
@@ -37,6 +41,18 @@ public class Basket {
         quantityAndPrice.add(quantity);
         quantityAndPrice.add(totalPrice);
         products.put(productName, quantityAndPrice);
+    }
+
+    public void modifyProduct(String productName, int quantity, int totalPrice)
+    {
+        if (!products.containsKey(productName))
+        {
+            throw new IllegalArgumentException("The item you try to edit is not in your basket. Please add the item before attempting to modify it.");
+        }
+
+        List<Integer> quantityAndPrice = products.get(productName);
+        quantityAndPrice.set(0, quantity);
+        quantityAndPrice.set(1, totalPrice);
     }
 
     public void calcBasketPrice()
@@ -60,4 +76,8 @@ public class Basket {
         products.remove(productName);
     }
 
+    public boolean isBasketEmpty()
+    {
+        return products.isEmpty();
+    }
 }

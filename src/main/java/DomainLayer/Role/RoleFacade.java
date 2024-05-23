@@ -10,6 +10,7 @@ public class RoleFacade {
     private static RoleFacade roleFacadeInstance;
     private List<StoreOwner> storeOwnersList;  //todo: move this to repository
     private List<StoreManager> storeManagerList;
+    private List<SystemManager> systemManagers;
 
     private RoleFacade()
     {
@@ -52,22 +53,6 @@ public class RoleFacade {
             }
         }
         return null;
-    }
-
-    public List<Integer> getAllStoreRoles(int storeID)
-    {
-        List<Integer> rolesList = new ArrayList<>();
-        for (StoreOwner storeOwner : storeOwnersList)
-        {
-            if (storeOwner.getStore_ID() == storeID)
-                rolesList.add(storeOwner.getMember_ID());
-        }
-        for (StoreManager storeManager: storeManagerList)
-        {
-            if(storeManager.getStore_ID() == storeID)
-                rolesList.add(storeManager.getMember_ID());
-        }
-        return rolesList;
     }
 
     public boolean verifyStoreOwnerIsFounder(int storeID, int memberID){
@@ -163,5 +148,34 @@ public class RoleFacade {
                 storeOwners.add(storeOwner.getMember_ID());
         }
         return storeOwners;
+    }
+
+
+    public List<Integer> getStoresByOwner(List<Integer> stores, int member_ID)
+    {
+        /*this function gets list of stores id and member id, and return only stores id in which the member is owner*/
+
+        List<Integer> storesOwned = null;
+
+        for(Integer storeID: stores)
+        {
+            if(verifyStoreOwner(storeID, member_ID))
+                storesOwned.add(storeID);
+        }
+        return storesOwned;
+    }
+
+    public void getStoresByOwners(List<StoreOwner> storeOwnersList) {
+        this.storeOwnersList = storeOwnersList;
+    }
+
+    public boolean verifyMemberIsSystemManager(int member_ID)
+    {
+        for (SystemManager systemManager : systemManagers)
+        {
+            if (systemManager.getMember_ID() == member_ID)
+                return true;
+        }
+        return false;
     }
 }

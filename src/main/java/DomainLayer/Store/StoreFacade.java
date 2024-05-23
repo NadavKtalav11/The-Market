@@ -1,9 +1,6 @@
 package DomainLayer.Store;
 
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class StoreFacade {
     private static StoreFacade storeFacadeInstance;
@@ -37,12 +34,27 @@ public class StoreFacade {
     public boolean checkQuantityAndPolicies(String productName, int quantity, int storeId, int userId)
     {
         Store store = getStoreByID(storeId);
-        if (!store.checkProductQuantity(productName, quantity))
+        if (!store.checkProductExists(productName))
         {
             throw new IllegalArgumentException("The product you try to add isn't in the store");
         }
 
+        if (!store.checkProductQuantity(productName, quantity))
+        {
+            throw new IllegalArgumentException("The quantity you entered isn't available in the store");
+        }
+
         //Check here all policies
+        if (!store.checkPurchasePolicy(userId, productName))
+        {
+            throw new IllegalArgumentException("The product doesnt meet the store purchase policy");
+        }
+
+        if (!store.checkDiscountPolicy(userId, productName))
+        {
+            throw new IllegalArgumentException("The product doesnt meet the store discount policy");
+        }
+
         return true;
     }
 
@@ -53,16 +65,18 @@ public class StoreFacade {
     }
 
 
-    public void addProductToStore(int storeID, String productName, int price, int quantity){
-        allStores.get(storeID).addProduct(productName, price, quantity);
+    public void addProductToStore(int storeID, String productName, int price, int quantity,
+                                                                String description, String categoryStr){
+        allStores.get(storeID).addProduct(productName, price, quantity, description, categoryStr);
     }
 
     public void removeProductFromStore(int storeID, String productName){
         allStores.get(storeID).removeProduct(productName);
     }
 
-    public void updateProductInStore(int storeID, String productName, int price, int quantity){
-        allStores.get(storeID).updateProduct(productName, price, quantity);
+    public void updateProductInStore(int storeID, String productName, int price, int quantity,
+                                                                String description, String categoryStr){
+        allStores.get(storeID).updateProduct(productName, price, quantity, description, categoryStr);
     }
 
     public boolean verifyStoreExist(int storeID)
@@ -75,4 +89,72 @@ public class StoreFacade {
         Store storeToClose = this.getStoreByID(store_ID);
         storeToClose.closeStore();
     }
+
+    public List<Integer> getInformationAboutOpenStores()
+    {
+        List<Integer> openStoreInformation = new ArrayList<>();
+        for (Map.Entry<Integer, Store> entry : allStores.entrySet()) {
+            int storeId = entry.getKey();
+            Store store = entry.getValue();
+            if(store.getIsOpened())
+                openStoreInformation.add(storeId);
+        }
+        return openStoreInformation;
+    }
+
+    public List<Integer> getInformationAboutClosedStores()
+    {
+        List<Integer> closedStoreInformation = new ArrayList<>();
+        for (Map.Entry<Integer, Store> entry : allStores.entrySet()) {
+            int storeId = entry.getKey();
+            Store store = entry.getValue();
+            if(!store.getIsOpened())
+                closedStoreInformation.add(storeId);
+        }
+        return closedStoreInformation;
+    }
+
+    public List<String> getStoreProducts(int store_ID)
+    {
+        Store store = getStoreByID(store_ID);
+        return store.getProducts();
+    }
+
+    public int calculateTotalCartPriceAfterDiscount(int store_ID, Map<String, List<Integer>> products, int totalPriceBeforeDiscount) {
+        return 0; //In the future - check discount and calculate price by policies
+    }
+    public List<String> inStoreProductSearch(String productName, String categoryStr, List<String> keywords, int storeId)
+    {
+        Store storeToSearchIn = getStoreByID(storeId);
+        List<String> filteredProducts = storeToSearchIn.matchProducts(productName, categoryStr, keywords);
+        return filteredProducts;
+    }
+
+    public List<String> inStoreProductFilter(String categoryStr, List<String> keywords, Integer minPrice, Integer maxPrice, Double minRating, Integer storeId, List<String> productsFromSearch, Double storeMinRating)
+    {
+        Store storeToSearchIn = getStoreByID(storeId);
+        List<String> filteredProducts = storeToSearchIn.filterProducts(categoryStr, keywords, minPrice, maxPrice, minRating, productsFromSearch, storeMinRating);
+        return filteredProducts;
+    }
+
+    public void checkCategory(String categoryStr)
+    {
+        if (Category.fromString(categoryStr) == null)
+            throw new IllegalArgumentException("The category you entered doesn't exist.");
+    }
+
+    public void checkProductExistInStore(String productName, int storeId)
+    {
+        Store store = getStoreByID(storeId);
+        if (!store.checkProductExists(productName))
+        {
+            throw new IllegalArgumentException("The product you try to add isn't in the store");
+        }
+    }
+
+    public List<Integer> getStores()
+    {
+        return new ArrayList<>(this.allStores.keySet());
+    }
+
 }
