@@ -8,16 +8,20 @@ public class User {
     private int userID;
     private State state;
     private String birthday;
+    private String country;
+    private String city;
     private String address;
     private Cart cart;
 
-    public User(int userID, String address){
+    public User(int userID, String country, String city,String address){
         this.userID = userID;
         this.birthday = null;
-        this.address = null;
+        //this.address = null;
         this.state = new Guest(); //default state
         this.cart = new Cart();
         this.address = address;
+        this.city = city;
+        this.country = country;
     }
 
     public int getUserID(){
