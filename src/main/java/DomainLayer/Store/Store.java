@@ -29,6 +29,13 @@ public class Store {
         isOpenedLock = new Object();
     }
 
+
+    public void returnProductToStore(Map<String, Integer> products){
+        for (String product : products.keySet()){
+            storeProducts.get(product).addToStock(products.get(product));
+        }
+    }
+
     public int getStoreID()
     {
         synchronized (storeIdLock) {

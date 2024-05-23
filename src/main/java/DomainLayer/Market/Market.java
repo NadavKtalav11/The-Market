@@ -7,6 +7,7 @@ import DomainLayer.Store.StoreFacade;
 import DomainLayer.User.UserFacade;
 import DomainLayer.SupplyServices.SupplyServicesFacade;
 
+import javax.swing.event.ListDataEvent;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -63,9 +64,22 @@ public class Market {
         }
     }
 
-    public boolean payWithExternalPaymentService() {
-        //HashMap<Integer, Integer>  productIdAndAmount= userFacade.payWithExternalPaymentService(userId);
-        return true;
+    public void payWithExternalPaymentService(int price, int cvv, int month, int year, String holderID, int Userid) {
+
+        // int reciptNumber = paymentServicesFacade.getService().paywithcard;
+        //if (reciptNumber==-1){
+        //List<Integer> stores = this.userFacade.getCartStoresByUser(user_ID);
+        // returnStock(getPuchaseList())
+        //print (purchsde successed)
+
+
+
+    }
+
+    public void returnStock(Map<Integer, Map<String, Integer>> products){
+        for (Integer storeId: products.keySet()){
+            storeFacade.returnProductToStore(products.get(storeId), storeId);
+        }
     }
 
     public void logout(int memberID){
@@ -328,7 +342,26 @@ public class Market {
 
     }
 
+<<<<<<< HEAD
     public List<Integer> getInformationAboutStores(int user_ID)throws Exception
+=======
+    public Map<Integer, Map<String, Integer>> getPurchaseList(int userId){
+        Map<Integer, Map<String, Integer>> purchaseList = new HashMap<>();
+        List<Integer> usersStores = userFacade.getCartStoresByUser(userId);
+        for (Integer storeId: usersStores) {
+            Map<String, Integer> productAndQuantity = new HashMap<>();
+            purchaseList.put(storeId, productAndQuantity) ;
+            Map <String, List<Integer>> returnedMap = userFacade.getCartProductsByStoreAndUser(storeId , userId);
+            for (String productName : returnedMap.keySet()){
+                productAndQuantity.put(productName,returnedMap.get(productName).get(0) );
+            }
+
+        }
+        return purchaseList;
+    }
+
+    public List<Integer> getInformationAboutStores(int user_ID)
+>>>>>>> c2f558b46d290c4bab2c567f950d40748d6cc37f
     {
         boolean succeeded=  authorizationAndSecurityFacade.validateToken(authorizationAndSecurityFacade.getToken(user_ID));
         if (!succeeded){
@@ -417,6 +450,8 @@ public class Market {
         }
     }
 
+
+
     public Map<Integer, Integer> storeOwnerGetInfoAboutStore(int user_ID, int store_ID) throws Exception //return receiptId and total amount in the receipt for the specific store
     {
         boolean succeeded=  authorizationAndSecurityFacade.validateToken(authorizationAndSecurityFacade.getToken(user_ID));
@@ -466,6 +501,7 @@ public class Market {
                         throw new Exception("Item is not available or policy conditions are not met");
                     else if(!this.supplyServicesFacade.checkAvailableExternalSupplyService(this.userFacade.getUserAddress(user_ID), null))
                         throw new Exception("Unfortunately, there is no shipping for the user address");
+                    //todo remove items from stock
                 }
                 int storeTotalPriceBeforeDiscount = this.userFacade.getCartPriceByUser(user_ID);
                 int storeTotalPrice = this.storeFacade.calculateTotalCartPriceAfterDiscount(store_ID, products, storeTotalPriceBeforeDiscount);
