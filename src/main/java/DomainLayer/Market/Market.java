@@ -18,12 +18,13 @@ public class Market {
     private static Market MarketInstance;
     private PaymentServicesFacade paymentServicesFacade;
     private SupplyServicesFacade supplyServicesFacade;
-    private Set<Integer> systemManagerIds;
+    //private Set<Integer> systemManagerIds;
     private AuthorizationAndSecurityFacade authorizationAndSecurityFacade;
     private StoreFacade storeFacade;
     private UserFacade userFacade;
     private RoleFacade roleFacade;
     private boolean initialized= false;
+    Object initializedLock;
 
     public static Market getInstance() {
         if (MarketInstance == null) {
@@ -36,16 +37,20 @@ public class Market {
 
     private Market(){
         this.storeFacade = StoreFacade.getInstance();
-         this.userFacade = UserFacade.getInstance();
-          this.roleFacade = RoleFacade.getInstance();
-          this.paymentServicesFacade = PaymentServicesFacade.getInstance();
-          this.authorizationAndSecurityFacade = AuthorizationAndSecurityFacade.getInstance();
+        this.userFacade = UserFacade.getInstance();
+        this.roleFacade = RoleFacade.getInstance();
+        this.paymentServicesFacade = PaymentServicesFacade.getInstance();
+        this.authorizationAndSecurityFacade = AuthorizationAndSecurityFacade.getInstance();
+        supplyServicesFacade= SupplyServicesFacade.getInstance();
+        initializedLock= new Object();
     }
 
     public void init(String userName, String password, int licensedDealerNumber,
                      String paymentServiceName, String url, int licensedDealerNumber1, String supplyServiceName, String address){
-        if(initialized==true){
-            return;
+        synchronized (initializedLock) {
+            if (initialized == true) {
+                return;
+            }
         }
 
         // userFacade.register(username, password)
@@ -53,8 +58,9 @@ public class Market {
        // systemManagerIds.add(systemMangerId);
         paymentServicesFacade.addExternalService(licensedDealerNumber,paymentServiceName,url);
         supplyServicesFacade.addExternalService(licensedDealerNumber1,supplyServiceName, address);
-
-        initialized = true;
+        synchronized (initializedLock) {
+            initialized = true;
+        }
     }
 
     public boolean payWithExternalPaymentService() {
@@ -73,10 +79,11 @@ public class Market {
 
 
     public void enterMarketSystem(){
-
         int userId = userFacade.addUser();
+        Thread newTread = new Thread();
         authorizationAndSecurityFacade.generateToken(userId);
     }
+
     public void register(int userID,String username, String password, String birthday, String address) throws Exception {
         authorizationAndSecurityFacade.validateToken(authorizationAndSecurityFacade.getToken(userID));
         //check validation
@@ -441,6 +448,8 @@ public class Market {
     }
 
     public boolean isInitialized() {
-        return initialized;
+        synchronized (initializedLock) {
+            return initialized;
+        }
     }
 }
