@@ -342,9 +342,9 @@ public class Market {
 
     }
 
-<<<<<<< HEAD
-    public List<Integer> getInformationAboutStores(int user_ID)throws Exception
-=======
+
+   // public List<Integer> getInformationAboutStores(int user_ID)throws Exception
+
     public Map<Integer, Map<String, Integer>> getPurchaseList(int userId){
         Map<Integer, Map<String, Integer>> purchaseList = new HashMap<>();
         List<Integer> usersStores = userFacade.getCartStoresByUser(userId);
@@ -360,9 +360,7 @@ public class Market {
         return purchaseList;
     }
 
-    public List<Integer> getInformationAboutStores(int user_ID)
->>>>>>> c2f558b46d290c4bab2c567f950d40748d6cc37f
-    {
+    public List<Integer> getInformationAboutStores(int user_ID) throws Exception {
         boolean succeeded=  authorizationAndSecurityFacade.validateToken(authorizationAndSecurityFacade.getToken(user_ID));
         if (!succeeded){
             logout(user_ID);
