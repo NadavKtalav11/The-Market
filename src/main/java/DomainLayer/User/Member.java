@@ -30,9 +30,25 @@ public class Member implements State{
         isLogin = false;
     }
 
-    public void Exit(User user){
+    public void exitMarketSystem(User user){
         //todo understand what happens after user press x.
         user.Logout();
+    }
+
+    public String getUsername(){
+        return username;
+    }
+
+    public String getAddress() {
+        return address;
+    }
+
+    public String getBirthday() {
+        return birthday;
+    }
+
+    public String getPassword() {
+        return password;
     }
 
     public boolean isLogin()
@@ -45,8 +61,16 @@ public class Member implements State{
         return this.member_ID;
     }
 
-    public void Register(User user, String username, String password, String birthday, String address) throws Exception {
-        throw new Exception("The user is already registered");
+
+    @Override
+    public void Login(User user, String username, String password) throws Exception {
+        throw new Exception("The user is already logged in");
+
+    }
+
+    @Override
+    public boolean isMember() {
+        return true;
     }
 
 }

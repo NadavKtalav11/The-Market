@@ -2,17 +2,21 @@ package DomainLayer.User;
 
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 public class UserFacade {
     private static UserFacade userFacadeInstance;
     Map<Integer, User> allUsers = new HashMap<Integer, User>();
-
+    Map<Integer, Member> members = new HashMap<>();
     private int currentUserID;
+    private int currentMemberID;
 
     private UserFacade()
     {
         this.currentUserID = 0;
+        this.currentMemberID = 0;
     }
 
     public static UserFacade getInstance() {
@@ -26,8 +30,6 @@ public class UserFacade {
         return allUsers.get(userID);
     }
 
-
-
     public boolean isUserLoggedIn(int userID){
         return getUserByID(userID).isLoggedIn();
     }
@@ -38,10 +40,17 @@ public class UserFacade {
         return ((Member)user.getState()).getMemberID();
     }
 
-    public void Exit(int userID){
-        //todo remove token when Nadav finish.
-        allUsers.remove(userID);
-        allUsers.get(userID).Exit();
+    public void exitMarketSystem(int userID){
+        allUsers.remove(userID); //todo do i need to remove the user from the list of users ?
+        (allUsers.get(userID)).exitMarketSystem();
+    }
+
+
+    public int addUser(){
+        int userId = currentUserID;
+        allUsers.put(currentUserID, new User(currentUserID, ""));
+        currentUserID++;
+        return userId;
     }
 
 
@@ -71,15 +80,70 @@ public class UserFacade {
         user.removeItemFromUserCart(productName, storeId);
     }
 
-    public void Register(int userID, String username, String password, String birthday,String address){
-        //todo check validation of the username.
-        //todo check validation of the password.
-        //todo check validation of the birthday.
-        //todo check validation od the address.
-        allUsers.get(userID).Register(username,password,birthday,address);
+
+    public void register(int userID, String username, String password, String birthday,String address) throws Exception {
+        if (allUsers.get(userID).isMember()){
+            throw new Exception("member cannot register");
+        }
+        else {
+            validateRegistrationDetails(username,password,birthday,address);
+            Member newMember = new Member(currentMemberID, username,password,birthday,address);
+            members.put(currentMemberID, newMember);
+            //todo pass the user to login page.
+        }
     }
 
 
+    private void validateRegistrationDetails(String username, String password, String birthDate, String address) throws Exception {
+        if (username == null || password == null || birthDate == null || address == null) {
+            throw new Exception("All fields are required.");
+        }
+        //checking if username is already exist
+        for (User user : allUsers.values()){
+            if (Objects.equals(((Member) user.getState()).getUsername(), username)){
+                throw new Exception("Username already exists. Please choose a different username.");
+            }
+        }
+        //todo check validation of the password. - do encription passwords only.
+        //todo check validation of the birthday.
+        //todo check validation of the address.
+    }
 
+    public void Login(int userID, String username, String password) throws Exception {
+        allUsers.get(userID).Login(username,password);
+    }
 
+    public List<Integer> getCartStoresByUser(int user_ID)
+    {
+        User user = getUserByID(user_ID);
+        if(user != null)
+            return user.getCartStores();
+        else
+            return null;
+    }
+
+    public Map<String, List<Integer>> getCartProductsByStoreAndUser(int store_ID, int user_ID)
+    {
+        User user = getUserByID(user_ID);
+        if(user != null)
+            return user.getCartProductsByStore(store_ID);
+        else
+            return null;
+    }
+
+    public boolean isUserCartEmpty(int user_ID)
+    {
+        return getUserByID(user_ID).isCartEmpty();
+    }
+
+    public String getUserAddress(int user_ID)
+    {
+        return getUserByID(user_ID).getAddress();
+    }
+
+    public int getCartPriceByUser(int user_ID)
+    {
+        /*this function returns the cart total price before discounts, of a specific user*/
+        return getUserByID(user_ID).getCartTotalPriceBeforeDiscount();
+    }
 }
