@@ -283,5 +283,16 @@ public class Service_layer {
         }
     }
 
+    public void modifyShoppingCart(String productName, int quantity, int storeId, int userId)
+    {
+        logger.info("User try to modify his shopping cart");
+
+        try {
+            market.modifyShoppingCart(productName, quantity, storeId, userId);
+        } catch (Exception e) {
+            logger.error("Error occurred during modifying shopping cart: {}", e.getMessage(), e);
+        }
+    }
+
 
 }
