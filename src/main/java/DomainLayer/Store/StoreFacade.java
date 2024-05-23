@@ -7,12 +7,20 @@ public class StoreFacade {
     Map<Integer, Store> allStores = new HashMap<Integer, Store>();
     private int currentStoreID;
 
+    private Object allStoresLock;
+    private Object storeIdLock;
+
+
     private StoreFacade()
     {
         this.currentStoreID = 0;
+
+        allStoresLock = new Object();
+        storeIdLock = new Object();
+
     }
 
-    public static StoreFacade getInstance() {
+    public synchronized static StoreFacade getInstance() {
         if (storeFacadeInstance == null) {
             storeFacadeInstance = new StoreFacade();
         }
@@ -20,14 +28,20 @@ public class StoreFacade {
     }
 
     public Store getStoreByID(int storeID){
-        return allStores.get(storeID);
+        synchronized (allStoresLock) {
+            return allStores.get(storeID);
+        }
     }
 
     public int openStore()
     {
         Store newStore = new Store(currentStoreID); //todo: add this to list in repository
-        this.allStores.put(currentStoreID, newStore);
-        this.currentStoreID++;
+        synchronized (allStoresLock) {
+            synchronized (storeIdLock) {
+                this.allStores.put(currentStoreID, newStore);
+                this.currentStoreID++;
+            }
+        }
         return newStore.getStoreID();
     }
 
@@ -66,17 +80,23 @@ public class StoreFacade {
 
 
     public void addProductToStore(int storeID, String productName, int price, int quantity,
-                                                                String description, String categoryStr){
-        allStores.get(storeID).addProduct(productName, price, quantity, description, categoryStr);
+                                                                String description, String categoryStr) {
+        synchronized (allStoresLock) {
+            allStores.get(storeID).addProduct(productName, price, quantity, description, categoryStr);
+        }
     }
 
     public void removeProductFromStore(int storeID, String productName){
-        allStores.get(storeID).removeProduct(productName);
+        synchronized (allStoresLock) {
+            allStores.get(storeID).removeProduct(productName);
+        }
     }
 
     public void updateProductInStore(int storeID, String productName, int price, int quantity,
-                                                                String description, String categoryStr){
-        allStores.get(storeID).updateProduct(productName, price, quantity, description, categoryStr);
+                                                                String description, String categoryStr) {
+        synchronized (allStoresLock) {
+            allStores.get(storeID).updateProduct(productName, price, quantity, description, categoryStr);
+        }
     }
 
     public boolean verifyStoreExist(int storeID)
@@ -93,11 +113,13 @@ public class StoreFacade {
     public List<Integer> getInformationAboutOpenStores()
     {
         List<Integer> openStoreInformation = new ArrayList<>();
-        for (Map.Entry<Integer, Store> entry : allStores.entrySet()) {
-            int storeId = entry.getKey();
-            Store store = entry.getValue();
-            if(store.getIsOpened())
-                openStoreInformation.add(storeId);
+        synchronized (allStoresLock) {
+            for (Map.Entry<Integer, Store> entry : allStores.entrySet()) {
+                int storeId = entry.getKey();
+                Store store = entry.getValue();
+                if (store.getIsOpened())
+                    openStoreInformation.add(storeId);
+            }
         }
         return openStoreInformation;
     }
@@ -105,11 +127,13 @@ public class StoreFacade {
     public List<Integer> getInformationAboutClosedStores()
     {
         List<Integer> closedStoreInformation = new ArrayList<>();
-        for (Map.Entry<Integer, Store> entry : allStores.entrySet()) {
-            int storeId = entry.getKey();
-            Store store = entry.getValue();
-            if(!store.getIsOpened())
-                closedStoreInformation.add(storeId);
+        synchronized (allStoresLock) {
+            for (Map.Entry<Integer, Store> entry : allStores.entrySet()) {
+                int storeId = entry.getKey();
+                Store store = entry.getValue();
+                if (!store.getIsOpened())
+                    closedStoreInformation.add(storeId);
+            }
         }
         return closedStoreInformation;
     }
@@ -152,9 +176,10 @@ public class StoreFacade {
         }
     }
 
-    public List<Integer> getStores()
-    {
-        return new ArrayList<>(this.allStores.keySet());
+    public List<Integer> getStores() {
+        synchronized (allStoresLock) {
+            return new ArrayList<>(this.allStores.keySet());
+        }
     }
 
 }

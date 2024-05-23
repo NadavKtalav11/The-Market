@@ -12,7 +12,7 @@ public class PaymentServicesFacade {
    private Map<Integer, Receipt> IdAndReceipt = new HashMap<>();
 
 
-    public static PaymentServicesFacade getInstance() {
+    public synchronized static PaymentServicesFacade getInstance() {
         if (paymentServicesFacadeInstance == null) {
             paymentServicesFacadeInstance = new PaymentServicesFacade();
         }

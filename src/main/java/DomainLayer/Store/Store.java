@@ -13,30 +13,48 @@ public class Store {
     private double rating;
     private int numOfRatings;
 
+
+    private Object storeProductLock;
+    private Object storeIdLock;
+    private Object isOpenedLock;
+
     Store(int store_ID)
     {
         this.store_ID = store_ID;
         this.isOpened = true;
+        storeIdLock= new Object();
+        discountPolicy= new DiscountPolicy();
+        purchasePolicy = new PurchasePolicy();
+        storeProductLock= new Object();
+        isOpenedLock = new Object();
     }
 
     public int getStoreID()
     {
-        return store_ID;
+        synchronized (storeIdLock) {
+            return store_ID;
+        }
     }
 
-    public void addProduct(String productName, int price, int quantity, String description, String categoryStr){
+    public void addProduct(String productName, int price, int quantity, String description, String categoryStr) {
         Category category = Category.fromString(categoryStr);
-        storeProducts.put(productName, new Product(productName, price, quantity, description, category));
+        synchronized (storeProductLock) {
+            storeProducts.put(productName, new Product(productName, price, quantity, description, category));
+        }
     }
 
     public Product getProductByName(String productName)
     {
-        return storeProducts.get(productName);
+        synchronized (storeProductLock) {
+            return storeProducts.get(productName);
+        }
     }
 
     public boolean checkProductExists(String productName)
     {
-        return storeProducts.containsKey(productName);
+        synchronized (storeProductLock) {
+            return storeProducts.containsKey(productName);
+        }
     }
 
     public boolean checkProductQuantity(String productName, int quantity)
@@ -54,32 +72,44 @@ public class Store {
     }
 
     public void removeProduct(String productName){
-        storeProducts.remove(productName);
+        synchronized (storeProductLock) {
+            storeProducts.remove(productName);
+        }
     }
 
     public void updateProduct(String productName, int price, int quantity, String description, String categoryStr){
-        storeProducts.get(productName).setPrice(price);
-        storeProducts.get(productName).setQuantity(quantity);
-        storeProducts.get(productName).setDescription(description);
-        Category category = Category.fromString(categoryStr);
-        storeProducts.get(productName).setCategory(category);
+        synchronized (storeProductLock) {
+            storeProducts.get(productName).setPrice(price);
+            storeProducts.get(productName).setQuantity(quantity);
+            storeProducts.get(productName).setDescription(description);
+            Category category = Category.fromString(categoryStr);
+            storeProducts.get(productName).setCategory(category);
+        }
     }
 
     public void closeStore()
     {
-        this.isOpened = false;
+        synchronized (isOpenedLock) {
+            this.isOpened = false;
+        }
     }
 
     public boolean getIsOpened()
     {
-        return this.isOpened;
+        synchronized (isOpenedLock) {
+            return this.isOpened;
+        }
     }
 
     public List<String> getProducts()
     {
-        Set<String> productsSet = storeProducts.keySet();
-        List<String> productsList = new ArrayList<>(productsSet);
-        return productsList;
+        List<String> productsList;
+
+        synchronized (storeProductLock) {
+            Set<String> productsSet = storeProducts.keySet();
+            productsList = new ArrayList<>(productsSet);
+            return productsList;
+        }
     }
 
     public boolean checkDiscountPolicy(int userId, String productName)
@@ -94,30 +124,35 @@ public class Store {
 
     public List<String> matchProducts(String productName, String categoryStr, List<String> keywords)
     {
-        List<Product> products = storeProducts.values().stream().toList();
-        return products.stream()
-                .filter(product -> productName == null || product.getProductName().toLowerCase().contains(productName.toLowerCase()))
-                .filter(product -> categoryStr == null || product.getCategoryName().equals(categoryStr))
-                .filter(product -> keywords == null || keywords.stream().anyMatch(keyword -> product.getDescription().toLowerCase().contains(keyword.toLowerCase())))
-                .map(Product::getProductName)
-                .collect(Collectors.toList());
+        synchronized (storeProductLock) {
+            List<Product> products = storeProducts.values().stream().toList();
+            return products.stream()
+                    .filter(product -> productName == null || product.getProductName().toLowerCase().contains(productName.toLowerCase()))
+                    .filter(product -> categoryStr == null || product.getCategoryName().equals(categoryStr))
+                    .filter(product -> keywords == null || keywords.stream().anyMatch(keyword -> product.getDescription().toLowerCase().contains(keyword.toLowerCase())))
+                    .map(Product::getProductName)
+                    .collect(Collectors.toList());
+        }
     }
 
     public List<String> filterProducts(String categoryStr, List<String> keywords, Integer minPrice, Integer maxPrice, Double minRating, List<String> productsFromSearch, Double storeMinRating)
     {
         List<Product> products = new ArrayList<>();
 
-        for (String productName : productsFromSearch) {
-            products.add(storeProducts.get(productName));
-        }
-        return products.stream()
-                .filter(product -> categoryStr == null || product.getCategoryName().equals(categoryStr))
-                .filter(product -> keywords == null || keywords.stream().anyMatch(keyword -> product.getDescription().toLowerCase().contains(keyword.toLowerCase())))
-                .filter(product -> minPrice == null || product.getPrice() >= minPrice)
-                .filter(product -> maxPrice == null || product.getPrice() <= maxPrice)
-                .filter(product -> minRating == null || product.getRating() >= minRating)
-                .filter(product -> storeMinRating == null || this.rating >= storeMinRating)
-                .map(Product::getProductName)
-                .collect(Collectors.toList());
+            for (String productName : productsFromSearch) {
+                synchronized (storeProductLock) {
+                    products.add(storeProducts.get(productName));
+                }
+            }
+            return products.stream()
+                    .filter(product -> categoryStr == null || product.getCategoryName().equals(categoryStr))
+                    .filter(product -> keywords == null || keywords.stream().anyMatch(keyword -> product.getDescription().toLowerCase().contains(keyword.toLowerCase())))
+                    .filter(product -> minPrice == null || product.getPrice() >= minPrice)
+                    .filter(product -> maxPrice == null || product.getPrice() <= maxPrice)
+                    .filter(product -> minRating == null || product.getRating() >= minRating)
+                    .filter(product -> storeMinRating == null || this.rating >= storeMinRating)
+                    .map(Product::getProductName)
+                    .collect(Collectors.toList());
+
     }
 }

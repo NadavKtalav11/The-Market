@@ -78,7 +78,7 @@ public class Service_layer {
     //todo think about where we get the userID
     public void logout(int memberID) {
         try {
-            market.Logout(memberID);
+            market.logout(memberID);
         } catch (Exception e) {
             System.out.println(e);
         }
@@ -138,14 +138,14 @@ public class Service_layer {
         }
     }
 
-    public List<String> generalProductFilter(String categoryStr, List<String> keywords, int minPrice, int maxPrice, Double productMinRating, List<String> productsFromSearch, Double storeMinRating)
+    public List<String> generalProductFilter(int userId, String categoryStr, List<String> keywords, int minPrice, int maxPrice, Double productMinRating, List<String> productsFromSearch, Double storeMinRating)
     {
         logger.info("Starting general product search filter in the system.");
 
         List<String> filteredProductNames = null;
 
         try {
-            filteredProductNames = market.generalProductFilter(categoryStr, keywords, minPrice, maxPrice, productMinRating, productsFromSearch, storeMinRating);
+            filteredProductNames = market.generalProductFilter(userId, categoryStr, keywords, minPrice, maxPrice, productMinRating, productsFromSearch, storeMinRating);
         } catch (Exception e) {
             logger.error("Error occurred during the general product search filter: {}", e.getMessage(), e);
         }
@@ -153,14 +153,14 @@ public class Service_layer {
         return filteredProductNames;
     }
 
-    public List<String> generalProductSearch(String productName, String categoryStr, List<String> keywords)
+    public List<String> generalProductSearch(int userId, String productName, String categoryStr, List<String> keywords)
     {
         logger.info("Starting general product search in the system.");
 
         List<String> filteredProductNames = null;
 
         try {
-            filteredProductNames = market.generalProductSearch(productName, categoryStr, keywords);
+            filteredProductNames = market.generalProductSearch(userId, productName, categoryStr, keywords);
         } catch (Exception e) {
             logger.error("Error occurred during the general product search: {}", e.getMessage(), e);
         }
@@ -322,14 +322,14 @@ public class Service_layer {
         return storePurchases;
     }
 
-    public List<String> inStoreProductFilter(String categoryStr, List<String> keywords, int minPrice, int maxPrice, Double productMinRating, int storeId, List<String> productsFromSearch, Double storeMinRating)
+    public List<String> inStoreProductFilter(int userId ,String categoryStr, List<String> keywords, int minPrice, int maxPrice, Double productMinRating, int storeId, List<String> productsFromSearch, Double storeMinRating)
     {
         logger.info("Starting in-store product search filter in the system.");
 
         List<String> filteredProductNames = null;
 
         try {
-            filteredProductNames = market.inStoreProductFilter(categoryStr, keywords, minPrice, maxPrice, productMinRating, storeId, productsFromSearch, storeMinRating);
+            filteredProductNames = market.inStoreProductFilter(userId, categoryStr, keywords, minPrice, maxPrice, productMinRating, storeId, productsFromSearch, storeMinRating);
         } catch (Exception e) {
             logger.error("Error occurred during the in-store product search filter: {}", e.getMessage(), e);
         }
@@ -337,14 +337,14 @@ public class Service_layer {
         return filteredProductNames;
     }
 
-    public List<String> inStoreProductSearch(String productName, String categoryStr, List<String> keywords, int storeId)
+    public List<String> inStoreProductSearch(int userId, String productName, String categoryStr, List<String> keywords, int storeId)
     {
         logger.info("Starting in-store product search in the system.");
 
         List<String> filteredProductNames = null;
 
         try {
-            filteredProductNames = market.inStoreProductSearch(productName, categoryStr, keywords, storeId);
+            filteredProductNames = market.inStoreProductSearch(userId, productName, categoryStr, keywords, storeId);
         } catch (Exception e) {
             logger.error("Error occurred during the in-store product search: {}", e.getMessage(), e);
         }

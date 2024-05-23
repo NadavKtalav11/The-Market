@@ -12,14 +12,22 @@ public class UserFacade {
     Map<Integer, Member> members = new HashMap<>();
     private int currentUserID;
     private int currentMemberID;
+    Object allUserLock;
+    Object membersLock;
+    Object userIdLock;
+    Object memberIdLock;
 
     private UserFacade()
     {
         this.currentUserID = 0;
         this.currentMemberID = 0;
+        allUserLock = new Object();
+        membersLock = new Object();
+        userIdLock = new Object();
+        memberIdLock = new Object();
     }
 
-    public static UserFacade getInstance() {
+    public synchronized static UserFacade getInstance() {
         if (userFacadeInstance == null) {
             userFacadeInstance = new UserFacade();
         }
@@ -27,10 +35,13 @@ public class UserFacade {
     }
 
     public User getUserByID(int userID){
-        return allUsers.get(userID);
+        synchronized (allUserLock) {
+            return allUsers.get(userID);
+        }
     }
 
     public boolean isUserLoggedIn(int userID){
+
         return getUserByID(userID).isLoggedIn();
     }
 
@@ -41,15 +52,24 @@ public class UserFacade {
     }
 
     public void exitMarketSystem(int userID){
-        allUsers.remove(userID); //todo do i need to remove the user from the list of users ?
-        (allUsers.get(userID)).exitMarketSystem();
+        synchronized (allUserLock) {
+            allUsers.remove(userID); //todo do i need to remove the user from the list of users ?
+            (allUsers.get(userID)).exitMarketSystem();
+        }
     }
 
 
     public int addUser(){
-        int userId = currentUserID;
-        allUsers.put(currentUserID, new User(currentUserID, ""));
-        currentUserID++;
+        int userId;
+        synchronized (userIdLock) {
+            userId = currentUserID;
+        }
+        synchronized (allUserLock) {
+            allUsers.put(currentUserID, new User(currentUserID, ""));
+        }
+        synchronized (userIdLock) {
+            currentUserID++;
+        }
         return userId;
     }
 
@@ -82,13 +102,20 @@ public class UserFacade {
 
 
     public void register(int userID, String username, String password, String birthday,String address) throws Exception {
-        if (allUsers.get(userID).isMember()){
+
+        if (getUserByID(userID).isMember()) {
             throw new Exception("member cannot register");
         }
         else {
             validateRegistrationDetails(username,password,birthday,address);
-            Member newMember = new Member(currentMemberID, username,password,birthday,address);
-            members.put(currentMemberID, newMember);
+            int memberId;
+            synchronized (memberIdLock){
+                memberId = currentMemberID;
+            }
+            Member newMember = new Member(memberId, username,password,birthday,address);
+            synchronized (membersLock) {
+                members.put(memberId, newMember);
+            }
             //todo pass the user to login page.
         }
     }
@@ -99,9 +126,11 @@ public class UserFacade {
             throw new Exception("All fields are required.");
         }
         //checking if username is already exist
-        for (User user : allUsers.values()){
-            if (Objects.equals(((Member) user.getState()).getUsername(), username)){
-                throw new Exception("Username already exists. Please choose a different username.");
+        synchronized (allUsers) {
+            for (User user : allUsers.values()) {
+                if (Objects.equals(((Member) user.getState()).getUsername(), username)) {
+                    throw new Exception("Username already exists. Please choose a different username.");
+                }
             }
         }
         //todo check validation of the password. - do encription passwords only.
@@ -110,7 +139,7 @@ public class UserFacade {
     }
 
     public void Login(int userID, String username, String password) throws Exception {
-        allUsers.get(userID).Login(username,password);
+        getUserByID(userID).Login(username,password);
     }
 
     public List<Integer> getCartStoresByUser(int user_ID)
