@@ -5,6 +5,7 @@ import org.slf4j.LoggerFactory;
 
 import DomainLayer.Market.Market;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
@@ -18,6 +19,7 @@ public class Service_layer {
     }
 
 
+
     public Response<String> init(String userName, String password, int licensedDealerNumber,
                      String paymentServiceName, String url, int licensedDealerNumber1, String supplyServiceName, String address) {
 
@@ -26,6 +28,7 @@ public class Service_layer {
             market.init(userName, password, licensedDealerNumber, paymentServiceName,
                     url, licensedDealerNumber1, supplyServiceName, address);
             return new Response<>("Initialization successful", "System initialized successfully.");
+          
         } catch (Exception e) {
             logger.error("Error occurred during the initialization: {}", e.getMessage(), e);
             return new Response<>(null, "Initialization failed: " + e.getMessage());
@@ -35,98 +38,102 @@ public class Service_layer {
     public void payWithExternalPaymentService(int price, int cvv, int month, int year, String holderID, int userID) {
         logger.info("Reaching for the payment service in order to complete the purchase.");
         try {
-            market.payWithExternalPaymentService( price,  cvv,  month,  year,  holderID,  userID);
+            //   market.payWithExternalPaymentService( price,  cvv,  month,  year,  holderID,  userID);
         } catch (Exception e) {
             logger.error("Error occurred with the payment service company: {}", e.getMessage(), e);
         }
     }
 */
     //todo think about the userID and the purpose of this function.
-    public Response<String> exitMarketSystem(int userID) {
 
-        logger.info("Exiting the market system for user with ID: {}", userID);
+    public Response<String> exitMarketSystem(int userID) {
+        logger.info("Exiting market system");
         try {
             market.exitMarketSystem(userID);
             return new Response<>("Exit successful", "User exited the market system successfully.");
         } catch (Exception e) {
-            logger.error("Error occurred while exiting the market system for user with ID {}: {}", userID, e.getMessage(), e);
+            logger.error("Error occurred during exiting market system", e.getMessage(), e);
             return new Response<>(null, "Exit failed: " + e.getMessage());
         }
     }
 
     //todo think about the userID and the purpose of this function.
-    public Response<String> enterMarketSystem() {
 
-        logger.info("Entering the market system.");
+    public Response<String> enterMarketSystem() {
+        logger.info("Entering market system");
+
         try {
             market.enterMarketSystem();
             return new Response<>("Enter successful", "Entered the market system successfully.");
         } catch (Exception e) {
-            logger.error("Error occurred while entering the market system: {}", e.getMessage(), e);
+            logger.error("Error occurred during entering market system", e.getMessage(), e);
             return new Response<>(null, "Enter failed: " + e.getMessage());
+
         }
     }
 
     //todo think about where we get the userID
-    public Response<String> register(int userID, String username, String password, String birthday, String address) {
 
-        logger.info("Registering user with ID: {}, username: {}", userID, username);
+    public Response<String> register(int userID, String username, String password, String birthday, String address) {
+        logger.info("Registration");
         try {
             market.register(userID, username, password, birthday, address);
             return new Response<>("Registration successful", "User registered successfully.");
         } catch (Exception e) {
-            logger.error("Error occurred during registration for user with ID {}: {}", userID, e.getMessage(), e);
+            logger.error("Error occurred during registration", e.getMessage(), e);
             return new Response<>(null, "Registration failed: " + e.getMessage());
         }
     }
 
     //todo think about where we get the userID
-    public Response<String> login(int userID, String username, String password) {
 
-        logger.info("Attempting login for user with ID: {}, username: {}", userID, username);
+    public Response<String> login(int userID, String username, String password) {
+        logger.info("Log in");
+
         try {
             market.Login(userID, username, password);
             return new Response<>("Login successful", "User logged in successfully.");
         } catch (Exception e) {
-            logger.error("Error occurred during login for user with ID {}: {}", userID, e.getMessage(), e);
+            logger.error("Error occurred during log in", e.getMessage(), e);
             return new Response<>(null, "Login failed: " + e.getMessage());
         }
     }
 
     //todo think about where we get the userID
     public Response<String> logout(int memberID) {
-
-        logger.info("Logging out user with ID: {}", memberID);
+        logger.info("Log out");
         try {
             market.logout(memberID);
             return new Response<>("Logout successful", "User logged out successfully.");
         } catch (Exception e) {
-            logger.error("Error occurred during logout for user with ID {}: {}", memberID, e.getMessage(), e);
+            logger.error("Error occurred during log out", e.getMessage(), e);
             return new Response<>(null, "Logout failed: " + e.getMessage());
         }
     }
 
     public Response<String> addProductToStore(int memberID, int storeID, String productName, int price, int quantity,
                                   String description, String categoryStr) {
+        logger.info("Adding product to store");
 
-        logger.info("Adding product to store with ID: {}", storeID);
         try {
             market.addProductToStore(memberID, storeID, productName, price, quantity, description, categoryStr);
             return new Response<>("Product added successfully", "Product added to store successfully.");
         } catch (Exception e) {
-            logger.error("Error occurred while adding product to store with ID {}: {}", storeID, e.getMessage(), e);
+            logger.error("Error occurred during adding product to store", e.getMessage(), e);
             return new Response<>(null, "Failed to add product: " + e.getMessage());
         }
     }
 
-    public Response<String> removeProductFromStore(int memberID, int storeID, String productName) {
 
-        logger.info("Removing product '{}' from store with ID: {}", productName, storeID);
+    public Response<String> removeProductFromStore(int memberID, int storeID, String productName) {
+        logger.info("Removing product from store");
+
         try {
             market.removeProductFromStore(memberID, storeID, productName);
             return new Response<>("Product removed successfully", "Product removed from store successfully.");
         } catch (Exception e) {
-            logger.error("Error occurred while removing product '{}' from store with ID {}: {}", productName, storeID, e.getMessage(), e);
+
+            logger.error("Error occurred during removing product from store", e.getMessage(), e);
             return new Response<>(null, "Failed to remove product: " + e.getMessage());
         }
     }
@@ -134,38 +141,43 @@ public class Service_layer {
     public Response<String> updateProductInStore(int memberID, int storeID, String productName, int price, int quantity,
                                      String description, String categoryStr) {
 
-        logger.info("Updating product '{}' in store with ID: {}", productName, storeID);
+        logger.info("Updating product in store");
         try {
             market.updateProductInStore(memberID, storeID, productName, price, quantity, description, categoryStr);
             return new Response<>("Product updated successfully", "Product updated in store successfully.");
         } catch (Exception e) {
-            logger.error("Error occurred while updating product '{}' in store with ID {}: {}", productName, storeID, e.getMessage(), e);
+
+            logger.error("Error occurred during updating product in store", e.getMessage(), e);;
             return new Response<>(null, "Failed to update product: " + e.getMessage());
         }
     }
 
     public Response<String> appointStoreOwner(int firstMemberID, int secondMemberID, int storeID) {
+        logger.info("Appoint store owner");
 
-        logger.info("Appointing store owner with ID {} for store with ID: {}", secondMemberID, storeID);
         try {
             market.appointStoreOwner(firstMemberID, secondMemberID, storeID);
             return new Response<>("Store owner appointed successfully", "Store owner appointed successfully.");
         } catch (Exception e) {
-            logger.error("Error occurred while appointing store owner with ID {} for store with ID {}: {}", secondMemberID, storeID, e.getMessage(), e);
+
+            logger.error("Error occurred during appointing store owner", e.getMessage(), e);
             return new Response<>(null, "Failed to appoint store owner: " + e.getMessage());
+
         }
     }
 
     public Response<String> appointStoreManager(int firstMemberID, int secondMemberID, int storeID,
                                     boolean inventoryPermissions, boolean purchasePermissions) {
 
-        logger.info("Appointing store manager with ID {} for store with ID: {}", secondMemberID, storeID);
+        logger.info("Appoint store manager");
+
         try {
             market.appointStoreManager(firstMemberID, secondMemberID, storeID,
                     inventoryPermissions, purchasePermissions);
             return new Response<>("Store manager appointed successfully", "Store manager appointed successfully.");
         } catch (Exception e) {
-            logger.error("Error occurred while appointing store manager with ID {} for store with ID {}: {}", secondMemberID, storeID, e.getMessage(), e);
+
+            logger.error("Error occurred during appointing store manager", e.getMessage(), e);
             return new Response<>(null, "Failed to appoint store manager: " + e.getMessage());
         }
     }
@@ -173,14 +185,17 @@ public class Service_layer {
     public Response<String> updateStoreManagerPermissions(int firstMemberID, int secondMemberID, int storeID,
                                               boolean inventoryPermissions, boolean purchasePermissions) {
 
-        logger.info("Updating permissions for store manager with ID {} for store with ID: {}", secondMemberID, storeID);
+        logger.info("Updating store manager permissions");
+
         try {
             market.updateStoreManagerPermissions(firstMemberID, secondMemberID, storeID,
                     inventoryPermissions, purchasePermissions);
             return new Response<>("Permissions updated successfully", "Store manager permissions updated successfully.");
         } catch (Exception e) {
-            logger.error("Error occurred while updating permissions for store manager with ID {} for store with ID {}: {}", secondMemberID, storeID, e.getMessage(), e);
+
+            logger.error("Error occurred during updating store manager permissions", e.getMessage(), e);
             return new Response<>(null, "Failed to update permissions: " + e.getMessage());
+
         }
     }
 

@@ -4,6 +4,7 @@ package DomainLayer.SupplyServices;
 import DomainLayer.Role.RoleFacade;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 
 public class SupplyServicesFacade {
@@ -25,31 +26,37 @@ public class SupplyServicesFacade {
         return supplyServicesFacade;
     }
 
-    public boolean addExternalService(int licensedDealerNumber, String supplyServiceName, String address){
+    public boolean addExternalService(int licensedDealerNumber, String supplyServiceName, HashSet<String> countries, HashSet<String> cities){
         synchronized (externalSupplyService) {
             int size_before = externalSupplyService.size();
-            ExternalSupplyService externalPaymentService = new ExternalSupplyService(licensedDealerNumber, supplyServiceName, address);
+            ExternalSupplyService externalPaymentService = new ExternalSupplyService(licensedDealerNumber, supplyServiceName, countries, cities);
             externalSupplyService.put(licensedDealerNumber, externalPaymentService);
             return externalSupplyService.size() == size_before + 1;
         }
     }
 
-    public boolean checkAvailableExternalSupplyService(String userAddress,
-                                                       HashMap<Integer,Integer> ProductIdAndAmount) {
+    public int checkAvailableExternalSupplyService(String country, String city) {
         //   (private Map<Integer, ExternalSupplyService>  ExternalSupplyService)
         synchronized (externalSupplyService) {
             for (Map.Entry<Integer, ExternalSupplyService> entry : externalSupplyService.entrySet()) {
-                Integer externalSupplyServiceId = entry.getKey();
                 ExternalSupplyService externalSupplyService1 = entry.getValue();
-                if (externalSupplyService1.checkAreaAvailability(userAddress)) {
-                    if (externalSupplyService1.checkServiceAvailability(ProductIdAndAmount)) {
-                        return true;
+                if (externalSupplyService1.checkAreaAvailability(country, city)) {
+                    externalSupplyService1.getLicensedDealerNumber();
                     }
-                }
             }
         }
-        return false;
+        return -1;
     }
 
+    public ExternalSupplyService getExternalSupplyServiceById(int externalSupplyServiceId){
+        return externalSupplyService.get(externalSupplyServiceId);
+    }
+
+
+
+   public boolean createShiftingDetails(int externalSupplyServiceId,String userName,String country,String city,String address){
+        ExternalSupplyService externalSupplyService = getExternalSupplyServiceById(externalSupplyServiceId);
+        return externalSupplyService.createShiftingDetails(userName,country ,city, address);
         // Check if the product exists in the instance's map and if the amount is sufficient
+    }
 }
