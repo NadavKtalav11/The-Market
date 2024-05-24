@@ -5,6 +5,7 @@ import org.slf4j.LoggerFactory;
 
 import DomainLayer.Market.Market;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
@@ -19,11 +20,11 @@ public class Service_layer {
 
 
     public void init(String userName, String password, int licensedDealerNumber,
-                     String paymentServiceName, String url, int licensedDealerNumber1, String supplyServiceName, String address) {
+                     String paymentServiceName, String url, int licensedDealerNumber1, String supplyServiceName, HashSet<String> countries, HashSet<String> cities) {
         logger.info("Starting the initialization of the system.");
         try {
             market.init(userName, password, licensedDealerNumber, paymentServiceName,
-                    url, licensedDealerNumber1, supplyServiceName, address);
+                    url, licensedDealerNumber1, supplyServiceName, countries, cities);
         } catch (Exception e) {
             logger.error("Error occurred during the initialization: {}", e.getMessage(), e);
         }
@@ -33,7 +34,7 @@ public class Service_layer {
     public void payWithExternalPaymentService(int price, int cvv, int month, int year, String holderID, int userID) {
         logger.info("Reaching for the payment service in order to complete the purchase.");
         try {
-            market.payWithExternalPaymentService( price,  cvv,  month,  year,  holderID,  userID);
+         //   market.payWithExternalPaymentService( price,  cvv,  month,  year,  holderID,  userID);
         } catch (Exception e) {
             logger.error("Error occurred with the payment service company: {}", e.getMessage(), e);
         }
