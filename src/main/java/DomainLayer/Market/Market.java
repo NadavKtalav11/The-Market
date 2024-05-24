@@ -8,11 +8,7 @@ import DomainLayer.User.UserFacade;
 import DomainLayer.SupplyServices.SupplyServicesFacade;
 
 import javax.swing.event.ListDataEvent;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Set;
-import java.util.Map;
+import java.util.*;
 
 
 public class Market {
@@ -47,7 +43,7 @@ public class Market {
     }
 
     public void init(String userName, String password, int licensedDealerNumber,
-                     String paymentServiceName, String url, int licensedDealerNumber1, String supplyServiceName, String address){
+                     String paymentServiceName, String url, int licensedDealerNumber1, String supplyServiceName, HashSet<String> countries, HashSet<String> cities){
         synchronized (initializedLock) {
             if (initialized == true) {
                 return;
@@ -58,7 +54,7 @@ public class Market {
        // int systemMangerId = userFacade.getByUserName();
        // systemManagerIds.add(systemMangerId);
         paymentServicesFacade.addExternalService(licensedDealerNumber,paymentServiceName,url);
-        supplyServicesFacade.addExternalService(licensedDealerNumber1,supplyServiceName, address);
+        supplyServicesFacade.addExternalService(licensedDealerNumber1,supplyServiceName, countries, cities);
         synchronized (initializedLock) {
             initialized = true;
         }
@@ -496,15 +492,19 @@ public class Market {
                 String country = this.userFacade.getUserByID(user_ID).getCountry();
                 String city = this.userFacade.getUserByID(user_ID).getCity();
                 String address = this.userFacade.getUserAddress(user_ID);
+                String userName = this.userFacade.getUserByID(user_ID).getName();
                 for(String productName: products.keySet()) {
                     quantity = products.get(productName).get(0);
                     if(!this.storeFacade.checkQuantityAndPolicies(productName, quantity, store_ID, user_ID))
                         throw new Exception("Item is not available or policy conditions are not met");
                     //todo remove comment after david
-                    //else if(!this.supplyServicesFacade.checkAvailableExternalSupplyService(country,city))
-                    //    throw new Exception("Unfortunately, there is no shipping for the user address");
+                    int availibleExteranlSupplyService =this.supplyServicesFacade.checkAvailableExternalSupplyService(country,city);
+                    if(-1==availibleExteranlSupplyService)
+                        throw new Exception("Unfortunately, there is no shipping for the user address");
                     //todo remove items from stock
-                    //supplyServicesFacade.shiftingDetails(country,city,address, this.userFacade.getUserByID(user_ID).getName());
+                    if(!supplyServicesFacade.createShiftingDetails(availibleExteranlSupplyService, userName,country,city,address)){
+                        throw new Exception("Unfortunately, there was problem in creating the shifting");
+                    }
                 }
                 int storeTotalPriceBeforeDiscount = this.userFacade.getCartPriceByUser(user_ID);
                 int storeTotalPrice = this.storeFacade.calculateTotalCartPriceAfterDiscount(store_ID, products, storeTotalPriceBeforeDiscount);
