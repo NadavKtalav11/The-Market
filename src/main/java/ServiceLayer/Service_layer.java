@@ -34,7 +34,7 @@ public class Service_layer {
     public void payWithExternalPaymentService(int price, int cvv, int month, int year, String holderID, int userID) {
         logger.info("Reaching for the payment service in order to complete the purchase.");
         try {
-         //   market.payWithExternalPaymentService( price,  cvv,  month,  year,  holderID,  userID);
+            //   market.payWithExternalPaymentService( price,  cvv,  month,  year,  holderID,  userID);
         } catch (Exception e) {
             logger.error("Error occurred with the payment service company: {}", e.getMessage(), e);
         }
@@ -42,100 +42,111 @@ public class Service_layer {
 
     //todo think about the userID and the purpose of this function.
     public void exitMarketSystem(int userID) {
+        logger.info("Exiting market system");
         try {
             market.exitMarketSystem(userID);
         } catch (Exception e) {
-            System.out.println(e);
+            logger.error("Error occurred during exiting market system", e.getMessage(), e);
         }
     }
 
     //todo think about the userID and the purpose of this function.
     public void enterMarketSystem() {
+        logger.info("Entering market system");
         try {
             market.enterMarketSystem();
         } catch (Exception e) {
-            System.out.println(e);
+            logger.error("Error occurred during entering market system", e.getMessage(), e);
         }
     }
 
     //todo think about where we get the userID
     public void register(int userID, String username, String password, String birthday, String address) {
+        logger.info("Registration");
         try {
             market.register(userID, username, password, birthday, address);
         } catch (Exception e) {
-            System.out.println(e);
+            logger.error("Error occurred during registration", e.getMessage(), e);
         }
     }
 
     //todo think about where we get the userID
     public void login(int userID, String username, String password) {
+        logger.info("Log in");
         try {
             market.Login(userID, username, password);
         } catch (Exception e) {
-            System.out.println(e);
+            logger.error("Error occurred during log in", e.getMessage(), e);
         }
     }
 
     //todo think about where we get the userID
     public void logout(int memberID) {
+        logger.info("Log out");
         try {
             market.logout(memberID);
         } catch (Exception e) {
-            System.out.println(e);
+            logger.error("Error occurred during log out", e.getMessage(), e);
         }
     }
 
     public void addProductToStore(int memberID, int storeID, String productName, int price, int quantity,
                                   String description, String categoryStr) {
+        logger.info("Adding product to store");
         try {
             market.addProductToStore(memberID, storeID, productName, price, quantity, description, categoryStr);
         } catch (Exception e) {
-            System.out.println(e);
+            logger.error("Error occurred during adding product to store", e.getMessage(), e);
         }
     }
 
     public void removeProductFromStore(int memberID, int storeID, String productName) {
+        logger.info("Removing product from store");
         try {
             market.removeProductFromStore(memberID, storeID, productName);
         } catch (Exception e) {
-            System.out.println(e);
+            logger.error("Error occurred during removing product from store", e.getMessage(), e);
         }
     }
 
     public void updateProductInStore(int memberID, int storeID, String productName, int price, int quantity,
                                      String description, String categoryStr) {
+        logger.info("Updating product in store");
         try {
             market.updateProductInStore(memberID, storeID, productName, price, quantity, description, categoryStr);
         } catch (Exception e) {
-            System.out.println(e);
+            logger.error("Error occurred during updating product in store", e.getMessage(), e);
         }
     }
 
     public void appointStoreOwner(int firstMemberID, int secondMemberID, int storeID) {
+        logger.info("Appoint store owner");
         try {
             market.appointStoreOwner(firstMemberID, secondMemberID, storeID);
         } catch (Exception e) {
-            System.out.println(e);
+            logger.error("Error occurred during appointing store owner", e.getMessage(), e);
         }
     }
 
     public void appointStoreManager(int firstMemberID, int secondMemberID, int storeID,
                                     boolean inventoryPermissions, boolean purchasePermissions) {
+        logger.info("Appoint store manager");
         try {
             market.appointStoreManager(firstMemberID, secondMemberID, storeID,
                     inventoryPermissions, purchasePermissions);
         } catch (Exception e) {
-            System.out.println(e);
+            logger.error("Error occurred during appointing store manager", e.getMessage(), e);
         }
     }
 
     public void updateStoreManagerPermissions(int firstMemberID, int secondMemberID, int storeID,
                                               boolean inventoryPermissions, boolean purchasePermissions) {
+        logger.info("Updating store manager permissions");
         try {
             market.updateStoreManagerPermissions(firstMemberID, secondMemberID, storeID,
                     inventoryPermissions, purchasePermissions);
         } catch (Exception e) {
-            System.out.println(e);
+            logger.error("Error occurred during updating store manager permissions", e.getMessage(), e);
         }
     }
 
