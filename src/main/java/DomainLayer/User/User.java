@@ -14,7 +14,7 @@ public class User {
     private String address;
     private String name;
     private Cart cart;
-    private Map<Integer,Integer> paymentServiceIDReceiptID;
+    private Map<Integer, Integer> receiptIdsAndStoreId; //<receiptId, storeId>
 
     public User(int userID){
         this.userID = userID;
@@ -24,7 +24,7 @@ public class User {
         this.address = null;
         this.state = new Guest(); //default state
         this.cart = new Cart();
-        this.paymentServiceIDReceiptID = new HashMap<>();
+        this.receiptIdsAndStoreId = new HashMap<>();
     }
 
     public int getUserID(){
@@ -122,5 +122,10 @@ public class User {
     public int getCartTotalPriceBeforeDiscount()
     {
         return this.cart.getCartPrice();
+    }
+
+    public void addReceipt(Map<Integer, Integer> receiptIdAndStoreId)
+    {
+        receiptIdsAndStoreId.putAll(receiptIdAndStoreId);
     }
 }

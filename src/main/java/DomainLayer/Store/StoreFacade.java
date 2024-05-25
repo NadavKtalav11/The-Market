@@ -186,9 +186,9 @@ public class StoreFacade {
         }
     }
 
-    public void addReceiptToStore(int storeId, int receiptId)
+    public void addReceiptToStore(int storeId, int receiptId, int userId)
     {
-        allStores.get(storeId).addReceipt(receiptId);
+        allStores.get(storeId).addReceipt(receiptId, userId);
     }
 
 }

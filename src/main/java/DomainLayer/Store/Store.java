@@ -12,7 +12,7 @@ public class Store {
     private PurchasePolicy purchasePolicy;
     private double rating;
     private int numOfRatings;
-    private List<Integer> receiptsIds;
+    private Map<Integer, Integer> receiptsIdsUserIds; //<receiptId, userId>
 
 
     private Object storeProductLock;
@@ -28,7 +28,7 @@ public class Store {
         purchasePolicy = new PurchasePolicy();
         storeProductLock= new Object();
         isOpenedLock = new Object();
-        this.receiptsIds = new ArrayList<>();
+        this.receiptsIdsUserIds = new HashMap<>();
     }
 
 
@@ -165,8 +165,8 @@ public class Store {
 
     }
 
-    public void addReceipt(int receiptId)
+    public void addReceipt(int receiptId, int userId)
     {
-        receiptsIds.add(receiptId);
+        receiptsIdsUserIds.put(receiptId, userId);
     }
 }

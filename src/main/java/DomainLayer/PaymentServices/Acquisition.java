@@ -68,11 +68,11 @@ public class Acquisition {
         return storeIdAndReceipt.get(storeId).getReceiptId();
     }
 
-    public Map<Integer, Integer> getStoreIdAndReceiptIdMap() {
-        Map<Integer, Integer> storeIdAndReceiptIdMap = new HashMap<>();
+    public Map<Integer, Integer> getReceiptIdAndStoreIdMap() {
+        Map<Integer, Integer> receiptIdAndStoreIdMap = new HashMap<>();
         for (Map.Entry<Integer, Receipt> entry : storeIdAndReceipt.entrySet()) {
-            storeIdAndReceiptIdMap.put(entry.getKey(), entry.getValue().getReceiptId());
+            receiptIdAndStoreIdMap.put(entry.getValue().getReceiptId(), entry.getKey());
         }
-        return storeIdAndReceiptIdMap;
+        return receiptIdAndStoreIdMap;
     }
 }

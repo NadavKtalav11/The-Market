@@ -23,7 +23,7 @@ public  class ExternalPaymentService {
                                             int acquisitionIdCounter, int receiptIdCounter){
         Acquisition acquisition = new Acquisition(acquisitionIdCounter, id, price, holder, creditCard, cvv, month, year, productList, receiptIdCounter);
         idAndAcquisition.put(acquisitionIdCounter, acquisition);
-        return acquisition.getStoreIdAndReceiptIdMap();
+        return acquisition.getReceiptIdAndStoreIdMap();
     }
 
     // Abstract method for refunding to a card
