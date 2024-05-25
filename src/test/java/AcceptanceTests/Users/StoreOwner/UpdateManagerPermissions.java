@@ -1,12 +1,12 @@
 package AcceptanceTests.Users.StoreOwner;
 
-import AcceptanceTests.BridgeService;
-import AcceptanceTests.ProxyService;
+import AcceptanceTests.BridgeToTests;
+import AcceptanceTests.ProxyToTest;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 public class UpdateManagerPermissions {
-    private BridgeService impl = new ProxyService();;
+    private BridgeToTests impl = new ProxyToTest("Real");
 
 
     @BeforeAll

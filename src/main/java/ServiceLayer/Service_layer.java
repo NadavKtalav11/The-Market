@@ -21,29 +21,28 @@ public class Service_layer {
 
 
     public Response<String> init(String userName, String password, int licensedDealerNumber,
-                     String paymentServiceName, String url, int licensedDealerNumber1, String supplyServiceName, String address) {
-
+                                 String paymentServiceName, String url, int licensedDealerNumber1, String supplyServiceName, HashSet<String> countries, HashSet<String> cities){
         logger.info("Starting the initialization of the system.");
         try {
             market.init(userName, password, licensedDealerNumber, paymentServiceName,
-                    url, licensedDealerNumber1, supplyServiceName, address);
+                    url, licensedDealerNumber1, supplyServiceName, countries, cities);
             return new Response<>("Initialization successful", "System initialized successfully.");
-          
+
         } catch (Exception e) {
             logger.error("Error occurred during the initialization: {}", e.getMessage(), e);
             return new Response<>(null, "Initialization failed: " + e.getMessage());
         }
     }
-/*
-    public void payWithExternalPaymentService(int price, int cvv, int month, int year, String holderID, int userID) {
+
+    public void payWithExternalPaymentService(int price,int cardNumber, int cvv, int month, int year, String holderID, int userID) {
         logger.info("Reaching for the payment service in order to complete the purchase.");
         try {
-            //   market.payWithExternalPaymentService( price,  cvv,  month,  year,  holderID,  userID);
+            market.payWithExternalPaymentService( price, cardNumber, cvv,  month,  year,  holderID,  userID, market.getPurchaseList(userID) );
+
         } catch (Exception e) {
             logger.error("Error occurred with the payment service company: {}", e.getMessage(), e);
         }
     }
-*/
 
     public Response<String> exitMarketSystem(int userID) {
         logger.info("Exiting market system");
