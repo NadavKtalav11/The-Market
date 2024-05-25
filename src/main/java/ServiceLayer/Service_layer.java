@@ -25,7 +25,7 @@ public class Service_layer {
         logger.info("Starting the initialization of the system.");
         try {
             market.init(userName, password, licensedDealerNumber, paymentServiceName,
-                    url, licensedDealerNumber1, supplyServiceName, countires, cities);
+                    url, licensedDealerNumber1, supplyServiceName, countries, cities);
             return new Response<>("Initialization successful", "System initialized successfully.");
 
         } catch (Exception e) {
@@ -42,7 +42,6 @@ public class Service_layer {
             logger.error("Error occurred with the payment service company: {}", e.getMessage(), e);
         }
     }
-*/
     //todo think about the userID and the purpose of this function.
 
     public Response<String> exitMarketSystem(int userID) {
