@@ -27,6 +27,15 @@ public class PaymentServicesFacade {
             return allPaymentServices.size()==size_before+1;
     }
 
+    public Map<Integer,Integer> pay(int price,int creditCard, int cvv, int month, int year, String holderID, int userId, Map<Integer, Map<String, Integer>> productList){
+        ExternalPaymentService externalPaymentService = allPaymentServices.values().iterator().next();
+        return externalPaymentService.payWithCard(price, creditCard, cvv, month, year, holderID, userId, productList);
+    }
+
+
+
+
+
     public Map<Integer, Integer> getStorePurchaseInfo()
     {
         Map<Integer, Integer> storePurchaseStats = new HashMap<>();
