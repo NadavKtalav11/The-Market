@@ -6,10 +6,10 @@ import ServiceLayer.Service_layer;
 import java.util.List;
 import java.util.Map;
 
-public class RealServiceAdaptor implements BridgeService {
+public class RealToTest implements BridgeToTests {
     private Service_layer service;
 
-    public RealServiceAdaptor()
+    public RealToTest()
     {
         this.service = new Service_layer();
     }

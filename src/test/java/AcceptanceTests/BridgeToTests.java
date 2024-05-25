@@ -5,7 +5,7 @@ import ServiceLayer.Response;
 import java.util.List;
 import java.util.Map;
 
-public interface BridgeService {
+public interface BridgeToTests {
 
     Response<String> init(String userName, String password, int licensedDealerNumber,
                           String paymentServiceName, String url, int licensedDealerNumber1, String supplyServiceName, String address);
