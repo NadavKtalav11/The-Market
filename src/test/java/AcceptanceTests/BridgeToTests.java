@@ -8,8 +8,9 @@ import java.util.Map;
 
 public interface BridgeToTests {
 
-    Response<String> init(String userName, String password, int licensedDealerNumber,
+    Response<String> init(String userName, String password,String birthday, String country, String city, String address, String name, int licensedDealerNumber,
                           String paymentServiceName, String url, int licensedDealerNumber1, String supplyServiceName, HashSet<String> countries, HashSet<String> cities);
+
 
     Response<String> exitMarketSystem(int userID);
 
