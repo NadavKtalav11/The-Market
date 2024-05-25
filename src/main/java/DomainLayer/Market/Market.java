@@ -63,9 +63,14 @@ public class Market {
 
     public void payWithExternalPaymentService(int price,int creditCard, int cvv, int month, int year, String holderID, int userId, Map<Integer, Map<String, Integer>> productList) {
         try {
-            Map<Integer,Integer> receiptNumber = paymentServicesFacade.pay(price, creditCard, cvv, month, year, holderID, userId, productList);
+            Map<Integer,Integer> receiptNumber = paymentServicesFacade.pay(price, creditCard, cvv, month, year, holderID, userId, productList); //<storeId, receiptId>
             //todo add this to the map of the user.
             //print (purchsde successed)
+
+            //Add the receiptId to the store receipts list
+            for (Integer storeId : receiptNumber.keySet()) {
+                storeFacade.addReceiptToStore(storeId, receiptNumber.get(storeId));
+            }
         }
         catch (Exception e){
             //List<Integer> stores = this.userFacade.getCartStoresByUser(user_ID);
