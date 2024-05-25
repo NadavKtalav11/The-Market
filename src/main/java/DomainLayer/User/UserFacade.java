@@ -213,4 +213,9 @@ public class UserFacade {
         /*this function returns the cart total price before discounts, of a specific user*/
         return getUserByID(user_ID).getCartTotalPriceBeforeDiscount();
     }
+
+    public void addReceiptToUser(Map<Integer, Integer> receiptIdAndStoreId, int userId)
+    {
+        allUsers.get(userId).addReceipt(receiptIdAndStoreId);
+    }
 }

@@ -12,6 +12,7 @@ public class Store {
     private PurchasePolicy purchasePolicy;
     private double rating;
     private int numOfRatings;
+    private Map<Integer, Integer> receiptsIdsUserIds; //<receiptId, userId>
 
 
     private Object storeProductLock;
@@ -27,6 +28,7 @@ public class Store {
         purchasePolicy = new PurchasePolicy();
         storeProductLock= new Object();
         isOpenedLock = new Object();
+        this.receiptsIdsUserIds = new HashMap<>();
     }
 
 
@@ -161,5 +163,10 @@ public class Store {
                     .map(Product::getProductName)
                     .collect(Collectors.toList());
 
+    }
+
+    public void addReceipt(int receiptId, int userId)
+    {
+        receiptsIdsUserIds.put(receiptId, userId);
     }
 }
