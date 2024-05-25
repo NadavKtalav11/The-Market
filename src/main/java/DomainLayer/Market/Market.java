@@ -15,7 +15,7 @@ public class Market {
     private static Market MarketInstance;
     private PaymentServicesFacade paymentServicesFacade;
     private SupplyServicesFacade supplyServicesFacade;
-    //private Set<Integer> systemManagerIds;
+    private Set<Integer> systemManagerIds;
     private AuthorizationAndSecurityFacade authorizationAndSecurityFacade;
     private StoreFacade storeFacade;
     private UserFacade userFacade;
@@ -40,19 +40,20 @@ public class Market {
         this.authorizationAndSecurityFacade = AuthorizationAndSecurityFacade.getInstance();
         supplyServicesFacade= SupplyServicesFacade.getInstance();
         initializedLock= new Object();
+        this.systemManagerIds = new HashSet<>();
     }
 
-    public void init(String userName, String password, int licensedDealerNumber,
-                     String paymentServiceName, String url, int licensedDealerNumber1, String supplyServiceName, HashSet<String> countries, HashSet<String> cities){
+    public void init(String userName, String password,String birthday, String country, String city, String address, String name, int licensedDealerNumber,
+                     String paymentServiceName, String url,
+                     int licensedDealerNumber1, String supplyServiceName, HashSet<String> countries, HashSet<String> cities) throws Exception {
         synchronized (initializedLock) {
             if (initialized == true) {
                 return;
             }
         }
 
-        // userFacade.register(username, password)
-       // int systemMangerId = userFacade.getByUserName();
-       // systemManagerIds.add(systemMangerId);
+        int systemMangerId = userFacade.registerSystemAdmin(userName, password, birthday,country,city,address,name);
+        systemManagerIds.add(systemMangerId);
         paymentServicesFacade.addExternalService(licensedDealerNumber,paymentServiceName,url);
         supplyServicesFacade.addExternalService(licensedDealerNumber1,supplyServiceName, countries, cities);
         synchronized (initializedLock) {

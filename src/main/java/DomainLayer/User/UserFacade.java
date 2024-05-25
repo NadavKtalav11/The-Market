@@ -120,6 +120,22 @@ public class UserFacade {
         }
     }
 
+    public int registerSystemAdmin(String username, String password, String birthday,String country, String city,String address, String name) throws Exception {
+        validateRegistrationDetails(username,password,birthday,country,city,address,name);
+        int memberId;
+        synchronized (memberIdLock){
+            memberId = currentMemberID;
+        }
+        Member newMember = new Member(memberId, username,password,birthday,country,city,address,name);
+        synchronized (membersLock) {
+            members.put(memberId, newMember);
+            currentMemberID++;
+        }
+        return memberId;
+        //todo pass the user to login page.
+    }
+
+
 
     private void validateRegistrationDetails(String username, String password, String birthDate, String country, String city, String address, String name) throws Exception {
         if (username == null || password == null || birthDate == null || country ==null || city == null ||

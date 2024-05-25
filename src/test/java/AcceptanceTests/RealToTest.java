@@ -17,7 +17,9 @@ public class RealToTest implements BridgeToTests {
     public Response<String> init(String userName, String password, int licensedDealerNumber,
                           String paymentServiceName, String url, int licensedDealerNumber1, String supplyServiceName, String address)
     {
-        return service.init(userName, password, licensedDealerNumber, paymentServiceName, url, licensedDealerNumber1, supplyServiceName, address);
+        return null;
+        //todo remove comment before push
+        //return service.init(userName, password, licensedDealerNumber, paymentServiceName, url, licensedDealerNumber1, supplyServiceName, address);
     }
 
     public Response<String> exitMarketSystem(int userID)
