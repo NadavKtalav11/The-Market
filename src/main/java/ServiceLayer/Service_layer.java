@@ -20,11 +20,11 @@ public class Service_layer {
 
 
 
-    public Response<String> init(String userName, String password, int licensedDealerNumber,
+    public Response<String> init(String userName, String password,String birthday, String country, String city, String address, String name, int licensedDealerNumber,
                                  String paymentServiceName, String url, int licensedDealerNumber1, String supplyServiceName, HashSet<String> countries, HashSet<String> cities){
         logger.info("Starting the initialization of the system.");
         try {
-            market.init(userName, password, licensedDealerNumber, paymentServiceName,
+            market.init(userName, password, birthday,  country,  city,  address,  name, licensedDealerNumber, paymentServiceName,
                     url, licensedDealerNumber1, supplyServiceName, countries, cities);
             return new Response<>("Initialization successful", "System initialized successfully.");
 
@@ -103,12 +103,12 @@ public class Service_layer {
         }
     }
 
-    public Response<String> addProductToStore(int memberID, int storeID, String productName, int price, int quantity,
+    public Response<String> addProductToStore(int userId, int memberID, int storeID, String productName, int price, int quantity,
                                   String description, String categoryStr) {
         logger.info("Adding product to store");
 
         try {
-            market.addProductToStore(memberID, storeID, productName, price, quantity, description, categoryStr);
+            market.addProductToStore(userId, memberID, storeID, productName, price, quantity, description, categoryStr);
             return new Response<>("Product added successfully", "Product added to store successfully.");
         } catch (Exception e) {
             logger.error("Error occurred during adding product to store", e.getMessage(), e);
@@ -117,11 +117,11 @@ public class Service_layer {
     }
 
 
-    public Response<String> removeProductFromStore(int memberID, int storeID, String productName) {
+    public Response<String> removeProductFromStore(int userId, int memberID, int storeID, String productName) {
         logger.info("Removing product from store");
 
         try {
-            market.removeProductFromStore(memberID, storeID, productName);
+            market.removeProductFromStore(userId, memberID, storeID, productName);
             return new Response<>("Product removed successfully", "Product removed from store successfully.");
         } catch (Exception e) {
 
@@ -130,12 +130,12 @@ public class Service_layer {
         }
     }
 
-    public Response<String> updateProductInStore(int memberID, int storeID, String productName, int price, int quantity,
+    public Response<String> updateProductInStore(int userId, int memberID, int storeID, String productName, int price, int quantity,
                                      String description, String categoryStr) {
 
         logger.info("Updating product in store");
         try {
-            market.updateProductInStore(memberID, storeID, productName, price, quantity, description, categoryStr);
+            market.updateProductInStore(userId, memberID, storeID, productName, price, quantity, description, categoryStr);
             return new Response<>("Product updated successfully", "Product updated in store successfully.");
         } catch (Exception e) {
 
@@ -144,11 +144,11 @@ public class Service_layer {
         }
     }
 
-    public Response<String> appointStoreOwner(int firstMemberID, int secondMemberID, int storeID) {
+    public Response<String> appointStoreOwner(int userID, int firstMemberID, int secondMemberID, int storeID) {
         logger.info("Appoint store owner");
 
         try {
-            market.appointStoreOwner(firstMemberID, secondMemberID, storeID);
+            market.appointStoreOwner(userID, firstMemberID, secondMemberID, storeID);
             return new Response<>("Store owner appointed successfully", "Store owner appointed successfully.");
         } catch (Exception e) {
 
@@ -158,13 +158,13 @@ public class Service_layer {
         }
     }
 
-    public Response<String> appointStoreManager(int firstMemberID, int secondMemberID, int storeID,
+    public Response<String> appointStoreManager(int userId ,int firstMemberID, int secondMemberID, int storeID,
                                     boolean inventoryPermissions, boolean purchasePermissions) {
 
         logger.info("Appoint store manager");
 
         try {
-            market.appointStoreManager(firstMemberID, secondMemberID, storeID,
+            market.appointStoreManager(userId, firstMemberID, secondMemberID, storeID,
                     inventoryPermissions, purchasePermissions);
             return new Response<>("Store manager appointed successfully", "Store manager appointed successfully.");
         } catch (Exception e) {
@@ -174,13 +174,13 @@ public class Service_layer {
         }
     }
 
-    public Response<String> updateStoreManagerPermissions(int firstMemberID, int secondMemberID, int storeID,
+    public Response<String> updateStoreManagerPermissions(int userId, int firstMemberID, int secondMemberID, int storeID,
                                               boolean inventoryPermissions, boolean purchasePermissions) {
 
         logger.info("Updating store manager permissions");
 
         try {
-            market.updateStoreManagerPermissions(firstMemberID, secondMemberID, storeID,
+            market.updateStoreManagerPermissions(userId , firstMemberID, secondMemberID, storeID,
                     inventoryPermissions, purchasePermissions);
             return new Response<>("Permissions updated successfully", "Store manager permissions updated successfully.");
         } catch (Exception e) {
