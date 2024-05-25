@@ -41,7 +41,7 @@ public class SupplyServicesFacade {
             for (Map.Entry<Integer, ExternalSupplyService> entry : externalSupplyService.entrySet()) {
                 ExternalSupplyService externalSupplyService1 = entry.getValue();
                 if (externalSupplyService1.checkAreaAvailability(country, city)) {
-                    externalSupplyService1.getLicensedDealerNumber();
+                    return externalSupplyService1.getLicensedDealerNumber();
                     }
             }
         }

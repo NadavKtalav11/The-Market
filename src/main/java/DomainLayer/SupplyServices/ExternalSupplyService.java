@@ -34,6 +34,23 @@ public class ExternalSupplyService {
         return true;
     }
 
+    public void addCountries(HashSet<String> countriesToAdd){
+        countries.addAll(countriesToAdd);
+
+    }
+
+    public void addCities(HashSet<String> citiesToAdd){
+        cities.addAll(citiesToAdd);
+
+    }
+
+    public HashSet<String> getCountries(){
+        return this.countries;
+    }
+    public HashSet<String> getCities(){
+        return this.cities;
+    }
+
 
     public boolean createShiftingDetails(String userName, String country,String city,String address){
         int size = shiftIdAndDetails.size();
