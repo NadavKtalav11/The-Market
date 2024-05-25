@@ -42,7 +42,8 @@ public class ExternalSupplyService {
         ShiftIDCounter++;
         return shiftIdAndDetails.size() == size+1;
     }
-
-    // Check if the product exists in the instance's map and if the amount is sufficient
+    public HashMap<Integer,ShiftingDetails> getShiftIdAndDetails(){
+        return this.shiftIdAndDetails;
+    }
 
 }

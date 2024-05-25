@@ -18,11 +18,11 @@ public class ProxyToTest implements BridgeToTests {
     }
 
 
-    @Override
-    public Response<String> init(String userName, String password, int licensedDealerNumber,
-                                 String paymentServiceName, String url, int licensedDealerNumber1, String supplyServiceName, HashSet<String> countries, HashSet<String> cities) {
+
+    public Response<String> init(String userName, String password, int licensedDealerNumber, String paymentServiceName, String url, int licensedDealerNumber1, String supplyServiceName, HashSet<String> countries, HashSet<String> cities) {
         if (realServiceAdaptor != null)
-            return realServiceAdaptor.init(userName, password, licensedDealerNumber, paymentServiceName, url, licensedDealerNumber1, supplyServiceName, countries, cities);
+            return realServiceAdaptor.init(userName, password, licensedDealerNumber, paymentServiceName, url, licensedDealerNumber1, supplyServiceName, countries,cities);
+
         else
             return new Response<>(null, "Not Implemented yet");
     }

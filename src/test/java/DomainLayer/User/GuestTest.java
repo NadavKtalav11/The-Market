@@ -33,6 +33,7 @@ public class GuestTest {
         (mockUser.getState()).Login(mockUser, username, password, expectedMember);
         verify(mockUser).setState(expectedMember); // Verify that the setState method was called
         assertTrue(mockUser.getState() instanceof Member); // Additional assertion
+
     }
 
     @Test
