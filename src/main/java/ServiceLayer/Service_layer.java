@@ -27,9 +27,7 @@ public class Service_layer {
             market.init(userName, password, licensedDealerNumber, paymentServiceName,
                     url, licensedDealerNumber1, supplyServiceName, countires, cities);
             return new Response<>("Initialization successful", "System initialized successfully.");
-          
-        }
-          
+
         } catch (Exception e) {
             logger.error("Error occurred during the initialization: {}", e.getMessage(), e);
             return new Response<>(null, "Initialization failed: " + e.getMessage());
