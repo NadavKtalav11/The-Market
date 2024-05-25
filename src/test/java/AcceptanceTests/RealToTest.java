@@ -3,6 +3,7 @@ package AcceptanceTests;
 import ServiceLayer.Response;
 import ServiceLayer.Service_layer;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
@@ -15,11 +16,11 @@ public class RealToTest implements BridgeToTests {
     }
 
     public Response<String> init(String userName, String password, int licensedDealerNumber,
-                          String paymentServiceName, String url, int licensedDealerNumber1, String supplyServiceName, String address)
+                                 String paymentServiceName, String url, int licensedDealerNumber1, String supplyServiceName, HashSet<String> countries, HashSet<String> cities)
     {
-        return null;
-        //todo remove comment before push
-        //return service.init(userName, password, licensedDealerNumber, paymentServiceName, url, licensedDealerNumber1, supplyServiceName, address);
+
+        return service.init(userName, password, licensedDealerNumber, paymentServiceName, url, licensedDealerNumber1, supplyServiceName, countries, cities);
+
     }
 
     public Response<String> exitMarketSystem(int userID)
