@@ -16,9 +16,9 @@ public class Login {
 
     @BeforeAll
     public void setUp() {
-        impl.register(0, "user1", "0VnDExW3T9", "12/12/00", "BeerSheva");
-        impl.register(1, "user2", "QtzxeceVM0", "12/12/00", "BeerSheva");
-        impl.register(2, "user3", "KjUJqvJBls", "12/12/00", "BeerSheva");
+        impl.register(0, "user1", "0VnDExW3T9", "12/12/00","Israel", "BeerSheva", "bialik","noa");
+        impl.register(1, "user2", "QtzxeceVM0", "12/12/00", "Israel", "BeerSheva", "bialik","noa");
+        impl.register(2, "user3", "KjUJqvJBls", "12/12/00", "Israel", "BeerSheva", "bialik","noa");
     }
 
     @AfterEach

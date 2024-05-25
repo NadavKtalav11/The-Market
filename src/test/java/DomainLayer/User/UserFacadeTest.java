@@ -103,10 +103,13 @@ public class UserFacadeTest {
         String password = "testPass";
         String birthday = "01-01-2000";
         String address = "123 Test St";
+        String country = "testCountry";
+        String city = "testCity";
+        String name = "testName";
 
         //doNothing().when(mockUser).register(anyString(), anyString(), anyString(), anyString());
 
-        userFacade.register(userId, username, password, birthday, address);
+        userFacade.register(userId, username, password, birthday,country,city ,address, name);
         //verify(mockUser).register(username, password, birthday, address);
     }
 
@@ -115,9 +118,15 @@ public class UserFacadeTest {
         String username = "testUser";
         String password = "testPass";
 
-        doNothing().when(mockUser).Login(anyString(), anyString());
+        Member member = new Member(userId, username, password, "1990-01-01", "Country", "City", "Address", "Name");
+        doNothing().when(mockUser).Login(anyString(), anyString(), eq(member));
+
+        // Assuming a method to add a member for testing
+        userFacade.allUsers.put(userId, mockUser);
+        userFacade.allUsers.put(2, new User(2)); // Adding another user for proper username verification
+        ((User) userFacade.allUsers.get(2)).setState(member);
 
         userFacade.Login(userId, username, password);
-        verify(mockUser).Login(username, password);
+        verify(mockUser).Login(username, password, member);
     }
 }

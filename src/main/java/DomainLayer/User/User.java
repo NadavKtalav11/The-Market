@@ -16,15 +16,14 @@ public class User {
     private Cart cart;
     private Map<Integer,Integer> paymentServiceIDReceiptID;
 
-    public User(int userID, String country, String city,String address){
+    public User(int userID){
         this.userID = userID;
         this.birthday = null;
-        //this.address = null;
+        this.country = null;
+        this.city = null;
+        this.address = null;
         this.state = new Guest(); //default state
         this.cart = new Cart();
-        this.address = address;
-        this.city = city;
-        this.country = country;
         this.paymentServiceIDReceiptID = new HashMap<>();
     }
 
@@ -67,8 +66,8 @@ public class User {
         this.cart.calcCartTotal();
     }
 
-    public void Login(String username, String password) throws Exception {
-        state.Login(this,username,password);
+    public void Login(String username, String password, Member loginMember) throws Exception {
+        state.Login(this,username,password, loginMember);
     }
     
 

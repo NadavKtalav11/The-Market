@@ -30,9 +30,9 @@ public class RealToTest implements BridgeToTests {
         return service.enterMarketSystem();
     }
 
-    public Response<String> register(int userID, String username, String password, String birthday, String address)
+    public Response<String> register(int userID, String username, String password, String birthday,String country, String city, String address, String name)
     {
-        return service.register(userID, username, password, birthday, address);
+        return service.register(userID, username, password, birthday,country, city, address, name);
     }
 
     public Response<String> login(int userID, String username, String password)
@@ -90,9 +90,9 @@ public class RealToTest implements BridgeToTests {
         return service.generalProductSearch(userId, productName, categoryStr, keywords);
     }
 
-    public Response<Integer> checkingCartValidationBeforePurchase(int user_ID)
+    public Response<Integer> checkingCartValidationBeforePurchase(int user_ID, String country, String city, String address)
     {
-        return service.checkingCartValidationBeforePurchase(user_ID);
+        return service.checkingCartValidationBeforePurchase(user_ID, country, city,address);
     }
 
     public Response<List<Integer>> getInformationAboutStores(int user_ID)

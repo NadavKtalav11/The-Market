@@ -1,21 +1,33 @@
 package DomainLayer.PaymentServices;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class Receipt {
+    private int receiptId;
     private int userId;
     private int totalPrice;
-    private LocalDate date;
+    private String userName;
+    private int creditCardNumber;
+    private int cvv;
+    private int month;
+    private int year;
+    private Date date;
+    Map<Integer, Map<String, Integer>> productList = new HashMap<>();
     private HashMap<Integer, List<ProductDetail>> storeIdAndProductDetails; //<storeId, List<details>>
 
-    public Receipt(int userId, int totalPrice, LocalDate date) {
+    public Receipt(int receiptId, int userId, int totalPrice,String userName,
+                   int creditCardNumber,int cvv, int month, int year, Map<Integer, Map<String, Integer>> productList) {
+        this.receiptId = receiptId;
         this.userId = userId;
         this.totalPrice = totalPrice;
-        this.date = date;
+        this.userName = userName;
+        this.creditCardNumber= creditCardNumber;
+        this.cvv = cvv;
+        this.month=month;
+        this.year=year;
+        this.productList = productList;
+        this.date = new Date(); // Current date and time
         this.storeIdAndProductDetails = new HashMap<>();
     }
 
@@ -36,13 +48,11 @@ public class Receipt {
         this.totalPrice = totalPrice;
     }
 
-    public LocalDate getDate() {
+    public Date getDate() {
         return date;
     }
 
-    public void setDate(LocalDate date) {
-        this.date = date;
-    }
+
 
     public Map<Integer, List<ProductDetail>> getStoreIdAndProductDetails() {
         return storeIdAndProductDetails;
