@@ -27,7 +27,7 @@ public class MarketTest {
         HashSet<String> cities = new HashSet<>(Arrays.asList("Tel Aviv", "Madrid", "Ashdod"));
 
 
-        market.init("admin", "adminPassword", 1234, "PaymentService1", "https://paymentservice1.com", 5678, "SupplyService1", countries, cities);
+        market.init("admin", "adminPassword", 1234, "Israel", "Bash", "Bialik","noa","PaymentService1", "https://paymentservice1.com", 5678, "SupplyService1", countries, cities);
         assertTrue( market.isInitialized() ,"Market should be initialized");
 
         // Test reinitialization
