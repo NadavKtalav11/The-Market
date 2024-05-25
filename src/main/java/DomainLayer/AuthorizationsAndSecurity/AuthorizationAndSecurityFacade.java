@@ -9,7 +9,7 @@ public class AuthorizationAndSecurityFacade {
     private TokensService tokensService;
     private static AuthorizationAndSecurityFacade instance;
 
-    public static AuthorizationAndSecurityFacade getInstance() {
+    public synchronized static AuthorizationAndSecurityFacade getInstance() {
         if (instance == null) {
             instance = new AuthorizationAndSecurityFacade();
         }
@@ -29,6 +29,10 @@ public class AuthorizationAndSecurityFacade {
 
     public String encodePassword(String password){
         return passwordEncryptor.encryptPassword(password);
+    }
+
+    public void removeToken(int userId){
+        tokensService.removeToken(userId);
     }
 
 

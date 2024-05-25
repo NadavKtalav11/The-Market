@@ -7,11 +7,8 @@ import DomainLayer.Store.StoreFacade;
 import DomainLayer.User.UserFacade;
 import DomainLayer.SupplyServices.SupplyServicesFacade;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Set;
-import java.util.Map;
+import javax.swing.event.ListDataEvent;
+import java.util.*;
 
 
 public class Market {
@@ -24,8 +21,9 @@ public class Market {
     private UserFacade userFacade;
     private RoleFacade roleFacade;
     private boolean initialized= false;
+    Object initializedLock;
 
-    public static Market getInstance() {
+    public synchronized static Market getInstance() {
         if (MarketInstance == null) {
             MarketInstance = new Market();
         }
@@ -36,36 +34,57 @@ public class Market {
 
     private Market(){
         this.storeFacade = StoreFacade.getInstance();
-         this.userFacade = UserFacade.getInstance();
-          this.roleFacade = RoleFacade.getInstance();
-          this.paymentServicesFacade = PaymentServicesFacade.getInstance();
-          this.authorizationAndSecurityFacade = AuthorizationAndSecurityFacade.getInstance();
+        this.userFacade = UserFacade.getInstance();
+        this.roleFacade = RoleFacade.getInstance();
+        this.paymentServicesFacade = PaymentServicesFacade.getInstance();
+        this.authorizationAndSecurityFacade = AuthorizationAndSecurityFacade.getInstance();
+        supplyServicesFacade= SupplyServicesFacade.getInstance();
+        initializedLock= new Object();
+        this.systemManagerIds = new HashSet<>();
     }
 
-    public void init(String userName, String password, int licensedDealerNumber,
-                     String paymentServiceName, String url, int licensedDealerNumber1, String supplyServiceName, String address){
-        if(initialized==true){
-            return;
+    public void init(String userName, String password,String birthday, String country, String city, String address, String name, int licensedDealerNumber,
+                     String paymentServiceName, String url,
+                     int licensedDealerNumber1, String supplyServiceName, HashSet<String> countries, HashSet<String> cities) throws Exception {
+        synchronized (initializedLock) {
+            if (initialized == true) {
+                return;
+            }
         }
 
-        // userFacade.register(username, password)
-       // int systemMangerId = userFacade.getByUserName();
-       // systemManagerIds.add(systemMangerId);
+        int systemMangerId = userFacade.registerSystemAdmin(userName, password, birthday,country,city,address,name);
+        systemManagerIds.add(systemMangerId);
         paymentServicesFacade.addExternalService(licensedDealerNumber,paymentServiceName,url);
-        supplyServicesFacade.addExternalService(licensedDealerNumber1,supplyServiceName, address);
-
-        initialized = true;
+        supplyServicesFacade.addExternalService(licensedDealerNumber1,supplyServiceName, countries, cities);
+        synchronized (initializedLock) {
+            initialized = true;
+        }
     }
 
-    public boolean payWithExternalPaymentService() {
-        //HashMap<Integer, Integer>  productIdAndAmount= userFacade.payWithExternalPaymentService(userId);
-        return true;
+    public void payWithExternalPaymentService(int price,int creditCard, int cvv, int month, int year, String holderID, int userId, Map<Integer, Map<String, Integer>> productList) {
+        try {
+            Map<Integer,Integer> receiptNumber = paymentServicesFacade.pay(price, creditCard, cvv, month, year, holderID, userId, productList);
+            //todo add this to the map of the user.
+            //print (purchsde successed)
+        }
+        catch (Exception e){
+            //List<Integer> stores = this.userFacade.getCartStoresByUser(user_ID);
+            // returnStock(getPuchaseList(userId))
+        }
     }
 
-    public void Logout(int memberID){
+    public void returnStock(Map<Integer, Map<String, Integer>> products){
+        for (Integer storeId: products.keySet()){
+            storeFacade.returnProductToStore(products.get(storeId), storeId);
+        }
+    }
+
+    public void logout(int memberID){
         //todo add condition if the user is logged in
         userFacade.getUserByID(memberID).Logout();
+        authorizationAndSecurityFacade.removeToken(memberID);
     }
+
 
     public void exitMarketSystem(int userID){
         userFacade.exitMarketSystem(userID);
@@ -73,25 +92,29 @@ public class Market {
 
 
     public void enterMarketSystem(){
-
-        int userId = userFacade.addUser();
-        authorizationAndSecurityFacade.generateToken(userId);
+        userFacade.addUser();
     }
-    public void register(int userID,String username, String password, String birthday, String address) throws Exception {
-        authorizationAndSecurityFacade.validateToken(authorizationAndSecurityFacade.getToken(userID));
+
+    public void register( int userId,String username, String password, String birthday,String country, String city, String address, String name) throws Exception {
         //check validation
         String encryptedPassword = authorizationAndSecurityFacade.encodePassword(password);
-        userFacade.register(userID, username,encryptedPassword,birthday,address);
-
+        userFacade.register(userId, username,encryptedPassword,birthday,country,city,address,name);
+        authorizationAndSecurityFacade.generateToken(userId);
     }
 
     public void Login(int userID,String username, String password) throws Exception {
         String encryptedPassword = authorizationAndSecurityFacade.encodePassword(password);
         userFacade.Login(userID, username,encryptedPassword);
+        authorizationAndSecurityFacade.generateToken(userID);
     }
 
-    public void addProductToBasket(String productName, int quantity, int storeId, int userId)
+    public void addProductToBasket(String productName, int quantity, int storeId, int userId) throws Exception
     {
+        boolean succeeded=  authorizationAndSecurityFacade.validateToken(authorizationAndSecurityFacade.getToken(userId));
+        if (!succeeded){
+            logout(userId);
+            throw new Exception("your session was over please log in again");
+        }
         boolean canAddToBasket = storeFacade.checkQuantityAndPolicies(productName, quantity, storeId, userId);
         if (canAddToBasket)
         {
@@ -104,8 +127,13 @@ public class Market {
         }
     }
 
-    public void removeProductFromBasket(String productName, int storeId, int userId)
+    public void removeProductFromBasket(String productName, int storeId, int userId)throws Exception
     {
+        boolean succeeded=  authorizationAndSecurityFacade.validateToken(authorizationAndSecurityFacade.getToken(userId));
+        if (!succeeded){
+            logout(userId);
+            throw new Exception("your session was over please log in again");
+        }
         boolean canRemoveFromBasket = userFacade.checkIfCanRemove(productName, storeId, userId);
         if (canRemoveFromBasket)
         {
@@ -118,7 +146,12 @@ public class Market {
     }
 
 
-    public void openStore(int user_ID) {
+    public void openStore(int user_ID)throws Exception {
+        boolean succeeded=  authorizationAndSecurityFacade.validateToken(authorizationAndSecurityFacade.getToken(user_ID));
+        if (!succeeded){
+            logout(user_ID);
+            throw new Exception("your session was over please log in again");
+        }
         if (userFacade.isUserLoggedIn(user_ID)) {
             int store_ID = this.storeFacade.openStore();   //todo: compare to use case parameters
             int member_ID = this.userFacade.getUsernameByUserID(user_ID);
@@ -130,6 +163,11 @@ public class Market {
 
     public void addProductToStore(int memberID, int storeID, String productName, int price, int quantity,
                                                         String description, String categoryStr) throws Exception {
+        boolean succeeded=  authorizationAndSecurityFacade.validateToken(authorizationAndSecurityFacade.getToken(memberID));
+        if (!succeeded){
+            logout(memberID);
+            throw new Exception("your session was over please log in again");
+        }
         if (roleFacade.verifyStoreOwner(storeID, memberID) ||
                 (roleFacade.verifyStoreManager(storeID, memberID) &&
                         roleFacade.managerHasInventoryPermissions(memberID, storeID))) {
@@ -140,6 +178,11 @@ public class Market {
     }
 
     public void removeProductFromStore(int memberID, int storeID, String productName) throws Exception {
+        boolean succeeded=  authorizationAndSecurityFacade.validateToken(authorizationAndSecurityFacade.getToken(memberID));
+        if (!succeeded){
+            logout(memberID);
+            throw new Exception("your session was over please log in again");
+        }
         if (roleFacade.verifyStoreOwner(storeID, memberID) ||
                 (roleFacade.verifyStoreManager(storeID, memberID) &&
                         roleFacade.managerHasInventoryPermissions(memberID, storeID))) {
@@ -151,6 +194,11 @@ public class Market {
 
     public void updateProductInStore(int memberID, int storeID, String productName, int price, int quantity,
                                                         String description, String categoryStr) throws Exception {
+        boolean succeeded=  authorizationAndSecurityFacade.validateToken(authorizationAndSecurityFacade.getToken(memberID));
+        if (!succeeded){
+            logout(memberID);
+            throw new Exception("your session was over please log in again");
+        }
         if (roleFacade.verifyStoreOwner(storeID, memberID) ||
                 (roleFacade.verifyStoreManager(storeID, memberID) &&
                         roleFacade.managerHasInventoryPermissions(memberID, storeID))) {
@@ -161,6 +209,11 @@ public class Market {
     }
 
     public void appointStoreOwner(int firstMemberID, int secondMemberID, int storeID) throws Exception {
+        boolean succeeded=  authorizationAndSecurityFacade.validateToken(authorizationAndSecurityFacade.getToken(firstMemberID));
+        if (!succeeded){
+            logout(firstMemberID);
+            throw new Exception("your session was over please log in again");
+        }
         if (roleFacade.verifyStoreOwner(storeID, firstMemberID)) {
             if (!roleFacade.verifyStoreOwner(storeID, secondMemberID)) {
                 roleFacade.createStoreOwner(secondMemberID, storeID, false);
@@ -174,6 +227,11 @@ public class Market {
 
     public void appointStoreManager(int firstMemberID, int secondMemberID, int storeID,
                                     boolean inventoryPermissions, boolean purchasePermissions) throws Exception {
+        boolean succeeded=  authorizationAndSecurityFacade.validateToken(authorizationAndSecurityFacade.getToken(firstMemberID));
+        if (!succeeded){
+            logout(firstMemberID);
+            throw new Exception("your session was over please log in again");
+        }
         if (roleFacade.verifyStoreOwner(storeID, firstMemberID)) {
             if (!roleFacade.verifyStoreManager(storeID, secondMemberID)) {
                 roleFacade.createStoreManager(secondMemberID, storeID, inventoryPermissions, purchasePermissions);
@@ -187,6 +245,11 @@ public class Market {
 
     public void updateStoreManagerPermissions(int firstMemberID, int secondMemberID, int storeID,
                                     boolean inventoryPermissions, boolean purchasePermissions) throws Exception {
+        boolean succeeded=  authorizationAndSecurityFacade.validateToken(authorizationAndSecurityFacade.getToken(firstMemberID));
+        if (!succeeded){
+            logout(firstMemberID);
+            throw new Exception("your session was over please log in again");
+        }
         if (roleFacade.verifyStoreOwner(storeID, firstMemberID)) {
             if (roleFacade.verifyStoreManager(storeID, secondMemberID)) {
                 roleFacade.updateStoreManagerPermissions(secondMemberID, storeID, inventoryPermissions, purchasePermissions);
@@ -200,6 +263,11 @@ public class Market {
 
     public void closeStore(int user_ID, int store_ID) throws Exception
     {
+        boolean succeeded=  authorizationAndSecurityFacade.validateToken(authorizationAndSecurityFacade.getToken(user_ID));
+        if (!succeeded){
+            logout(user_ID);
+            throw new Exception("your session was over please log in again");
+        }
         if (userFacade.isUserLoggedIn(user_ID)) {
             int member_ID = this.userFacade.getUsernameByUserID(user_ID);
             if (roleFacade.verifyStoreOwner(store_ID, member_ID) && roleFacade.verifyStoreOwnerIsFounder(store_ID, member_ID)) {
@@ -221,6 +289,11 @@ public class Market {
     }
 
     public Map<Integer, String> getInformationAboutRolesInStore(int user_ID, int store_ID) throws Exception {
+        boolean succeeded=  authorizationAndSecurityFacade.validateToken(authorizationAndSecurityFacade.getToken(user_ID));
+        if (!succeeded){
+            logout(user_ID);
+            throw new Exception("your session was over please log in again");
+        }
         Map<Integer, String> information = null;
 
         if (userFacade.isUserLoggedIn(user_ID)) {
@@ -241,6 +314,11 @@ public class Market {
     }
 
     public Map<Integer, List<Integer>> getAuthorizationsOfManagersInStore(int user_ID, int store_ID) throws Exception {
+        boolean succeeded=  authorizationAndSecurityFacade.validateToken(authorizationAndSecurityFacade.getToken(user_ID));
+        if (!succeeded){
+            logout(user_ID);
+            throw new Exception("your session was over please log in again");
+        }
         Map<Integer, List<Integer>> managersAuthorizations;
 
         if (userFacade.isUserLoggedIn(user_ID)) {
@@ -261,8 +339,30 @@ public class Market {
 
     }
 
-    public List<Integer> getInformationAboutStores(int user_ID)
-    {
+
+   // public List<Integer> getInformationAboutStores(int user_ID)throws Exception
+
+    public Map<Integer, Map<String, Integer>> getPurchaseList(int userId){
+        Map<Integer, Map<String, Integer>> purchaseList = new HashMap<>();
+        List<Integer> usersStores = userFacade.getCartStoresByUser(userId);
+        for (Integer storeId: usersStores) {
+            Map<String, Integer> productAndQuantity = new HashMap<>();
+            purchaseList.put(storeId, productAndQuantity) ;
+            Map <String, List<Integer>> returnedMap = userFacade.getCartProductsByStoreAndUser(storeId , userId);
+            for (String productName : returnedMap.keySet()){
+                productAndQuantity.put(productName,returnedMap.get(productName).get(0) );
+            }
+
+        }
+        return purchaseList;
+    }
+
+    public List<Integer> getInformationAboutStores(int user_ID) throws Exception {
+        boolean succeeded=  authorizationAndSecurityFacade.validateToken(authorizationAndSecurityFacade.getToken(user_ID));
+        if (!succeeded){
+            logout(user_ID);
+            throw new Exception("your session was over please log in again");
+        }
         List<Integer> openedStores = storeFacade.getInformationAboutOpenStores(); // open stores available for everyone
         List<Integer> closedStores = storeFacade.getInformationAboutClosedStores(); //closed stores available only for owners/ system managers
         List<Integer> closedStoreAvailable = null;
@@ -284,6 +384,11 @@ public class Market {
     }
 
     public List<String> getInformationAboutProductInStore(int user_ID, int store_ID) throws Exception {
+        boolean succeeded=  authorizationAndSecurityFacade.validateToken(authorizationAndSecurityFacade.getToken(user_ID));
+        if (!succeeded){
+            logout(user_ID);
+            throw new Exception("your session was over please log in again");
+        }
         List<String> storeProducts = null;
         if (storeFacade.verifyStoreExist(store_ID)) {
             storeProducts = storeFacade.getStoreProducts(store_ID);
@@ -293,8 +398,13 @@ public class Market {
         return storeProducts;
     }
 
-    public void modifyShoppingCart(String productName, int quantity, int storeId, int userId)
+    public void modifyShoppingCart(String productName, int quantity, int storeId, int userId)throws Exception
     {
+        boolean succeeded=  authorizationAndSecurityFacade.validateToken(authorizationAndSecurityFacade.getToken(userId));
+        if (!succeeded){
+            logout(userId);
+            throw new Exception("your session was over please log in again");
+        }
         if (quantity == 0)
             removeProductFromBasket(productName, storeId, userId);
         else
@@ -312,8 +422,13 @@ public class Market {
         }
     }
 
-    public Map<Integer, Integer> marketManagerAskInfo(int user_ID)
+    public Map<Integer, Integer> marketManagerAskInfo(int user_ID)throws Exception
     {
+        boolean succeeded=  authorizationAndSecurityFacade.validateToken(authorizationAndSecurityFacade.getToken(user_ID));
+        if (!succeeded){
+            logout(user_ID);
+            throw new Exception("your session was over please log in again");
+        }
         if (userFacade.isUserLoggedIn(user_ID)) {
             if (this.roleFacade.verifyMemberIsSystemManager(user_ID))
             {
@@ -330,8 +445,15 @@ public class Market {
         }
     }
 
+
+
     public Map<Integer, Integer> storeOwnerGetInfoAboutStore(int user_ID, int store_ID) throws Exception //return receiptId and total amount in the receipt for the specific store
     {
+        boolean succeeded=  authorizationAndSecurityFacade.validateToken(authorizationAndSecurityFacade.getToken(user_ID));
+        if (!succeeded){
+            logout(user_ID);
+            throw new Exception("your session was over please log in again");
+        }
         Map<Integer, Integer> storeReceiptsAndTotalAmount = new HashMap<>();
 
         if (userFacade.isUserLoggedIn(user_ID)) {
@@ -353,7 +475,12 @@ public class Market {
         return storeReceiptsAndTotalAmount;
     }
 
-    public int checkingCartValidationBeforePurchase(int user_ID) throws Exception {
+    public int checkingCartValidationBeforePurchase(int user_ID, String country, String city, String address) throws Exception {
+        boolean succeeded=  authorizationAndSecurityFacade.validateToken(authorizationAndSecurityFacade.getToken(user_ID));
+        if (!succeeded){
+            logout(user_ID);
+            throw new Exception("your session was over please log in again");
+        }
         int totalPrice = 0;
         if(this.userFacade.isUserCartEmpty(user_ID))  //todo: verify if needed
             throw new Exception("User cart is empty, there's nothing to purchase");
@@ -363,12 +490,19 @@ public class Market {
             {
                 Map<String, List<Integer>> products = this.userFacade.getCartProductsByStoreAndUser(user_ID, store_ID);
                 int quantity;
+                String userName = this.userFacade.getUserByID(user_ID).getName();
                 for(String productName: products.keySet()) {
                     quantity = products.get(productName).get(0);
                     if(!this.storeFacade.checkQuantityAndPolicies(productName, quantity, store_ID, user_ID))
                         throw new Exception("Item is not available or policy conditions are not met");
-                    else if(!this.supplyServicesFacade.checkAvailableExternalSupplyService(this.userFacade.getUserAddress(user_ID), null))
+                    //todo remove comment after david
+                    int availibleExteranlSupplyService =this.supplyServicesFacade.checkAvailableExternalSupplyService(country,city);
+                    if(-1==availibleExteranlSupplyService)
                         throw new Exception("Unfortunately, there is no shipping for the user address");
+                    //todo remove items from stock
+                    if(!supplyServicesFacade.createShiftingDetails(availibleExteranlSupplyService, userName,country,city,address)){
+                        throw new Exception("Unfortunately, there was problem in creating the shifting");
+                    }
                 }
                 int storeTotalPriceBeforeDiscount = this.userFacade.getCartPriceByUser(user_ID);
                 int storeTotalPrice = this.storeFacade.calculateTotalCartPriceAfterDiscount(store_ID, products, storeTotalPriceBeforeDiscount);
@@ -379,7 +513,12 @@ public class Market {
     }
 
 
-    public List<String> inStoreProductSearch(String productName, String categoryStr, List<String> keywords, int storeId) {
+    public List<String> inStoreProductSearch(int userId, String productName, String categoryStr, List<String> keywords, int storeId) throws Exception {
+        boolean succeeded=  authorizationAndSecurityFacade.validateToken(authorizationAndSecurityFacade.getToken(userId));
+        if (!succeeded){
+            logout(userId);
+            throw new Exception("your session was over please log in again");
+        }
         List<String> filteredProductNames;
         if (categoryStr != null)
             storeFacade.checkCategory(categoryStr);
@@ -396,18 +535,28 @@ public class Market {
         return filteredProductNames;
     }
 
-    public List<String> generalProductSearch(String productName, String categoryStr, List<String> keywords) {
+    public List<String> generalProductSearch(int userId, String productName, String categoryStr, List<String> keywords) throws Exception {
+        boolean succeeded=  authorizationAndSecurityFacade.validateToken(authorizationAndSecurityFacade.getToken(userId));
+        if (!succeeded){
+            logout(userId);
+            throw new Exception("your session was over please log in again");
+        }
         List<String> filteredProductNames = new ArrayList<>();
 
         List<Integer> stores = this.storeFacade.getStores();
         for(Integer store_ID: stores)
         {
-            filteredProductNames.addAll(inStoreProductSearch(productName, categoryStr, keywords,store_ID));
+            filteredProductNames.addAll(inStoreProductSearch(userId, productName, categoryStr, keywords,store_ID));
         }
         return filteredProductNames;
     }
 
-        public List<String> inStoreProductFilter(String categoryStr, List<String> keywords, int minPrice, int maxPrice, Double productMinRating, int storeId, List<String> productsFromSearch, Double storeMinRating) {
+        public List<String> inStoreProductFilter(int userId, String categoryStr, List<String> keywords, int minPrice, int maxPrice, Double productMinRating, int storeId, List<String> productsFromSearch, Double storeMinRating)throws Exception {
+            boolean succeeded=  authorizationAndSecurityFacade.validateToken(authorizationAndSecurityFacade.getToken(userId));
+            if (!succeeded){
+                logout(userId);
+                throw new Exception("your session was over please log in again");
+            }
         List<String> filteredProductNames = null;
         if (minPrice <= maxPrice)
         {
@@ -429,18 +578,25 @@ public class Market {
         return filteredProductNames;
     }
 
-    public List<String> generalProductFilter(String categoryStr, List<String> keywords, int minPrice, int maxPrice, Double productMinRating, List<String> productsFromSearch, Double storeMinRating) {
+    public List<String> generalProductFilter(int userId, String categoryStr, List<String> keywords, int minPrice, int maxPrice, Double productMinRating, List<String> productsFromSearch, Double storeMinRating) throws Exception {
+        boolean succeeded=  authorizationAndSecurityFacade.validateToken(authorizationAndSecurityFacade.getToken(userId));
+        if (!succeeded){
+            logout(userId);
+            throw new Exception("your session was over please log in again");
+        }
         List<String> filteredProductNames = new ArrayList<>();
 
         List<Integer> stores = this.storeFacade.getStores();
         for(Integer store_ID: stores)
         {
-            filteredProductNames.addAll(inStoreProductFilter(categoryStr, keywords, minPrice, maxPrice, productMinRating, store_ID, productsFromSearch, storeMinRating));
+            filteredProductNames.addAll(inStoreProductFilter(userId, categoryStr, keywords, minPrice, maxPrice, productMinRating, store_ID, productsFromSearch, storeMinRating));
         }
         return filteredProductNames;
     }
 
     public boolean isInitialized() {
-        return initialized;
+        synchronized (initializedLock) {
+            return initialized;
+        }
     }
 }

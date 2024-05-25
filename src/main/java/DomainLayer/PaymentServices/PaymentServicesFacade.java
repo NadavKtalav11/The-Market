@@ -8,11 +8,12 @@ import java.util.Map;
 
 public class PaymentServicesFacade {
     private static PaymentServicesFacade paymentServicesFacadeInstance;
-   private Map<Integer, ExternalPaymentService>  allPaymentServices = new HashMap<Integer, ExternalPaymentService>();
-   private Map<Integer, Receipt> IdAndReceipt = new HashMap<>();
+    private Map<Integer, ExternalPaymentService>  allPaymentServices = new HashMap<Integer, ExternalPaymentService>();
+    private Map<Integer, Receipt> IdAndReceipt = new HashMap<>();
 
 
-    public static PaymentServicesFacade getInstance() {
+
+    public synchronized static PaymentServicesFacade getInstance() {
         if (paymentServicesFacadeInstance == null) {
             paymentServicesFacadeInstance = new PaymentServicesFacade();
         }
@@ -25,6 +26,15 @@ public class PaymentServicesFacade {
             allPaymentServices.put(licensedDealerNumber, externalPaymentService);
             return allPaymentServices.size()==size_before+1;
     }
+
+    public Map<Integer,Integer> pay(int price,int creditCard, int cvv, int month, int year, String holderID, int userId, Map<Integer, Map<String, Integer>> productList){
+        ExternalPaymentService externalPaymentService = allPaymentServices.values().iterator().next();
+        return externalPaymentService.payWithCard(price, creditCard, cvv, month, year, holderID, userId, productList);
+    }
+
+
+
+
 
     public Map<Integer, Integer> getStorePurchaseInfo()
     {
