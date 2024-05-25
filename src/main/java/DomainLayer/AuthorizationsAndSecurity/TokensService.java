@@ -5,20 +5,39 @@ import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
+import java.nio.charset.Charset;
+import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
+import java.util.*;
 
 public class TokensService {
-    private static final String SECRET_KEY = "your-256-bit-secret"; // Use a strong secret key
-    private static final long TOKEN_VALIDITY_DURATION = 3600 * 1000; // 1 hour in milliseconds
+    private final String SECRET_KEY  ; // Use a strong secret key
+    private final long TOKEN_VALIDITY_DURATION = 3600 * 1000; // 1 hour in milliseconds
     private Map<Integer , String > tokens ;
     final private Object tokensLock= new Object();
 
     public TokensService() {
         tokens = new HashMap<>();
+        SECRET_KEY =generateSecretKey(32);
+
         // Constructor
     }
+
+    private String generateSecretKey(int keyLength) {
+        try {
+            SecureRandom secureRandom = SecureRandom.getInstanceStrong(); // Use a strong instance
+            byte[] key = new byte[keyLength];
+            secureRandom.nextBytes(key);
+            return Base64.getEncoder().encodeToString(key);
+        }// Encode the key as a Base64 string
+        catch (NoSuchAlgorithmException E){
+            byte[] array = new byte[32]; // length is bounded by 7
+            new Random().nextBytes(array);
+            return new String(array, Charset.forName("UTF-8"));
+        }
+    }
+
+
 
     public String generateToken(int userId) {
         long now = System.currentTimeMillis();
