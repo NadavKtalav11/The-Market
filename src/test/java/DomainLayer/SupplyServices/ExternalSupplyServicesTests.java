@@ -19,14 +19,17 @@ public class ExternalSupplyServicesTests {
     @BeforeEach
     public void setUp() {
         // Mock the sets of countries and cities
-        mockCountries = Mockito.mock(HashSet.class);
-        mockCities = Mockito.mock(HashSet.class);
+        HashSet<String> countries =new HashSet<>();
+        HashSet<String> cities =new HashSet<>();
+
+        countries.add("Israel");
+        cities.add("Bash");
         shiftingDetailsMock = Mockito.mock(ShiftingDetails.class);
         shiftIdAndDetails = Mockito.mock(HashSet.class);
 
 
         // Initialize the service with the mock data
-        externalSupplyService = new ExternalSupplyService(12345, "MockService", mockCountries, mockCities);
+        externalSupplyService = new ExternalSupplyService(12345, "MockService", countries, cities);
     }
 
     @Test
@@ -36,26 +39,44 @@ public class ExternalSupplyServicesTests {
 
     @Test
     public void testCheckAreaAvailability_CountryNotAvailable() {
-        Mockito.when(mockCountries.contains("MockCountry")).thenReturn(false);
-        Mockito.when(mockCities.contains("MockCity")).thenReturn(true);
 
-        assertFalse(externalSupplyService.checkAreaAvailability("MockCountry", "MockCity"));
+
+        assertFalse(externalSupplyService.checkAreaAvailability("France", "Bash"));
     }
 
     @Test
     public void testCheckAreaAvailability_CityNotAvailable() {
-        Mockito.when(mockCountries.contains("MockCountry")).thenReturn(true);
-        Mockito.when(mockCities.contains("MockCity")).thenReturn(false);
 
-        assertFalse(externalSupplyService.checkAreaAvailability("MockCountry", "MockCity"));
+        assertFalse(externalSupplyService.checkAreaAvailability("Israel", "MockCity"));
+    }
+
+    @Test
+    public void testAddCountries() {
+        assertEquals(1,externalSupplyService.getCountries().size());
+        HashSet<String> countries1 = new HashSet<>();
+        countries1.add("Israel");
+        countries1.add("France");
+        externalSupplyService.addCountries(countries1);
+        assertEquals(2,externalSupplyService.getCountries().size());
+
+    }
+
+    @Test
+    public void testAddCities() {
+        assertEquals(1,externalSupplyService.getCities().size());
+        HashSet<String> cities1 = new HashSet<>();
+        cities1.add("Ashdod");
+        cities1.add("Tel aviv");
+        externalSupplyService.addCities(cities1);
+        assertEquals(3,externalSupplyService.getCities().size());
+
     }
 
     @Test
     public void testCheckAreaAvailability_AreaAvailable() {
-        Mockito.when(mockCountries.contains("MockCountry")).thenReturn(true);
-        Mockito.when(mockCities.contains("MockCity")).thenReturn(true);
 
-        assertTrue(externalSupplyService.checkAreaAvailability("MockCountry", "MockCity"));
+
+        assertTrue(externalSupplyService.checkAreaAvailability("Israel", "Bash"));
     }
 
     @Test
