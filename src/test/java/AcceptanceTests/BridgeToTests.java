@@ -19,22 +19,22 @@ public interface BridgeToTests {
 
     Response<String> login(int userID, String username, String password);
 
-    Response<String> logout(int memberID);
+    Response<String> logout(int userId);
 
-    Response<String> addProductToStore(int memberID, int storeID, String productName, int price, int quantity,
+    Response<String> addProductToStore(int userId, int memberID, int storeID, String productName, int price, int quantity,
                                        String description, String categoryStr);
 
-    Response<String> removeProductFromStore(int memberID, int storeID, String productName);
+    Response<String> removeProductFromStore(int userId, int memberID, int storeID, String productName);
 
-    Response<String> updateProductInStore(int memberID, int storeID, String productName, int price, int quantity,
+    Response<String> updateProductInStore(int userId, int memberID, int storeID, String productName, int price, int quantity,
                                           String description, String categoryStr);
 
-    Response<String> appointStoreOwner(int firstMemberID, int secondMemberID, int storeID);
+    Response<String> appointStoreOwner(int userId, int firstMemberID, int secondMemberID, int storeID);
 
-    Response<String> appointStoreManager(int firstMemberID, int secondMemberID, int storeID,
+    Response<String> appointStoreManager(int userId, int firstMemberID, int secondMemberID, int storeID,
                                          boolean inventoryPermissions, boolean purchasePermissions);
 
-    Response<String> updateStoreManagerPermissions(int firstMemberID, int secondMemberID, int storeID,
+    Response<String> updateStoreManagerPermissions(int userId, int firstMemberID, int secondMemberID, int storeID,
                                                    boolean inventoryPermissions, boolean purchasePermissions);
 
     Response<List<String>> generalProductFilter(int userId, String categoryStr, List<String> keywords, int minPrice, int maxPrice, Double productMinRating, List<String> productsFromSearch, Double storeMinRating);

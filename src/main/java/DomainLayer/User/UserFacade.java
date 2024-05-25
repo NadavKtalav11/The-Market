@@ -51,6 +51,10 @@ public class UserFacade {
         return ((Member)user.getState()).getMemberID();
     }
 
+    public boolean isMember(int userId){
+        return getUserByID(userId).isMember();
+    }
+
     public void exitMarketSystem(int userID){
         synchronized (allUserLock) {
             allUsers.remove(userID); //todo do i need to remove the user from the list of users ?

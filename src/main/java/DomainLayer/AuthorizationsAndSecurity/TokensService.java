@@ -13,11 +13,10 @@ public class TokensService {
     private static final String SECRET_KEY = "your-256-bit-secret"; // Use a strong secret key
     private static final long TOKEN_VALIDITY_DURATION = 3600 * 1000; // 1 hour in milliseconds
     private Map<Integer , String > tokens ;
-    private Object tokensLock;
+    final private Object tokensLock= new Object();
 
     public TokensService() {
         tokens = new HashMap<>();
-        tokensLock = new Object();
         // Constructor
     }
 
@@ -40,7 +39,16 @@ public class TokensService {
         try {
             Claims claims = Jwts.parser().setSigningKey(SECRET_KEY).build().parseClaimsJws(token).getBody();
             Date expiration = claims.getExpiration();
-            return expiration.after(new Date());
+            int userId= getUserId(token);
+            if (expiration.after(new Date())){
+                synchronized (tokensLock){
+                    generateToken(userId);
+                }
+                return true;
+            }
+            else{
+                return false;
+            }
         } catch (JwtException | IllegalArgumentException e) {
             return false;
         }
