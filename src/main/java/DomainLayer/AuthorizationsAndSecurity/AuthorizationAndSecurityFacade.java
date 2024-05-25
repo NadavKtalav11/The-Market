@@ -2,6 +2,8 @@ package DomainLayer.AuthorizationsAndSecurity;
 
 import DomainLayer.Market.Market;
 
+import java.security.NoSuchAlgorithmException;
+
 public class AuthorizationAndSecurityFacade {
 
 
@@ -15,7 +17,7 @@ public class AuthorizationAndSecurityFacade {
         }
         return instance;
     }
-    private AuthorizationAndSecurityFacade(){
+    private AuthorizationAndSecurityFacade() {
         passwordEncryptor = new PasswordEncryptor();
         tokensService = new TokensService();
     }

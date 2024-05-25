@@ -24,6 +24,7 @@ public class ProxyToTest implements BridgeToTests {
      {
         if (realServiceAdaptor != null)
             return realServiceAdaptor.init(userName, password, birthday, country, city, address, name,licensedDealerNumber, paymentServiceName, url, licensedDealerNumber1, supplyServiceName, countries, cities);
+
         else
             return new Response<>(null, "Not Implemented yet");
     }
