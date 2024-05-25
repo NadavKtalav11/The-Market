@@ -30,8 +30,8 @@ public class ProxyService implements BridgeService {
     }
 
     @Override
-    public Response<String> register(int userID, String username, String password, String birthday, String address) {
-        return realServiceAdaptor.register(userID, username, password, birthday, address);
+    public Response<String> register(int userID, String username, String password, String birthday,String country, String city, String address, String name) {
+        return realServiceAdaptor.register(userID, username, password, birthday, country, city, address, name);
     }
 
     @Override
@@ -85,8 +85,8 @@ public class ProxyService implements BridgeService {
     }
 
     @Override
-    public Response<Integer> checkingCartValidationBeforePurchase(int user_ID) {
-        return realServiceAdaptor.checkingCartValidationBeforePurchase(user_ID);
+    public Response<Integer> checkingCartValidationBeforePurchase(int user_ID, String country, String city, String address) {
+        return realServiceAdaptor.checkingCartValidationBeforePurchase(user_ID, country, city, address);
     }
 
     @Override

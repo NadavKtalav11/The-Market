@@ -44,7 +44,6 @@ public class Service_layer {
         }
     }
 */
-    //todo think about the userID and the purpose of this function.
 
     public Response<String> exitMarketSystem(int userID) {
         logger.info("Exiting market system");
@@ -57,7 +56,6 @@ public class Service_layer {
         }
     }
 
-    //todo think about the userID and the purpose of this function.
 
     public Response<String> enterMarketSystem() {
         logger.info("Entering market system");
@@ -72,20 +70,16 @@ public class Service_layer {
         }
     }
 
-    //todo think about where we get the userID
-
-    public Response<String> register(int userID, String username, String password, String birthday, String address) {
+    public Response<String> register(int userID, String username, String password, String birthday,String country, String city, String address, String name) {
         logger.info("Registration");
         try {
-            market.register(userID, username, password, birthday, address);
+            market.register(userID, username, password, birthday, country, city, address, name);
             return new Response<>("Registration successful", "User registered successfully.");
         } catch (Exception e) {
             logger.error("Error occurred during registration", e.getMessage(), e);
             return new Response<>(null, "Registration failed: " + e.getMessage());
         }
     }
-
-    //todo think about where we get the userID
 
     public Response<String> login(int userID, String username, String password) {
         logger.info("Log in");
@@ -99,11 +93,10 @@ public class Service_layer {
         }
     }
 
-    //todo think about where we get the userID
-    public Response<String> logout(int memberID) {
+    public Response<String> logout(int userID) {
         logger.info("Log out");
         try {
-            market.logout(memberID);
+            market.logout(userID);
             return new Response<>("Logout successful", "User logged out successfully.");
         } catch (Exception e) {
             logger.error("Error occurred during log out", e.getMessage(), e);
@@ -225,12 +218,12 @@ public class Service_layer {
         }
     }
 
-    public Response<Integer> checkingCartValidationBeforePurchase(int user_ID)
+    public Response<Integer> checkingCartValidationBeforePurchase(int user_ID, String country, String city, String address)
     {
         logger.info("Starting care validation and price calculation before purchase.");
 
         try {
-            int totalPrice = market.checkingCartValidationBeforePurchase(user_ID);
+            int totalPrice = market.checkingCartValidationBeforePurchase(user_ID, country,city,address);
             return new Response<>(totalPrice, "Cart validation and price calculation completed successfully.");
         } catch (Exception e) {
             logger.error("Error occurred during the validation of the cart: {}", e.getMessage(), e);

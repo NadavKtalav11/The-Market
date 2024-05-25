@@ -65,7 +65,7 @@ public class UserFacade {
             userId = currentUserID;
         }
         synchronized (allUserLock) {
-            allUsers.put(currentUserID, new User(currentUserID, "", "", ""));
+            allUsers.put(currentUserID, new User(currentUserID));
         }
         synchronized (userIdLock) {
             currentUserID++;
@@ -101,28 +101,29 @@ public class UserFacade {
     }
 
 
-    public void register(int userID, String username, String password, String birthday,String address) throws Exception {
-
+    public void register(int userID, String username, String password, String birthday,String country, String city,String address, String name) throws Exception {
         if (getUserByID(userID).isMember()) {
             throw new Exception("member cannot register");
         }
         else {
-            validateRegistrationDetails(username,password,birthday,address);
+            validateRegistrationDetails(username,password,birthday,country,city,address,name);
             int memberId;
             synchronized (memberIdLock){
                 memberId = currentMemberID;
             }
-            Member newMember = new Member(memberId, username,password,birthday,address);
+            Member newMember = new Member(memberId, username,password,birthday,country,city,address,name);
             synchronized (membersLock) {
                 members.put(memberId, newMember);
+                currentMemberID++;
             }
             //todo pass the user to login page.
         }
     }
 
 
-    private void validateRegistrationDetails(String username, String password, String birthDate, String address) throws Exception {
-        if (username == null || password == null || birthDate == null || address == null) {
+    private void validateRegistrationDetails(String username, String password, String birthDate, String country, String city, String address, String name) throws Exception {
+        if (username == null || password == null || birthDate == null || country ==null || city == null ||
+                address == null || name == null) {
             throw new Exception("All fields are required.");
         }
         //checking if username is already exist
@@ -134,12 +135,29 @@ public class UserFacade {
             }
         }
         //todo check validation of the password. - do encription passwords only.
-        //todo check validation of the birthday.
-        //todo check validation of the address.
+        //todo check validation of the birthday. - do we need to check this, in the gui the user will choose date from the calender.
+        //todo check validation of the address. - do we need to check this, in the gui the user will address date from the calender.
     }
 
     public void Login(int userID, String username, String password) throws Exception {
-        getUserByID(userID).Login(username,password);
+        Member loginMember = getMemberByUsername(username);
+        if (loginMember == null){
+            throw new Exception("Username or password is incorrect");
+        }
+        else if (!loginMember.getPassword().equals(password)){
+            throw new Exception("Username or password is incorrect");
+        }
+        getUserByID(userID).Login(username,password, loginMember);
+
+    }
+
+    public Member getMemberByUsername(String userName) throws Exception {
+        for (Member member : members.values()) {
+            if (member.getUsername().equals(userName)) {
+                return member;
+            }
+        }
+        return null;
     }
 
     public List<Integer> getCartStoresByUser(int user_ID)

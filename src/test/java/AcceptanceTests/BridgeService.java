@@ -14,7 +14,7 @@ public interface BridgeService {
 
     Response<String> enterMarketSystem();
 
-    Response<String> register(int userID, String username, String password, String birthday, String address);
+    Response<String> register(int userID, String username, String password, String birthday,String country, String city, String address, String name);
 
     Response<String> login(int userID, String username, String password);
 
@@ -40,7 +40,7 @@ public interface BridgeService {
 
     Response<List<String>> generalProductSearch(int userId, String productName, String categoryStr, List<String> keywords);
 
-    Response<Integer> checkingCartValidationBeforePurchase(int user_ID);
+    Response<Integer> checkingCartValidationBeforePurchase(int user_ID, String country, String city, String address);
 
     Response<List<Integer>> getInformationAboutStores(int user_ID);
 

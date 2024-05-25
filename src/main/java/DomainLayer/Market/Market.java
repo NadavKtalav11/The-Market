@@ -94,10 +94,10 @@ public class Market {
         userFacade.addUser();
     }
 
-    public void register( int userId,String username, String password, String birthday, String address) throws Exception {
+    public void register( int userId,String username, String password, String birthday,String country, String city, String address, String name) throws Exception {
         //check validation
         String encryptedPassword = authorizationAndSecurityFacade.encodePassword(password);
-        userFacade.register(userId, username,encryptedPassword,birthday,address);
+        userFacade.register(userId, username,encryptedPassword,birthday,country,city,address,name);
         authorizationAndSecurityFacade.generateToken(userId);
     }
 
@@ -474,7 +474,7 @@ public class Market {
         return storeReceiptsAndTotalAmount;
     }
 
-    public int checkingCartValidationBeforePurchase(int user_ID) throws Exception {
+    public int checkingCartValidationBeforePurchase(int user_ID, String country, String city, String address) throws Exception {
         boolean succeeded=  authorizationAndSecurityFacade.validateToken(authorizationAndSecurityFacade.getToken(user_ID));
         if (!succeeded){
             logout(user_ID);
@@ -489,9 +489,6 @@ public class Market {
             {
                 Map<String, List<Integer>> products = this.userFacade.getCartProductsByStoreAndUser(user_ID, store_ID);
                 int quantity;
-                String country = this.userFacade.getUserByID(user_ID).getCountry();
-                String city = this.userFacade.getUserByID(user_ID).getCity();
-                String address = this.userFacade.getUserAddress(user_ID);
                 String userName = this.userFacade.getUserByID(user_ID).getName();
                 for(String productName: products.keySet()) {
                     quantity = products.get(productName).get(0);
