@@ -6,11 +6,13 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 public class RemoveStoreProduct {
-    private BridgeToTests impl = new ProxyToTest("Real");
+    private static BridgeToTests impl;
 
 
     @BeforeAll
     public void setUp() {
+        impl = new ProxyToTest("Real");
+        //Do what you need
 
     }
 

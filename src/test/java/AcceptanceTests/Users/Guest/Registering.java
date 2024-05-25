@@ -7,11 +7,13 @@ import org.junit.jupiter.api.Test;
 
 public class Registering {
 
-    private BridgeToTests impl = new ProxyToTest("Real");
+    private static BridgeToTests impl;
 
 
     @BeforeAll
     public void setUp() {
+        impl = new ProxyToTest("Real");
+        //Do what you need
 
     }
 

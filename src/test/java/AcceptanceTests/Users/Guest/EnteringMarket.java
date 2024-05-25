@@ -8,11 +8,13 @@ import org.junit.jupiter.api.Test;
 
 public class EnteringMarket {
 
-    private BridgeToTests impl = new ProxyToTest("Real");
+    private static BridgeToTests impl;
 
 
     @BeforeAll
     public void setUp() {
+        impl = new ProxyToTest("Real");
+        //Do what you need
 
     }
 

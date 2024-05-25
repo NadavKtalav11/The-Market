@@ -2,13 +2,14 @@ package AcceptanceTests;
 
 import ServiceLayer.Response;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
 public interface BridgeToTests {
 
     Response<String> init(String userName, String password, int licensedDealerNumber,
-                          String paymentServiceName, String url, int licensedDealerNumber1, String supplyServiceName, String address);
+                          String paymentServiceName, String url, int licensedDealerNumber1, String supplyServiceName, HashSet<String> countries, HashSet<String> cities);
 
     Response<String> exitMarketSystem(int userID);
 
