@@ -17,6 +17,7 @@ public class Login {
 
     @BeforeAll
     public void setUp() {
+
         impl = new ProxyToTest("Real");
         impl.enterMarketSystem();
         impl.enterMarketSystem();
