@@ -29,11 +29,19 @@ public class PaymentServicesFacade {
 
     public Map<Integer,Integer> pay(int price,int creditCard, int cvv, int month, int year, String holderID, int userId, Map<Integer, Map<String, Integer>> productList){
         ExternalPaymentService externalPaymentService = allPaymentServices.values().iterator().next();
-        Map<Integer,Integer> acquisitionAndExternalService;
-         acquisitionAndExternalService = externalPaymentService.payWithCard(price, creditCard, cvv, month, year, holderID, userId, productList, acquisitionIdCounter, receiptIdCounter);
-        acquisitionIdCounter++;
-        receiptIdCounter += productList.size();
-        return acquisitionAndExternalService;
+        boolean paymentSucceeded = externalPaymentService.payWithCard(price, creditCard, cvv, month, year, holderID, userId, productList, acquisitionIdCounter, receiptIdCounter);
+        if (paymentSucceeded)
+        {
+            Acquisition acquisition = new Acquisition(acquisitionIdCounter, userId, price, holderID, creditCard, cvv, month, year, productList, receiptIdCounter);
+            IdAndAcquisition.put(acquisitionIdCounter, acquisition);
+            acquisitionIdCounter++;
+            receiptIdCounter += productList.size();
+            return acquisition.getReceiptIdAndStoreIdMap();
+        }
+        else
+        {
+            throw new IllegalArgumentException("Payment failed");
+        }
     }
 
     public Map<Integer, ExternalPaymentService> getAllPaymentServices(){
@@ -50,41 +58,30 @@ public class PaymentServicesFacade {
 
 
 
-    //todo:Change the function after we move the acquisition map from ExternalPaymentService to here
     public Map<Integer, Integer> getStorePurchaseInfo()
     {
         Map<Integer, Integer> storePurchaseStats = new HashMap<>();
-
-        for (Integer external : allPaymentServices.keySet()) {
-            Map<Integer, Acquisition> paymentServiceAcquisitions = allPaymentServices.get(external).getIdAndAcquisition();
-            for (Integer acqId : paymentServiceAcquisitions.keySet()) {
-                Map<Integer, Receipt> acqReceipts = paymentServiceAcquisitions.get(acqId).getStoreIdAndReceipt();
-                for (Integer receiptId : acqReceipts.keySet()) {
-                    int storeId = acqReceipts.get(receiptId).getStoreId();
-                    storePurchaseStats.put(storeId, storePurchaseStats.getOrDefault(storeId, 0) + 1);
-                }
+        for (Integer acqId : IdAndAcquisition.keySet()) {
+            Map<Integer, Receipt> acqReceipts = IdAndAcquisition.get(acqId).getStoreIdAndReceipt();
+            for (Integer receiptId : acqReceipts.keySet()) {
+                int storeId = acqReceipts.get(receiptId).getStoreId();
+                storePurchaseStats.put(storeId, storePurchaseStats.getOrDefault(storeId, 0) + 1);
             }
-
         }
-
         return storePurchaseStats;
     }
 
-    //todo:Change the function after we move the acquisition map from ExternalPaymentService to here
+
     public Map<Integer, Integer> getStoreReceiptsAndTotalAmount(int storeId)
     {
         Map<Integer, Integer> receiptAndTotalPrice = new HashMap<>();
 
-        for (Integer external : allPaymentServices.keySet()) {
-            Map<Integer, Acquisition> paymentServiceAcquisitions = allPaymentServices.get(external).getIdAndAcquisition();
-            for (Integer acqId : paymentServiceAcquisitions.keySet()) {
-                Acquisition acq = paymentServiceAcquisitions.get(acqId);
-                if (acq.getStoreIdAndReceipt().containsKey(storeId))
-                {
-                    receiptAndTotalPrice.put(acq.getReceiptIdByStoreId(storeId), acq.getTotalPriceOfStoreInAcquisition(storeId));
-                }
+        for (Integer acqId : IdAndAcquisition.keySet()) {
+            Acquisition acq = IdAndAcquisition.get(acqId);
+            if (acq.getStoreIdAndReceipt().containsKey(storeId))
+            {
+                receiptAndTotalPrice.put(acq.getReceiptIdByStoreId(storeId), acq.getTotalPriceOfStoreInAcquisition(storeId));
             }
-
         }
 
         return receiptAndTotalPrice;
