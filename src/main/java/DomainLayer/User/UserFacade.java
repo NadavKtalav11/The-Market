@@ -8,8 +8,8 @@ import java.util.Objects;
 
 public class UserFacade {
     private static UserFacade userFacadeInstance;
-    Map<Integer, User> allUsers = new HashMap<Integer, User>();
-    Map<Integer, Member> members = new HashMap<>();
+    Map<Integer, User> allUsers = new HashMap<Integer, User>(); //userID-User
+    Map<Integer, Member> members = new HashMap<>(); //memberID-Member
     private int currentUserID;
     private int currentMemberID;
     Object allUserLock;
@@ -32,6 +32,10 @@ public class UserFacade {
             userFacadeInstance = new UserFacade();
         }
         return userFacadeInstance;
+    }
+
+    public int getCurrentUserID (){
+        return currentUserID;
     }
 
     public User getUserByID(int userID){
@@ -151,15 +155,15 @@ public class UserFacade {
 
 
 
-    private void validateRegistrationDetails(String username, String password, String birthDate, String country, String city, String address, String name) throws Exception {
+    private void validateRegistrationDetails(String username, String password , String birthDate, String country, String city, String address, String name) throws Exception {
         if (username == null || password == null || birthDate == null || country ==null || city == null ||
                 address == null || name == null) {
             throw new Exception("All fields are required.");
         }
         //checking if username is already exist
-        synchronized (allUsers) {
-            for (User user : allUsers.values()) {
-                if (Objects.equals(((Member) user.getState()).getUsername(), username)) {
+        synchronized (members) {
+            for (Member member : members.values()) {
+                if (Objects.equals(member.getUsername(), username)) {
                     throw new Exception("Username already exists. Please choose a different username.");
                 }
             }
@@ -174,10 +178,11 @@ public class UserFacade {
         if (loginMember == null){
             throw new Exception("Username or password is incorrect");
         }
-        else if (!loginMember.getPassword().equals(password)){
+        /*else if (!loginMember.getPassword().equals(password)){
             throw new Exception("Username or password is incorrect");
-        }
-        getUserByID(userID).Login(username,password, loginMember);
+        }*/
+        loginMember.validatePassword(password);
+        getUserByID(userID).Login(loginMember);
 
     }
 
