@@ -3,6 +3,8 @@ import DomainLayer.Store.Store;
 import DomainLayer.Store.StoreFacade;
 import DomainLayer.Role.RoleFacade;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.zip.CheckedOutputStream;
 
 public class Member implements State{
@@ -16,7 +18,8 @@ public class Member implements State{
     private String city;
     private String address;
     private int productIdCounter;
-    private boolean isLogin;
+    private Map<Integer, Integer> receiptIdsAndStoreId; //<receiptId, storeId>
+    //private boolean isLogin;
   
     Member(int member_ID, String username, String password, String birthday,String country, String city, String address, String name)
     {
@@ -29,18 +32,31 @@ public class Member implements State{
         this.address = address;
         this.name = name;
         this.productIdCounter = 0;
+        this.receiptIdsAndStoreId = new HashMap<>();
     }
 
-    public void Logout(User user)
+
+    public void Logout()
     {
         // todo save data if needed
-        user.setState(new Guest());
-        isLogin = false;
+        // do nothing
+
     }
 
-    public void exitMarketSystem(User user){
+    public void exitMarketSystem(){
         //todo understand what happens after user press x.
-        user.Logout();
+    }
+
+    @Override
+    public void Login() throws Exception {
+        throw new Exception("The user is already logged in");
+    }
+
+    public void validatePassword(String password){
+        if (!password.equals(this.password)){
+            throw new IllegalArgumentException("Incorrect password or username please try again.");
+        }
+
     }
 
     public String getUsername(){
@@ -71,26 +87,20 @@ public class Member implements State{
         return password;
     }
 
-    public boolean isLogin()
-    {
-        return this.isLogin;
-    }
 
     public int getMemberID()
     {
         return this.member_ID;
     }
 
-
-    @Override
-    public void Login(User user, String username, String password, Member loginMember) throws Exception {
-        throw new Exception("The user is already logged in");
-
-    }
-
     @Override
     public boolean isMember() {
         return true;
+    }
+
+    @Override
+    public void addReceipt(Map<Integer, Integer> receiptIdAndStoreId) {
+        receiptIdsAndStoreId.putAll(receiptIdAndStoreId);
     }
 
 }
