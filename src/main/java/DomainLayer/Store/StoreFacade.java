@@ -83,23 +83,43 @@ public class StoreFacade {
     }
 
 
-    public void addProductToStore(int storeID, String productName, int price, int quantity,
-                                                                String description, String categoryStr) {
+    public void addProductToStore(int storeId, String productName, int price, int quantity,
+                                                                String description, String categoryStr) throws Exception {
         synchronized (allStoresLock) {
-            allStores.get(storeID).addProduct(productName, price, quantity, description, categoryStr);
+            if (!checkProductExistInStore(productName, storeId)){
+                if (quantity >= 0){
+                    allStores.get(storeId).addProduct(productName, price, quantity, description, categoryStr);
+                } else {
+                    throw new Exception("Quantity must be non-negative");
+                }
+            } else {
+                throw new Exception("Product already exist in this store");
+            }
         }
     }
 
-    public void removeProductFromStore(int storeID, String productName){
+    public void removeProductFromStore(int storeId, String productName) throws Exception {
         synchronized (allStoresLock) {
-            allStores.get(storeID).removeProduct(productName);
+            if (checkProductExistInStore(productName, storeId)) {
+                allStores.get(storeId).removeProduct(productName);
+            } else {
+                throw new Exception("Product does not exist in this store");
+            }
         }
     }
 
-    public void updateProductInStore(int storeID, String productName, int price, int quantity,
-                                                                String description, String categoryStr) {
+    public void updateProductInStore(int storeId, String productName, int price, int quantity,
+                                                                String description, String categoryStr) throws Exception {
         synchronized (allStoresLock) {
-            allStores.get(storeID).updateProduct(productName, price, quantity, description, categoryStr);
+            if (checkProductExistInStore(productName, storeId)) {
+                if (quantity >= 0){
+                    allStores.get(storeId).updateProduct(productName, price, quantity, description, categoryStr);
+                } else {
+                    throw new Exception("Quantity must be non-negative");
+                }
+            } else {
+                throw new Exception("Product does not exist in this store");
+            }
         }
     }
 
@@ -165,19 +185,15 @@ public class StoreFacade {
         return filteredProducts;
     }
 
-    public void checkCategory(String categoryStr)
+    public boolean checkCategory(String categoryStr)
     {
-        if (Category.fromString(categoryStr) == null)
-            throw new IllegalArgumentException("The category you entered doesn't exist.");
+        return !(Category.fromString(categoryStr) == null);
     }
 
-    public void checkProductExistInStore(String productName, int storeId)
+    public boolean checkProductExistInStore(String productName, int storeId)
     {
         Store store = getStoreByID(storeId);
-        if (!store.checkProductExists(productName))
-        {
-            throw new IllegalArgumentException("The product isn't in the store");
-        }
+        return store.checkProductExists(productName);
     }
 
     public List<Integer> getStores() {
