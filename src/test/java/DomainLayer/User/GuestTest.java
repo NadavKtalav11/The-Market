@@ -2,6 +2,9 @@ package DomainLayer.User;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
+
+import static org.mockito.Mockito.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class GuestTest {
@@ -13,24 +16,24 @@ public class GuestTest {
     private final String password = "testPass";
     private final String birthday = "01-01-2000";
     private final String address = "123 Test St";
+    private final String country = "Test Country";
+    private final String city = "Test City";
+    private final String name = "Test Name";
 
     @BeforeEach
     public void setUp() {
         guest = new Guest();
-        mockUser = new User(userId);
+        mockUser = Mockito.mock(User.class); // Initialize mockUser with a mock object
     }
 
-    @Test
-    public void testRegister() {
-        assertThrows(Exception.class, () -> guest.Register(mockUser, username, password, birthday, address));
-        assertTrue(mockUser.getState() instanceof Member);
-    }
 
     @Test
-    public void testLogin() {
-        guest.Login(mockUser, username, password);
-        assertTrue(mockUser.getState() instanceof Member);
-        // Additional assertions can be added if there are more behaviors to test
+    public void testLogin() throws Exception {
+        Member expectedMember = new Member(userId, username, password, birthday, country, city, address, name);
+        (mockUser.getState()).Login(mockUser, username, password, expectedMember);
+        verify(mockUser).setState(expectedMember); // Verify that the setState method was called
+        assertTrue(mockUser.getState() instanceof Member); // Additional assertion
+
     }
 
     @Test

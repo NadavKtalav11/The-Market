@@ -9,10 +9,12 @@ public class Basket {
     private final int storeId;
     Map<String, List<Integer>> products = new HashMap<>(); //key = product name, value = [quantity, products total price]
     int basketPrice;
+    Object basketPriceLock;
 
     public Basket(int storeId) {
         this.storeId = storeId;
         this.basketPrice = 0;
+        basketPriceLock = new Object();
     }
 
     public int getStoreId()
@@ -22,20 +24,24 @@ public class Basket {
 
     public int getBasketPrice()
     {
-        return this.basketPrice;
+        synchronized (basketPriceLock) {
+            return this.basketPrice;
+        }
     }
 
     public void setBasketPrice(int price)
     {
-        this.basketPrice = price;
+        synchronized (basketPriceLock) {
+            this.basketPrice = price;
+        }
     }
 
-    public Map<String, List<Integer>> getProducts()
+    public synchronized Map<String, List<Integer>> getProducts()
     {
         return products;
     }
 
-    public void addProduct(String productName, int quantity, int totalPrice)
+    public synchronized void addProduct(String productName, int quantity, int totalPrice)
     {
         List<Integer> quantityAndPrice = new ArrayList<>();
         quantityAndPrice.add(quantity);
@@ -43,7 +49,7 @@ public class Basket {
         products.put(productName, quantityAndPrice);
     }
 
-    public void modifyProduct(String productName, int quantity, int totalPrice)
+    public synchronized void modifyProduct(String productName, int quantity, int totalPrice)
     {
         if (!products.containsKey(productName))
         {
@@ -55,7 +61,7 @@ public class Basket {
         quantityAndPrice.set(1, totalPrice);
     }
 
-    public void calcBasketPrice()
+    public synchronized void calcBasketPrice()
     {
         int totalPrice = 0;
         for (String productName : products.keySet()) {
@@ -66,17 +72,17 @@ public class Basket {
         setBasketPrice(totalPrice);
     }
 
-    public boolean checkIfProductInBasket(String productName)
+    public synchronized boolean checkIfProductInBasket(String productName)
     {
         return products.containsKey(productName);
     }
 
-    public void removeItemFromBasket(String productName)
+    public synchronized void removeItemFromBasket(String productName)
     {
         products.remove(productName);
     }
 
-    public boolean isBasketEmpty()
+    public synchronized boolean isBasketEmpty()
     {
         return products.isEmpty();
     }

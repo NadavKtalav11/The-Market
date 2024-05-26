@@ -1,18 +1,19 @@
 package DomainLayer.PaymentServices;
 
 
-import DomainLayer.Role.RoleFacade;
-
 import java.util.HashMap;
 import java.util.Map;
 
 public class PaymentServicesFacade {
     private static PaymentServicesFacade paymentServicesFacadeInstance;
-   private Map<Integer, ExternalPaymentService>  allPaymentServices = new HashMap<Integer, ExternalPaymentService>();
-   private Map<Integer, Receipt> IdAndReceipt = new HashMap<>();
+    private Map<Integer, ExternalPaymentService>  allPaymentServices = new HashMap<Integer, ExternalPaymentService>();
+    private Map<Integer, Acquisition> IdAndAcquisition = new HashMap<>();
+    private int acquisitionIdCounter = 1;
+    private int receiptIdCounter = 1;
 
 
-    public static PaymentServicesFacade getInstance() {
+
+    public synchronized static PaymentServicesFacade getInstance() {
         if (paymentServicesFacadeInstance == null) {
             paymentServicesFacadeInstance = new PaymentServicesFacade();
         }
@@ -26,28 +27,63 @@ public class PaymentServicesFacade {
             return allPaymentServices.size()==size_before+1;
     }
 
+    public Map<Integer,Integer> pay(int price,int creditCard, int cvv, int month, int year, String holderID, int userId, Map<Integer, Map<String, Integer>> productList){
+        ExternalPaymentService externalPaymentService = allPaymentServices.values().iterator().next();
+        boolean paymentSucceeded = externalPaymentService.payWithCard(price, creditCard, cvv, month, year, holderID, userId, productList, acquisitionIdCounter, receiptIdCounter);
+        if (paymentSucceeded)
+        {
+            Acquisition acquisition = new Acquisition(acquisitionIdCounter, userId, price, holderID, creditCard, cvv, month, year, productList, receiptIdCounter);
+            IdAndAcquisition.put(acquisitionIdCounter, acquisition);
+            acquisitionIdCounter++;
+            receiptIdCounter += productList.size();
+            return acquisition.getReceiptIdAndStoreIdMap();
+        }
+        else
+        {
+            throw new IllegalArgumentException("Payment failed");
+        }
+    }
+
+    public Map<Integer, ExternalPaymentService> getAllPaymentServices(){
+        return this.allPaymentServices;
+    }
+
+    public int getAcquisitionIdCounter(){
+        return this.acquisitionIdCounter;
+    }
+
+    public int getReceiptIdCounter(){
+        return this.receiptIdCounter;
+    }
+
+
+
     public Map<Integer, Integer> getStorePurchaseInfo()
     {
         Map<Integer, Integer> storePurchaseStats = new HashMap<>();
-
-        for (Integer receiptId : IdAndReceipt.keySet()) {
-            Receipt receipt = IdAndReceipt.get(receiptId);
-            for (Integer store : receipt.getStoreIdAndProductDetails().keySet()) {
-                storePurchaseStats.put(store, storePurchaseStats.getOrDefault(store, 0) + 1);
+        for (Integer acqId : IdAndAcquisition.keySet()) {
+            Map<Integer, Receipt> acqReceipts = IdAndAcquisition.get(acqId).getStoreIdAndReceipt();
+            for (Integer receiptId : acqReceipts.keySet()) {
+                int storeId = acqReceipts.get(receiptId).getStoreId();
+                storePurchaseStats.put(storeId, storePurchaseStats.getOrDefault(storeId, 0) + 1);
             }
         }
-
         return storePurchaseStats;
     }
+
 
     public Map<Integer, Integer> getStoreReceiptsAndTotalAmount(int storeId)
     {
         Map<Integer, Integer> receiptAndTotalPrice = new HashMap<>();
-        for (Integer receiptId : IdAndReceipt.keySet()) {
-            Receipt receipt = IdAndReceipt.get(receiptId);
-            if (receipt.getStoreIdAndProductDetails().containsKey(storeId))
-                receiptAndTotalPrice.put(receiptId, receipt.getTotalPriceOfStoreInReceipt(storeId));
+
+        for (Integer acqId : IdAndAcquisition.keySet()) {
+            Acquisition acq = IdAndAcquisition.get(acqId);
+            if (acq.getStoreIdAndReceipt().containsKey(storeId))
+            {
+                receiptAndTotalPrice.put(acq.getReceiptIdByStoreId(storeId), acq.getTotalPriceOfStoreInAcquisition(storeId));
+            }
         }
+
         return receiptAndTotalPrice;
     }
 }

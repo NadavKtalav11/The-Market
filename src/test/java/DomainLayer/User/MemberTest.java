@@ -11,11 +11,14 @@ public class MemberTest {
     private final String username = "testUser";
     private final String password = "testPass";
     private final String birthday = "01-01-2000";
+    private final String country = "testCountry";
+    private final String city = "testCity";
     private final String address = "123 Test St";
+    private final String name = "testName";
 
     @BeforeEach
     public void setUp() {
-        member = new Member(memberId, username, password, birthday, address);
+        member = new Member(memberId, username, password,birthday,country,city,address, name);
     }
 
     @Test
