@@ -55,6 +55,16 @@ public class UserFacade {
         return getUserByID(userId).isMember();
     }
 
+    public int getMemberIdByUserId(int userID) throws Exception {
+        if(isMember(userID)){
+            String username = getUserByID(userID).getName();
+            return getMemberByUsername(username).getMemberID();
+        }
+        else {
+            throw new Exception("User is not a member");
+        }
+    }
+
     public void exitMarketSystem(int userID){
         synchronized (allUserLock) {
             allUsers.remove(userID); //todo do i need to remove the user from the list of users ?

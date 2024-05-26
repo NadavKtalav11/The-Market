@@ -49,38 +49,39 @@ public class RealToTest implements BridgeToTests {
         return service.logout(userId);
     }
 
-    public Response<String> addProductToStore(int userId, int memberID, int storeID, String productName, int price, int quantity,
+    @Override
+    public Response<String> addProductToStore(int userId, int storeID, String productName, int price, int quantity,
                                        String description, String categoryStr)
     {
-        return service.addProductToStore(userId, memberID, storeID, productName, price, quantity, description, categoryStr);
+        return service.addProductToStore(userId, storeID, productName, price, quantity, description, categoryStr);
     }
 
-    public Response<String> removeProductFromStore(int userId,int memberID, int storeID, String productName)
+    public Response<String> removeProductFromStore(int userId, int storeID, String productName)
     {
-        return service.removeProductFromStore(userId,memberID, storeID, productName);
+        return service.removeProductFromStore(userId, storeID, productName);
     }
 
-    public Response<String> updateProductInStore(int userId,int memberID, int storeID, String productName, int price, int quantity,
+    public Response<String> updateProductInStore(int userId, int storeID, String productName, int price, int quantity,
                                           String description, String categoryStr)
     {
-        return service.updateProductInStore(userId, memberID, storeID, productName, price, quantity, description, categoryStr);
+        return service.updateProductInStore(userId, storeID, productName, price, quantity, description, categoryStr);
     }
 
-    public Response<String> appointStoreOwner(int userId,int firstMemberID, int secondMemberID, int storeID)
+    public Response<String> appointStoreOwner(int nominatorUserId, int nominatedUserId, int storeID)
     {
-        return service.appointStoreOwner(userId, firstMemberID, secondMemberID, storeID);
+        return service.appointStoreOwner(nominatorUserId, nominatedUserId, storeID);
     }
 
-    public Response<String> appointStoreManager(int userId,int firstMemberID, int secondMemberID, int storeID,
+    public Response<String> appointStoreManager(int nominatorUserId,int nominatedUserId, int storeID,
                                          boolean inventoryPermissions, boolean purchasePermissions)
     {
-        return service.appointStoreManager(userId, firstMemberID, secondMemberID, storeID, inventoryPermissions, purchasePermissions);
+        return service.appointStoreManager(nominatorUserId, nominatedUserId, storeID, inventoryPermissions, purchasePermissions);
     }
 
-    public Response<String> updateStoreManagerPermissions(int userId,int firstMemberID, int secondMemberID, int storeID,
+    public Response<String> updateStoreManagerPermissions(int nominatorUserId,int nominatedUserId, int storeID,
                                                    boolean inventoryPermissions, boolean purchasePermissions)
     {
-        return service.updateStoreManagerPermissions(userId, firstMemberID, secondMemberID, storeID, inventoryPermissions, purchasePermissions);
+        return service.updateStoreManagerPermissions(nominatorUserId, nominatedUserId, storeID, inventoryPermissions, purchasePermissions);
     }
 
     public Response<List<String>> generalProductFilter(int userId, String categoryStr, List<String> keywords, int minPrice, int maxPrice, Double productMinRating,
