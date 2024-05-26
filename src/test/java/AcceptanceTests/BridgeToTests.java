@@ -48,8 +48,6 @@ public interface BridgeToTests {
 
     Response<List<Integer>> getInformationAboutStores(int user_ID);
 
-    Response<List<String>> getInformationAboutProductInStore(int user_ID, int store_ID);
-
     Response<Map<Integer, String>> getInformationAboutRolesInStore(int user_ID, int store_ID);
 
     Response<Map<Integer, List<Integer>>> getAuthorizationsOfManagersInStore(int user_ID, int store_ID);

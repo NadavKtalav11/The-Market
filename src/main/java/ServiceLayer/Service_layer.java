@@ -253,19 +253,6 @@ public class Service_layer {
 
     }
 
-    public Response<List<String>> getInformationAboutProductInStore(int user_ID, int store_ID)
-    {
-        logger.info("Starting reviewing information about products in store.");
-
-        try {
-            List<String> storeProducts = market.getInformationAboutProductInStore(user_ID, store_ID);
-            return new Response<>(storeProducts, "Information about products in store retrieved successfully.");
-        } catch (Exception e) {
-            logger.error("Error occurred during reviewing information about products in store: {}", e.getMessage(), e);
-            return new Response<>(null, "Failed to retrieve information about products in store: " + e.getMessage());
-        }
-    }
-
     public Response<Map<Integer, String>> getInformationAboutRolesInStore(int user_ID, int store_ID)
     {
         logger.info("Store owner started  reviewing information about employees in.");
