@@ -112,11 +112,6 @@ public class RealToTest implements BridgeToTests {
         return service.getInformationAboutStores(user_ID);
     }
 
-    public Response<List<String>> getInformationAboutProductInStore(int user_ID, int store_ID)
-    {
-        return service.getInformationAboutProductInStore(user_ID, store_ID);
-    }
-
     public Response<Map<Integer, String>> getInformationAboutRolesInStore(int user_ID, int store_ID)
     {
         return service.getInformationAboutRolesInStore(user_ID, store_ID);

@@ -498,24 +498,6 @@ public class Market {
         return allAvailableStores;
     }
 
-    public List<String> getInformationAboutProductInStore(int user_ID, int store_ID) throws Exception {
-        if (userFacade.isMember(user_ID)) {
-            int memberId = userFacade.getMemberIdByUserId(user_ID);
-            boolean succeeded = authenticationAndSecurityFacade.validateToken(authenticationAndSecurityFacade.getToken(memberId));
-            if (!succeeded) {
-                logout(user_ID);
-                throw new Exception("your session was over please log in again");
-            }
-        }
-        List<String> storeProducts = null;
-        if (storeFacade.verifyStoreExist(store_ID)) {
-            storeProducts = storeFacade.getStoreProducts(store_ID);
-        }else {
-            throw new Exception("Store does not exist");
-        }
-        return storeProducts;
-    }
-
     public void modifyShoppingCart(String productName, int quantity, int storeId, int userId)throws Exception
     {
         if (userFacade.isMember(userId)) {
