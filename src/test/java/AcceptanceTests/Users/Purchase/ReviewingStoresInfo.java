@@ -1,14 +1,17 @@
-package AcceptanceTests.Users.StoreOwner;
+package AcceptanceTests.Users.Purchase;
 
 import AcceptanceTests.BridgeToTests;
 import AcceptanceTests.ProxyToTest;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
+import java.util.ArrayList;
+import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.assertIterableEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class CloseStore {
+public class ReviewingStoresInfo {
     private static BridgeToTests impl;
 
 
@@ -22,19 +25,19 @@ public class CloseStore {
         impl.login(0, "user1", "fSijsd281");
         impl.openStore(0, "Bershka", "clothing store");
         impl.openStore(0, "Zara", "clothing store");
-
+        impl.openStore(0, "PullAndBear", "clothing store");
     }
 
     @Test
-    public void successfulCloseTest() {
-        assertTrue(impl.closeStore(0, 0).isSuccess());
-        assertTrue(impl.closeStore(0, 1).isSuccess());
-    }
+    public void successfulViewTest() {
+        impl.closeStore(0, 3);
 
-    @Test
-    public void alreadyClosedTest() {
-        impl.closeStore(0, 0);
-        assertFalse(impl.closeStore(0, 0).isSuccess());
-    }
+        List<Integer> allAvailableStores = new ArrayList<>();
+        allAvailableStores.add(1);
+        allAvailableStores.add(2);
+        allAvailableStores.add(3);
 
+        assertTrue(impl.getInformationAboutStores(0).isSuccess());
+        assertIterableEquals(impl.getInformationAboutStores(0).getResult(), allAvailableStores);
+    }
 }

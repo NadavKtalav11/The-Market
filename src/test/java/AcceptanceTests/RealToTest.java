@@ -91,8 +91,7 @@ public class RealToTest implements BridgeToTests {
         return service.updateStoreManagerPermissions(nominatorUserId, nominatedUsername, storeID, inventoryPermissions, purchasePermissions);
     }
 
-
-    public Response<List<String>> generalProductFilter(int userId, String categoryStr, List<String> keywords, int minPrice, int maxPrice, Double productMinRating,
+    public Response<List<String>> generalProductFilter(int userId, String categoryStr, List<String> keywords, Integer minPrice, Integer maxPrice, Double productMinRating,
                                                 List<String> productsFromSearch, Double storeMinRating)
     {
         return service.generalProductFilter(userId, categoryStr, keywords, minPrice, maxPrice, productMinRating, productsFromSearch, storeMinRating);
@@ -113,11 +112,6 @@ public class RealToTest implements BridgeToTests {
         return service.getInformationAboutStores(user_ID);
     }
 
-    public Response<List<String>> getInformationAboutProductInStore(int user_ID, int store_ID)
-    {
-        return service.getInformationAboutProductInStore(user_ID, store_ID);
-    }
-
     public Response<Map<Integer, String>> getInformationAboutRolesInStore(int user_ID, int store_ID)
     {
         return service.getInformationAboutRolesInStore(user_ID, store_ID);
@@ -133,14 +127,10 @@ public class RealToTest implements BridgeToTests {
         return service.closeStore(user_ID, store_ID);
     }
 
-    @Override
-    public Response<String> openStore(int user_ID, String name, String description) {
-        return null;
-    }
-
-    public Response<String> openStore(int user_ID)
+    public Response<String> openStore(int user_ID, String name, String description)
     {
-        return service.openStore(user_ID);
+
+        return service.openStore(user_ID, name, description);
     }
 
     public Response<String> addProductToBasket(String productName, int quantity, int storeId, int userId)

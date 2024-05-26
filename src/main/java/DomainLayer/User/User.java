@@ -13,7 +13,7 @@ public class User {
     private String city;
     private String address;
     private String name;
-    private Cart cart;
+    //private Cart cart;
 
     public User(int userID){
         this.userID = userID;
@@ -22,7 +22,7 @@ public class User {
         this.city = null;
         this.address = null;
         this.state = new Guest(); //default state
-        this.cart = new Cart();
+        //this.cart = new Cart();
     }
 
     public int getUserID(){
@@ -53,17 +53,17 @@ public class User {
 
     public void addToCart(String productName, int quantity, int storeId, int totalPrice)
     {
-        cart.addItemsToCart(productName, quantity, storeId, totalPrice);
+        state.addItemsToCart(productName, quantity, storeId, totalPrice);
     }
 
     public void modifyProductInCart(String productName, int quantity, int storeId, int totalPrice)
     {
-        cart.modifyProductInCart(productName, quantity, storeId, totalPrice);
+        state.modifyProductInCart(productName, quantity, storeId, totalPrice);
     }
 
     public void updateCartPrice()
     {
-        this.cart.calcCartTotal();
+        state.calcCartTotal();
     }
 
     public void Login(Member loginMember) throws Exception {
@@ -83,36 +83,36 @@ public class User {
 
     public boolean checkIfProductInUserCart(String productName, int storeId)
     {
-        return cart.checkIfProductInCart(productName, storeId);
+        return state.checkIfProductInUserCart(productName, storeId);
     }
 
     public void removeItemFromUserCart(String productName, int storeId)
     {
-        cart.removeItemFromCart(productName, storeId);
+        state.removeItemFromUserCart(productName, storeId);
     }
     public void setCart(Cart cart) {
-        this.cart = cart;
+        state.setCart(cart);
     }
 
     public Cart getCart() {
-        return cart;
+        return state.getCart();
     }
 
 
 
     public Map<String, List<Integer>> getCartProductsByStore(int storeId)
     {
-        return cart.getProductsDetailsByStore(storeId);
+        return state.getCartProductsByStore(storeId);
     }
 
     public List<Integer> getCartStores()
     {
-        return cart.getCartStores();
+        return state.getCartStores();
     }
 
     public boolean isCartEmpty()
     {
-        return this.cart.isCartEmpty();
+        return state.isCartEmpty();
     }
 
     public String getAddress(){
@@ -121,7 +121,7 @@ public class User {
 
     public int getCartTotalPriceBeforeDiscount()
     {
-        return this.cart.getCartPrice();
+        return this.state.getCartTotalPriceBeforeDiscount();
     }
 
     public void addReceipt(Map<Integer, Integer> receiptIdAndStoreId)

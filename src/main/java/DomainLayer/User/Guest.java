@@ -2,8 +2,13 @@ package DomainLayer.User;
 
 import java.util.Map;
 
-public class Guest implements State{
+public class Guest extends State{
 
+
+    public Guest(){
+        super();
+
+    }
     @Override
     public void Logout() {
         //todo throw exception

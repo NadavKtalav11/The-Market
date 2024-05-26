@@ -42,6 +42,10 @@ public class Cart {
             if (!baskets.containsKey(storeId)) {
                 throw new IllegalArgumentException("You can only modify items in your cart from existing store's basket.");
             }
+            else
+            {
+                baskets.get(storeId).modifyProduct(productName, quantity, totalPrice);
+            }
         }
 
     }
