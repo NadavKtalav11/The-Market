@@ -21,7 +21,8 @@ public class AddProductCart {
         impl.enterMarketSystem();
         impl.register(0, "user1", "fSijsd281", "12/12/00", "Israel", "Beer Sheva", "Mesada", "Toy");
         impl.login(0, "user1", "fSijsd281");
-        impl.openStore(0, "big", "very good store");
+
+        impl.openStore(0, "Zara", "clothing store");
         impl.addProductToStore(0, 0, "Milk", 10, 5, "Milk 5%", "food");
         impl.addProductToStore(0, 0, "Cheese", 15, 8, "Cheese 22%", "food");
         impl.addProductToStore(0, 0, "Yogurt", 4, 12, "Yogurt 20%", "food");
