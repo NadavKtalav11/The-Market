@@ -104,25 +104,25 @@ public class ProxyToTest implements BridgeToTests {
     }
 
     @Override
-    public Response<String> appointStoreOwner(int nominatorUserID, int nominatedUserID, int storeID) {
+    public Response<String> appointStoreOwner(int nominatorUserID, String nominatedUsername, int storeID) {
         if (realServiceAdaptor != null)
-            return realServiceAdaptor.appointStoreOwner(nominatorUserID, nominatedUserID, storeID);
+            return realServiceAdaptor.appointStoreOwner(nominatorUserID, nominatedUsername, storeID);
         else
             return new Response<>(null, "Not Implemented yet");
     }
 
     @Override
-    public Response<String> appointStoreManager(int nominatorUserID, int nominatedUserID, int storeID, boolean inventoryPermissions, boolean purchasePermissions) {
+    public Response<String> appointStoreManager(int nominatorUserID, String nominatedUsername, int storeID, boolean inventoryPermissions, boolean purchasePermissions) {
         if (realServiceAdaptor != null)
-            return realServiceAdaptor.appointStoreManager(nominatorUserID, nominatedUserID, storeID, inventoryPermissions, purchasePermissions);
+            return realServiceAdaptor.appointStoreManager(nominatorUserID, nominatedUsername, storeID, inventoryPermissions, purchasePermissions);
         else
             return new Response<>(null, "Not Implemented yet");
     }
 
     @Override
-    public Response<String> updateStoreManagerPermissions(int nominatorUserID, int nominatedUserID, int storeID, boolean inventoryPermissions, boolean purchasePermissions) {
+    public Response<String> updateStoreManagerPermissions(int nominatorUserID, String nominatedUsername, int storeID, boolean inventoryPermissions, boolean purchasePermissions) {
         if (realServiceAdaptor != null)
-            return realServiceAdaptor.updateStoreManagerPermissions(nominatorUserID, nominatedUserID, storeID, inventoryPermissions, purchasePermissions);
+            return realServiceAdaptor.updateStoreManagerPermissions(nominatorUserID, nominatedUsername, storeID, inventoryPermissions, purchasePermissions);
         else
             return new Response<>(null, "Not Implemented yet");
     }

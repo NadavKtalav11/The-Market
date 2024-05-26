@@ -32,12 +32,12 @@ public interface BridgeToTests {
     Response<String> updateProductInStore(int userId, int storeID, String productName, int price, int quantity,
                                           String description, String categoryStr);
 
-    Response<String> appointStoreOwner(int nominatorUserId, int nominatedUserId, int storeID);
+    Response<String> appointStoreOwner(int nominatorUserId, String nominatedUsername, int storeID);
 
-    Response<String> appointStoreManager(int nominatorUserId, int nominatedUserId, int storeID,
+    Response<String> appointStoreManager(int nominatorUserId, String nominatedUsername, int storeID,
                                          boolean inventoryPermissions, boolean purchasePermissions);
 
-    Response<String> updateStoreManagerPermissions(int nominatorUserId, int nominatedUserId, int storeID,
+    Response<String> updateStoreManagerPermissions(int nominatorUserId, String nominatedUsername, int storeID,
                                                    boolean inventoryPermissions, boolean purchasePermissions);
 
     Response<List<String>> generalProductFilter(int userId, String categoryStr, List<String> keywords, int minPrice, int maxPrice, Double productMinRating, List<String> productsFromSearch, Double storeMinRating);

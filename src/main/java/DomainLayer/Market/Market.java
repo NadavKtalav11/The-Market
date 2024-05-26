@@ -230,7 +230,7 @@ public class Market {
         }
     }
 
-    public void appointStoreOwner(int nominatorUserId, int nominatedUserId, int storeID) throws Exception {
+    public void appointStoreOwner(int nominatorUserId, String nominatedUsername, int storeID) throws Exception {
         if (userFacade.isMember(nominatorUserId)) {
             boolean succeeded = authorizationAndSecurityFacade.validateToken(authorizationAndSecurityFacade.getToken(nominatorUserId));
             if (!succeeded) {
@@ -239,8 +239,8 @@ public class Market {
             }
             int nominatorMemberID = userFacade.getMemberIdByUserId(nominatorUserId);
             if (roleFacade.verifyStoreOwner(storeID, nominatorMemberID)) {
-                if(userFacade.isMember(nominatedUserId)){
-                    int nominatedMemberID = userFacade.getMemberIdByUserId(nominatedUserId);
+                if(userFacade.getMemberByUsername(nominatedUsername) != null){
+                    int nominatedMemberID = userFacade.getMemberByUsername(nominatedUsername).getMemberID();
                     if (!roleFacade.verifyStoreOwner(storeID, nominatedMemberID)) {
                         roleFacade.createStoreOwner(nominatedMemberID, storeID, false, nominatorMemberID);
                     } else {
@@ -255,7 +255,7 @@ public class Market {
         }
     }
 
-    public void appointStoreManager(int nominatorUserId, int nominatedUserId, int storeID,
+    public void appointStoreManager(int nominatorUserId, String nominatedUsername, int storeID,
                                     boolean inventoryPermissions, boolean purchasePermissions) throws Exception {
         if (userFacade.isMember(nominatorUserId)) {
             boolean succeeded = authorizationAndSecurityFacade.validateToken(authorizationAndSecurityFacade.getToken(nominatorUserId));
@@ -265,8 +265,8 @@ public class Market {
             }
             int nominatorMemberID = userFacade.getMemberIdByUserId(nominatorUserId);
             if (roleFacade.verifyStoreOwner(storeID, nominatorMemberID)) {
-                if(userFacade.isMember(nominatedUserId)){
-                    int nominatedMemberID = userFacade.getMemberIdByUserId(nominatedUserId);
+                if(userFacade.getMemberByUsername(nominatedUsername) != null){
+                    int nominatedMemberID = userFacade.getMemberByUsername(nominatedUsername).getMemberID();
                     if (!roleFacade.verifyStoreOwner(storeID, nominatedMemberID) && !roleFacade.verifyStoreManager(storeID, nominatedMemberID)) {
                         roleFacade.createStoreManager(nominatedMemberID, storeID,
                                     inventoryPermissions, purchasePermissions, nominatorMemberID);
@@ -282,7 +282,7 @@ public class Market {
         }
     }
 
-    public void updateStoreManagerPermissions(int nominatorUserId, int nominatedUserId, int storeID,
+    public void updateStoreManagerPermissions(int nominatorUserId, String nominatedUsername, int storeID,
                                     boolean inventoryPermissions, boolean purchasePermissions) throws Exception {
         if (userFacade.isMember(nominatorUserId)) {
             boolean succeeded = authorizationAndSecurityFacade.validateToken(authorizationAndSecurityFacade.getToken(nominatorUserId));
@@ -292,8 +292,8 @@ public class Market {
             }
             int nominatorMemberID = userFacade.getMemberIdByUserId(nominatorUserId);
             if (roleFacade.verifyStoreOwner(storeID, nominatorMemberID)) {
-                if(userFacade.isMember(nominatedUserId)){
-                    int nominatedMemberID = userFacade.getMemberIdByUserId(nominatedUserId);
+                if(userFacade.getMemberByUsername(nominatedUsername) != null){
+                    int nominatedMemberID = userFacade.getMemberByUsername(nominatedUsername).getMemberID();
                     if (roleFacade.verifyStoreManager(storeID, nominatedMemberID)) {
                         if(roleFacade.getStoreManager(storeID, nominatedMemberID).getNominatorMemberId() == nominatorMemberID){
                             roleFacade.updateStoreManagerPermissions(nominatedMemberID, storeID, inventoryPermissions, purchasePermissions);
