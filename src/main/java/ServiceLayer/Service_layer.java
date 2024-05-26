@@ -370,7 +370,7 @@ public class Service_layer {
         }
     }
 
-    public Response<List<String>> inStoreProductFilter(int userId ,String categoryStr, List<String> keywords, int minPrice, int maxPrice, Double productMinRating, int storeId, List<String> productsFromSearch, Double storeMinRating)
+    public Response<List<String>> inStoreProductFilter(int userId ,String categoryStr, List<String> keywords, Integer minPrice, Integer maxPrice, Double productMinRating, int storeId, List<String> productsFromSearch, Double storeMinRating)
     {
         logger.info("Starting in-store product search filter in the system.");
 

@@ -72,4 +72,5 @@ public abstract class State {
     protected abstract void Login() throws Exception;
     protected abstract boolean isMember();
     protected abstract void addReceipt(Map<Integer, Integer> receiptIdAndStoreId);
+    public abstract String getUsername();
 }

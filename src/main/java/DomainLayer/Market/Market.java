@@ -637,7 +637,7 @@ public class Market {
 
         if (storeFacade.verifyStoreExist(storeId))
         {
-                if (storeFacade.checkProductExistInStore(productName, storeId))
+                if (productName == null || storeFacade.checkProductExistInStore(productName, storeId))
                     return storeFacade.inStoreProductSearch(productName, categoryStr, keywords, storeId);
                 else
                     throw new IllegalArgumentException("The product doesn't exist in the store");
