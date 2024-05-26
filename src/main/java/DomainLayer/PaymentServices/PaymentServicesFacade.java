@@ -20,11 +20,23 @@ public class PaymentServicesFacade {
         return paymentServicesFacadeInstance;
     }
 
+    public void clearPaymentServices() {
+        allPaymentServices.clear();
+    }
+
     public boolean addExternalService(int licensedDealerNumber, String paymentServiceName, String url){
             int size_before= allPaymentServices.size();
             ExternalPaymentService externalPaymentService = new ExternalPaymentService(licensedDealerNumber,paymentServiceName, url);
             allPaymentServices.put(licensedDealerNumber, externalPaymentService);
             return allPaymentServices.size()==size_before+1;
+    }
+
+    public boolean removeExternalService(int licensedDealerNumber){
+        if(!this.allPaymentServices.containsKey(licensedDealerNumber)){
+            return false;
+        }
+        allPaymentServices.remove(licensedDealerNumber);
+        return true;
     }
 
     public Map<Integer,Integer> pay(int price,int creditCard, int cvv, int month, int year, String holderID, int userId, Map<Integer, Map<String, Integer>> productList){

@@ -49,6 +49,21 @@ public class Market {
                 return;
             }
         }
+        try {
+            // Check for supply service
+            if (supplyServiceName == null || licensedDealerNumber1<0 || countries==null || cities==null ) {
+                throw new Exception("The system has not been able to be launched since there is a problem with the supply service details");
+            }
+            // Check for payment service
+            if (paymentServiceName == null || url==null || licensedDealerNumber <0) {
+                throw new Exception("The system has not been able to be launched since there is a problem with the payment service details");
+            }
+            // Initialization logic here
+            initialized = true;
+        } catch (Exception e) {
+            // Log the error or handle it as needed
+            throw e;  // Re-throwing the exception to be handled by the caller
+        }
 
         int systemMangerId = userFacade.registerSystemAdmin(userName, password, birthday,country,city,address,name);
         systemManagerIds.add(systemMangerId);
@@ -59,14 +74,86 @@ public class Market {
         }
     }
 
-    public void payWithExternalPaymentService(int price,int creditCard, int cvv, int month, int year, String holderID, int userId, Map<Integer, Map<String, Integer>> productList) {
+    public void addExternalPaymentService(int licensedDealerNumber,String paymentServiceName, String url, int systemMangerId) throws Exception {
         try {
+            if(!systemManagerIds.contains(systemMangerId)){
+                throw new Exception("Only system manager is allowed to add new external payment service");
+            }
+            if (paymentServiceName == null || licensedDealerNumber<0 || url==null ) {
+                throw new Exception("The system has not been able to add the payment service due to invalid details");
+            }
+        } catch (Exception e) {
+            // Log the error or handle it as needed
+            throw e;  // Re-throwing the exception to be handled by the caller
+        }
+        paymentServicesFacade.addExternalService(licensedDealerNumber, paymentServiceName, url);
+    }
+
+    public void removeExternalPaymentService(int licensedDealerNumber, int systemMangerId) throws Exception {
+        try {
+            if (!systemManagerIds.contains(systemMangerId)) {
+                throw new Exception("Only system manager is allowed to remove external payment services");
+            }
+            if (paymentServicesFacade.getAllPaymentServices().size() <= 1) {
+                throw new Exception("There must remain at least one external payment service in the system");
+            }
+        }
+            catch (Exception e) {
+                // Log the error or handle it as needed
+                throw e;  // Re-throwing the exception to be handled by the caller
+            }
+        paymentServicesFacade.removeExternalService(licensedDealerNumber);
+
+    }
+
+    public void addExternalSupplyService(int licensedDealerNumber, String supplyServiceName, HashSet<String> countries, HashSet<String> cities, int systemManagerId) throws Exception {
+            try {
+                if (!systemManagerIds.contains(systemManagerId)) {
+                    throw new Exception("Only system manager is allowed to add new external supply service");
+                }
+                if (supplyServiceName == null || countries ==null || cities ==null || licensedDealerNumber < 0 || supplyServiceName == null ) {
+                    throw new Exception("The system has not been able to add the supply service due to invalid details");
+                }
+            } catch (Exception e) {
+                throw e;  // Re-throwing the exception to be handled by the caller
+            }
+        supplyServicesFacade.addExternalService(licensedDealerNumber, supplyServiceName, countries, cities);
+
+    }
+
+    public void removeExternalSupplyService(int licensedDealerNumber, int systemManagerId) throws Exception {
+        synchronized (initializedLock) {
+            try {
+                if (!systemManagerIds.contains(systemManagerId)) {
+                    throw new Exception("Only system manager is allowed to remove external supply service");
+                }
+                if (supplyServicesFacade.getAllSupplyServices().size() <= 1) {
+                    throw new Exception("There must remain at least one external supply service in the system");
+                }
+                supplyServicesFacade.removeExternalService(licensedDealerNumber);
+            } catch (Exception e) {
+                throw e;  // Re-throwing the exception to be handled by the caller
+            }
+        }
+    }
+
+
+
+
+    public void payWithExternalPaymentService(int price,int creditCard, int cvv, int month, int year, String holderID, int userId, Map<Integer, Map<String, Integer>> productList) throws Exception{
+        try {
+            if(price<= 0 || month> 12 || month<1 ||year < 2020 ||holderID==null||userId<0 ||productList==null) {
+                throw new Exception("There is a problem with the provided payment measure or details of the order.\n");
+            }
+            if(paymentServicesFacade.getAllPaymentServices().size()<1){
+                throw new Exception("There is no available external payment system.\n");
+            }
             Map<Integer,Integer> receiptIdStoreId = paymentServicesFacade.pay(price, creditCard, cvv, month, year, holderID, userId, productList); //<receiptId, storeId>
             //todo add this to the map of the user.
             //print (purchsde successed)
 
             //Add the receiptId and storeId to the user receipts map
-            if (userFacade.isUserLoggedIn(userId))
+            if (userFacade.isMember(userId))
             {
                 userFacade.addReceiptToUser(receiptIdStoreId, userId);
             }
@@ -78,6 +165,7 @@ public class Market {
         catch (Exception e){
             //List<Integer> stores = this.userFacade.getCartStoresByUser(user_ID);
             // returnStock(getPuchaseList(userId))
+            throw e;
         }
     }
 
@@ -682,5 +770,9 @@ public class Market {
         synchronized (initializedLock) {
             return initialized;
         }
+    }
+
+    public Set<Integer> getSystemManagerIds() {
+        return this.systemManagerIds;
     }
 }

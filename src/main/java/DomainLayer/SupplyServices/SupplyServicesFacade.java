@@ -3,6 +3,7 @@ package DomainLayer.SupplyServices;
 
 import DomainLayer.Role.RoleFacade;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -59,4 +60,17 @@ public class SupplyServicesFacade {
         return externalSupplyService.createShiftingDetails(userName,country ,city, address);
         // Check if the product exists in the instance's map and if the amount is sufficient
     }
+
+    public Map<Integer, ExternalSupplyService> getAllSupplyServices() {
+        return this.externalSupplyService;
+    }
+
+    public boolean removeExternalService(int licensedDealerNumber) {
+        if (!this.externalSupplyService.containsKey(licensedDealerNumber)) {
+            return false;
+        }
+        externalSupplyService.remove(licensedDealerNumber);
+        return true;
+    }
+
 }

@@ -19,6 +19,7 @@ public class UserFacade {
 
     private UserFacade()
     {
+        this.allUsers = new HashMap<>();
         this.currentUserID = 0;
         this.currentMemberID = 0;
         allUserLock = new Object();
@@ -52,6 +53,9 @@ public class UserFacade {
     }
 
     public boolean isMember(int userId){
+        if(!allUsers.containsKey(userId)){
+            return false;
+        }
         return getUserByID(userId).isMember();
     }
 
@@ -116,8 +120,10 @@ public class UserFacade {
 
 
     public void register(int userID, String username, String password, String birthday,String country, String city,String address, String name) throws Exception {
-        if (getUserByID(userID).isMember()) {
-            throw new Exception("member cannot register");
+        if(allUsers.containsKey(userID)) {
+            if (getUserByID(userID).isMember()) {
+                throw new Exception("member cannot register");
+            }
         }
         else {
             validateRegistrationDetails(username,password,birthday,country,city,address,name);

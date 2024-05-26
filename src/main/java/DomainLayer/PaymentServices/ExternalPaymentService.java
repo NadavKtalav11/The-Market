@@ -16,6 +16,7 @@ public  class ExternalPaymentService {
         this.licensedDealerNumber=licensedDealerNumber;
         this.paymentServiceName= paymentServiceName;
         this.url= url;
+        this.idAndAcquisition = new HashMap<>();
     }
 
     // Abstract method for paying with a card
@@ -38,6 +39,6 @@ public  class ExternalPaymentService {
 
     public Map<Integer, Acquisition> getIdAndAcquisition()
     {
-        return idAndAcquisition;
+        return this.idAndAcquisition;
     }
 }
