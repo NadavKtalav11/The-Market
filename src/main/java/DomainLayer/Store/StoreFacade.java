@@ -185,10 +185,9 @@ public class StoreFacade {
         return filteredProducts;
     }
 
-    public void checkCategory(String categoryStr)
+    public boolean checkCategory(String categoryStr)
     {
-        if (Category.fromString(categoryStr) == null)
-            throw new IllegalArgumentException("The category you entered doesn't exist.");
+        return !(Category.fromString(categoryStr) == null);
     }
 
     public boolean checkProductExistInStore(String productName, int storeId)
