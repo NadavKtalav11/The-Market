@@ -34,6 +34,10 @@ public class UserFacade {
         return userFacadeInstance;
     }
 
+    public int getCurrentUserID (){
+        return currentUserID;
+    }
+
     public User getUserByID(int userID){
         synchronized (allUserLock) {
             return allUsers.get(userID);
@@ -157,9 +161,9 @@ public class UserFacade {
             throw new Exception("All fields are required.");
         }
         //checking if username is already exist
-        synchronized (allUsers) {
-            for (User user : allUsers.values()) {
-                if (Objects.equals(((Member) user.getState()).getUsername(), username)) {
+        synchronized (members) {
+            for (Member member : members.values()) {
+                if (Objects.equals(member.getUsername(), username)) {
                     throw new Exception("Username already exists. Please choose a different username.");
                 }
             }
@@ -174,7 +178,7 @@ public class UserFacade {
         if (loginMember == null){
             throw new Exception("Username or password is incorrect");
         }
-        else if (!loginMember.getPassword().equals(password)){
+        else if (!(loginMember.getPassword() == password)){
             throw new Exception("Username or password is incorrect");
         }
         getUserByID(userID).Login(username,password, loginMember);

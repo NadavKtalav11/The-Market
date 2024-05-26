@@ -27,10 +27,11 @@ public class GeneralSerach {
         impl.login(0, "user1", "fSijsd281");
         impl.openStore(0);
         impl.openStore(0);
-        impl.addProductToStore(0, 0, 0, "Milk", 10, 5, "Milk 5%", "food");
-        impl.addProductToStore(0, 0, 0, "Cheese", 15, 8, "Cheese 22%", "food");
-        impl.addProductToStore(0, 0, 1, "Yogurt", 4, 12, "Yogurt 20%", "food");
-        impl.addProductToStore(0, 0, 1, "Shoes", 4, 12, "Nike Shoes", "clothing");
+        //todo remove this comment before push
+//        impl.addProductToStore(0, 0, 0, "Milk", 10, 5, "Milk 5%", "food");
+//        impl.addProductToStore(0, 0, 0, "Cheese", 15, 8, "Cheese 22%", "food");
+//        impl.addProductToStore(0, 0, 1, "Yogurt", 4, 12, "Yogurt 20%", "food");
+//        impl.addProductToStore(0, 0, 1, "Shoes", 4, 12, "Nike Shoes", "clothing");
 
     }
 
