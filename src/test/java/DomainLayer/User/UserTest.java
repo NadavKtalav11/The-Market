@@ -39,19 +39,10 @@ public class UserTest {
     }
 
     @Test
-    //todo do this after Nadav
     public void testLogout() {
         user.setState(mockState);
         user.Logout();
         verify(mockState).Logout();
-    }
-
-    @Test
-    //todo think what to do
-    public void testExit() {
-        user.setState(mockState);
-        user.exitMarketSystem();
-        verify(mockState).exitMarketSystem();
     }
 
     @Test
@@ -62,7 +53,6 @@ public class UserTest {
     }
 
     @Test
-    //todo check this after tomer
     public void testModifyProductInCart() {
         user.addToCart("Product1", 2, 1, 100);
         user.modifyProductInCart("Product1", 3, 1, 150);

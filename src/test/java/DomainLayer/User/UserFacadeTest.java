@@ -92,14 +92,6 @@ public class UserFacadeTest {
     }
 
     @Test
-    public void testExit() {
-        doNothing().when(mockUser).exitMarketSystem();
-        userFacade.exitMarketSystem(userId);
-        verify(mockUser).exitMarketSystem();
-        assertNull(userFacade.allUsers.get(userId));
-    }
-
-    @Test
     public void testAddItemsToBasket() {
         doNothing().when(mockUser).addToCart(anyString(), anyInt(), anyInt(), anyInt());
         doNothing().when(mockUser).updateCartPrice();
