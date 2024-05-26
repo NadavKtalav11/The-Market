@@ -34,13 +34,15 @@ public class Service_layer {
         }
     }
 
-    public void payWithExternalPaymentService(int price,int cardNumber, int cvv, int month, int year, String holderID, int userID) {
+    public Response<String> payWithExternalPaymentService(int price,int cardNumber, int cvv, int month, int year, String holderID, int userID) {
         logger.info("Reaching for the payment service in order to complete the purchase.");
         try {
             market.payWithExternalPaymentService( price, cardNumber, cvv,  month,  year,  holderID,  userID, market.getPurchaseList(userID) );
+            return new Response<>("Successful payment", "payment went successfully.");
 
         } catch (Exception e) {
-            logger.error("Error occurred with the payment service company: {}", e.getMessage(), e);
+            logger.error("Error occurred while paying: {}", e.getMessage(), e);
+            return new Response<>(null, "Payment failed: " + e.getMessage());
         }
     }
 

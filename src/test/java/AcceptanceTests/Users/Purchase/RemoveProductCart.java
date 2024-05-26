@@ -54,6 +54,7 @@ public class RemoveProductCart {
     @Test
     public void purchasePolicyInvalidTest() {
         //Assume that in the future 'Shoes' won't meet the purchase policies
+        impl.addProductToBasket("Shoes", 5, 0, 0);
         assertFalse(impl.removeProductFromBasket("Shoes", 0, 0).isSuccess());
     }
 }

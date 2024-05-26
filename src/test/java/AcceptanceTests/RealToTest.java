@@ -24,6 +24,13 @@ public class RealToTest implements BridgeToTests {
 
     }
 
+    @Override
+    public Response<String> payWithExternalPaymentService(int price,int cardNumber, int cvv, int month, int year, String holderID, int userID)
+    {
+        return service.payWithExternalPaymentService(price, cardNumber, cvv, month, year, holderID, userID);
+
+    }
+
     public Response<String> exitMarketSystem(int userID)
     {
         return service.exitMarketSystem(userID);
@@ -154,7 +161,7 @@ public class RealToTest implements BridgeToTests {
         return service.storeOwnerGetInfoAboutStore(user_ID, store_ID);
     }
 
-    public Response<List<String>> inStoreProductFilter(int userId, String categoryStr, List<String> keywords, int minPrice, int maxPrice, Double productMinRating,
+    public Response<List<String>> inStoreProductFilter(int userId, String categoryStr, List<String> keywords, Integer minPrice, Integer maxPrice, Double productMinRating,
                                                 int storeId, List<String> productsFromSearch, Double storeMinRating)
     {
         return service.inStoreProductFilter(userId, categoryStr, keywords, minPrice, maxPrice, productMinRating, storeId, productsFromSearch, storeMinRating);
