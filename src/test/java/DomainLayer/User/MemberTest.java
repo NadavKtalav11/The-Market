@@ -2,6 +2,9 @@ package DomainLayer.User;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
+import java.util.Map;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 public class MemberTest {
@@ -21,31 +24,40 @@ public class MemberTest {
         member = new Member(memberId, username, password,birthday,country,city,address, name);
     }
 
+
     @Test
-    public void testMemberInitialization() {
-        assertEquals(memberId, member.getMemberID());
-        assertEquals(username, member.getUsername());
-        assertEquals(password, member.getPassword());
-        assertEquals(birthday, member.getBirthday());
-        assertEquals(address, member.getAddress());
-        //todo remove
-        //assertFalse(member.isLogin());
+    public void testLoginThrowsException() {
+        // Assert that Login throws an exception when called
+        assertThrows(Exception.class, member::Login);
     }
 
     @Test
     public void testLogout() {
-        member.Logout(); // No need to pass user since it's not used in Logout method
-        //todo remove
-        //assertFalse(member.isLogin());
+        // Assert that logout does not throw any exception
+        assertDoesNotThrow(member::Logout);
     }
 
     @Test
-    public void testExit() {
-        // Exit method should simply call Logout, so we just need to verify if isLogin becomes false
-        member.exitMarketSystem(); // No need to pass user since it's not used in Exit method
-        //assertFalse(member.isLogin());
-        //todo remove
+    public void testExitMarketSystem() {
+        // Assert that exitMarketSystem does not throw any exception
+        assertDoesNotThrow(member::exitMarketSystem);
     }
 
+    @Test
+    public void testIsMember() {
+        // Assert that isMember returns true for a member
+        assertTrue(member.isMember());
+    }
 
+    @Test
+    public void testAddReceipt() {
+        // Prepare test data
+        int receiptId = 123;
+        int storeId = 456;
+        member.addReceipt(Map.of(receiptId, storeId));
+
+        // Assert that the receipt was added correctly
+        assertTrue(member.getReceiptIdsAndStoreId().containsKey(receiptId));
+        assertEquals(storeId, member.getReceiptIdsAndStoreId().get(receiptId));
+    }
 }

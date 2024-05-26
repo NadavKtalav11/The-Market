@@ -91,11 +91,6 @@ public class RealToTest implements BridgeToTests {
         return service.updateStoreManagerPermissions(nominatorUserId, nominatedUsername, storeID, inventoryPermissions, purchasePermissions);
     }
 
-    @Override
-    public Response<List<String>> generalProductFilter(int userId, String categoryStr, List<String> keywords, Integer minPrice, Integer maxPrice, Double productMinRating, List<String> productsFromSearch, Double storeMinRating) {
-        //todo remove this
-        return null;
-    }
 
     public Response<List<String>> generalProductFilter(int userId, String categoryStr, List<String> keywords, int minPrice, int maxPrice, Double productMinRating,
                                                 List<String> productsFromSearch, Double storeMinRating)
@@ -145,9 +140,7 @@ public class RealToTest implements BridgeToTests {
 
     public Response<String> openStore(int user_ID)
     {
-        //todo remove this
-        //return service.openStore(user_ID);
-        return null;
+        return service.openStore(user_ID);
     }
 
     public Response<String> addProductToBasket(String productName, int quantity, int storeId, int userId)

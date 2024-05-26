@@ -87,6 +87,7 @@ public class Member implements State{
         return password;
     }
 
+    public Map<Integer, Integer> getReceiptIdsAndStoreId(){return receiptIdsAndStoreId;}
 
     public int getMemberID()
     {
