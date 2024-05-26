@@ -7,7 +7,7 @@ import java.util.Map;
 
 public class Basket {
     private final int storeId;
-    Map<String, List<Integer>> products = new HashMap<>(); //key = product name, value = [quantity, products total price]
+    Map<String, List<Integer>> products; //key = product name, value = [quantity, products total price]
     int basketPrice;
     Object basketPriceLock;
 
@@ -15,6 +15,7 @@ public class Basket {
         this.storeId = storeId;
         this.basketPrice = 0;
         basketPriceLock = new Object();
+        products = new HashMap<>();
     }
 
     public int getStoreId()
@@ -25,6 +26,7 @@ public class Basket {
     public int getBasketPrice()
     {
         synchronized (basketPriceLock) {
+            calcBasketPrice();
             return this.basketPrice;
         }
     }
@@ -68,7 +70,6 @@ public class Basket {
             int totalItemPrice = products.get(productName).get(1);
             totalPrice += totalItemPrice;
         }
-
         setBasketPrice(totalPrice);
     }
 

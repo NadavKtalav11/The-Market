@@ -122,7 +122,7 @@ public class User {
 
     public int getCartTotalPriceBeforeDiscount()
     {
-        return this.state.getCartTotalPriceBeforeDiscount();
+        return state.getCartTotalPriceBeforeDiscount();
     }
 
     public void addReceipt(Map<Integer, Integer> receiptIdAndStoreId)
