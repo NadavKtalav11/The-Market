@@ -80,49 +80,49 @@ public class ProxyToTest implements BridgeToTests {
     }
 
     @Override
-    public Response<String> addProductToStore(int userId ,int memberID, int storeID, String productName, int price, int quantity, String description, String categoryStr) {
+    public Response<String> addProductToStore(int userId, int storeID, String productName, int price, int quantity, String description, String categoryStr) {
         if (realServiceAdaptor != null)
-            return realServiceAdaptor.addProductToStore(userId, memberID, storeID, productName, price, quantity, description, categoryStr);
+            return realServiceAdaptor.addProductToStore(userId, storeID, productName, price, quantity, description, categoryStr);
         else
             return new Response<>(null, "Not Implemented yet");
     }
 
     @Override
-    public Response<String> removeProductFromStore(int userId,int memberID, int storeID, String productName) {
+    public Response<String> removeProductFromStore(int userId, int storeID, String productName) {
         if (realServiceAdaptor != null)
-            return realServiceAdaptor.removeProductFromStore(userId,memberID, storeID, productName);
+            return realServiceAdaptor.removeProductFromStore(userId, storeID, productName);
         else
             return new Response<>(null, "Not Implemented yet");
     }
 
     @Override
-    public Response<String> updateProductInStore(int userId,int memberID, int storeID, String productName, int price, int quantity, String description, String categoryStr) {
+    public Response<String> updateProductInStore(int userId, int storeID, String productName, int price, int quantity, String description, String categoryStr) {
         if (realServiceAdaptor != null)
-            return realServiceAdaptor.updateProductInStore(userId ,memberID, storeID, productName, price, quantity, description, categoryStr);
+            return realServiceAdaptor.updateProductInStore(userId, storeID, productName, price, quantity, description, categoryStr);
         else
             return new Response<>(null, "Not Implemented yet");
     }
 
     @Override
-    public Response<String> appointStoreOwner(int userId,int firstMemberID, int secondMemberID, int storeID) {
+    public Response<String> appointStoreOwner(int nominatorUserID, int nominatedUserID, int storeID) {
         if (realServiceAdaptor != null)
-            return realServiceAdaptor.appointStoreOwner(userId,firstMemberID, secondMemberID, storeID);
+            return realServiceAdaptor.appointStoreOwner(nominatorUserID, nominatedUserID, storeID);
         else
             return new Response<>(null, "Not Implemented yet");
     }
 
     @Override
-    public Response<String> appointStoreManager(int userId,int firstMemberID, int secondMemberID, int storeID, boolean inventoryPermissions, boolean purchasePermissions) {
+    public Response<String> appointStoreManager(int nominatorUserID, int nominatedUserID, int storeID, boolean inventoryPermissions, boolean purchasePermissions) {
         if (realServiceAdaptor != null)
-            return realServiceAdaptor.appointStoreManager(userId, firstMemberID, secondMemberID, storeID, inventoryPermissions, purchasePermissions);
+            return realServiceAdaptor.appointStoreManager(nominatorUserID, nominatedUserID, storeID, inventoryPermissions, purchasePermissions);
         else
             return new Response<>(null, "Not Implemented yet");
     }
 
     @Override
-    public Response<String> updateStoreManagerPermissions(int userId,int firstMemberID, int secondMemberID, int storeID, boolean inventoryPermissions, boolean purchasePermissions) {
+    public Response<String> updateStoreManagerPermissions(int nominatorUserID, int nominatedUserID, int storeID, boolean inventoryPermissions, boolean purchasePermissions) {
         if (realServiceAdaptor != null)
-            return realServiceAdaptor.updateStoreManagerPermissions(userId, firstMemberID, secondMemberID, storeID, inventoryPermissions, purchasePermissions);
+            return realServiceAdaptor.updateStoreManagerPermissions(nominatorUserID, nominatedUserID, storeID, inventoryPermissions, purchasePermissions);
         else
             return new Response<>(null, "Not Implemented yet");
     }
