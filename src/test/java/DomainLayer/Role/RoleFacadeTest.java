@@ -18,7 +18,7 @@ public class RoleFacadeTest {
     }
 
     @Test
-    public void testCreateStoreOwner() {
+    public void testCreateStoreOwner() throws Exception {
         int memberId = 123;
         int storeId = 1;
         roleFacade.createStoreOwner(memberId, storeId, true, -1);
@@ -26,7 +26,7 @@ public class RoleFacadeTest {
     }
 
     @Test
-    public void testCreateStoreManager() {
+    public void testCreateStoreManager() throws Exception {
         int memberId = 456;
         int storeId = 1;
         roleFacade.createStoreManager(memberId, storeId, true, true, -1);
@@ -34,7 +34,7 @@ public class RoleFacadeTest {
     }
 
     @Test
-    public void testVerifyStoreOwnerIsFounder() {
+    public void testVerifyStoreOwnerIsFounder() throws Exception {
         int memberId = 789;
         int storeId = 1;
         //remove
@@ -43,7 +43,7 @@ public class RoleFacadeTest {
     }
 
     @Test
-    public void testGetInformationAboutStoreRoles() {
+    public void testGetInformationAboutStoreRoles() throws Exception {
         int storeId = 1;
         int ownerId = 123;
         int managerId = 456;
@@ -57,7 +57,7 @@ public class RoleFacadeTest {
     }
 
     @Test
-    public void testGetStoreManagersAuthorizations() {
+    public void testGetStoreManagersAuthorizations() throws Exception {
         int memberId = 789;
         int storeId = 1;
         roleFacade.createStoreManager(memberId, storeId, true, true, -1);
@@ -67,7 +67,7 @@ public class RoleFacadeTest {
     }
 
     @Test
-    public void testGetAllStoreManagers() {
+    public void testGetAllStoreManagers() throws Exception {
         int memberId = 789;
         int storeId = 1;
         roleFacade.createStoreManager(memberId, storeId, true, true, -1);
@@ -76,7 +76,7 @@ public class RoleFacadeTest {
     }
 
     @Test
-    public void testGetAllStoreOwners() {
+    public void testGetAllStoreOwners() throws Exception {
         int memberId = 789;
         int storeId = 1;
         roleFacade.createStoreOwner(memberId, storeId, true, -1);

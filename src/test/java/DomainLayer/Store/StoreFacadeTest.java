@@ -43,7 +43,7 @@ public class StoreFacadeTest {
     }
 
     @Test
-    void testAddProductToStore() {
+    void testAddProductToStore() throws Exception {
         storeFacade.addProductToStore(storeId, "Product1", 100, 10, "Description1", "Category1");
         verify(mockStore).addProduct("Product1", 100, 10, "Description1", "Category1");
 
@@ -55,7 +55,7 @@ public class StoreFacadeTest {
     }
 
     @Test
-    void testRemoveProductFromStore() {
+    void testRemoveProductFromStore() throws Exception {
         storeFacade.removeProductFromStore(storeId, "Product1");
         verify(mockStore).removeProduct("Product1");
 
@@ -103,7 +103,7 @@ public class StoreFacadeTest {
     }
 
     @Test
-    void testUpdateProductInStore() {
+    void testUpdateProductInStore() throws Exception {
         storeFacade.updateProductInStore(0, "Milk", 100, 10, "Fresh Milk", "Dairy");
 
         verify(mockStore).updateProduct("Milk", 100, 10, "Fresh Milk", "Dairy");
