@@ -654,7 +654,7 @@ public class Market {
         return filteredProductNames;
     }
 
-    public List<String> generalProductFilter(int userId, String categoryStr, List<String> keywords, int minPrice, int maxPrice, Double productMinRating, List<String> productsFromSearch, Double storeMinRating) throws Exception {
+    public List<String> generalProductFilter(int userId, String categoryStr, List<String> keywords, Integer minPrice, Integer maxPrice, Double productMinRating, List<String> productsFromSearch, Double storeMinRating) throws Exception {
         if (userFacade.isMember(userId)) {
             boolean succeeded = authorizationAndSecurityFacade.validateToken(authorizationAndSecurityFacade.getToken(userId));
             if (!succeeded) {

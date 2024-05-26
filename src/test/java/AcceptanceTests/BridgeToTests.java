@@ -40,7 +40,7 @@ public interface BridgeToTests {
     Response<String> updateStoreManagerPermissions(int nominatorUserId, String nominatedUsername, int storeID,
                                                    boolean inventoryPermissions, boolean purchasePermissions);
 
-    Response<List<String>> generalProductFilter(int userId, String categoryStr, List<String> keywords, int minPrice, int maxPrice, Double productMinRating, List<String> productsFromSearch, Double storeMinRating);
+    Response<List<String>> generalProductFilter(int userId, String categoryStr, List<String> keywords, Integer minPrice, Integer maxPrice, Double productMinRating, List<String> productsFromSearch, Double storeMinRating);
 
     Response<List<String>> generalProductSearch(int userId, String productName, String categoryStr, List<String> keywords);
 

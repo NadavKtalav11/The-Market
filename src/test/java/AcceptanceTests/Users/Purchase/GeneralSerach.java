@@ -8,8 +8,8 @@ import org.junit.jupiter.api.Test;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertIterableEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
 public class GeneralSerach {
     private static BridgeToTests impl;
@@ -62,26 +62,40 @@ public class GeneralSerach {
 
     @Test
     public void productNotExistTest() {
-
+        assertFalse(impl.generalProductSearch(0, "Tomato", null, null).isSuccess());
+        assertFalse(impl.generalProductSearch(0, "Shirt", null, null).isSuccess());
     }
 
     @Test
     public void categoryNotExistTest() {
-
+        assertFalse(impl.generalProductSearch(0, null, "asdsjd", null).isSuccess());
+        assertFalse(impl.generalProductSearch(0, null, "asdsjdasdkdf", null).isSuccess());
     }
 
     @Test
     public void negativePriceRangeTest() {
-
+        List<String> diaryProducts = new ArrayList<>();
+        diaryProducts.add("Milk");
+        diaryProducts.add("Cheese");
+        diaryProducts.add("Yogurt");
+        assertFalse(impl.generalProductFilter(0, null, null, 10, 0, null, diaryProducts, null).isSuccess());
     }
 
     @Test
     public void productRatingInvalidTest() {
-
+        List<String> diaryProducts = new ArrayList<>();
+        diaryProducts.add("Milk");
+        diaryProducts.add("Cheese");
+        diaryProducts.add("Yogurt");
+        assertFalse(impl.generalProductFilter(0, null, null, null, null, 7.0, diaryProducts, null).isSuccess());
     }
 
     @Test
     public void storeRatingInvalidTest() {
-
+        List<String> diaryProducts = new ArrayList<>();
+        diaryProducts.add("Milk");
+        diaryProducts.add("Cheese");
+        diaryProducts.add("Yogurt");
+        assertFalse(impl.generalProductFilter(0, null, null, null, null, null, diaryProducts, 7.0).isSuccess());
     }
 }

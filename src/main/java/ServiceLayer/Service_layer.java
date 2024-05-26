@@ -200,7 +200,7 @@ public class Service_layer {
         }
     }
 
-    public Response<List<String>> generalProductFilter(int userId, String categoryStr, List<String> keywords, int minPrice, int maxPrice, Double productMinRating, List<String> productsFromSearch, Double storeMinRating)
+    public Response<List<String>> generalProductFilter(int userId, String categoryStr, List<String> keywords, Integer minPrice, Integer maxPrice, Double productMinRating, List<String> productsFromSearch, Double storeMinRating)
     {
         logger.info("Starting general product search filter in the system.");
 
