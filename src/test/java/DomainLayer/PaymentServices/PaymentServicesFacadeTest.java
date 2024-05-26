@@ -82,8 +82,7 @@ public class PaymentServicesFacadeTest {
         Map<Integer, Acquisition> acquisitionMap = new HashMap<>();
         acquisitionMap.put(1, mockAcquisition);
 
-        //todo remove this comment before push
-        //when(mockExternalPaymentService.getIdAndAcquisition()).thenReturn(acquisitionMap);
+        when(mockExternalPaymentService.getIdAndAcquisition()).thenReturn(acquisitionMap);
         paymentServicesFacade.getAllPaymentServices().put(1, mockExternalPaymentService);
 
         Map<Integer, Integer> result = paymentServicesFacade.getStorePurchaseInfo();
@@ -108,8 +107,7 @@ public class PaymentServicesFacadeTest {
         Map<Integer, Acquisition> acquisitionMap = new HashMap<>();
         acquisitionMap.put(1, mockAcquisition);
 
-        //todo remove this comment before push
-        // when(mockExternalPaymentService.getIdAndAcquisition()).thenReturn(acquisitionMap);
+        when(mockExternalPaymentService.getIdAndAcquisition()).thenReturn(acquisitionMap);
         paymentServicesFacade.getAllPaymentServices().put(1, mockExternalPaymentService);
 
         Map<Integer, Integer> result = paymentServicesFacade.getStoreReceiptsAndTotalAmount(storeId);

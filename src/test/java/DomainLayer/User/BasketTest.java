@@ -4,6 +4,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
+import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -33,11 +34,11 @@ public class BasketTest {
 
         basket.addProduct(productName, quantity, totalPrice);
 
-        assertTrue(basket.products.containsKey(productName));
-        List<Integer> quantityAndPrice = basket.products.get(productName);
-        assertNotNull(quantityAndPrice);
-        assertEquals(quantity, quantityAndPrice.get(0));
-        assertEquals(totalPrice, quantityAndPrice.get(1));
+        // Check if product was added correctly
+        Map<String, List<Integer>> products = basket.getProducts();
+        assertTrue(products.containsKey(productName));
+        assertEquals(quantity, products.get(productName).get(0).intValue());
+        assertEquals(totalPrice, products.get(productName).get(1).intValue());
     }
 
     @Test

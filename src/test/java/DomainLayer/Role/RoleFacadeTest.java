@@ -37,7 +37,8 @@ public class RoleFacadeTest {
     public void testVerifyStoreOwnerIsFounder() throws Exception {
         int memberId = 789;
         int storeId = 1;
-        roleFacade.createStoreOwner(memberId, storeId, true, -1);
+        //remove
+//        roleFacade.createStoreOwner(memberId, storeId, true, -1);
         assertTrue(roleFacade.verifyStoreOwnerIsFounder(storeId, memberId));
     }
 

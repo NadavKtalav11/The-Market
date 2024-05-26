@@ -81,9 +81,10 @@ public class Cart {
             if (baskets.containsKey(storeId)) {
                 baskets.get(storeId).removeItemFromBasket(productName);
             }
+            else{
+                throw new IllegalArgumentException("The store id" + storeId + "you entered is invalid");
+            }
         }
-
-        throw new IllegalArgumentException("The store id" + storeId + "you entered is invalid");
     }
 
     public boolean isCartEmpty()

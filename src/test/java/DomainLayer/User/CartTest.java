@@ -3,6 +3,9 @@ package DomainLayer.User;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.util.List;
+import java.util.Map;
+
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
@@ -27,27 +30,36 @@ public class CartTest {
     @Test
     public void testAddItemsToCart() {
         String productName = "Product1";
-        int quantity = 1;
-        int storeId = 100;
-        int totalPrice = 50;
+        int quantity = 2;
+        int storeId = 1;
+        int totalPrice = 100;
 
         cart.addItemsToCart(productName, quantity, storeId, totalPrice);
-        assertTrue(cart.baskets.containsKey(storeId));
-        Basket basket = cart.baskets.get(storeId);
-        assertNotNull(basket);
-        assertEquals(storeId, basket.getStoreId());
+
+        // Check if product was added correctly
+        Map<String, List<Integer>> products = cart.getProductsDetailsByStore(storeId);
+        assertTrue(products.containsKey(productName));
+        assertEquals(quantity, products.get(productName).get(0).intValue());
+        assertEquals(totalPrice, products.get(productName).get(1).intValue());
     }
 
     @Test
     public void testModifyProductInCart() {
         String productName = "Product1";
-        int quantity = 2;
-        int storeId = 100;
-        int totalPrice = 100;
+        int initialQuantity = 2;
+        int modifiedQuantity = 3;
+        int storeId = 1;
+        int initialTotalPrice = 100;
+        int modifiedTotalPrice = 150;
 
-        cart.baskets.put(storeId, mockBasket);
-        cart.modifyProductInCart(productName, quantity, storeId, totalPrice);
-        verify(mockBasket).modifyProduct(productName, quantity, totalPrice);
+        cart.addItemsToCart(productName, initialQuantity, storeId, initialTotalPrice);
+        cart.modifyProductInCart(productName, modifiedQuantity, storeId, modifiedTotalPrice);
+
+        // Check if product was modified correctly
+        Map<String, List<Integer>> products = cart.getProductsDetailsByStore(storeId);
+        assertTrue(products.containsKey(productName));
+        assertEquals(modifiedQuantity, products.get(productName).get(0).intValue());
+        assertEquals(modifiedTotalPrice, products.get(productName).get(1).intValue());
     }
 
     @Test
@@ -64,13 +76,22 @@ public class CartTest {
 
     @Test
     public void testCalcCartTotal() {
-        int storeId = 100;
+        String productName1 = "Product1";
+        String productName2 = "Product2";
+        int quantity1 = 2;
+        int quantity2 = 3;
+        int storeId1 = 1;
+        int storeId2 = 2;
+        int totalPrice1 = 100;
+        int totalPrice2 = 200;
 
-        when(mockBasket.getBasketPrice()).thenReturn(50);
-        cart.baskets.put(storeId, mockBasket);
+        cart.addItemsToCart(productName1, quantity1, storeId1, totalPrice1);
+        cart.addItemsToCart(productName2, quantity2, storeId2, totalPrice2);
 
         cart.calcCartTotal();
-        assertEquals(50, cart.getCartPrice());
+
+        // Check if cart total price was calculated correctly
+        assertEquals(totalPrice1 + totalPrice2, cart.getCartPrice());
     }
 
     @Test
@@ -98,11 +119,17 @@ public class CartTest {
     @Test
     public void testRemoveItemFromCart() {
         String productName = "Product1";
-        int storeId = 100;
+        int quantity = 2;
+        int storeId = 1;
+        int totalPrice = 100;
 
-        cart.baskets.put(storeId, mockBasket);
+        cart.addItemsToCart(productName, quantity, storeId, totalPrice);
         cart.removeItemFromCart(productName, storeId);
-        verify(mockBasket).removeItemFromBasket(productName);
+
+        // Check if product was removed correctly
+        Map<String, List<Integer>> products = cart.getProductsDetailsByStore(storeId);
+        assertFalse(products.containsKey(productName));
+        assertThrows(IllegalArgumentException.class, () -> cart.removeItemFromCart(productName, 999));
     }
 
     @Test
