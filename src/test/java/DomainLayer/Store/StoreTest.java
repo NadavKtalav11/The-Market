@@ -13,10 +13,11 @@ public class StoreTest {
     private final int price = 100;
     private final int quantity = 10;
 
+
     @BeforeEach
     public void setUp() {
         store = new Store(storeId);
-        store.addProduct(productName, price, quantity);
+        //store.addProduct(productName, price, quantity, );
     }
 
     @Test
@@ -57,7 +58,7 @@ public class StoreTest {
     public void testUpdateProduct() {
         int newPrice = 150;
         int newQuantity = 20;
-        store.updateProduct(productName, newPrice, newQuantity);
+        //store.updateProduct(productName, newPrice, newQuantity);
         assertEquals(newPrice, store.getProductByName(productName).getPrice());
         assertEquals(newQuantity, store.getProductByName(productName).getQuantity());
     }

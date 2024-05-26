@@ -1,37 +1,66 @@
 package DomainLayer.SupplyServices;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 
 public class ExternalSupplyService {
     private int licensedDealerNumber;
     private String supplyServiceName;
-    private String address;
-    private HashMap<Integer, Integer> productIdAndAmount;
+    private HashSet<String> countries = new HashSet<>();
+    private HashSet<String> cities = new HashSet<>();
+    private HashMap<Integer, ShiftingDetails> shiftIdAndDetails = new HashMap<>();
+    int ShiftIDCounter= 1;
 
-    public ExternalSupplyService(int licensedDealerNumber, String supplyServiceName, String address){
+    public ExternalSupplyService(int licensedDealerNumber, String supplyServiceName, HashSet<String> countries, HashSet<String> cities){
 
         this.licensedDealerNumber=licensedDealerNumber;
         this.supplyServiceName = supplyServiceName;
-        this.address = address;
+        this.countries  = countries;
+        this.cities = cities;
     }
 
-    public boolean checkAreaAvailability(String userAddress){
-        return true;
+    public int getLicensedDealerNumber(){
+        return this.licensedDealerNumber;
     }
 
-
-    public boolean checkServiceAvailability(HashMap<Integer,Integer> ProductIdAndAmount){
-        for (Map.Entry<Integer, Integer> entry : ProductIdAndAmount.entrySet()) {
-            Integer productId = entry.getKey();
-            Integer requestedAmount = entry.getValue();
-            // Check if the product exists in the instance's map and if the amount is sufficient
-            if (!productIdAndAmount.containsKey(productId) || productIdAndAmount.get(productId) < requestedAmount) {
-                return false; // If any product cannot fulfill the requested amount, return false
-            }
+    public boolean checkAreaAvailability(String country, String city){
+        if(!countries.contains(country)){
+            return false;
         }
-
+        if(!cities.contains((city))){
+            return false;
+        }
         return true;
+    }
+
+    public void addCountries(HashSet<String> countriesToAdd){
+        countries.addAll(countriesToAdd);
+
+    }
+
+    public void addCities(HashSet<String> citiesToAdd){
+        cities.addAll(citiesToAdd);
+
+    }
+
+    public HashSet<String> getCountries(){
+        return this.countries;
+    }
+    public HashSet<String> getCities(){
+        return this.cities;
+    }
+
+
+    public boolean createShiftingDetails(String userName, String country,String city,String address){
+        int size = shiftIdAndDetails.size();
+        ShiftingDetails shiftingDetails = new ShiftingDetails(ShiftIDCounter, userName, country, city, address);
+        shiftIdAndDetails.put(ShiftIDCounter,shiftingDetails);
+        ShiftIDCounter++;
+        return shiftIdAndDetails.size() == size+1;
+    }
+    public HashMap<Integer,ShiftingDetails> getShiftIdAndDetails(){
+        return this.shiftIdAndDetails;
     }
 
 }
