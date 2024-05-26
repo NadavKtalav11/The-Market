@@ -7,27 +7,45 @@ public class StoreFacade {
     Map<Integer, Store> allStores = new HashMap<Integer, Store>();
     private int currentStoreID;
 
+    private Object allStoresLock;
+    private Object storeIdLock;
+
+
     private StoreFacade()
     {
         this.currentStoreID = 0;
+
+        allStoresLock = new Object();
+        storeIdLock = new Object();
+
     }
 
-    public static StoreFacade getInstance() {
+    public synchronized static StoreFacade getInstance() {
         if (storeFacadeInstance == null) {
             storeFacadeInstance = new StoreFacade();
         }
         return storeFacadeInstance;
     }
 
-    public Store getStoreByID(int storeID){
-        return allStores.get(storeID);
+    public void returnProductToStore(Map<String, Integer> products , int storeId){
+        getStoreByID(storeId).returnProductToStore(products);
     }
 
-    public int openStore()
+    public Store getStoreByID(int storeID){
+        synchronized (allStoresLock) {
+            return allStores.get(storeID);
+        }
+    }
+
+    public int openStore(String name, String description)
     {
-        Store newStore = new Store(currentStoreID); //todo: add this to list in repository
-        this.allStores.put(currentStoreID, newStore);
-        this.currentStoreID++;
+        Store newStore = new Store(currentStoreID, name, description); //todo: add this to list in repository
+        synchronized (allStoresLock) {
+            synchronized (storeIdLock) {
+                this.allStores.put(currentStoreID, newStore);
+                this.currentStoreID++;
+            }
+        }
         return newStore.getStoreID();
     }
 
@@ -65,18 +83,44 @@ public class StoreFacade {
     }
 
 
-    public void addProductToStore(int storeID, String productName, int price, int quantity,
-                                                                String description, String categoryStr){
-        allStores.get(storeID).addProduct(productName, price, quantity, description, categoryStr);
+    public void addProductToStore(int storeId, String productName, int price, int quantity,
+                                                                String description, String categoryStr) throws Exception {
+        synchronized (allStoresLock) {
+            if (!checkProductExistInStore(productName, storeId)){
+                if (quantity >= 0){
+                    allStores.get(storeId).addProduct(productName, price, quantity, description, categoryStr);
+                } else {
+                    throw new Exception("Quantity must be non-negative");
+                }
+            } else {
+                throw new Exception("Product already exist in this store");
+            }
+        }
     }
 
-    public void removeProductFromStore(int storeID, String productName){
-        allStores.get(storeID).removeProduct(productName);
+    public void removeProductFromStore(int storeId, String productName) throws Exception {
+        synchronized (allStoresLock) {
+            if (checkProductExistInStore(productName, storeId)) {
+                allStores.get(storeId).removeProduct(productName);
+            } else {
+                throw new Exception("Product does not exist in this store");
+            }
+        }
     }
 
-    public void updateProductInStore(int storeID, String productName, int price, int quantity,
-                                                                String description, String categoryStr){
-        allStores.get(storeID).updateProduct(productName, price, quantity, description, categoryStr);
+    public void updateProductInStore(int storeId, String productName, int price, int quantity,
+                                                                String description, String categoryStr) throws Exception {
+        synchronized (allStoresLock) {
+            if (checkProductExistInStore(productName, storeId)) {
+                if (quantity >= 0){
+                    allStores.get(storeId).updateProduct(productName, price, quantity, description, categoryStr);
+                } else {
+                    throw new Exception("Quantity must be non-negative");
+                }
+            } else {
+                throw new Exception("Product does not exist in this store");
+            }
+        }
     }
 
     public boolean verifyStoreExist(int storeID)
@@ -93,11 +137,13 @@ public class StoreFacade {
     public List<Integer> getInformationAboutOpenStores()
     {
         List<Integer> openStoreInformation = new ArrayList<>();
-        for (Map.Entry<Integer, Store> entry : allStores.entrySet()) {
-            int storeId = entry.getKey();
-            Store store = entry.getValue();
-            if(store.getIsOpened())
-                openStoreInformation.add(storeId);
+        synchronized (allStoresLock) {
+            for (Map.Entry<Integer, Store> entry : allStores.entrySet()) {
+                int storeId = entry.getKey();
+                Store store = entry.getValue();
+                if (store.getIsOpened())
+                    openStoreInformation.add(storeId);
+            }
         }
         return openStoreInformation;
     }
@@ -105,11 +151,13 @@ public class StoreFacade {
     public List<Integer> getInformationAboutClosedStores()
     {
         List<Integer> closedStoreInformation = new ArrayList<>();
-        for (Map.Entry<Integer, Store> entry : allStores.entrySet()) {
-            int storeId = entry.getKey();
-            Store store = entry.getValue();
-            if(!store.getIsOpened())
-                closedStoreInformation.add(storeId);
+        synchronized (allStoresLock) {
+            for (Map.Entry<Integer, Store> entry : allStores.entrySet()) {
+                int storeId = entry.getKey();
+                Store store = entry.getValue();
+                if (!store.getIsOpened())
+                    closedStoreInformation.add(storeId);
+            }
         }
         return closedStoreInformation;
     }
@@ -137,24 +185,26 @@ public class StoreFacade {
         return filteredProducts;
     }
 
-    public void checkCategory(String categoryStr)
+    public boolean checkCategory(String categoryStr)
     {
-        if (Category.fromString(categoryStr) == null)
-            throw new IllegalArgumentException("The category you entered doesn't exist.");
+        return !(Category.fromString(categoryStr) == null);
     }
 
-    public void checkProductExistInStore(String productName, int storeId)
+    public boolean checkProductExistInStore(String productName, int storeId)
     {
         Store store = getStoreByID(storeId);
-        if (!store.checkProductExists(productName))
-        {
-            throw new IllegalArgumentException("The product you try to add isn't in the store");
+        return store.checkProductExists(productName);
+    }
+
+    public List<Integer> getStores() {
+        synchronized (allStoresLock) {
+            return new ArrayList<>(this.allStores.keySet());
         }
     }
 
-    public List<Integer> getStores()
+    public void addReceiptToStore(int storeId, int receiptId, int userId)
     {
-        return new ArrayList<>(this.allStores.keySet());
+        allStores.get(storeId).addReceipt(receiptId, userId);
     }
 
 }

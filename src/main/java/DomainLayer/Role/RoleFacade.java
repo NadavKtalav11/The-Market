@@ -1,5 +1,7 @@
 package DomainLayer.Role;
 
+import com.fasterxml.jackson.databind.JsonSerializer;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -8,16 +10,25 @@ import java.util.Map;
 public class RoleFacade {
 
     private static RoleFacade roleFacadeInstance;
-    private List<StoreOwner> storeOwnersList;  //todo: move this to repository
-    private List<StoreManager> storeManagerList;
-    private List<SystemManager> systemManagers;
+    private Map<Integer,List<StoreOwner>> memberId_storeOwnersMap;  //todo: move this to repository
+    private Map<Integer,List<StoreManager>> memberId_storeManagerMap;
+    private List<SystemManager> systemManagers ;
+    Object storeOwnerLock;
+    Object storeManagerLock;
+    Object systemManagerLock;
+
 
     private RoleFacade()
     {
-        storeOwnersList = new ArrayList<StoreOwner>();
+        memberId_storeOwnersMap = new HashMap<>();
+        memberId_storeManagerMap = new HashMap<>();
+        systemManagers = new ArrayList<>();
+        storeManagerLock= new Object();
+        systemManagerLock= new Object();
+        storeOwnerLock = new Object();
     }
 
-    public static RoleFacade getInstance() {
+    public static synchronized RoleFacade getInstance() {
         if (roleFacadeInstance == null) {
             roleFacadeInstance = new RoleFacade();
         }
@@ -31,10 +42,17 @@ public class RoleFacade {
 
     public StoreOwner getStoreOwner(int storeID, int memberID)
     {
-        for(int i=0 ; i<storeOwnersList.size(); i++){
-            if(storeOwnersList.get(i).getStore_ID() == storeID &&
-                    storeOwnersList.get(i).getMember_ID() == memberID){
-                return storeOwnersList.get(i);
+
+        synchronized (storeOwnerLock) {
+            List<StoreOwner> userOwner = memberId_storeOwnersMap.get(memberID);
+            if (userOwner==null){
+                return null;
+            }
+            for (int i = 0; i < userOwner.size(); i++) {
+                StoreOwner found = userOwner.get(i);
+                if (found.getStore_ID() == storeID) {
+                    return found;
+                }
             }
         }
         return null;
@@ -46,12 +64,19 @@ public class RoleFacade {
 
     public StoreManager getStoreManager(int storeID, int memberID)
     {
-        for(int i=0 ; i<storeManagerList.size(); i++){
-            if(storeManagerList.get(i).getStore_ID() == storeID &&
-                    storeManagerList.get(i).getMember_ID() == memberID){
-                return storeManagerList.get(i);
+        synchronized (storeManagerLock) {
+            List<StoreManager> userManager = memberId_storeManagerMap.get(memberID);
+            if (userManager==null){
+                return null;
+            }
+            for (int i = 0; i < userManager.size(); i++) {
+                StoreManager found = userManager.get(i);
+                if (found.getStore_ID() == storeID) {
+                    return found;
+                }
             }
         }
+
         return null;
     }
 
@@ -60,23 +85,36 @@ public class RoleFacade {
         return storeOwner != null && storeOwner.verifyStoreOwnerIsFounder();
     }
 
-    public void createStoreOwner(int member_ID, int store_ID, boolean founder)
-    {
-        StoreOwner newStoreOwner = new StoreOwner(member_ID, store_ID, founder);
-        addNewStoreOwnerToTheMarket(newStoreOwner);
+    public void createStoreOwner(int memberId, int storeId, boolean founder, int nominatorMemberId) throws Exception {
+        if (!verifyStoreOwner(storeId, memberId)) {
+            StoreOwner newStoreOwner = new StoreOwner(memberId, storeId, founder, nominatorMemberId);
+            addNewStoreOwnerToTheMarket(newStoreOwner);
+        } else {
+            throw new Exception("Member is already owner of this store");
+        }
     }
 
-    public void createStoreManager(int member_ID, int store_ID,
-                                   boolean inventoryPermissions, boolean purchasePermissions)
-    {
-        StoreManager newStoreManager = new StoreManager(member_ID, store_ID, inventoryPermissions, purchasePermissions);
-        addNewStoreManagerToTheMarket(newStoreManager);
+    public void createStoreManager(int memberId, int storeId,
+                                   boolean inventoryPermissions, boolean purchasePermissions, int nominatorMemberId) throws Exception {
+        if (!verifyStoreOwner(storeId, memberId) && !verifyStoreManager(storeId, memberId)) {
+            StoreManager newStoreManager = new StoreManager(memberId, storeId, inventoryPermissions, purchasePermissions, nominatorMemberId);
+            addNewStoreManagerToTheMarket(newStoreManager);
+        } else {
+            throw new Exception("Member already has a role in this store");
+        }
     }
 
-    public void updateStoreManagerPermissions(int member_ID, int store_ID,
-                                              boolean inventoryPermissions, boolean purchasePermissions)
-    {
-        getStoreManager(store_ID, member_ID).setPermissions(inventoryPermissions, purchasePermissions);
+    public void updateStoreManagerPermissions(int memberId, int storeId,
+                                      boolean inventoryPermissions, boolean purchasePermissions, int nominatorMemberID) throws Exception {
+        if (verifyStoreManager(storeId, memberId)) {
+            if (getStoreManager(storeId, memberId).getNominatorMemberId() == nominatorMemberID) {
+                getStoreManager(storeId, memberId).setPermissions(inventoryPermissions, purchasePermissions);
+            } else {
+                throw new Exception("Store owner is not the store manager's nominator");
+            }
+        } else {
+            throw new Exception("User is not a manager of this store");
+        }
     }
 
     public boolean managerHasInventoryPermissions(int member_ID, int store_ID)
@@ -91,12 +129,24 @@ public class RoleFacade {
 
     private void addNewStoreManagerToTheMarket(StoreManager storeManager)
     {
-        storeManagerList.add(storeManager);
+        synchronized (storeManagerLock) {
+            int memberId = storeManager.getMember_ID();
+            if (memberId_storeManagerMap.get(memberId)==null){
+                memberId_storeManagerMap.put(memberId, new ArrayList<>());
+            }
+            memberId_storeManagerMap.get(memberId).add(storeManager);
+        }
     }
 
     private void addNewStoreOwnerToTheMarket(StoreOwner storeOwner)
     {
-        storeOwnersList.add(storeOwner);
+        synchronized (storeOwnerLock) {
+            int memberId = storeOwner.getMember_ID();
+            if (memberId_storeOwnersMap.get(memberId)==null){
+                memberId_storeOwnersMap.put(memberId, new ArrayList<>());
+            }
+            memberId_storeOwnersMap.get(memberId).add(storeOwner);
+        }
     }
 
     public Map<Integer, String> getInformationAboutStoreRoles(int store_ID)
@@ -119,11 +169,15 @@ public class RoleFacade {
 
     public Map<Integer, List<Integer>> getStoreManagersAuthorizations(int storeID)
     {
-        Map<Integer, List<Integer>> managersAuthorizations = new HashMap<>();
-        for (StoreManager storeManager: storeManagerList)
-        {
-            if(storeManager.getStore_ID() == storeID)
-                managersAuthorizations.put(storeManager.getMember_ID(), storeManager.getAuthorizations());
+        Map<Integer, List<Integer>> managersAuthorizations= new HashMap<>();
+        synchronized (storeManagerLock) {
+            for (Integer memberId : memberId_storeManagerMap.keySet()) {
+                for (StoreManager currStoreManager:memberId_storeManagerMap.get(memberId)) {
+                    if (currStoreManager.getStore_ID() == storeID) {
+                        managersAuthorizations.put(memberId, currStoreManager.getAuthorizations());
+                    }
+                }
+            }
         }
         return managersAuthorizations;
     }
@@ -131,10 +185,14 @@ public class RoleFacade {
     public List<Integer> getAllStoreManagers(int storeID)
     {
         List<Integer> storeManagers = new ArrayList<>();
-        for (StoreManager storeManager: storeManagerList)
-        {
-            if(storeManager.getStore_ID() == storeID)
-                storeManagers.add(storeManager.getMember_ID());
+        synchronized (storeManagerLock) {
+            for (Integer memberId : memberId_storeManagerMap.keySet()) {
+                for (StoreManager currStoreManager:memberId_storeManagerMap.get(memberId)) {
+                    if (currStoreManager.getStore_ID() == storeID) {
+                        storeManagers.add(currStoreManager.getMember_ID());
+                    }
+                }
+            }
         }
         return storeManagers;
     }
@@ -142,10 +200,14 @@ public class RoleFacade {
     public List<Integer> getAllStoreOwners(int storeID)
     {
         List<Integer> storeOwners = new ArrayList<>();
-        for (StoreOwner storeOwner : storeOwnersList)
-        {
-            if (storeOwner.getStore_ID() == storeID)
-                storeOwners.add(storeOwner.getMember_ID());
+        synchronized (storeOwnerLock) {
+            for (Integer memberId : memberId_storeOwnersMap.keySet()) {
+                for (StoreOwner currStoreOwner:memberId_storeOwnersMap.get(memberId)) {
+                    if (currStoreOwner.getStore_ID() == storeID) {
+                        storeOwners.add(currStoreOwner.getMember_ID());
+                    }
+                }
+            }
         }
         return storeOwners;
     }
@@ -165,16 +227,19 @@ public class RoleFacade {
         return storesOwned;
     }
 
-    public void getStoresByOwners(List<StoreOwner> storeOwnersList) {
-        this.storeOwnersList = storeOwnersList;
-    }
+    /*public void getStoresByOwners(List<StoreOwner> storeOwnersList) {
+        synchronized (storeOwnersList) {
+            this.storeOwnersList = storeOwnersList;
+        }
+    }*/
 
     public boolean verifyMemberIsSystemManager(int member_ID)
     {
-        for (SystemManager systemManager : systemManagers)
-        {
-            if (systemManager.getMember_ID() == member_ID)
-                return true;
+        synchronized (systemManagerLock) {
+            for (SystemManager systemManager : systemManagers) {
+                if (systemManager.getMember_ID() == member_ID)
+                    return true;
+            }
         }
         return false;
     }

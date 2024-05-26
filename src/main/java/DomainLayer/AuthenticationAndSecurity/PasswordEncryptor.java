@@ -1,4 +1,4 @@
-package DomainLayer.AuthorizationsAndSecurity;
+package DomainLayer.AuthenticationAndSecurity;
 
 
 import java.security.MessageDigest;

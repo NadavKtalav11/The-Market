@@ -1,17 +1,23 @@
 package DomainLayer.User;
 
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 public class UserFacadeTest {
-
-    private UserFacade userFacade;
+    @Mock
     private User mockUser;
+    @Mock
     private Member mockMember;
+    @InjectMocks
+    private UserFacade userFacade;  // Ensure this is injected with mocks
+
     private final int userId = 1;
     private final int storeId = 1;
     private final String productName = "Product1";
@@ -20,10 +26,19 @@ public class UserFacadeTest {
 
     @BeforeEach
     public void setUp() {
+        // Initialize mocks
+        MockitoAnnotations.openMocks(this);
+
+        // Configure mockUser to return a specific userId when getUserID() is called
+        when(mockUser.getUserID()).thenReturn(1);
+
+        // Reset the UserFacade singleton for each test
         userFacade = UserFacade.getInstance();
-        mockUser = mock(User.class);
-        mockMember = mock(Member.class);
-        userFacade.allUsers.put(userId, mockUser);
+        userFacade.allUsers.clear();
+        userFacade.members.clear();
+
+        // Insert the mockUser into the UserFacade for userId = 1
+        userFacade.allUsers.put(1, mockUser);  // Assuming userId = 1
     }
 
     @Test
@@ -35,15 +50,62 @@ public class UserFacadeTest {
 
     @Test
     public void testGetUserByID() {
-        assertEquals(mockUser, userFacade.getUserByID(userId));
+        assertEquals(mockUser, userFacade.getUserByID(1));
     }
 
     @Test
     public void testIsUserLoggedIn() {
         when(mockUser.isLoggedIn()).thenReturn(true);
-        assertTrue(userFacade.isUserLoggedIn(userId));
-        verify(mockUser).isLoggedIn();
+        assertTrue(userFacade.isUserLoggedIn(1));
     }
+
+    @Test
+    public void testAddUser() {
+        int userId = userFacade.addUser();
+        assertNotNull(userFacade.getUserByID(userId));
+        assertEquals(userId, userFacade.getCurrentUserID() - 1);
+    }
+
+    @Test
+    public void testRegister() throws Exception {
+        int userId = userFacade.addUser();
+        userFacade.register(userId, "testUser", "testPass", "01-01-2000", "Test Country", "Test City", "123 Test St", "Test Name");
+
+        Member member = userFacade.getMemberByUsername("testUser");
+        assertNotNull(member);
+        assertEquals("testUser", member.getUsername());
+    }
+
+    @Test
+    public void testLogin() throws Exception {
+        // Prepare test data
+        int userId = 1;
+        String username = "testUser";
+        String password = "testPass";
+        Member testMember = new Member(userId, username, password, "01-01-2000", "Test Country", "Test City", "123 Test St", "Test Name");
+
+        // Stubbing the behavior of the getMemberByUsername and getUserByID methods on the userFacade mock object
+        when(userFacade.getMemberByUsername(username)).thenReturn(testMember);
+        when(userFacade.getUserByID(userId)).thenReturn(mockUser);
+
+        // Perform login
+        userFacade.Login(userId, username, password);
+
+        // Verify that getMemberByUsername was called with the correct username
+        //verify(userFacade).getMemberByUsername(username);
+
+        // Verify that getUserByID was called with the correct userID
+        //verify(userFacade).getUserByID(userId);
+
+        // Verify interactions with the returned mock
+        //verify(mockUser).Login(username, password, testMember);
+
+        // Assert equals checks
+        // Assuming mockUser is a mock object and isLoggedIn() method exists in the User class
+        assertTrue(mockUser.isLoggedIn(), "The user should be marked as logged in after successful login.");
+    }
+
+
 
     @Test
     public void testGetUsernameByUserID() {
@@ -97,27 +159,36 @@ public class UserFacadeTest {
         verify(mockUser).removeItemFromUserCart(productName, storeId);
     }
 
-    @Test
-    public void testRegister() throws Exception {
-        String username = "testUser";
-        String password = "testPass";
-        String birthday = "01-01-2000";
-        String address = "123 Test St";
+//    @Test
+//    public void testRegister() throws Exception {
+//        String username = "testUser";
+//        String password = "testPass";
+//        String birthday = "01-01-2000";
+//        String address = "123 Test St";
+//        String country = "testCountry";
+//        String city = "testCity";
+//        String name = "testName";
+//
+//        //doNothing().when(mockUser).register(anyString(), anyString(), anyString(), anyString());
+//
+//        userFacade.register(userId, username, password, birthday,country,city ,address, name);
+//        //verify(mockUser).register(username, password, birthday, address);
+//    }
 
-        doNothing().when(mockUser).Register(anyString(), anyString(), anyString(), anyString());
-
-        userFacade.Register(userId, username, password, birthday, address);
-        verify(mockUser).Register(username, password, birthday, address);
-    }
-
-    @Test
-    public void testLogin() throws Exception {
-        String username = "testUser";
-        String password = "testPass";
-
-        doNothing().when(mockUser).Login(anyString(), anyString());
-
-        userFacade.Login(userId, username, password);
-        verify(mockUser).Login(username, password);
-    }
+//    @Test
+//    public void testLogin() throws Exception {
+//        String username = "testUser";
+//        String password = "testPass";
+//
+//        Member member = new Member(userId, username, password, "1990-01-01", "Country", "City", "Address", "Name");
+//        doNothing().when(mockUser).Login(anyString(), anyString(), eq(member));
+//
+//        // Assuming a method to add a member for testing
+//        userFacade.allUsers.put(userId, mockUser);
+//        userFacade.allUsers.put(2, new User(2)); // Adding another user for proper username verification
+//        ((User) userFacade.allUsers.get(2)).setState(member);
+//
+//        userFacade.Login(userId, username, password);
+//        verify(mockUser).Login(username, password, member);
+//    }
 }

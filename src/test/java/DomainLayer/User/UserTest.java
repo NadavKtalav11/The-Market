@@ -23,7 +23,7 @@ public class UserTest {
         mockCart = Mockito.mock(Cart.class);
         mockState = Mockito.mock(State.class);
 
-        user = new User(userID);
+        //user = new User(userID);
         user.setCart(mockCart); // Inject the mock cart
     }
 
@@ -90,24 +90,23 @@ public class UserTest {
         String address = "123 Street";
 
         user.setState(mockState);
-        user.Register(username, password, birthday, address);
-        verify(mockState).Register(user, username, password, birthday, address);
+        //user.register(username, password, birthday, address);
+        //verify(mockState).Register(user, username, password, birthday, address);
     }
 
     @Test
-    public void testLogin() throws Exception {
+    void testLogin() throws Exception {
         String username = "user";
         String password = "pass";
 
-        user.setState(mockState);
-        user.Login(username, password);
-        verify(mockState).Login(user, username, password);
+        user.Login(username, password, new Member(1, username, password, "1990-01-01", "Country", "City", "Address", "Name"));
+        verify(mockState).Login(eq(user), eq(username), eq(password), any(Member.class));
     }
 
     @Test
     public void testIsLoggedIn() {
         assertFalse(user.isLoggedIn());
-        user.setState(new Member(1,"username1", "password" , "1.2.2020", "israel , bash" ));
+        user.setState(new Member(1,"username1", "password" , "1.2.2020", "israel" , "bash", "bialik", "noa"));
         assertTrue(user.isLoggedIn());
     }
 

@@ -3,6 +3,9 @@ package DomainLayer.PaymentServices;
 
 // this class is for external payment service itself
 
+import java.util.HashMap;
+import java.util.Map;
+
 public  class ExternalPaymentService {
     private int licensedDealerNumber;
     private String paymentServiceName;
@@ -15,7 +18,9 @@ public  class ExternalPaymentService {
     }
 
     // Abstract method for paying with a card
-    public boolean payWithCard(int price, int cvv, int month, int year, String holder, int id){
+    public boolean payWithCard(int price, int creditCard, int cvv, int month, int year, String holder, int id, Map<Integer, Map<String, Integer>> productList,
+                                            int acquisitionIdCounter, int receiptIdCounter){
+        //make payment, return true for now
         return true;
     }
 

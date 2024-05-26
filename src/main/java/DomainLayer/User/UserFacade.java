@@ -8,29 +8,44 @@ import java.util.Objects;
 
 public class UserFacade {
     private static UserFacade userFacadeInstance;
-    Map<Integer, User> allUsers = new HashMap<Integer, User>();
-    Map<Integer, Member> members = new HashMap<>();
+    Map<Integer, User> allUsers = new HashMap<Integer, User>(); //userID-User
+    Map<Integer, Member> members = new HashMap<>(); //memberID-Member
     private int currentUserID;
     private int currentMemberID;
+    Object allUserLock;
+    Object membersLock;
+    Object userIdLock;
+    Object memberIdLock;
 
     private UserFacade()
     {
         this.currentUserID = 0;
         this.currentMemberID = 0;
+        allUserLock = new Object();
+        membersLock = new Object();
+        userIdLock = new Object();
+        memberIdLock = new Object();
     }
 
-    public static UserFacade getInstance() {
+    public synchronized static UserFacade getInstance() {
         if (userFacadeInstance == null) {
             userFacadeInstance = new UserFacade();
         }
         return userFacadeInstance;
     }
 
+    public int getCurrentUserID (){
+        return currentUserID;
+    }
+
     public User getUserByID(int userID){
-        return allUsers.get(userID);
+        synchronized (allUserLock) {
+            return allUsers.get(userID);
+        }
     }
 
     public boolean isUserLoggedIn(int userID){
+
         return getUserByID(userID).isLoggedIn();
     }
 
@@ -40,15 +55,40 @@ public class UserFacade {
         return ((Member)user.getState()).getMemberID();
     }
 
+    public boolean isMember(int userId){
+        return getUserByID(userId).isMember();
+    }
+
+    public int getMemberIdByUserId(int userID) throws Exception {
+        if(isMember(userID)){
+            String username = getUserByID(userID).getName();
+            return getMemberByUsername(username).getMemberID();
+        }
+        else {
+            throw new Exception("User is not a member");
+        }
+    }
+
     public void exitMarketSystem(int userID){
-        allUsers.remove(userID); //todo do i need to remove the user from the list of users ?
-        (allUsers.get(userID)).exitMarketSystem();
+        synchronized (allUserLock) {
+            allUsers.remove(userID); //todo do i need to remove the user from the list of users ?
+            (allUsers.get(userID)).exitMarketSystem();
+        }
     }
 
 
-    public void addUser(){
-        allUsers.put(currentUserID, new User(currentUserID));
-        currentUserID++;
+    public int addUser(){
+        int userId;
+        synchronized (userIdLock) {
+            userId = currentUserID;
+        }
+        synchronized (allUserLock) {
+            allUsers.put(currentUserID, new User(currentUserID));
+        }
+        synchronized (userIdLock) {
+            currentUserID++;
+        }
+        return userId;
     }
 
 
@@ -79,36 +119,80 @@ public class UserFacade {
     }
 
 
-    public void register(int userID, String username, String password, String birthday,String address) throws Exception {
-        if (allUsers.get(userID).isMember()){
+    public void register(int userID, String username, String password, String birthday,String country, String city,String address, String name) throws Exception {
+        if (getUserByID(userID).isMember()) {
             throw new Exception("member cannot register");
         }
         else {
-            validateRegistrationDetails(username,password,birthday,address);
-            Member newMember = new Member(currentMemberID, username,password,birthday,address);
-            members.put(currentMemberID, newMember);
+            validateRegistrationDetails(username,password,birthday,country,city,address,name);
+            int memberId;
+            synchronized (memberIdLock){
+                memberId = currentMemberID;
+            }
+            Member newMember = new Member(memberId, username,password,birthday,country,city,address,name);
+            synchronized (membersLock) {
+                members.put(memberId, newMember);
+                currentMemberID++;
+            }
             //todo pass the user to login page.
         }
     }
 
+    public int registerSystemAdmin(String username, String password, String birthday,String country, String city,String address, String name) throws Exception {
+        validateRegistrationDetails(username,password,birthday,country,city,address,name);
+        int memberId;
+        synchronized (memberIdLock){
+            memberId = currentMemberID;
+        }
+        Member newMember = new Member(memberId, username,password,birthday,country,city,address,name);
+        synchronized (membersLock) {
+            members.put(memberId, newMember);
+            currentMemberID++;
+        }
+        return memberId;
+        //todo pass the user to login page.
+    }
 
-    private void validateRegistrationDetails(String username, String password, String birthDate, String address) throws Exception {
-        if (username == null || password == null || birthDate == null || address == null) {
+
+
+    private void validateRegistrationDetails(String username, String password , String birthDate, String country, String city, String address, String name) throws Exception {
+        if (username == null || password == null || birthDate == null || country ==null || city == null ||
+                address == null || name == null) {
             throw new Exception("All fields are required.");
         }
         //checking if username is already exist
-        for (User user : allUsers.values()){
-            if (Objects.equals(((Member) user.getState()).getUsername(), username)){
-                throw new Exception("Username already exists. Please choose a different username.");
+        synchronized (members) {
+            for (Member member : members.values()) {
+                if (Objects.equals(member.getUsername(), username)) {
+                    throw new Exception("Username already exists. Please choose a different username.");
+                }
             }
         }
         //todo check validation of the password. - do encription passwords only.
-        //todo check validation of the birthday.
-        //todo check validation of the address.
+        //todo check validation of the birthday. - do we need to check this, in the gui the user will choose date from the calender.
+        //todo check validation of the address. - do we need to check this, in the gui the user will address date from the calender.
     }
 
     public void Login(int userID, String username, String password) throws Exception {
-        allUsers.get(userID).Login(username,password);
+        Member loginMember = getMemberByUsername(username);
+        if (loginMember == null){
+            throw new Exception("Username or password is incorrect");
+        }
+        /*else if (!loginMember.getPassword().equals(password)){
+            throw new Exception("Username or password is incorrect");
+        }*/
+        loginMember.validatePassword(password);
+        getUserByID(userID).Login(loginMember);
+
+    }
+
+    public Member getMemberByUsername(String userName) throws Exception {
+        for (Member member : members.values()) {
+            if (member.getUsername().equals(userName)) {
+                return member;
+            }
+        }
+        return null;
     }
 
     public List<Integer> getCartStoresByUser(int user_ID)
@@ -143,5 +227,10 @@ public class UserFacade {
     {
         /*this function returns the cart total price before discounts, of a specific user*/
         return getUserByID(user_ID).getCartTotalPriceBeforeDiscount();
+    }
+
+    public void addReceiptToUser(Map<Integer, Integer> receiptIdAndStoreId, int userId)
+    {
+        allUsers.get(userId).addReceipt(receiptIdAndStoreId);
     }
 }

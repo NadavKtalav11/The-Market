@@ -1,5 +1,6 @@
 package DomainLayer.User;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -8,16 +9,20 @@ public class User {
     private int userID;
     private State state;
     private String birthday;
+    private String country;
+    private String city;
     private String address;
+    private String name;
     private Cart cart;
 
-    public User(int userID, String address){
+    public User(int userID){
         this.userID = userID;
         this.birthday = null;
+        this.country = null;
+        this.city = null;
         this.address = null;
         this.state = new Guest(); //default state
         this.cart = new Cart();
-        this.address = address;
     }
 
     public int getUserID(){
@@ -28,13 +33,23 @@ public class User {
         this.state = state;
     }
 
+    public String getCountry(){
+        return this.country;
+    }
+
+    public String getName(){return this.name;}
+
+    public String getCity(){return this.city;}
+
     public boolean isMember(){ return this.state.isMember();}
 
     public void Logout() {
-        state.Logout(this);
+        state.Logout();
     }
 
-    public void exitMarketSystem() {state.exitMarketSystem(this);}
+    public void exitMarketSystem() {
+        //state.exitMarketSystem(this);
+    }
 
     public void addToCart(String productName, int quantity, int storeId, int totalPrice)
     {
@@ -51,8 +66,8 @@ public class User {
         this.cart.calcCartTotal();
     }
 
-    public void Login(String username, String password) throws Exception {
-        state.Login(this,username,password);
+    public void Login(Member loginMember) throws Exception {
+        setState(loginMember);
     }
     
 
@@ -107,5 +122,10 @@ public class User {
     public int getCartTotalPriceBeforeDiscount()
     {
         return this.cart.getCartPrice();
+    }
+
+    public void addReceipt(Map<Integer, Integer> receiptIdAndStoreId)
+    {
+        state.addReceipt(receiptIdAndStoreId);
     }
 }
