@@ -23,7 +23,7 @@ public class StoreTest {
 
     @BeforeEach
     public void setUp() {
-        store = new Store(storeId);
+        store = new Store(storeId, "Grocery", "");
         mockProduct = mock(Product.class);
     }
 
