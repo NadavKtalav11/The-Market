@@ -29,10 +29,23 @@ public class PaymentServicesFacade {
 
     public Map<Integer,Integer> pay(int price,int creditCard, int cvv, int month, int year, String holderID, int userId, Map<Integer, Map<String, Integer>> productList){
         ExternalPaymentService externalPaymentService = allPaymentServices.values().iterator().next();
-        Map<Integer,Integer> acquisitionAndExternalService = externalPaymentService.payWithCard(price, creditCard, cvv, month, year, holderID, userId, productList, acquisitionIdCounter, receiptIdCounter);
+        Map<Integer,Integer> acquisitionAndExternalService;
+         acquisitionAndExternalService = externalPaymentService.payWithCard(price, creditCard, cvv, month, year, holderID, userId, productList, acquisitionIdCounter, receiptIdCounter);
         acquisitionIdCounter++;
         receiptIdCounter += productList.size();
         return acquisitionAndExternalService;
+    }
+
+    public Map<Integer, ExternalPaymentService> getAllPaymentServices(){
+        return this.allPaymentServices;
+    }
+
+    public int getAcquisitionIdCounter(){
+        return this.acquisitionIdCounter;
+    }
+
+    public int getReceiptIdCounter(){
+        return this.receiptIdCounter;
     }
 
 

@@ -12,7 +12,7 @@ public class Acquisition {
     private int month;
     private int year;
     private Date date;
-    private Map<Integer, Receipt> storeIdAndReceipt; //<storeId, Receipt>
+    private Map<Integer, Receipt> storeIdAndReceipt= new HashMap<>(); //<storeId, Receipt>
 
     public Acquisition(int acquisitionId, int userId, int totalPrice, String userName,
                        int creditCardNumber, int cvv, int month, int year, Map<Integer, Map<String, Integer>> productList, int receiptIdCounter) {
