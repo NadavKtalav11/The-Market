@@ -1,4 +1,4 @@
-package DomainLayer.AuthorizationsAndSecurity;
+package DomainLayer.AuthenticationAndSecurity;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
