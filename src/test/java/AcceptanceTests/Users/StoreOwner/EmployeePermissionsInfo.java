@@ -10,7 +10,7 @@ import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class EmployeeInfo {
+public class EmployeePermissionsInfo {
     private static BridgeToTests impl;
 
 
@@ -32,18 +32,13 @@ public class EmployeeInfo {
         impl.openStore(0, "Zara", "clothing store");
         impl.appointStoreOwner(0, "tom", 0);
         impl.appointStoreManager(0, "jalal", 0, true, false);
+        impl.appointStoreManager(0, "ovad", 0, true, false);
 
-        assertTrue(impl.getInformationAboutRolesInStore(0, 0).isSuccess());
-        Map<Integer, String > employees = new HashMap<>();
-        employees.put(1, "owner");
-        employees.put(2, "manager");
-        assertEquals(impl.getInformationAboutRolesInStore(0, 0).getResult(), employees);
-
+        assertTrue(impl.getAuthorizationsOfManagersInStore(0, 0).isSuccess());
     }
 
     @Test
     public void storeNotExistTest() {
         assertFalse(impl.getInformationAboutRolesInStore(0, 0).isSuccess());
     }
-
 }
