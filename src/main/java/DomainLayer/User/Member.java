@@ -19,7 +19,7 @@ public class Member implements State{
     private String address;
     private int productIdCounter;
     private Map<Integer, Integer> receiptIdsAndStoreId; //<receiptId, storeId>
-    private boolean isLogin;
+    //private boolean isLogin;
   
     Member(int member_ID, String username, String password, String birthday,String country, String city, String address, String name)
     {
@@ -36,21 +36,27 @@ public class Member implements State{
     }
 
 
-    public void Logout(User user)
+    public void Logout()
     {
         // todo save data if needed
-        user.setState(new Guest());
-        isLogin = false;
+        // do nothing
+
     }
 
-    public void exitMarketSystem(User user){
+    public void exitMarketSystem(){
         //todo understand what happens after user press x.
-        user.Logout();
     }
 
     @Override
-    public void Login(String username, String password, Member loginMember) throws Exception {
+    public void Login() throws Exception {
         throw new Exception("The user is already logged in");
+    }
+
+    public void validatePassword(String password){
+        if (!password.equals(this.password)){
+            throw new IllegalArgumentException("Incorrect password or username please try again.");
+        }
+
     }
 
     public String getUsername(){
@@ -81,10 +87,6 @@ public class Member implements State{
         return password;
     }
 
-    public boolean isLogin()
-    {
-        return this.isLogin;
-    }
 
     public int getMemberID()
     {
