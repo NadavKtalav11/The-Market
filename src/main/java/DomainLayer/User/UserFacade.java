@@ -8,8 +8,8 @@ import java.util.Objects;
 
 public class UserFacade {
     private static UserFacade userFacadeInstance;
-    Map<Integer, User> allUsers = new HashMap<Integer, User>();
-    Map<Integer, Member> members = new HashMap<>();
+    Map<Integer, User> allUsers = new HashMap<Integer, User>(); //userID-User
+    Map<Integer, Member> members = new HashMap<>(); //memberID-Member
     private int currentUserID;
     private int currentMemberID;
     Object allUserLock;
