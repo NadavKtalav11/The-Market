@@ -85,23 +85,36 @@ public class RoleFacade {
         return storeOwner != null && storeOwner.verifyStoreOwnerIsFounder();
     }
 
-    public void createStoreOwner(int memberId, int store_ID, boolean founder, int nominatorMemberId)
-    {
-        StoreOwner newStoreOwner = new StoreOwner(memberId, store_ID, founder, nominatorMemberId);
-        addNewStoreOwnerToTheMarket(newStoreOwner);
+    public void createStoreOwner(int memberId, int storeId, boolean founder, int nominatorMemberId) throws Exception {
+        if (!verifyStoreOwner(storeId, memberId)) {
+            StoreOwner newStoreOwner = new StoreOwner(memberId, storeId, founder, nominatorMemberId);
+            addNewStoreOwnerToTheMarket(newStoreOwner);
+        } else {
+            throw new Exception("Member is already owner of this store");
+        }
     }
 
-    public void createStoreManager(int member_ID, int store_ID,
-                                   boolean inventoryPermissions, boolean purchasePermissions, int nominatorMemberId)
-    {
-        StoreManager newStoreManager = new StoreManager(member_ID, store_ID, inventoryPermissions, purchasePermissions, nominatorMemberId);
-        addNewStoreManagerToTheMarket(newStoreManager);
+    public void createStoreManager(int memberId, int storeId,
+                                   boolean inventoryPermissions, boolean purchasePermissions, int nominatorMemberId) throws Exception {
+        if (!verifyStoreOwner(storeId, memberId) && !verifyStoreManager(storeId, memberId)) {
+            StoreManager newStoreManager = new StoreManager(memberId, storeId, inventoryPermissions, purchasePermissions, nominatorMemberId);
+            addNewStoreManagerToTheMarket(newStoreManager);
+        } else {
+            throw new Exception("Member already has a role in this store");
+        }
     }
 
-    public void updateStoreManagerPermissions(int member_ID, int store_ID,
-                                              boolean inventoryPermissions, boolean purchasePermissions)
-    {
-        getStoreManager(store_ID, member_ID).setPermissions(inventoryPermissions, purchasePermissions);
+    public void updateStoreManagerPermissions(int memberId, int storeId,
+                                      boolean inventoryPermissions, boolean purchasePermissions, int nominatorMemberID) throws Exception {
+        if (verifyStoreManager(storeId, memberId)) {
+            if (getStoreManager(storeId, memberId).getNominatorMemberId() == nominatorMemberID) {
+                getStoreManager(storeId, memberId).setPermissions(inventoryPermissions, purchasePermissions);
+            } else {
+                throw new Exception("Store owner is not the store manager's nominator");
+            }
+        } else {
+            throw new Exception("User is not a manager of this store");
+        }
     }
 
     public boolean managerHasInventoryPermissions(int member_ID, int store_ID)
