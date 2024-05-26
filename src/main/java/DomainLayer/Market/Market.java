@@ -169,7 +169,7 @@ public class Market {
         }
         if (userFacade.isUserLoggedIn(user_ID)) {
             if(name != null && !name.equals("")) {
-                int store_ID = this.storeFacade.openStore(name, description);   
+                int store_ID = this.storeFacade.openStore(name, description);
                 int member_ID = this.userFacade.getUsernameByUserID(user_ID);
                 this.roleFacade.createStoreOwner(member_ID, store_ID, true);
             }
