@@ -14,7 +14,7 @@ public class RemoveProductCart {
 
 
     @BeforeAll
-    public static void setUp() {
+    public static void setUp() { //
         impl = new ProxyToTest("Real");
         //Do what you need
         impl.enterMarketSystem();
