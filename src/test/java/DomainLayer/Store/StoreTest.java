@@ -24,7 +24,7 @@ public class StoreTest {
     @BeforeEach
     public void setUp() {
         //todo remove before push
-        //store = new Store(storeId);
+        store = new Store(storeId,"good", "verygood store");
         mockProduct = mock(Product.class);
     }
 

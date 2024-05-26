@@ -16,7 +16,7 @@ public class PurhcaseHistoryInfo {
 
 
     @BeforeAll
-    public void setUp() {
+    public static void setUp() {
         impl = new ProxyToTest("Real");
         //Do what you need
         HashSet<String> countries =new HashSet<>();
@@ -28,7 +28,7 @@ public class PurhcaseHistoryInfo {
         impl.enterMarketSystem();
         impl.register(1, "user1", "fSijsd281", "12/12/00", "Israel", "Beer Sheva", "Mesada", "Toy");
         impl.login(1, "user1", "fSijsd281");
-        impl.openStore(0);
+        impl.openStore(0, "sytro", "sttoe");
         impl.addProductToStore(0, 0, "Milk", 10, 5, "Milk 5%", "food");
         impl.addProductToStore(0, 0, "Cheese", 15, 8, "Cheese 22%", "food");
         impl.addProductToStore(0, 0, "Yogurt", 4, 12, "Yogurt 20%", "food");

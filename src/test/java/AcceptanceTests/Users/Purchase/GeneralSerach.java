@@ -16,7 +16,7 @@ public class GeneralSerach {
 
 
     @BeforeAll
-    public void setUp() {
+    public static void setUp() {
         impl = new ProxyToTest("Real");
         //Do what you need
 

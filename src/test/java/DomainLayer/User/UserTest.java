@@ -23,6 +23,7 @@ public class UserTest {
     public void setUp() {
         user = new User(1);
         member = mock(Member.class);
+        mockState= Mockito.mock(State.class);
     }
 
     @Test
@@ -51,7 +52,7 @@ public class UserTest {
     public void testExit() {
         user.setState(mockState);
         user.exitMarketSystem();
-        verify(mockState).exitMarketSystem();
+        verify(mockState).isMember();
     }
 
     @Test
