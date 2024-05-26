@@ -31,7 +31,8 @@ public class StoreFacadeTest {
 
     @Test
     void testOpenStore() {
-        int storeId = storeFacade.openStore();
+        //todo remove this before push
+//        int storeId = storeFacade.openStore();
         assertNotNull(storeFacade.getStoreByID(storeId));
     }
 

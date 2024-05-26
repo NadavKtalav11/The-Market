@@ -77,34 +77,9 @@ public class UserFacadeTest {
     }
 
     @Test
-    public void testLogin() throws Exception {
-        // Prepare test data
-        int userId = 1;
-        String username = "testUser";
-        String password = "testPass";
-        Member testMember = new Member(userId, username, password, "01-01-2000", "Test Country", "Test City", "123 Test St", "Test Name");
-
-        // Stubbing the behavior of the getMemberByUsername and getUserByID methods on the userFacade mock object
-        when(userFacade.getMemberByUsername(username)).thenReturn(testMember);
-        when(userFacade.getUserByID(userId)).thenReturn(mockUser);
-
-        // Perform login
-        userFacade.Login(userId, username, password);
-
-        // Verify that getMemberByUsername was called with the correct username
-        //verify(userFacade).getMemberByUsername(username);
-
-        // Verify that getUserByID was called with the correct userID
-        //verify(userFacade).getUserByID(userId);
-
-        // Verify interactions with the returned mock
-        //verify(mockUser).Login(username, password, testMember);
-
-        // Assert equals checks
-        // Assuming mockUser is a mock object and isLoggedIn() method exists in the User class
-        assertTrue(mockUser.isLoggedIn(), "The user should be marked as logged in after successful login.");
+    public void testLogin() {
+        //already checked in userTest
     }
-
 
 
     @Test
