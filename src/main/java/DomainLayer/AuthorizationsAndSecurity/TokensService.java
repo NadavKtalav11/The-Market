@@ -39,17 +39,17 @@ public class TokensService {
 
 
 
-    public String generateToken(int userId) {
+    public String generateToken(int memberId) {
         long now = System.currentTimeMillis();
         Date expiryDate = new Date(now + TOKEN_VALIDITY_DURATION);
         String currToken = Jwts.builder()
-                .setSubject(String.valueOf(userId))
+                .setSubject(String.valueOf(memberId))
                 .setIssuedAt(new Date(now))
                 .setExpiration(expiryDate)
                 .signWith(SignatureAlgorithm.HS256, SECRET_KEY)
                 .compact();
         synchronized (tokensLock) {
-            tokens.put(userId, currToken);
+            tokens.put(memberId, currToken);
         }
         return currToken;
     }
@@ -58,10 +58,10 @@ public class TokensService {
         try {
             Claims claims = Jwts.parser().setSigningKey(SECRET_KEY).build().parseClaimsJws(token).getBody();
             Date expiration = claims.getExpiration();
-            int userId= getUserId(token);
+            int memberId= getMemberId(token);
             if (expiration.after(new Date())){
                 synchronized (tokensLock){
-                    generateToken(userId);
+                    generateToken(memberId);
                 }
                 return true;
             }
@@ -73,18 +73,18 @@ public class TokensService {
         }
     }
 
-    public String getToken(int userId){
+    public String getToken(int memberId){
         synchronized (tokensLock) {
-            return tokens.get(userId);
+            return tokens.get(memberId);
         }
     }
-    public void removeToken(int userId){
+    public void removeToken(int memberId){
         synchronized (tokensLock){
-            tokens.remove(userId);
+            tokens.remove(memberId);
         }
     }
 
-    public int getUserId(String token) {
+    public int getMemberId(String token) {
         Claims claims = Jwts.parser().setSigningKey(SECRET_KEY).build().parseClaimsJws(token).getBody();
         return Integer.parseInt(claims.getSubject());
     }
