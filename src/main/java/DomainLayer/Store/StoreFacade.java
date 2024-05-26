@@ -176,7 +176,7 @@ public class StoreFacade {
         Store store = getStoreByID(storeId);
         if (!store.checkProductExists(productName))
         {
-            throw new IllegalArgumentException("The product you try to add isn't in the store");
+            throw new IllegalArgumentException("The product isn't in the store");
         }
     }
 

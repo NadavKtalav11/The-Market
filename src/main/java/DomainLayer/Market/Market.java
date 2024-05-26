@@ -607,7 +607,7 @@ public class Market {
         return filteredProductNames;
     }
 
-    public List<String> inStoreProductFilter(int userId, String categoryStr, List<String> keywords, int minPrice, int maxPrice, Double productMinRating, int storeId, List<String> productsFromSearch, Double storeMinRating)throws Exception {
+    public List<String> inStoreProductFilter(int userId, String categoryStr, List<String> keywords, Integer minPrice, Integer maxPrice, Double productMinRating, int storeId, List<String> productsFromSearch, Double storeMinRating)throws Exception {
         if (userFacade.isMember(userId)) {
             boolean succeeded = authorizationAndSecurityFacade.validateToken(authorizationAndSecurityFacade.getToken(userId));
             if (!succeeded) {
@@ -616,7 +616,7 @@ public class Market {
             }
         }
         List<String> filteredProductNames = null;
-        if (minPrice <= maxPrice)
+        if ((minPrice == null || maxPrice == null) || (minPrice != null && maxPrice != null && minPrice <= maxPrice))
         {
             if(storeMinRating <= 5 && storeMinRating >= 0) {
                 if (productMinRating <= 5 && productMinRating >= 0) {

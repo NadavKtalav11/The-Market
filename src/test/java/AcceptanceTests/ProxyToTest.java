@@ -30,6 +30,16 @@ public class ProxyToTest implements BridgeToTests {
     }
 
     @Override
+    public Response<String> payWithExternalPaymentService(int price,int cardNumber, int cvv, int month, int year, String holderID, int userID)
+    {
+        if (realServiceAdaptor != null)
+            return realServiceAdaptor.payWithExternalPaymentService(price, cardNumber, cvv, month, year, holderID, userID);
+
+        else
+            return new Response<>(null, "Not Implemented yet");
+    }
+
+    @Override
     public Response<String> exitMarketSystem(int userID) {
         if (realServiceAdaptor != null)
             return realServiceAdaptor.exitMarketSystem(userID);
@@ -230,7 +240,7 @@ public class ProxyToTest implements BridgeToTests {
     }
 
     @Override
-    public Response<List<String>> inStoreProductFilter(int userId, String categoryStr, List<String> keywords, int minPrice, int maxPrice, Double productMinRating, int storeId, List<String> productsFromSearch, Double storeMinRating) {
+    public Response<List<String>> inStoreProductFilter(int userId, String categoryStr, List<String> keywords, Integer minPrice, Integer maxPrice, Double productMinRating, int storeId, List<String> productsFromSearch, Double storeMinRating) {
         if (realServiceAdaptor != null)
             return realServiceAdaptor.inStoreProductFilter(userId, categoryStr, keywords, minPrice, maxPrice, productMinRating, storeId, productsFromSearch, storeMinRating);
         else
