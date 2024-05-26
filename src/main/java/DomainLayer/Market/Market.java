@@ -179,7 +179,7 @@ public class Market {
                                                         String description, String categoryStr) throws Exception {
         if (userFacade.getUserByID(userId) != null){
             if (userFacade.isMember(userId)) {
-                boolean succeeded = authorizationAndSecurityFacade.validateToken(authorizationAndSecurityFacade.getToken(userId));
+                boolean succeeded = authenticationAndSecurityFacade.validateToken(authenticationAndSecurityFacade.getToken(userId));
                 if (!succeeded) {
                     logout(userId);
                     throw new Exception("your session was over please log in again");
@@ -207,7 +207,7 @@ public class Market {
     public void removeProductFromStore(int userId, int storeId, String productName) throws Exception {
         if (userFacade.getUserByID(userId) != null){
             if (userFacade.isMember(userId)) {
-                boolean succeeded = authorizationAndSecurityFacade.validateToken(authorizationAndSecurityFacade.getToken(userId));
+                boolean succeeded = authenticationAndSecurityFacade.validateToken(authenticationAndSecurityFacade.getToken(userId));
                 if (!succeeded) {
                     logout(userId);
                     throw new Exception("your session was over please log in again");
@@ -236,7 +236,7 @@ public class Market {
                                                         String description, String categoryStr) throws Exception {
         if (userFacade.getUserByID(userId) != null) {
             if (userFacade.isMember(userId)) {
-                boolean succeeded = authorizationAndSecurityFacade.validateToken(authorizationAndSecurityFacade.getToken(userId));
+                boolean succeeded = authenticationAndSecurityFacade.validateToken(authenticationAndSecurityFacade.getToken(userId));
                 if (!succeeded) {
                     logout(userId);
                     throw new Exception("your session was over please log in again");
@@ -264,7 +264,7 @@ public class Market {
     public void appointStoreOwner(int nominatorUserId, String nominatedUsername, int storeId) throws Exception {
         if (userFacade.getUserByID(nominatorUserId) != null) {
             if (userFacade.isMember(nominatorUserId)) {
-                boolean succeeded = authorizationAndSecurityFacade.validateToken(authorizationAndSecurityFacade.getToken(nominatorUserId));
+                boolean succeeded = authenticationAndSecurityFacade.validateToken(authenticationAndSecurityFacade.getToken(nominatorUserId));
                 if (!succeeded) {
                     logout(nominatorUserId);
                     throw new Exception("your session was over please log in again");
@@ -296,7 +296,7 @@ public class Market {
                                     boolean inventoryPermissions, boolean purchasePermissions) throws Exception {
         if (userFacade.getUserByID(nominatorUserId) != null) {
             if (userFacade.isMember(nominatorUserId)) {
-                boolean succeeded = authorizationAndSecurityFacade.validateToken(authorizationAndSecurityFacade.getToken(nominatorUserId));
+                boolean succeeded = authenticationAndSecurityFacade.validateToken(authenticationAndSecurityFacade.getToken(nominatorUserId));
                 if (!succeeded) {
                     logout(nominatorUserId);
                     throw new Exception("your session was over please log in again");
@@ -328,7 +328,7 @@ public class Market {
                                     boolean inventoryPermissions, boolean purchasePermissions) throws Exception {
         if (userFacade.getUserByID(nominatorUserId) != null) {
             if (userFacade.isMember(nominatorUserId)) {
-                boolean succeeded = authorizationAndSecurityFacade.validateToken(authorizationAndSecurityFacade.getToken(nominatorUserId));
+                boolean succeeded = authenticationAndSecurityFacade.validateToken(authenticationAndSecurityFacade.getToken(nominatorUserId));
                 if (!succeeded) {
                     logout(nominatorUserId);
                     throw new Exception("your session was over please log in again");
@@ -650,20 +650,18 @@ public class Market {
                 throw new Exception("your session was over please log in again");
             }
         }
-        List<String> filteredProductNames;
-        if (categoryStr != null)
-            storeFacade.checkCategory(categoryStr);
+        if (categoryStr != null && !storeFacade.checkCategory(categoryStr))
+            throw new IllegalArgumentException("The category you entered in invalid");
 
         if (storeFacade.verifyStoreExist(storeId))
         {
-            if (categoryStr != null)
-                storeFacade.checkProductExistInStore(productName, storeId);
-            filteredProductNames = storeFacade.inStoreProductSearch(productName, categoryStr, keywords, storeId);
+                if (storeFacade.checkProductExistInStore(productName, storeId))
+                    return storeFacade.inStoreProductSearch(productName, categoryStr, keywords, storeId);
+                else
+                    throw new IllegalArgumentException("The product doesn't exist in the store");
         }
         else
             throw new IllegalArgumentException("The store you try to search in doesnt exist.");
-
-        return filteredProductNames;
     }
 
     public List<String> generalProductSearch(int userId, String productName, String categoryStr, List<String> keywords) throws Exception {
@@ -699,8 +697,8 @@ public class Market {
         {
             if(storeMinRating <= 5 && storeMinRating >= 0) {
                 if (productMinRating <= 5 && productMinRating >= 0) {
-                    if (categoryStr != null)
-                        storeFacade.checkCategory(categoryStr);
+                    if (categoryStr != null && storeFacade.checkCategory(categoryStr))
+                        throw new IllegalArgumentException("The category you entered is invalid.");
                     if (storeFacade.verifyStoreExist(storeId)) {
                         filteredProductNames = storeFacade.inStoreProductFilter(categoryStr, keywords, minPrice, maxPrice, productMinRating, storeId, productsFromSearch, storeMinRating);
                     } else
