@@ -86,4 +86,8 @@ public class PaymentServicesFacade {
 
         return receiptAndTotalPrice;
     }
+
+    public Map<Integer, Acquisition> getIdAndAcquisition() {
+        return IdAndAcquisition;
+    }
 }

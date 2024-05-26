@@ -119,12 +119,12 @@ public class RoleFacade {
 
     public boolean managerHasInventoryPermissions(int member_ID, int store_ID)
     {
-        return getStoreManager(store_ID, member_ID).hasInventoryPermissions();
+        return verifyStoreManager(store_ID, member_ID) && getStoreManager(store_ID, member_ID).hasInventoryPermissions();
     }
 
     public boolean managerHasPurchasePermissions(int member_ID, int store_ID)
     {
-        return getStoreManager(store_ID, member_ID).hasPurchasePermissions();
+        return verifyStoreManager(store_ID, member_ID) && getStoreManager(store_ID, member_ID).hasPurchasePermissions();
     }
 
     private void addNewStoreManagerToTheMarket(StoreManager storeManager)
@@ -217,7 +217,7 @@ public class RoleFacade {
     {
         /*this function gets list of stores id and member id, and return only stores id in which the member is owner*/
 
-        List<Integer> storesOwned = null;
+        List<Integer> storesOwned = new ArrayList<>();
 
         for(Integer storeID: stores)
         {
@@ -243,4 +243,9 @@ public class RoleFacade {
         }
         return false;
     }
+
+    public static void resetInstanceForTests() {
+        roleFacadeInstance = null;
+    }
+
 }
