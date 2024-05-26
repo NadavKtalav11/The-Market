@@ -6,20 +6,20 @@ public class Acquisition {
     private int acquisitionId;
     private int userId;
     private int totalPrice;
-    private String userName;
+    private String holderId;
     private int creditCardNumber;
     private int cvv;
     private int month;
     private int year;
     private Date date;
-    private Map<Integer, Receipt> storeIdAndReceipt; //<storeId, Receipt>
+    private Map<Integer, Receipt> storeIdAndReceipt= new HashMap<>(); //<storeId, Receipt>
 
-    public Acquisition(int acquisitionId, int userId, int totalPrice, String userName,
+    public Acquisition(int acquisitionId, int userId, int totalPrice, String holderId,
                        int creditCardNumber, int cvv, int month, int year, Map<Integer, Map<String, Integer>> productList, int receiptIdCounter) {
         this.acquisitionId = acquisitionId;
         this.userId = userId;
         this.totalPrice = totalPrice;
-        this.userName = userName;
+        this.holderId = holderId;
         this.creditCardNumber= creditCardNumber;
         this.cvv = cvv;
         this.month=month;

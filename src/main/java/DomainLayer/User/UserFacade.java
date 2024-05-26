@@ -8,8 +8,8 @@ import java.util.Objects;
 
 public class UserFacade {
     private static UserFacade userFacadeInstance;
-    Map<Integer, User> allUsers = new HashMap<Integer, User>();
-    Map<Integer, Member> members = new HashMap<>();
+    Map<Integer, User> allUsers = new HashMap<Integer, User>(); //userID-User
+    Map<Integer, Member> members = new HashMap<>(); //memberID-Member
     private int currentUserID;
     private int currentMemberID;
     Object allUserLock;
@@ -53,6 +53,16 @@ public class UserFacade {
 
     public boolean isMember(int userId){
         return getUserByID(userId).isMember();
+    }
+
+    public int getMemberIdByUserId(int userID) throws Exception {
+        if(isMember(userID)){
+            String username = getUserByID(userID).getName();
+            return getMemberByUsername(username).getMemberID();
+        }
+        else {
+            throw new Exception("User is not a member");
+        }
     }
 
     public void exitMarketSystem(int userID){
@@ -141,7 +151,7 @@ public class UserFacade {
 
 
 
-    private void validateRegistrationDetails(String username, String password, String birthDate, String country, String city, String address, String name) throws Exception {
+    private void validateRegistrationDetails(String username, String password , String birthDate, String country, String city, String address, String name) throws Exception {
         if (username == null || password == null || birthDate == null || country ==null || city == null ||
                 address == null || name == null) {
             throw new Exception("All fields are required.");
@@ -164,10 +174,11 @@ public class UserFacade {
         if (loginMember == null){
             throw new Exception("Username or password is incorrect");
         }
-        else if (!loginMember.getPassword().equals(password)){
+        /*else if (!loginMember.getPassword().equals(password)){
             throw new Exception("Username or password is incorrect");
-        }
-        getUserByID(userID).Login(username,password, loginMember);
+        }*/
+        loginMember.validatePassword(password);
+        getUserByID(userID).Login(loginMember);
 
     }
 

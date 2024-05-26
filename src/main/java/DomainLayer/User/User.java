@@ -14,7 +14,6 @@ public class User {
     private String address;
     private String name;
     private Cart cart;
-    private Map<Integer, Integer> receiptIdsAndStoreId; //<receiptId, storeId>
 
     public User(int userID){
         this.userID = userID;
@@ -24,7 +23,6 @@ public class User {
         this.address = null;
         this.state = new Guest(); //default state
         this.cart = new Cart();
-        this.receiptIdsAndStoreId = new HashMap<>();
     }
 
     public int getUserID(){
@@ -46,10 +44,12 @@ public class User {
     public boolean isMember(){ return this.state.isMember();}
 
     public void Logout() {
-        state.Logout(this);
+        state.Logout();
     }
 
-    public void exitMarketSystem() {state.exitMarketSystem(this);}
+    public void exitMarketSystem() {
+        //state.exitMarketSystem(this);
+    }
 
     public void addToCart(String productName, int quantity, int storeId, int totalPrice)
     {
@@ -66,8 +66,8 @@ public class User {
         this.cart.calcCartTotal();
     }
 
-    public void Login(String username, String password, Member loginMember) throws Exception {
-        state.Login(this,username,password, loginMember);
+    public void Login(Member loginMember) throws Exception {
+        setState(loginMember);
     }
     
 
@@ -126,6 +126,6 @@ public class User {
 
     public void addReceipt(Map<Integer, Integer> receiptIdAndStoreId)
     {
-        receiptIdsAndStoreId.putAll(receiptIdAndStoreId);
+        state.addReceipt(receiptIdAndStoreId);
     }
 }

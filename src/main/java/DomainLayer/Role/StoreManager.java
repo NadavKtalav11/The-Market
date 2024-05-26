@@ -11,18 +11,25 @@ public class StoreManager implements Role {
     private List<Integer> authorizations;
     private boolean inventoryPermissions;
     private boolean purchasePermissions;
+    private int nominatorMemberId;
 
-    StoreManager(int member_ID, int store_ID, boolean inventoryPermissions, boolean purchasePermissions)
+    StoreManager(int member_ID, int store_ID, boolean inventoryPermissions, boolean purchasePermissions, int nominatorMemberId)
     {
         this.member_ID = member_ID;
         this.store_ID = store_ID;
         this.inventoryPermissions = inventoryPermissions;
         this.purchasePermissions = purchasePermissions;
+        this.nominatorMemberId = nominatorMemberId;
     }
 
     public void setPermissions(boolean inventoryPermissions, boolean purchasePermissions){
         this.inventoryPermissions = inventoryPermissions;
         this.purchasePermissions = purchasePermissions;
+    }
+
+    public int getNominatorMemberId()
+    {
+        return this.nominatorMemberId;
     }
 
     public int getStore_ID()

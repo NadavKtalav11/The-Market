@@ -29,10 +29,10 @@ public class PurhcaseHistoryInfo {
         impl.register(1, "user1", "fSijsd281", "12/12/00", "Israel", "Beer Sheva", "Mesada", "Toy");
         impl.login(1, "user1", "fSijsd281");
         impl.openStore(0);
-        impl.addProductToStore(0, 0, 0, "Milk", 10, 5, "Milk 5%", "food");
-        impl.addProductToStore(0, 0, 0, "Cheese", 15, 8, "Cheese 22%", "food");
-        impl.addProductToStore(0, 0, 0, "Yogurt", 4, 12, "Yogurt 20%", "food");
-        impl.addProductToStore(0, 0, 0, "Shoes", 4, 12, "Nike Shoes", "clothing");
+        impl.addProductToStore(0, 0, "Milk", 10, 5, "Milk 5%", "food");
+        impl.addProductToStore(0, 0, "Cheese", 15, 8, "Cheese 22%", "food");
+        impl.addProductToStore(0, 0, "Yogurt", 4, 12, "Yogurt 20%", "food");
+        impl.addProductToStore(0, 0, "Shoes", 4, 12, "Nike Shoes", "clothing");
         impl.addProductToBasket("Milk", 2, 0, 0);
         impl.payWithExternalPaymentService(100, 12345, 123, 12, 2000, "389082132", 1);
 
