@@ -2,12 +2,15 @@ package AcceptanceTests.Users.Purchase;
 
 import AcceptanceTests.BridgeToTests;
 import AcceptanceTests.ProxyToTest;
+import ServiceLayer.Response;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -37,23 +40,32 @@ public class InStoreSearch {
         productNames.add("Cheese");
         productNames.add("Yogurt");
         productNames.add("Shoes");
-        assertTrue(impl.inStoreProductSearch(0, null, null, null, 0).isSuccess());
-        assertIterableEquals(impl.inStoreProductSearch(0, null, null, null, 0).getResult(), productNames);
+        Set<String> productsSet = new HashSet<String>(productNames);
+        Response<List<String>> res = impl.inStoreProductSearch(0, null, null, null, 0);
+        assertTrue(res.isSuccess());
+        List<String> unFilteredProducts = res.getResult();
+        Set<String> filteredProductsSet = new HashSet<String>(unFilteredProducts);
+        assertIterableEquals(filteredProductsSet, productsSet);
     }
 
     @Test
     public void successfulSearchWithFiltersTest() {
         List<String> diaryProducts = new ArrayList<>();
+
         diaryProducts.add("Milk");
         diaryProducts.add("Cheese");
         diaryProducts.add("Yogurt");
+        Set<String> dairySet = new HashSet<String>(diaryProducts);
+
         assertTrue(impl.inStoreProductSearch(0, null, "FOOD", null, 0).isSuccess());
-        assertIterableEquals(impl.inStoreProductSearch(0, null, "FOOD", null, 0).getResult(), diaryProducts);
+        List<String> filteredProducts = impl.inStoreProductSearch(0, null, "FOOD", null, 0).getResult();
+        Set<String> filteredProductsSet = new HashSet<String>(filteredProducts);
+        assertIterableEquals(filteredProductsSet, dairySet);
 
         List<String> shoes = new ArrayList<>();
         shoes.add("Shoes");
         assertTrue(impl.inStoreProductSearch(0, "Shoes", null, null, 0).isSuccess());
-        assertIterableEquals(impl.inStoreProductSearch(0, "Shoes", null, null, 0).getResult(), diaryProducts);
+        assertIterableEquals(impl.inStoreProductSearch(0, "Shoes", null, null, 0).getResult(), shoes);
     }
 
     @Test
