@@ -175,143 +175,184 @@ public class Market {
         }
     }
 
-    public void addProductToStore(int userId, int storeID, String productName, int price, int quantity,
+    public void addProductToStore(int userId, int storeId, String productName, int price, int quantity,
                                                         String description, String categoryStr) throws Exception {
-        if (userFacade.isMember(userId)) {
-            int memberId = userFacade.getMemberIdByUserId(userId);
-            boolean succeeded = authenticationAndSecurityFacade.validateToken(authenticationAndSecurityFacade.getToken(memberId));if (!succeeded) {
-                logout(userId);
-                throw new Exception("your session was over please log in again");
-            }
-            if (roleFacade.verifyStoreOwner(storeID, memberId) ||
-                    (roleFacade.verifyStoreManager(storeID, memberId) &&
-                            roleFacade.managerHasInventoryPermissions(memberId, storeID))) {
-                storeFacade.addProductToStore(storeID, productName, price, quantity, description, categoryStr);
-            } else {
-                throw new Exception("User has no inventory permissions");
-            }
-        }
-    }
-
-    public void removeProductFromStore(int userId, int storeID, String productName) throws Exception {
-        if (userFacade.isMember(userId)) {
-            int memberId = userFacade.getMemberIdByUserId(userId);
-            boolean succeeded = authenticationAndSecurityFacade.validateToken(authenticationAndSecurityFacade.getToken(memberId));
-            if (!succeeded) {
-                logout(userId);
-                throw new Exception("your session was over please log in again");
-            }
-            if (roleFacade.verifyStoreOwner(storeID, memberId) ||
-                    (roleFacade.verifyStoreManager(storeID, memberId) &&
-                            roleFacade.managerHasInventoryPermissions(memberId, storeID))) {
-                storeFacade.removeProductFromStore(storeID, productName);
-            } else {
-                throw new Exception("User has no inventory permissions");
-            }
-        }
-    }
-
-    public void updateProductInStore(int userId, int storeID, String productName, int price, int quantity,
-                                                        String description, String categoryStr) throws Exception {
-        if (userFacade.isMember(userId)) {
-            int memberId = userFacade.getMemberIdByUserId(userId);
-            boolean succeeded = authenticationAndSecurityFacade.validateToken(authenticationAndSecurityFacade.getToken(memberId));
-            if (!succeeded) {
-                logout(userId);
-                throw new Exception("your session was over please log in again");
-            }
-            if (roleFacade.verifyStoreOwner(storeID, memberId) ||
-                    (roleFacade.verifyStoreManager(storeID, memberId) &&
-                            roleFacade.managerHasInventoryPermissions(memberId, storeID))) {
-                storeFacade.updateProductInStore(storeID, productName, price, quantity, description, categoryStr);
-            } else {
-                throw new Exception("User has no inventory permissions");
-            }
-        }
-    }
-
-    public void appointStoreOwner(int nominatorUserId, String nominatedUsername, int storeID) throws Exception {
-        if (userFacade.isMember(nominatorUserId)) {
-            int memberId = userFacade.getMemberIdByUserId(nominatorUserId);
-            boolean succeeded = authenticationAndSecurityFacade.validateToken(authenticationAndSecurityFacade.getToken(memberId));
-            if (!succeeded) {
-                logout(nominatorUserId);
-                throw new Exception("your session was over please log in again");
-            }
-            int nominatorMemberID = userFacade.getMemberIdByUserId(nominatorUserId);
-            if (roleFacade.verifyStoreOwner(storeID, nominatorMemberID)) {
-                if(userFacade.getMemberByUsername(nominatedUsername) != null){
-                    int nominatedMemberID = userFacade.getMemberByUsername(nominatedUsername).getMemberID();
-                    if (!roleFacade.verifyStoreOwner(storeID, nominatedMemberID)) {
-                        roleFacade.createStoreOwner(nominatedMemberID, storeID, false, nominatorMemberID);
+        if (userFacade.getUserByID(userId) != null){
+            if (userFacade.isMember(userId)) {
+                boolean succeeded = authenticationAndSecurityFacade.validateToken(authenticationAndSecurityFacade.getToken(userId));
+                if (!succeeded) {
+                    logout(userId);
+                    throw new Exception("your session was over please log in again");
+                }
+                int memberId = userFacade.getMemberIdByUserId(userId);
+                if (storeFacade.getStoreByID(storeId) != null){
+                    if (roleFacade.verifyStoreOwner(storeId, memberId) ||
+                            (roleFacade.verifyStoreManager(storeId, memberId) &&
+                                    roleFacade.managerHasInventoryPermissions(memberId, storeId))) {
+                        storeFacade.addProductToStore(storeId, productName, price, quantity, description, categoryStr);
                     } else {
-                        throw new Exception("Member is already owner of this store");
+                        throw new Exception("User has no inventory permissions");
                     }
                 } else {
-                    throw new Exception("Guest appointment is not possible");
+                    throw new Exception("Store does not exist");
                 }
             } else {
-                throw new Exception("Only store owner can appoint new store owner");
+                throw new Exception("User has no inventory permissions");
             }
+        } else {
+            throw new Exception("User does not exist");
         }
     }
 
-    public void appointStoreManager(int nominatorUserId, String nominatedUsername, int storeID,
-                                    boolean inventoryPermissions, boolean purchasePermissions) throws Exception {
-        if (userFacade.isMember(nominatorUserId)) {
-            int memberId = userFacade.getMemberIdByUserId(nominatorUserId);
-            boolean succeeded = authenticationAndSecurityFacade.validateToken(authenticationAndSecurityFacade.getToken(memberId));
-            if (!succeeded) {
-                logout(nominatorUserId);
-                throw new Exception("your session was over please log in again");
-            }
-            int nominatorMemberID = userFacade.getMemberIdByUserId(nominatorUserId);
-            if (roleFacade.verifyStoreOwner(storeID, nominatorMemberID)) {
-                if(userFacade.getMemberByUsername(nominatedUsername) != null){
-                    int nominatedMemberID = userFacade.getMemberByUsername(nominatedUsername).getMemberID();
-                    if (!roleFacade.verifyStoreOwner(storeID, nominatedMemberID) && !roleFacade.verifyStoreManager(storeID, nominatedMemberID)) {
-                        roleFacade.createStoreManager(nominatedMemberID, storeID,
-                                    inventoryPermissions, purchasePermissions, nominatorMemberID);
+    public void removeProductFromStore(int userId, int storeId, String productName) throws Exception {
+        if (userFacade.getUserByID(userId) != null){
+            if (userFacade.isMember(userId)) {
+                boolean succeeded = authenticationAndSecurityFacade.validateToken(authenticationAndSecurityFacade.getToken(userId));
+                if (!succeeded) {
+                    logout(userId);
+                    throw new Exception("your session was over please log in again");
+                }
+                int memberId = userFacade.getMemberIdByUserId(userId);
+                if (storeFacade.getStoreByID(storeId) != null) {
+                    if (roleFacade.verifyStoreOwner(storeId, memberId) ||
+                            (roleFacade.verifyStoreManager(storeId, memberId) &&
+                                    roleFacade.managerHasInventoryPermissions(memberId, storeId))) {
+                        storeFacade.removeProductFromStore(storeId, productName);
                     } else {
-                        throw new Exception("Member already has a role in this store");
+                        throw new Exception("User has no inventory permissions");
                     }
                 } else {
-                    throw new Exception("Guest appointment is not possible");
+                    throw new Exception("Store does not exist");
                 }
             } else {
-                throw new Exception("Only store owner can appoint new store manager");
+                throw new Exception("User has no inventory permissions");
             }
+        } else {
+            throw new Exception("User does not exist");
         }
     }
 
-    public void updateStoreManagerPermissions(int nominatorUserId, String nominatedUsername, int storeID,
-                                    boolean inventoryPermissions, boolean purchasePermissions) throws Exception {
-        if (userFacade.isMember(nominatorUserId)) {
-            int memberId = userFacade.getMemberIdByUserId(nominatorUserId);
-            boolean succeeded = authenticationAndSecurityFacade.validateToken(authenticationAndSecurityFacade.getToken(memberId));
-            if (!succeeded) {
-                logout(nominatorUserId);
-                throw new Exception("your session was over please log in again");
+    public void updateProductInStore(int userId, int storeId, String productName, int price, int quantity,
+                                                        String description, String categoryStr) throws Exception {
+        if (userFacade.getUserByID(userId) != null) {
+            if (userFacade.isMember(userId)) {
+                boolean succeeded = authenticationAndSecurityFacade.validateToken(authenticationAndSecurityFacade.getToken(userId));
+                if (!succeeded) {
+                    logout(userId);
+                    throw new Exception("your session was over please log in again");
+                }
+                int memberId = userFacade.getMemberIdByUserId(userId);
+                if (storeFacade.getStoreByID(storeId) != null) {
+                    if (roleFacade.verifyStoreOwner(storeId, memberId) ||
+                            (roleFacade.verifyStoreManager(storeId, memberId) &&
+                                    roleFacade.managerHasInventoryPermissions(memberId, storeId))) {
+                        storeFacade.updateProductInStore(storeId, productName, price, quantity, description, categoryStr);
+                    } else {
+                        throw new Exception("User has no inventory permissions");
+                    }
+                } else {
+                    throw new Exception("Store does not exist");
+                }
+            } else {
+                throw new Exception("User has no inventory permissions");
             }
-            int nominatorMemberID = userFacade.getMemberIdByUserId(nominatorUserId);
-            if (roleFacade.verifyStoreOwner(storeID, nominatorMemberID)) {
-                if(userFacade.getMemberByUsername(nominatedUsername) != null){
-                    int nominatedMemberID = userFacade.getMemberByUsername(nominatedUsername).getMemberID();
-                    if (roleFacade.verifyStoreManager(storeID, nominatedMemberID)) {
-                        if(roleFacade.getStoreManager(storeID, nominatedMemberID).getNominatorMemberId() == nominatorMemberID){
-                            roleFacade.updateStoreManagerPermissions(nominatedMemberID, storeID, inventoryPermissions, purchasePermissions);
+        } else {
+            throw new Exception("User does not exist");
+        }
+    }
+
+    public void appointStoreOwner(int nominatorUserId, String nominatedUsername, int storeId) throws Exception {
+        if (userFacade.getUserByID(nominatorUserId) != null) {
+            if (userFacade.isMember(nominatorUserId)) {
+                boolean succeeded = authenticationAndSecurityFacade.validateToken(authenticationAndSecurityFacade.getToken(nominatorUserId));
+                if (!succeeded) {
+                    logout(nominatorUserId);
+                    throw new Exception("your session was over please log in again");
+                }
+                int nominatorMemberID = userFacade.getMemberIdByUserId(nominatorUserId);
+                if (storeFacade.getStoreByID(storeId) != null) {
+                    if (roleFacade.verifyStoreOwner(storeId, nominatorMemberID)) {
+                        if (userFacade.getMemberByUsername(nominatedUsername) != null) {
+                            int nominatedMemberID = userFacade.getMemberByUsername(nominatedUsername).getMemberID();
+                            roleFacade.createStoreOwner(nominatedMemberID, storeId, false, nominatorMemberID);
                         } else {
-                            throw new Exception("Store owner is not the store manager's nominator");
+                            throw new Exception("Username was not found");
                         }
                     } else {
-                        throw new Exception("User is not a manager of this store");
+                        throw new Exception("User has no permission to appoint store owner");
                     }
                 } else {
-                    throw new Exception("User is not a manager of this store");
+                    throw new Exception("Store does not exist");
                 }
             } else {
-                throw new Exception("Only store owner can update store manager permissions");
+                throw new Exception("User has no permission to appoint store owner");
             }
+        } else {
+            throw new Exception("User does not exist");
+        }
+    }
+
+    public void appointStoreManager(int nominatorUserId, String nominatedUsername, int storeId,
+                                    boolean inventoryPermissions, boolean purchasePermissions) throws Exception {
+        if (userFacade.getUserByID(nominatorUserId) != null) {
+            if (userFacade.isMember(nominatorUserId)) {
+                boolean succeeded = authenticationAndSecurityFacade.validateToken(authenticationAndSecurityFacade.getToken(nominatorUserId));
+                if (!succeeded) {
+                    logout(nominatorUserId);
+                    throw new Exception("your session was over please log in again");
+                }
+                int nominatorMemberID = userFacade.getMemberIdByUserId(nominatorUserId);
+                if (storeFacade.getStoreByID(storeId) != null) {
+                    if (roleFacade.verifyStoreOwner(storeId, nominatorMemberID)) {
+                        if (userFacade.getMemberByUsername(nominatedUsername) != null) {
+                            int nominatedMemberID = userFacade.getMemberByUsername(nominatedUsername).getMemberID();
+                            roleFacade.createStoreManager(nominatedMemberID, storeId, inventoryPermissions, purchasePermissions, nominatorMemberID);
+                        } else {
+                            throw new Exception("Username was not found");
+                        }
+                    } else {
+                        throw new Exception("User has no permission to appoint store manager");
+                    }
+                } else {
+                    throw new Exception("Store does not exist");
+                }
+            } else {
+                throw new Exception("User has no permission to appoint store manager");
+            }
+        } else {
+            throw new Exception("User does not exist");
+        }
+    }
+
+    public void updateStoreManagerPermissions(int nominatorUserId, String nominatedUsername, int storeId,
+                                    boolean inventoryPermissions, boolean purchasePermissions) throws Exception {
+        if (userFacade.getUserByID(nominatorUserId) != null) {
+            if (userFacade.isMember(nominatorUserId)) {
+                boolean succeeded = authenticationAndSecurityFacade.validateToken(authenticationAndSecurityFacade.getToken(nominatorUserId));
+                if (!succeeded) {
+                    logout(nominatorUserId);
+                    throw new Exception("your session was over please log in again");
+                }
+                int nominatorMemberID = userFacade.getMemberIdByUserId(nominatorUserId);
+                if (storeFacade.getStoreByID(storeId) != null) {
+                    if (roleFacade.verifyStoreOwner(storeId, nominatorMemberID)) {
+                        if (userFacade.getMemberByUsername(nominatedUsername) != null) {
+                            int nominatedMemberID = userFacade.getMemberByUsername(nominatedUsername).getMemberID();
+                            roleFacade.updateStoreManagerPermissions(nominatedMemberID, storeId, inventoryPermissions, purchasePermissions, nominatorMemberID);
+                        } else {
+                            throw new Exception("Username was not found");
+                        }
+                    } else {
+                        throw new Exception("User has no permission to update store manager permissions");
+                    }
+                } else {
+                    throw new Exception("Store does not exist");
+                }
+            } else {
+                throw new Exception("User has no permission to update store manager permissions");
+            }
+        } else {
+            throw new Exception("User does not exist");
         }
     }
 
@@ -457,24 +498,6 @@ public class Market {
         return allAvailableStores;
     }
 
-    public List<String> getInformationAboutProductInStore(int user_ID, int store_ID) throws Exception {
-        if (userFacade.isMember(user_ID)) {
-            int memberId = userFacade.getMemberIdByUserId(user_ID);
-            boolean succeeded = authenticationAndSecurityFacade.validateToken(authenticationAndSecurityFacade.getToken(memberId));
-            if (!succeeded) {
-                logout(user_ID);
-                throw new Exception("your session was over please log in again");
-            }
-        }
-        List<String> storeProducts = null;
-        if (storeFacade.verifyStoreExist(store_ID)) {
-            storeProducts = storeFacade.getStoreProducts(store_ID);
-        }else {
-            throw new Exception("Store does not exist");
-        }
-        return storeProducts;
-    }
-
     public void modifyShoppingCart(String productName, int quantity, int storeId, int userId)throws Exception
     {
         if (userFacade.isMember(userId)) {
@@ -609,20 +632,18 @@ public class Market {
                 throw new Exception("your session was over please log in again");
             }
         }
-        List<String> filteredProductNames;
-        if (categoryStr != null)
-            storeFacade.checkCategory(categoryStr);
+        if (categoryStr != null && !storeFacade.checkCategory(categoryStr))
+            throw new IllegalArgumentException("The category you entered in invalid");
 
         if (storeFacade.verifyStoreExist(storeId))
         {
-            if (categoryStr != null)
-                storeFacade.checkProductExistInStore(productName, storeId);
-            filteredProductNames = storeFacade.inStoreProductSearch(productName, categoryStr, keywords, storeId);
+                if (storeFacade.checkProductExistInStore(productName, storeId))
+                    return storeFacade.inStoreProductSearch(productName, categoryStr, keywords, storeId);
+                else
+                    throw new IllegalArgumentException("The product doesn't exist in the store");
         }
         else
             throw new IllegalArgumentException("The store you try to search in doesnt exist.");
-
-        return filteredProductNames;
     }
 
     public List<String> generalProductSearch(int userId, String productName, String categoryStr, List<String> keywords) throws Exception {
@@ -658,8 +679,8 @@ public class Market {
         {
             if(storeMinRating <= 5 && storeMinRating >= 0) {
                 if (productMinRating <= 5 && productMinRating >= 0) {
-                    if (categoryStr != null)
-                        storeFacade.checkCategory(categoryStr);
+                    if (categoryStr != null && storeFacade.checkCategory(categoryStr))
+                        throw new IllegalArgumentException("The category you entered is invalid.");
                     if (storeFacade.verifyStoreExist(storeId)) {
                         filteredProductNames = storeFacade.inStoreProductFilter(categoryStr, keywords, minPrice, maxPrice, productMinRating, storeId, productsFromSearch, storeMinRating);
                     } else

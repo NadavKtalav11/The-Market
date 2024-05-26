@@ -160,14 +160,6 @@ public class ProxyToTest implements BridgeToTests {
     }
 
     @Override
-    public Response<List<String>> getInformationAboutProductInStore(int user_ID, int store_ID) {
-        if (realServiceAdaptor != null)
-            return realServiceAdaptor.getInformationAboutProductInStore(user_ID, store_ID);
-        else
-            return new Response<>(null, "Not Implemented yet");
-    }
-
-    @Override
     public Response<Map<Integer, String>> getInformationAboutRolesInStore(int user_ID, int store_ID) {
         if (realServiceAdaptor != null)
             return realServiceAdaptor.getInformationAboutRolesInStore(user_ID, store_ID);
