@@ -87,6 +87,7 @@ public class Member extends State{
         return password;
     }
 
+    public Map<Integer, Integer> getReceiptIdsAndStoreId(){return receiptIdsAndStoreId;}
 
     public int getMemberID()
     {
