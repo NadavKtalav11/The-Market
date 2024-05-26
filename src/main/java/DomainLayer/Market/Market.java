@@ -592,7 +592,7 @@ public class Market {
             }
         }
         int totalPrice = 0;
-        if(this.userFacade.isUserCartEmpty(user_ID))  //todo: verify if needed
+        if(this.userFacade.isUserCartEmpty(user_ID))
             throw new Exception("User cart is empty, there's nothing to purchase");
         else {
             List<Integer> stores = this.userFacade.getCartStoresByUser(user_ID);
