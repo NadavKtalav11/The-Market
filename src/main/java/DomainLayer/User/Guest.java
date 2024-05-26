@@ -3,7 +3,9 @@ package DomainLayer.User;
 public class Guest implements State{
 
     @Override
-    public void Logout(User user) {
+    public void Logout() {
+
+        throw new IllegalArgumentException("only members can Log out");
         //todo throw exception
     }
 

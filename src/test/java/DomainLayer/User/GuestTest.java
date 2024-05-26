@@ -23,13 +23,16 @@ public class GuestTest {
     @BeforeEach
     public void setUp() {
         guest = new Guest();
-        mockUser = Mockito.mock(User.class); // Initialize mockUser with a mock object
+        //mockUser = Mockito.mock(User.class); // Initialize mockUser with a mock object
+        //mockUser.setState(new Guest());
     }
 
 
     @Test
     public void testLogin() throws Exception {
         Member expectedMember = new Member(userId, username, password, birthday, country, city, address, name);
+        //expectedMember.Logout();
+
         (mockUser.getState()).Login(mockUser, username, password, expectedMember);
         verify(mockUser).setState(expectedMember); // Verify that the setState method was called
         assertTrue(mockUser.getState() instanceof Member); // Additional assertion
@@ -38,7 +41,7 @@ public class GuestTest {
 
     @Test
     public void testLogout() {
-        assertDoesNotThrow(() -> guest.Logout(mockUser));
+        assertDoesNotThrow(() -> guest.Logout());
         // No state change or other behavior to verify in Logout method for Guest
     }
 

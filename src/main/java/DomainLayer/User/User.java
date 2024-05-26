@@ -46,7 +46,8 @@ public class User {
     public boolean isMember(){ return this.state.isMember();}
 
     public void Logout() {
-        state.Logout(this);
+        state.Logout();
+        state = new Guest();
     }
 
     public void exitMarketSystem() {state.exitMarketSystem(this);}

@@ -31,10 +31,12 @@ public class Member implements State{
         this.productIdCounter = 0;
     }
 
-    public void Logout(User user)
+    public void Logout()
     {
         // todo save data if needed
-        user.setState(new Guest());
+        if (!isLogin){
+            throw new IllegalArgumentException("member is already logged out");
+        }
         isLogin = false;
     }
 

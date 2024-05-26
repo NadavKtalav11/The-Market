@@ -57,8 +57,12 @@ public class UserFacade {
 
     public void exitMarketSystem(int userID){
         synchronized (allUserLock) {
-            allUsers.remove(userID); //todo do i need to remove the user from the list of users ?
-            (allUsers.get(userID)).exitMarketSystem();
+
+            allUsers.get(userID).exitMarketSystem();
+
+            //todo do i need to remove the user from the list of users ?
+            allUsers.remove(userID);
+
         }
     }
 

@@ -17,7 +17,7 @@ public class StoreTest {
     @BeforeEach
     public void setUp() {
         store = new Store(storeId);
-        //store.addProduct(productName, price, quantity, );
+        store.addProduct(productName, price, quantity, "good", "drink"  );
     }
 
     @Test
