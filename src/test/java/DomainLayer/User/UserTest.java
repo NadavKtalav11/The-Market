@@ -1,5 +1,6 @@
 package DomainLayer.User;
 
+import DomainLayer.Store.Store;
 import DomainLayer.User.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -17,12 +18,20 @@ public class UserTest {
     private Member member;
     private Cart mockCart;
     private State mockState;
+    private Store storeMock;
     private int userID = 1;
 
     @BeforeEach
     public void setUp() {
         user = new User(1);
         member = mock(Member.class);
+
+        // Create the mocks
+        mockCart = Mockito.mock(Cart.class);
+        storeMock = Mockito.mock(Store.class);
+
+        // Initialize the user and set the user's cart
+        user.setCart(mockCart);
     }
 
     @Test
@@ -40,24 +49,26 @@ public class UserTest {
 
     @Test
     public void testLogout() {
-        user.setState(mockState);
+        user.setState(member);
         user.Logout();
-        verify(mockState).Logout();
+        assertFalse(user.isMember());
     }
 
     @Test
     public void testAddToCart() {
-        user.addToCart("Product1", 2, 1, 100);
-        assertFalse(user.getCart().isCartEmpty());
-        assertTrue(user.checkIfProductInUserCart("Product1", 1));
+        User user2 = new User(2);
+        user2.addToCart("Product1", 2, 1, 100);
+        assertFalse(user2.getCart().isCartEmpty());
+        assertTrue(user2.checkIfProductInUserCart("Product1", 1));
     }
 
     @Test
     public void testModifyProductInCart() {
-        user.addToCart("Product1", 2, 1, 100);
-        user.modifyProductInCart("Product1", 3, 1, 150);
-        assertEquals(1, user.getCartProductsByStore(1).size());
-        assertEquals(3, user.getCartProductsByStore(1).get("Product1").get(0));
+        User user2 = new User(2);
+        user2.addToCart("Product1", 2, 1, 100);
+        user2.modifyProductInCart("Product1", 3, 1, 150);
+        assertEquals(1, user2.getCartProductsByStore(1).size());
+        assertEquals(3, user2.getCartProductsByStore(1).get("Product1").get(0));
     }
 
     @Test
@@ -75,12 +86,17 @@ public class UserTest {
     }
 
     @Test
-    //todo fix this
     public void testRemoveItemFromUserCart() {
         String productName = "Product1";
         int storeId = 100;
 
+        // Set up the mock behavior for the store
+        when(storeMock.getStoreID()).thenReturn(storeId);
+
+        // Call the method to be tested
         user.removeItemFromUserCart(productName, storeId);
+
+        // Verify that the removeItemFromCart method was called on the mock cart with the correct parameters
         verify(mockCart).removeItemFromCart(productName, storeId);
     }
 
@@ -91,23 +107,27 @@ public class UserTest {
 
     @Test
     public void testGetCartProductsByStore() {
-        user.addToCart("Product1", 2, 1, 100);
-        user.addToCart("Product2", 1, 1, 50);
-        assertEquals(2, user.getCartProductsByStore(1).size());
+        User user2 = new User(2);
+        user2.addToCart("Product1", 2, 1, 100);
+        user2.addToCart("Product2", 1, 1, 50);
+        assertEquals(2, user2.getCartProductsByStore(1).size());
     }
 
     @Test
     //todo check this after Tomer
     public void testGetCartTotalPriceBeforeDiscount() {
-        user.addToCart("Product1", 2, 1, 100);
-        user.addToCart("Product2", 1, 1, 50);
-        assertEquals(150, user.getCartTotalPriceBeforeDiscount());
+        User user2 = new User(2);
+        user2.addToCart("Product1", 2, 1, 100);
+        user2.addToCart("Product2", 1, 1, 50);
+
+        assertEquals(150, user2.getCartTotalPriceBeforeDiscount());
     }
 
     @Test
     public void testIsCartEmpty() {
-        assertTrue(user.isCartEmpty());
-        user.addToCart("Product1", 2, 1, 100);
-        assertFalse(user.isCartEmpty());
+        User user2 = new User(2);
+        assertTrue(user2.isCartEmpty());
+        user2.addToCart("Product1", 2, 1, 100);
+        assertFalse(user2.isCartEmpty());
     }
 }
