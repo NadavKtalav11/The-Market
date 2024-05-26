@@ -185,9 +185,9 @@ public class ProxyToTest implements BridgeToTests {
 
     @Override
     public Response<String> openStore(int user_ID, String name, String description) {
-        if (realServiceAdaptor != null)
-            return realServiceAdaptor.openStore(user_ID, name, description);
-        else
+        //if (realServiceAdaptor != null)
+            //return realServiceAdaptor.openStore(user_ID, name, description);
+        //else
             return new Response<>(null, "Not Implemented yet");
     }
 
