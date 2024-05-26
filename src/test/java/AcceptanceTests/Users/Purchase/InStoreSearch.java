@@ -90,7 +90,7 @@ public class InStoreSearch {
     }
 
     @Test
-    public void productRatingInvalidTest() {
+    public void productRatingInvalidTest() { //
         List<String> diaryProducts = new ArrayList<>();
         diaryProducts.add("Milk");
         diaryProducts.add("Cheese");

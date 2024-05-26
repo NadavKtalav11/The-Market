@@ -54,7 +54,7 @@ public class ModifyingCart {
     }
 
     @Test
-    public void negQuantityTest() {
+    public void negQuantityTest() { //
         assertFalse(impl.modifyShoppingCart("Milk", -1,0, 0).isSuccess());
         assertFalse(impl.modifyShoppingCart("Cheese", -2, 0, 0).isSuccess());
         assertFalse(impl.modifyShoppingCart("Yogurt", -3, 0, 0).isSuccess());
