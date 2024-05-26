@@ -31,8 +31,8 @@ public class StoreFacadeTest {
 
     @Test
     void testOpenStore() {
-        //int storeId = storeFacade.openStore();
-        //assertNotNull(storeFacade.getStoreByID(storeId));
+        int storeId = storeFacade.openStore("Grocery", "");
+        assertNotNull(storeFacade.getStoreByID(storeId));
     }
 
     @Test
@@ -56,6 +56,7 @@ public class StoreFacadeTest {
 
     @Test
     void testRemoveProductFromStore() throws Exception {
+        when(mockStore.checkProductExists(anyString())).thenReturn(true);
         storeFacade.removeProductFromStore(storeId, "Product1");
         verify(mockStore).removeProduct("Product1");
 
@@ -104,8 +105,8 @@ public class StoreFacadeTest {
 
     @Test
     void testUpdateProductInStore() throws Exception {
+        when(mockStore.checkProductExists(anyString())).thenReturn(true);
         storeFacade.updateProductInStore(0, "Milk", 100, 10, "Fresh Milk", "Dairy");
-
         verify(mockStore).updateProduct("Milk", 100, 10, "Fresh Milk", "Dairy");
     }
 
@@ -164,18 +165,13 @@ public class StoreFacadeTest {
 
     @Test
     void testCheckCategory() {
-        assertThrows(IllegalArgumentException.class, () -> {
-            storeFacade.checkCategory("NonExistentCategory");
-        });
+        assertFalse(storeFacade.checkCategory("NonExistentCategory"));
     }
 
     @Test
     void testCheckProductExistInStore() {
         when(mockStore.checkProductExists("NonExistentProduct")).thenReturn(false);
-
-        assertThrows(IllegalArgumentException.class, () -> {
-            storeFacade.checkProductExistInStore("NonExistentProduct", 0);
-        });
+        assertFalse(storeFacade.checkProductExistInStore("NonExistentProduct", 0));
     }
 
     @Test
