@@ -62,6 +62,11 @@ public class StoreFacade {
             throw new IllegalArgumentException("The quantity you entered isn't available in the store");
         }
 
+        if (quantity < 0)
+        {
+            throw new IllegalArgumentException("The quantity you entered is negative");
+        }
+
         //Check here all policies
         if (!store.checkPurchasePolicy(userId, productName))
         {

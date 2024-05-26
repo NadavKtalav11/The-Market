@@ -36,4 +36,10 @@ public class Guest extends State{
         return;
     }
 
+    @Override
+    public String getUsername() {
+        return null;
+    }
+
+
 }

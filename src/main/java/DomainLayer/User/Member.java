@@ -20,7 +20,7 @@ public class Member extends State{
     private int productIdCounter;
     private Map<Integer, Integer> receiptIdsAndStoreId; //<receiptId, storeId>
     //private boolean isLogin;
-  
+
     Member(int member_ID, String username, String password, String birthday,String country, String city, String address, String name)
     {
         this.member_ID = member_ID;
@@ -58,7 +58,7 @@ public class Member extends State{
         }
 
     }
-
+    @Override
     public String getUsername(){
         return username;
     }
