@@ -10,8 +10,8 @@ import java.util.Map;
 public class RoleFacade {
 
     private static RoleFacade roleFacadeInstance;
-    private Map<Integer,List<StoreOwner>> userId_storeOwnersMap;  //todo: move this to repository
-    private Map<Integer,List<StoreManager>> userId_storeManagerMap;
+    private Map<Integer,List<StoreOwner>> memberId_storeOwnersMap;  //todo: move this to repository
+    private Map<Integer,List<StoreManager>> memberId_storeManagerMap;
     private List<SystemManager> systemManagers ;
     Object storeOwnerLock;
     Object storeManagerLock;
@@ -20,8 +20,8 @@ public class RoleFacade {
 
     private RoleFacade()
     {
-        userId_storeOwnersMap = new HashMap<>();
-        userId_storeManagerMap = new HashMap<>();
+        memberId_storeOwnersMap = new HashMap<>();
+        memberId_storeManagerMap = new HashMap<>();
         systemManagers = new ArrayList<>();
         storeManagerLock= new Object();
         systemManagerLock= new Object();
@@ -44,7 +44,7 @@ public class RoleFacade {
     {
 
         synchronized (storeOwnerLock) {
-            List<StoreOwner> userOwner = userId_storeOwnersMap.get(memberID);
+            List<StoreOwner> userOwner = memberId_storeOwnersMap.get(memberID);
             if (userOwner==null){
                 return null;
             }
@@ -65,7 +65,7 @@ public class RoleFacade {
     public StoreManager getStoreManager(int storeID, int memberID)
     {
         synchronized (storeManagerLock) {
-            List<StoreManager> userManager = userId_storeManagerMap.get(memberID);
+            List<StoreManager> userManager = memberId_storeManagerMap.get(memberID);
             if (userManager==null){
                 return null;
             }
@@ -118,10 +118,10 @@ public class RoleFacade {
     {
         synchronized (storeManagerLock) {
             int memberId = storeManager.getMember_ID();
-            if (userId_storeManagerMap.get(memberId)==null){
-                userId_storeManagerMap.put(memberId, new ArrayList<>());
+            if (memberId_storeManagerMap.get(memberId)==null){
+                memberId_storeManagerMap.put(memberId, new ArrayList<>());
             }
-            userId_storeManagerMap.get(memberId).add(storeManager);
+            memberId_storeManagerMap.get(memberId).add(storeManager);
         }
     }
 
@@ -129,10 +129,10 @@ public class RoleFacade {
     {
         synchronized (storeOwnerLock) {
             int memberId = storeOwner.getMember_ID();
-            if (userId_storeOwnersMap.get(memberId)==null){
-                userId_storeOwnersMap.put(memberId, new ArrayList<>());
+            if (memberId_storeOwnersMap.get(memberId)==null){
+                memberId_storeOwnersMap.put(memberId, new ArrayList<>());
             }
-            userId_storeOwnersMap.get(memberId).add(storeOwner);
+            memberId_storeOwnersMap.get(memberId).add(storeOwner);
         }
     }
 
@@ -158,8 +158,8 @@ public class RoleFacade {
     {
         Map<Integer, List<Integer>> managersAuthorizations= new HashMap<>();
         synchronized (storeManagerLock) {
-            for (Integer memberId : userId_storeManagerMap.keySet()) {
-                for (StoreManager currStoreManager:userId_storeManagerMap.get(memberId)) {
+            for (Integer memberId : memberId_storeManagerMap.keySet()) {
+                for (StoreManager currStoreManager:memberId_storeManagerMap.get(memberId)) {
                     if (currStoreManager.getStore_ID() == storeID) {
                         managersAuthorizations.put(memberId, currStoreManager.getAuthorizations());
                     }
@@ -173,8 +173,8 @@ public class RoleFacade {
     {
         List<Integer> storeManagers = new ArrayList<>();
         synchronized (storeManagerLock) {
-            for (Integer memberId : userId_storeManagerMap.keySet()) {
-                for (StoreManager currStoreManager:userId_storeManagerMap.get(memberId)) {
+            for (Integer memberId : memberId_storeManagerMap.keySet()) {
+                for (StoreManager currStoreManager:memberId_storeManagerMap.get(memberId)) {
                     if (currStoreManager.getStore_ID() == storeID) {
                         storeManagers.add(currStoreManager.getMember_ID());
                     }
@@ -188,8 +188,8 @@ public class RoleFacade {
     {
         List<Integer> storeOwners = new ArrayList<>();
         synchronized (storeOwnerLock) {
-            for (Integer memberId : userId_storeOwnersMap.keySet()) {
-                for (StoreOwner currStoreOwner:userId_storeOwnersMap.get(memberId)) {
+            for (Integer memberId : memberId_storeOwnersMap.keySet()) {
+                for (StoreOwner currStoreOwner:memberId_storeOwnersMap.get(memberId)) {
                     if (currStoreOwner.getStore_ID() == storeID) {
                         storeOwners.add(currStoreOwner.getMember_ID());
                     }
