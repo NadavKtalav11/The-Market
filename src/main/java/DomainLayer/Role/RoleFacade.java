@@ -1,5 +1,7 @@
 package DomainLayer.Role;
 
+import com.fasterxml.jackson.databind.JsonSerializer;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -83,16 +85,16 @@ public class RoleFacade {
         return storeOwner != null && storeOwner.verifyStoreOwnerIsFounder();
     }
 
-    public void createStoreOwner(int member_ID, int store_ID, boolean founder)
+    public void createStoreOwner(int memberId, int store_ID, boolean founder, int nominatorMemberId)
     {
-        StoreOwner newStoreOwner = new StoreOwner(member_ID, store_ID, founder);
+        StoreOwner newStoreOwner = new StoreOwner(memberId, store_ID, founder, nominatorMemberId);
         addNewStoreOwnerToTheMarket(newStoreOwner);
     }
 
     public void createStoreManager(int member_ID, int store_ID,
-                                   boolean inventoryPermissions, boolean purchasePermissions)
+                                   boolean inventoryPermissions, boolean purchasePermissions, int nominatorMemberId)
     {
-        StoreManager newStoreManager = new StoreManager(member_ID, store_ID, inventoryPermissions, purchasePermissions);
+        StoreManager newStoreManager = new StoreManager(member_ID, store_ID, inventoryPermissions, purchasePermissions, nominatorMemberId);
         addNewStoreManagerToTheMarket(newStoreManager);
     }
 

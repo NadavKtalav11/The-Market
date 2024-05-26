@@ -105,12 +105,12 @@ public class Service_layer {
         }
     }
 
-    public Response<String> addProductToStore(int userId, int memberID, int storeID, String productName, int price, int quantity,
+    public Response<String> addProductToStore(int userId, int storeID, String productName, int price, int quantity,
                                   String description, String categoryStr) {
         logger.info("Adding product to store");
 
         try {
-            market.addProductToStore(userId, memberID, storeID, productName, price, quantity, description, categoryStr);
+            market.addProductToStore(userId, storeID, productName, price, quantity, description, categoryStr);
             return new Response<>("Product added successfully", "Product added to store successfully.");
         } catch (Exception e) {
             logger.error("Error occurred during adding product to store", e.getMessage(), e);
@@ -119,11 +119,11 @@ public class Service_layer {
     }
 
 
-    public Response<String> removeProductFromStore(int userId, int memberID, int storeID, String productName) {
+    public Response<String> removeProductFromStore(int userId, int storeID, String productName) {
         logger.info("Removing product from store");
 
         try {
-            market.removeProductFromStore(userId, memberID, storeID, productName);
+            market.removeProductFromStore(userId, storeID, productName);
             return new Response<>("Product removed successfully", "Product removed from store successfully.");
         } catch (Exception e) {
 
@@ -132,12 +132,12 @@ public class Service_layer {
         }
     }
 
-    public Response<String> updateProductInStore(int userId, int memberID, int storeID, String productName, int price, int quantity,
+    public Response<String> updateProductInStore(int userId, int storeID, String productName, int price, int quantity,
                                      String description, String categoryStr) {
 
         logger.info("Updating product in store");
         try {
-            market.updateProductInStore(userId, memberID, storeID, productName, price, quantity, description, categoryStr);
+            market.updateProductInStore(userId, storeID, productName, price, quantity, description, categoryStr);
             return new Response<>("Product updated successfully", "Product updated in store successfully.");
         } catch (Exception e) {
 
@@ -146,11 +146,11 @@ public class Service_layer {
         }
     }
 
-    public Response<String> appointStoreOwner(int userID, int firstMemberID, int secondMemberID, int storeID) {
+    public Response<String> appointStoreOwner(int nominatorUserId, String nominatedUsername, int storeID) {
         logger.info("Appoint store owner");
 
         try {
-            market.appointStoreOwner(userID, firstMemberID, secondMemberID, storeID);
+            market.appointStoreOwner(nominatorUserId, nominatedUsername, storeID);
             return new Response<>("Store owner appointed successfully", "Store owner appointed successfully.");
         } catch (Exception e) {
 
@@ -160,13 +160,13 @@ public class Service_layer {
         }
     }
 
-    public Response<String> appointStoreManager(int userId ,int firstMemberID, int secondMemberID, int storeID,
+    public Response<String> appointStoreManager(int nominatorUserId ,String nominatedUsername, int storeID,
                                     boolean inventoryPermissions, boolean purchasePermissions) {
 
         logger.info("Appoint store manager");
 
         try {
-            market.appointStoreManager(userId, firstMemberID, secondMemberID, storeID,
+            market.appointStoreManager(nominatorUserId, nominatedUsername, storeID,
                     inventoryPermissions, purchasePermissions);
             return new Response<>("Store manager appointed successfully", "Store manager appointed successfully.");
         } catch (Exception e) {
@@ -176,13 +176,13 @@ public class Service_layer {
         }
     }
 
-    public Response<String> updateStoreManagerPermissions(int userId, int firstMemberID, int secondMemberID, int storeID,
+    public Response<String> updateStoreManagerPermissions(int nominatorUserId ,String nominatedUsername, int storeID,
                                               boolean inventoryPermissions, boolean purchasePermissions) {
 
         logger.info("Updating store manager permissions");
 
         try {
-            market.updateStoreManagerPermissions(userId , firstMemberID, secondMemberID, storeID,
+            market.updateStoreManagerPermissions(nominatorUserId ,nominatedUsername, storeID,
                     inventoryPermissions, purchasePermissions);
             return new Response<>("Permissions updated successfully", "Store manager permissions updated successfully.");
         } catch (Exception e) {
