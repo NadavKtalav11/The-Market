@@ -299,12 +299,12 @@ public class Service_layer {
         }
     }
 
-    public Response<String> openStore(int user_ID)
+    public Response<String> openStore(int user_ID, String name, String description)
     {
         logger.info("Store owner stared store opening.");
 
         try {
-            market.openStore(user_ID);
+            market.openStore(user_ID, name, description);
             return new Response<>("Store opened successfully", "Store opened successfully.");
         } catch (Exception e) {
             logger.error("Error occurred during store owner was trying to open a store: {}", e.getMessage(), e);

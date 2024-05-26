@@ -56,7 +56,7 @@ public interface BridgeToTests {
 
     Response<String> closeStore(int user_ID, int store_ID);
 
-    Response<String> openStore(int user_ID);
+    Response<String> openStore(int user_ID, String name, String description);
 
     Response<String> addProductToBasket(String productName, int quantity, int storeId, int userId);
 

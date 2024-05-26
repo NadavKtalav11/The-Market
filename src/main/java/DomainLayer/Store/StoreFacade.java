@@ -37,9 +37,9 @@ public class StoreFacade {
         }
     }
 
-    public int openStore()
+    public int openStore(String name, String description)
     {
-        Store newStore = new Store(currentStoreID); //todo: add this to list in repository
+        Store newStore = new Store(currentStoreID, name, description); //todo: add this to list in repository
         synchronized (allStoresLock) {
             synchronized (storeIdLock) {
                 this.allStores.put(currentStoreID, newStore);

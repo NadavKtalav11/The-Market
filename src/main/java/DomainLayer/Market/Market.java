@@ -159,7 +159,7 @@ public class Market {
     }
 
 
-    public void openStore(int user_ID)throws Exception {
+    public void openStore(int user_ID, String name, String description)throws Exception {
         if (userFacade.isMember(user_ID)) {
             boolean succeeded = authorizationAndSecurityFacade.validateToken(authorizationAndSecurityFacade.getToken(user_ID));
             if (!succeeded) {
@@ -168,9 +168,14 @@ public class Market {
             }
         }
         if (userFacade.isUserLoggedIn(user_ID)) {
-            int store_ID = this.storeFacade.openStore();   //todo: compare to use case parameters
-            int member_ID = this.userFacade.getUsernameByUserID(user_ID);
-            this.roleFacade.createStoreOwner(member_ID, store_ID, true);
+            if(name != null && !name.equals("")) {
+                int store_ID = this.storeFacade.openStore(name, description);   
+                int member_ID = this.userFacade.getUsernameByUserID(user_ID);
+                this.roleFacade.createStoreOwner(member_ID, store_ID, true);
+            }
+            else {
+                throw new IllegalArgumentException("Illegal store name. Store name is empty.");
+            }
         } else {
             throw new IllegalArgumentException("The user is not logged in so he cannot open a store");
         }

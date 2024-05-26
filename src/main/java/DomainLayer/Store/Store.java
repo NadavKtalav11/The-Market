@@ -13,13 +13,14 @@ public class Store {
     private double rating;
     private int numOfRatings;
     private Map<Integer, Integer> receiptsIdsUserIds; //<receiptId, userId>
-
+    private String storeName;
+    private String description;
 
     private Object storeProductLock;
     private Object storeIdLock;
     private Object isOpenedLock;
 
-    Store(int store_ID)
+    Store(int store_ID, String storeName, String description)
     {
         this.store_ID = store_ID;
         this.isOpened = true;
@@ -29,6 +30,10 @@ public class Store {
         storeProductLock= new Object();
         isOpenedLock = new Object();
         this.receiptsIdsUserIds = new HashMap<>();
+        this.rating = 0;
+        this.numOfRatings = 0;
+        this.storeName = storeName;
+        this.description = description;
     }
 
 
