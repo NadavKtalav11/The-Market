@@ -146,11 +146,11 @@ public class Service_layer {
         }
     }
 
-    public Response<String> appointStoreOwner(int nominatorUserId, int nominatedUserId, int storeID) {
+    public Response<String> appointStoreOwner(int nominatorUserId, String nominatedUsername, int storeID) {
         logger.info("Appoint store owner");
 
         try {
-            market.appointStoreOwner(nominatorUserId, nominatedUserId, storeID);
+            market.appointStoreOwner(nominatorUserId, nominatedUsername, storeID);
             return new Response<>("Store owner appointed successfully", "Store owner appointed successfully.");
         } catch (Exception e) {
 
@@ -160,13 +160,13 @@ public class Service_layer {
         }
     }
 
-    public Response<String> appointStoreManager(int nominatorUserId ,int nominatedUserId, int storeID,
+    public Response<String> appointStoreManager(int nominatorUserId ,String nominatedUsername, int storeID,
                                     boolean inventoryPermissions, boolean purchasePermissions) {
 
         logger.info("Appoint store manager");
 
         try {
-            market.appointStoreManager(nominatorUserId, nominatedUserId, storeID,
+            market.appointStoreManager(nominatorUserId, nominatedUsername, storeID,
                     inventoryPermissions, purchasePermissions);
             return new Response<>("Store manager appointed successfully", "Store manager appointed successfully.");
         } catch (Exception e) {
@@ -176,13 +176,13 @@ public class Service_layer {
         }
     }
 
-    public Response<String> updateStoreManagerPermissions(int nominatorUserId ,int nominatedUserId, int storeID,
+    public Response<String> updateStoreManagerPermissions(int nominatorUserId ,String nominatedUsername, int storeID,
                                               boolean inventoryPermissions, boolean purchasePermissions) {
 
         logger.info("Updating store manager permissions");
 
         try {
-            market.updateStoreManagerPermissions(nominatorUserId ,nominatedUserId, storeID,
+            market.updateStoreManagerPermissions(nominatorUserId ,nominatedUsername, storeID,
                     inventoryPermissions, purchasePermissions);
             return new Response<>("Permissions updated successfully", "Store manager permissions updated successfully.");
         } catch (Exception e) {

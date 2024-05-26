@@ -74,21 +74,21 @@ public class RealToTest implements BridgeToTests {
         return service.updateProductInStore(userId, storeID, productName, price, quantity, description, categoryStr);
     }
 
-    public Response<String> appointStoreOwner(int nominatorUserId, int nominatedUserId, int storeID)
+    public Response<String> appointStoreOwner(int nominatorUserId, String nominatorUsername, int storeID)
     {
-        return service.appointStoreOwner(nominatorUserId, nominatedUserId, storeID);
+        return service.appointStoreOwner(nominatorUserId, nominatorUsername, storeID);
     }
 
-    public Response<String> appointStoreManager(int nominatorUserId,int nominatedUserId, int storeID,
+    public Response<String> appointStoreManager(int nominatorUserId, String nominatedUsername, int storeID,
                                          boolean inventoryPermissions, boolean purchasePermissions)
     {
-        return service.appointStoreManager(nominatorUserId, nominatedUserId, storeID, inventoryPermissions, purchasePermissions);
+        return service.appointStoreManager(nominatorUserId, nominatedUsername, storeID, inventoryPermissions, purchasePermissions);
     }
 
-    public Response<String> updateStoreManagerPermissions(int nominatorUserId,int nominatedUserId, int storeID,
+    public Response<String> updateStoreManagerPermissions(int nominatorUserId, String nominatedUsername, int storeID,
                                                    boolean inventoryPermissions, boolean purchasePermissions)
     {
-        return service.updateStoreManagerPermissions(nominatorUserId, nominatedUserId, storeID, inventoryPermissions, purchasePermissions);
+        return service.updateStoreManagerPermissions(nominatorUserId, nominatedUsername, storeID, inventoryPermissions, purchasePermissions);
     }
 
     public Response<List<String>> generalProductFilter(int userId, String categoryStr, List<String> keywords, int minPrice, int maxPrice, Double productMinRating,
