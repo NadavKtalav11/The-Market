@@ -3,18 +3,20 @@ package DomainLayer.User;
 import java.util.*;
 
 public class Cart {
-    Map<Integer, Basket> baskets = new HashMap<>(); //key = storeID
+    Map<Integer, Basket> baskets ; //key = storeID
     private int cartPrice;
-    Object basketsLock;
+    private Object basketsLock;
 
     public Cart() {
         this.cartPrice = 0;
         basketsLock = new Object();
+        baskets = new HashMap<>();
     }
 
     public int getCartPrice()
     {
-        return this.cartPrice;
+        calcCartTotal();
+        return cartPrice;
     }
 
     private void setCartPrice(int price)
@@ -34,6 +36,7 @@ public class Cart {
             }
             basket.addProduct(productName, quantity, totalPrice);
         }
+
     }
 
     public void modifyProductInCart(String productName, int quantity, int storeId, int totalPrice)
@@ -56,8 +59,7 @@ public class Cart {
         synchronized (basketsLock) {
             for (Integer storeId : baskets.keySet()) {
                 Basket basket = baskets.get(storeId);
-                basket.calcBasketPrice();
-                totalCartPrice += basket.getBasketPrice();
+                totalCartPrice = totalCartPrice + basket.getBasketPrice();
             }
         }
         setCartPrice(totalCartPrice);

@@ -92,8 +92,8 @@ public class Market {
     }
 
 
-    public void enterMarketSystem(){
-        userFacade.addUser();
+    public int enterMarketSystem(){
+        return userFacade.addUser();
     }
 
     public void register( int userId,String username, String password, String birthday,String country, String city, String address, String name) throws Exception {
