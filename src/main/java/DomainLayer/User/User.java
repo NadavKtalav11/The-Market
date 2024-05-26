@@ -45,6 +45,7 @@ public class User {
 
     public void Logout() {
         state.Logout();
+        state = new Guest();
     }
 
     public void exitMarketSystem() {
