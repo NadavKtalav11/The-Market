@@ -7,7 +7,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.zip.CheckedOutputStream;
 
-public class Member implements State{
+public class Member extends State{
 
     private int member_ID;
     private String name;
@@ -87,6 +87,7 @@ public class Member implements State{
         return password;
     }
 
+    public Map<Integer, Integer> getReceiptIdsAndStoreId(){return receiptIdsAndStoreId;}
 
     public int getMemberID()
     {
