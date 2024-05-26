@@ -3,23 +3,31 @@ import DomainLayer.Store.Store;
 import DomainLayer.Store.StoreFacade;
 import DomainLayer.Role.RoleFacade;
 
+import java.util.zip.CheckedOutputStream;
+
 public class Member implements State{
 
     private int member_ID;
+    private String name;
     private String username;
     private String password;
-    private String birthday; // todo think about the implementation
-    private String address; // todo think about the implementation
+    private String birthday;
+    private String country;
+    private String city;
+    private String address;
     private int productIdCounter;
     private boolean isLogin;
   
-    Member(int member_ID, String username, String password, String birthday, String address)
+    Member(int member_ID, String username, String password, String birthday,String country, String city, String address, String name)
     {
         this.member_ID = member_ID;
         this.username = username;
         this.password = password;
         this.birthday = birthday;
+        this.country = country;
+        this.city =  city;
         this.address = address;
+        this.name = name;
         this.productIdCounter = 0;
     }
 
@@ -30,13 +38,25 @@ public class Member implements State{
         isLogin = false;
     }
 
-    public void Exit(User user){
+    public void exitMarketSystem(User user){
         //todo understand what happens after user press x.
         user.Logout();
     }
 
     public String getUsername(){
         return username;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public String getCountry() {
+        return country;
+    }
+
+    public String getCity() {
+        return city;
     }
 
     public String getAddress() {
@@ -61,13 +81,9 @@ public class Member implements State{
         return this.member_ID;
     }
 
-    public String getUsername()
-    {
-        return this.username;
-    }
 
     @Override
-    public void Login(User user, String username, String password) throws Exception {
+    public void Login(User user, String username, String password, Member loginMember) throws Exception {
         throw new Exception("The user is already logged in");
 
     }
