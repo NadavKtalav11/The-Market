@@ -14,7 +14,6 @@ public class User {
     private String address;
     private String name;
     private Cart cart;
-    private Map<Integer, Integer> receiptIdsAndStoreId; //<receiptId, storeId>
 
     public User(int userID){
         this.userID = userID;
@@ -24,7 +23,6 @@ public class User {
         this.address = null;
         this.state = new Guest(); //default state
         this.cart = new Cart();
-        this.receiptIdsAndStoreId = new HashMap<>();
     }
 
     public int getUserID(){
@@ -67,7 +65,8 @@ public class User {
     }
 
     public void Login(String username, String password, Member loginMember) throws Exception {
-        state.Login(this,username,password, loginMember);
+        state.Login(username,password, loginMember);
+        setState(loginMember);
     }
     
 
@@ -126,6 +125,6 @@ public class User {
 
     public void addReceipt(Map<Integer, Integer> receiptIdAndStoreId)
     {
-        receiptIdsAndStoreId.putAll(receiptIdAndStoreId);
+        state.addReceipt(receiptIdAndStoreId);
     }
 }

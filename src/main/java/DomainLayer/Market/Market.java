@@ -60,25 +60,19 @@ public class Market {
     }
 
     public void payWithExternalPaymentService(int price,int creditCard, int cvv, int month, int year, String holderID, int userId, Map<Integer, Map<String, Integer>> productList) {
-        try {
-            Map<Integer,Integer> receiptIdStoreId = paymentServicesFacade.pay(price, creditCard, cvv, month, year, holderID, userId, productList); //<receiptId, storeId>
-            //todo add this to the map of the user.
-            //print (purchsde successed)
+        Map<Integer,Integer> receiptIdStoreId = paymentServicesFacade.pay(price, creditCard, cvv, month, year, holderID, userId, productList); //<receiptId, storeId>
+        //print notification (purchase successes) - later
+        //Add the receiptId and storeId to the user receipts map
+        userFacade.addReceiptToUser(receiptIdStoreId, userId);
+        //Add the receiptId and userId to the store receipts map
+        for (Integer receiptId : receiptIdStoreId.keySet()) {
+            storeFacade.addReceiptToStore(receiptIdStoreId.get(receiptId), receiptId, userId);
+        }
+    }
 
-            //Add the receiptId and storeId to the user receipts map
-            if (userFacade.isUserLoggedIn(userId))
-            {
-                userFacade.addReceiptToUser(receiptIdStoreId, userId);
-            }
-            //Add the receiptId and userId to the store receipts map
-            for (Integer receiptId : receiptIdStoreId.keySet()) {
-                storeFacade.addReceiptToStore(receiptIdStoreId.get(receiptId), receiptId, userId);
-            }
-        }
-        catch (Exception e){
-            //List<Integer> stores = this.userFacade.getCartStoresByUser(user_ID);
-            // returnStock(getPuchaseList(userId))
-        }
+    public void paymentFailed(int user_ID) throws Exception {
+        List<Integer> stores = this.userFacade.getCartStoresByUser(user_ID);
+        returnStock(getPurchaseList(user_ID));
     }
 
     public void returnStock(Map<Integer, Map<String, Integer>> products){

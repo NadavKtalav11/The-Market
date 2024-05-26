@@ -41,6 +41,13 @@ public class Service_layer {
             return new Response<>("Successful payment", "payment went successfully.");
 
         } catch (Exception e) {
+            try{
+                market.paymentFailed(userID);
+            }
+            catch (Exception exception) {
+                logger.error("Error occurred while cancel payment: {}", exception.getMessage(), exception);
+                return new Response<>(null, "Cancel payment failed: " + exception.getMessage());
+            }
             logger.error("Error occurred while paying: {}", e.getMessage(), e);
             return new Response<>(null, "Payment failed: " + e.getMessage());
         }
