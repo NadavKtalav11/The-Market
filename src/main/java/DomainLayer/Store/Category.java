@@ -6,7 +6,8 @@ public enum Category {
     FOOD,
     HOME,
     BOOKS,
-    TOYS;
+    TOYS,
+    DAIRY;
 
     public static Category fromString(String categoryStr) {
         if (categoryStr == null)
