@@ -134,7 +134,8 @@ public class RealToTest implements BridgeToTests {
 
     public Response<String> openStore(int user_ID)
     {
-        return service.openStore(user_ID);
+        //return service.openStore(user_ID);
+        return new Response<String>("");
     }
 
     public Response<String> addProductToBasket(String productName, int quantity, int storeId, int userId)

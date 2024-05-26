@@ -44,7 +44,7 @@ public class UserTest {
     public void testLogout() {
         user.setState(mockState);
         user.Logout();
-        verify(mockState).Logout(user);
+        verify(mockState).Logout();
     }
 
     @Test
