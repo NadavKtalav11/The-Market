@@ -5,17 +5,19 @@ import java.util.Map;
 public class Guest implements State{
 
     @Override
-    public void Logout(User user) {
+    public void Logout() {
         //todo throw exception
+        throw new IllegalArgumentException("only member can log out");
     }
 
     @Override
-    public void exitMarketSystem(User user) {
+    public void exitMarketSystem() {
         //todo think if we need to do here something
     }
 
     @Override
-    public void Login(String username, String password, Member loginMember) {
+    public void Login() {
+        //do nothing
         return;
     }
 

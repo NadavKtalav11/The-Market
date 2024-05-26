@@ -1,23 +1,19 @@
-package DomainLayer.AuthorizationsAndSecurity;
+package DomainLayer.AuthenticationAndSecurity;
 
-import DomainLayer.Market.Market;
-
-import java.security.NoSuchAlgorithmException;
-
-public class AuthorizationAndSecurityFacade {
+public class AuthenticationAndSecurityFacade {
 
 
     private PasswordEncryptor passwordEncryptor;
     private TokensService tokensService;
-    private static AuthorizationAndSecurityFacade instance;
+    private static AuthenticationAndSecurityFacade instance;
 
-    public synchronized static AuthorizationAndSecurityFacade getInstance() {
+    public synchronized static AuthenticationAndSecurityFacade getInstance() {
         if (instance == null) {
-            instance = new AuthorizationAndSecurityFacade();
+            instance = new AuthenticationAndSecurityFacade();
         }
         return instance;
     }
-    private AuthorizationAndSecurityFacade() {
+    private AuthenticationAndSecurityFacade() {
         passwordEncryptor = new PasswordEncryptor();
         tokensService = new TokensService();
     }

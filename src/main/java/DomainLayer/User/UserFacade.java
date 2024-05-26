@@ -155,7 +155,7 @@ public class UserFacade {
 
 
 
-    private void validateRegistrationDetails(String username, String password, String birthDate, String country, String city, String address, String name) throws Exception {
+    private void validateRegistrationDetails(String username, String password , String birthDate, String country, String city, String address, String name) throws Exception {
         if (username == null || password == null || birthDate == null || country ==null || city == null ||
                 address == null || name == null) {
             throw new Exception("All fields are required.");
@@ -178,10 +178,11 @@ public class UserFacade {
         if (loginMember == null){
             throw new Exception("Username or password is incorrect");
         }
-        else if (!(loginMember.getPassword() == password)){
+        /*else if (!loginMember.getPassword().equals(password)){
             throw new Exception("Username or password is incorrect");
-        }
-        getUserByID(userID).Login(username,password, loginMember);
+        }*/
+        loginMember.validatePassword(password);
+        getUserByID(userID).Login(loginMember);
 
     }
 

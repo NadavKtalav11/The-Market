@@ -1,5 +1,4 @@
 package ServiceLayer;
-import DomainLayer.AuthorizationsAndSecurity.TokensService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -200,7 +199,7 @@ public class Service_layer {
         }
     }
 
-    public Response<List<String>> generalProductFilter(int userId, String categoryStr, List<String> keywords, int minPrice, int maxPrice, Double productMinRating, List<String> productsFromSearch, Double storeMinRating)
+    public Response<List<String>> generalProductFilter(int userId, String categoryStr, List<String> keywords, Integer minPrice, Integer maxPrice, Double productMinRating, List<String> productsFromSearch, Double storeMinRating)
     {
         logger.info("Starting general product search filter in the system.");
 
@@ -306,12 +305,12 @@ public class Service_layer {
         }
     }
 
-    public Response<String> openStore(int user_ID)
+    public Response<String> openStore(int user_ID, String name, String description)
     {
         logger.info("Store owner stared store opening.");
 
         try {
-            market.openStore(user_ID);
+            market.openStore(user_ID, name, description);
             return new Response<>("Store opened successfully", "Store opened successfully.");
         } catch (Exception e) {
             logger.error("Error occurred during store owner was trying to open a store: {}", e.getMessage(), e);

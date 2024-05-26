@@ -44,10 +44,12 @@ public class User {
     public boolean isMember(){ return this.state.isMember();}
 
     public void Logout() {
-        state.Logout(this);
+        state.Logout();
     }
 
-    public void exitMarketSystem() {state.exitMarketSystem(this);}
+    public void exitMarketSystem() {
+        //state.exitMarketSystem(this);
+    }
 
     public void addToCart(String productName, int quantity, int storeId, int totalPrice)
     {
@@ -64,8 +66,7 @@ public class User {
         this.cart.calcCartTotal();
     }
 
-    public void Login(String username, String password, Member loginMember) throws Exception {
-        state.Login(username,password, loginMember);
+    public void Login(Member loginMember) throws Exception {
         setState(loginMember);
     }
     
