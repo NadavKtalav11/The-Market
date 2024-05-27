@@ -59,7 +59,9 @@ public class SupplyServicesFacade {
     public ExternalSupplyService getExternalSupplyServiceById(int externalSupplyServiceId){
         return externalSupplyService.get(externalSupplyServiceId);
     }
-
+    public void reset() {
+        externalSupplyService.clear();
+    }
 
 
    public boolean createShiftingDetails(int externalSupplyServiceId,String userName,String country,String city,String address){

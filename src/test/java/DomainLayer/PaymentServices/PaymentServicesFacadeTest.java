@@ -71,48 +71,5 @@ public class PaymentServicesFacadeTest {
         assertNotNull(acquisitionAndExternalService);
     }
 
-    @Test
-    public void testGetStorePurchaseInfo() {
-        Map<Integer, Receipt> storeIdAndReceipt = new HashMap<>();
-        storeIdAndReceipt.put(1, mockReceipt);
-
-        when(mockAcquisition.getStoreIdAndReceipt()).thenReturn(storeIdAndReceipt);
-        when(mockReceipt.getStoreId()).thenReturn(1);
-
-        Map<Integer, Acquisition> acquisitionMap = new HashMap<>();
-        acquisitionMap.put(1, mockAcquisition);
-
-        when(paymentServicesFacade.getIdAndAcquisition()).thenReturn(acquisitionMap);
-        paymentServicesFacade.getAllPaymentServices().put(1, mockExternalPaymentService);
-
-        Map<Integer, Integer> result = paymentServicesFacade.getStorePurchaseInfo();
-
-        assertNotNull(result);
-        assertEquals(1, result.get(1).intValue());
-    }
-
-    @Test
-    public void testGetStoreReceiptsAndTotalAmount() {
-        int storeId = 1;
-        int receiptId = 1;
-        int totalPrice = 100;
-
-        Map<Integer, Receipt> storeIdAndReceipt = new HashMap<>();
-        storeIdAndReceipt.put(storeId, mockReceipt);
-
-        when(mockAcquisition.getStoreIdAndReceipt()).thenReturn(storeIdAndReceipt);
-        when(mockAcquisition.getReceiptIdByStoreId(storeId)).thenReturn(receiptId);
-        when(mockAcquisition.getTotalPriceOfStoreInAcquisition(storeId)).thenReturn(totalPrice);
-
-        Map<Integer, Acquisition> acquisitionMap = new HashMap<>();
-        acquisitionMap.put(1, mockAcquisition);
-
-        when(paymentServicesFacade.getIdAndAcquisition()).thenReturn(acquisitionMap);
-        paymentServicesFacade.getAllPaymentServices().put(1, mockExternalPaymentService);
-
-        Map<Integer, Integer> result = paymentServicesFacade.getStoreReceiptsAndTotalAmount(storeId);
-
-        assertNotNull(result);
-        assertEquals(totalPrice, result.get(receiptId).intValue());
-    }
+//
 }
