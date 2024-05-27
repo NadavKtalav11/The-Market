@@ -17,6 +17,13 @@ public class Service_layer {
         this.market = Market.getInstance(); // Initialize the Market instance
     }
 
+    public Service_layer(int i) {
+        market = Market.getInstance();
+        Market market1 = market.newForTests();
+        market=market1;
+        // Initialize the Market instance
+    }
+
 
 
     public Response<String> init(String userName, String password,String birthday, String country, String city, String address, String name, int licensedDealerNumber,

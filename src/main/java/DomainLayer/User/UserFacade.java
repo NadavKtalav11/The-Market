@@ -34,6 +34,11 @@ public class UserFacade {
         return userFacadeInstance;
     }
 
+    public UserFacade newForTest(){
+        userFacadeInstance= new UserFacade();
+        return userFacadeInstance;
+    }
+
     public int getCurrentUserID (){
         return currentUserID;
     }

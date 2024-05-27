@@ -26,6 +26,11 @@ public class SupplyServicesFacade {
         return supplyServicesFacade;
     }
 
+    public SupplyServicesFacade newForTest(){
+        supplyServicesFacade= new SupplyServicesFacade();
+        return supplyServicesFacade;
+    }
+
     public Map<Integer, ExternalSupplyService>  getAllSupplyServices(){
         return this.externalSupplyService;
     }

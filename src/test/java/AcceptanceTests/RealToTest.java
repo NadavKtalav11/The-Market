@@ -12,7 +12,9 @@ public class RealToTest implements BridgeToTests {
 
     public RealToTest()
     {
-        this.service = new Service_layer();
+        //this.service = new Service_layer();
+        service = new Service_layer(1);
+
     }
 
     public Response<String> init(String userName, String password,String birthday, String country, String city, String address, String name, int licensedDealerNumber,

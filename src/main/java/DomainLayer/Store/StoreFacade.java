@@ -27,6 +27,11 @@ public class StoreFacade {
         return storeFacadeInstance;
     }
 
+    public StoreFacade newForTest(){
+        storeFacadeInstance= new StoreFacade();
+        return storeFacadeInstance;
+    }
+
     public void returnProductToStore(Map<String, Integer> products , int storeId){
         getStoreByID(storeId).returnProductToStore(products);
     }
