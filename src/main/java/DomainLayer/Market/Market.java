@@ -64,7 +64,9 @@ public class Market {
             throw e;  // Re-throwing the exception to be handled by the caller
         }
         String encrypted = authenticationAndSecurityFacade.encodePassword(password);
-        int systemMangerId = userFacade.registerSystemAdmin(userName, encrypted, birthday,country,city,address,name);
+        int firstUserID = enterMarketSystem();
+        int systemMangerId = userFacade.register(firstUserID,userName, encrypted, birthday,country,city,address,name);
+        //int systemMangerId = userFacade.registerSystemAdmin(userName, encrypted, birthday,country,city,address,name);
         systemManagerIds.add(systemMangerId);
         paymentServicesFacade.addExternalService(licensedDealerNumber,paymentServiceName,url);
         supplyServicesFacade.addExternalService(licensedDealerNumber1,supplyServiceName, countries, cities);

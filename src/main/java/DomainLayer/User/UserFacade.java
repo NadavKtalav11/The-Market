@@ -126,7 +126,7 @@ public class UserFacade {
     }
 
 
-    public void register(int userID, String username, String password, String birthday,String country, String city,String address, String name) throws Exception {
+    public int register(int userID, String username, String password, String birthday,String country, String city,String address, String name) throws Exception {
         if(allUsers.containsKey(userID)&& getUserByID(userID).isMember()) {
             throw new Exception("member cannot register");
         }
@@ -145,6 +145,7 @@ public class UserFacade {
                 currentMemberID++;
             }
             //todo pass the user to login page.
+            return memberId;
         }
     }
 
