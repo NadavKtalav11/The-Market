@@ -68,6 +68,7 @@ public class User {
     }
 
     public void Login(Member loginMember) throws Exception {
+        state.Login();
         setState(loginMember);
     }
     

@@ -63,8 +63,8 @@ public class Market {
             // Log the error or handle it as needed
             throw e;  // Re-throwing the exception to be handled by the caller
         }
-
-        int systemMangerId = userFacade.registerSystemAdmin(userName, password, birthday,country,city,address,name);
+        String encrypted = authenticationAndSecurityFacade.encodePassword(password);
+        int systemMangerId = userFacade.registerSystemAdmin(userName, encrypted, birthday,country,city,address,name);
         systemManagerIds.add(systemMangerId);
         paymentServicesFacade.addExternalService(licensedDealerNumber,paymentServiceName,url);
         supplyServicesFacade.addExternalService(licensedDealerNumber1,supplyServiceName, countries, cities);
