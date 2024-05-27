@@ -26,6 +26,14 @@ public class SupplyServicesFacade {
         return supplyServicesFacade;
     }
 
+    public Map<Integer, ExternalSupplyService>  getAllSupplyServices(){
+        return this.externalSupplyService;
+    }
+
+    public void removeExternalService(int licensedDealerNumber){
+        externalSupplyService.remove(licensedDealerNumber);
+    }
+
     public boolean addExternalService(int licensedDealerNumber, String supplyServiceName, HashSet<String> countries, HashSet<String> cities){
         synchronized (externalSupplyService) {
             int size_before = externalSupplyService.size();
