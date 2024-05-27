@@ -2,6 +2,7 @@ package AcceptanceTests.Users.Purchase;
 
 import AcceptanceTests.BridgeToTests;
 import AcceptanceTests.ProxyToTest;
+import ServiceLayer.Response;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
@@ -33,11 +34,12 @@ public class ReviewingStoresInfo {
         impl.closeStore(0, 3);
 
         List<Integer> allAvailableStores = new ArrayList<>();
+        allAvailableStores.add(0);
         allAvailableStores.add(1);
         allAvailableStores.add(2);
-        allAvailableStores.add(3);
 
-        assertTrue(impl.getInformationAboutStores(0).isSuccess());
-        assertIterableEquals(impl.getInformationAboutStores(0).getResult(), allAvailableStores);
+        Response<List<Integer>> res = impl.getInformationAboutStores(0);
+        assertTrue(res.isSuccess());
+        assertIterableEquals(res.getResult(), allAvailableStores);
     }
 }
