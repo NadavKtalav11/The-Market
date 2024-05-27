@@ -1,5 +1,7 @@
 package DomainLayer.AuthenticationAndSecurity;
 
+import DomainLayer.Store.StoreFacade;
+
 public class AuthenticationAndSecurityFacade {
 
 
@@ -16,6 +18,11 @@ public class AuthenticationAndSecurityFacade {
     private AuthenticationAndSecurityFacade() {
         passwordEncryptor = new PasswordEncryptor();
         tokensService = new TokensService();
+    }
+
+    public AuthenticationAndSecurityFacade newForTest(){
+        instance= new AuthenticationAndSecurityFacade();
+        return instance;
     }
     public String generateToken(int userId){
         return tokensService.generateToken(userId);

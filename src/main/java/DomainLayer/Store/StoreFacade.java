@@ -20,6 +20,11 @@ public class StoreFacade {
 
     }
 
+    public StoreFacade newForTest(){
+        storeFacadeInstance= new StoreFacade();
+        return storeFacadeInstance;
+    }
+
     public synchronized static StoreFacade getInstance() {
         if (storeFacadeInstance == null) {
             storeFacadeInstance = new StoreFacade();

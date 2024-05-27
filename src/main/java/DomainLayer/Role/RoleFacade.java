@@ -1,5 +1,6 @@
 package DomainLayer.Role;
 
+import DomainLayer.Store.StoreFacade;
 import com.fasterxml.jackson.databind.JsonSerializer;
 
 import java.util.ArrayList;
@@ -28,10 +29,17 @@ public class RoleFacade {
         storeOwnerLock = new Object();
     }
 
+
+
     public static synchronized RoleFacade getInstance() {
         if (roleFacadeInstance == null) {
             roleFacadeInstance = new RoleFacade();
         }
+        return roleFacadeInstance;
+    }
+
+    public RoleFacade newForTest(){
+        roleFacadeInstance= new RoleFacade();
         return roleFacadeInstance;
     }
 

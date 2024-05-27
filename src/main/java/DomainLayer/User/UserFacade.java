@@ -1,6 +1,8 @@
 package DomainLayer.User;
 
 
+import DomainLayer.Store.StoreFacade;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -25,6 +27,11 @@ public class UserFacade {
         membersLock = new Object();
         userIdLock = new Object();
         memberIdLock = new Object();
+    }
+
+    public UserFacade newForTest(){
+        userFacadeInstance= new UserFacade();
+        return userFacadeInstance;
     }
 
     public synchronized static UserFacade getInstance() {

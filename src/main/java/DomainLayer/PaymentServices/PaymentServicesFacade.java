@@ -1,6 +1,8 @@
 package DomainLayer.PaymentServices;
 
 
+import DomainLayer.Store.StoreFacade;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -17,6 +19,11 @@ public class PaymentServicesFacade {
         if (paymentServicesFacadeInstance == null) {
             paymentServicesFacadeInstance = new PaymentServicesFacade();
         }
+        return paymentServicesFacadeInstance;
+    }
+
+    public PaymentServicesFacade newForTest(){
+        paymentServicesFacadeInstance= new PaymentServicesFacade();
         return paymentServicesFacadeInstance;
     }
 

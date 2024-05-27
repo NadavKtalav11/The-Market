@@ -2,6 +2,7 @@ package DomainLayer.SupplyServices;
 
 
 import DomainLayer.Role.RoleFacade;
+import DomainLayer.Store.StoreFacade;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -23,6 +24,11 @@ public class SupplyServicesFacade {
         if (supplyServicesFacade == null) {
             supplyServicesFacade = new SupplyServicesFacade();
         }
+        return supplyServicesFacade;
+    }
+
+    public SupplyServicesFacade newForTest(){
+        supplyServicesFacade= new SupplyServicesFacade();
         return supplyServicesFacade;
     }
 
