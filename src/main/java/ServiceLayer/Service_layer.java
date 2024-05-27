@@ -25,6 +25,7 @@ public class Service_layer {
         try {
             market.init(userName, password, birthday,  country,  city,  address,  name, licensedDealerNumber, paymentServiceName,
                     url, licensedDealerNumber1, supplyServiceName, countries, cities);
+            logger.info("System initialized successfully.");
             return new Response<>("Initialization successful", "System initialized successfully.");
 
         } catch (Exception e) {
@@ -33,6 +34,59 @@ public class Service_layer {
         }
     }
 
+    public Response<String> addExternalPaymentService(int licensedDealerNumber,String paymentServiceName, String url, int systemMangerId) throws Exception {
+        logger.info("Trying to add a new external payment service");
+        try {
+            market.addExternalPaymentService(licensedDealerNumber, paymentServiceName, url, systemMangerId);
+            logger.info("Adding new external payment service have been done successfully.");
+            return new Response<>("Successful adding", "Adding new external payment service have been done successfully.");
+
+        } catch (Exception e) {
+            logger.error("Error occurred during the adding: {}", e.getMessage(), e);
+            return new Response<>(null, "Adding failed: " + e.getMessage());
+        }
+    }
+
+    public Response<String> removeExternalPaymentService(int  licensedDealerNumber, int systemMangerId){
+        logger.info("Trying to remove the payment service number: {}",licensedDealerNumber );
+        try {
+            market.removeExternalPaymentService(licensedDealerNumber,systemMangerId);
+            logger.info("Removing the external payment service number: {} have been done successfully.", licensedDealerNumber);
+            return new Response<>("Successful adding", "Adding new external payment service have been done successfully.");
+        }
+        catch (Exception e) {
+            logger.error("Error occurred during the removing: {}", e.getMessage(), e);
+            return new Response<>(null, "Eemoving failed: " + e.getMessage());
+        }
+
+    }
+
+    public Response<String> addExternalSupplyService(int licensedDealerNumber, String supplyServiceName, HashSet<String> countries, HashSet<String> cities, int systemManagerId) throws Exception {
+        logger.info("Trying to add a new external supply service");
+        try {
+            market.addExternalSupplyService(licensedDealerNumber, supplyServiceName, countries, cities, systemManagerId);
+            logger.info("Adding new external supply service has been done successfully.");
+            return new Response<>("Successful adding", "Adding new external supply service has been done successfully.");
+        } catch (Exception e) {
+            logger.error("Error occurred during the adding: {}", e.getMessage(), e);
+            return new Response<>(null, "Adding failed: " + e.getMessage());
+        }
+    }
+
+    public Response<String> removeExternalSupplyService(int licensedDealerNumber, int systemManagerId) {
+        logger.info("Trying to remove the supply service number: {}", licensedDealerNumber);
+        try {
+            market.removeExternalSupplyService(licensedDealerNumber, systemManagerId);
+            logger.info("Removing the external supply service number: {} has been done successfully.", licensedDealerNumber);
+            return new Response<>("Successful removal", "Removing external supply service has been done successfully.");
+        } catch (Exception e) {
+            logger.error("Error occurred during the removing: {}", e.getMessage(), e);
+            return new Response<>(null, "Removing failed: " + e.getMessage());
+        }
+    }
+
+
+
     public Response<String> payWithExternalPaymentService(int price,int cardNumber, int cvv, int month, int year, String holderID, int userID) {
         logger.info("Reaching for the payment service in order to complete the purchase.");
         try {
@@ -40,17 +94,11 @@ public class Service_layer {
             return new Response<>("Successful payment", "payment went successfully.");
 
         } catch (Exception e) {
-            try{
-                market.paymentFailed(userID);
-            }
-            catch (Exception exception) {
-                logger.error("Error occurred while cancel payment: {}", exception.getMessage(), exception);
-                return new Response<>(null, "Cancel payment failed: " + exception.getMessage());
-            }
             logger.error("Error occurred while paying: {}", e.getMessage(), e);
             return new Response<>(null, "Payment failed: " + e.getMessage());
         }
     }
+
 
     public Response<String> exitMarketSystem(int userID) {
         logger.info("Exiting market system");

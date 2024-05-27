@@ -20,17 +20,24 @@ public class PaymentServicesFacade {
         return paymentServicesFacadeInstance;
     }
 
+    public void removeExternalService(int paymentId){
+        allPaymentServices.remove(paymentId);
+    }
+
     public boolean addExternalService(int licensedDealerNumber, String paymentServiceName, String url){
             int size_before= allPaymentServices.size();
             ExternalPaymentService externalPaymentService = new ExternalPaymentService(licensedDealerNumber,paymentServiceName, url);
             allPaymentServices.put(licensedDealerNumber, externalPaymentService);
             return allPaymentServices.size()==size_before+1;
     }
+    public void clearPaymentServices() {
+        allPaymentServices.clear();
+    }
 
     public Map<Integer,Integer> pay(int price,int creditCard, int cvv, int month, int year, String holderID, int userId, Map<Integer, Map<String, Integer>> productList){
         ExternalPaymentService externalPaymentService = allPaymentServices.values().iterator().next();
-        boolean paymentSucceeded = externalPaymentService.payWithCard(price, creditCard, cvv, month, year, holderID, userId, productList, acquisitionIdCounter, receiptIdCounter);
-        if (paymentSucceeded)
+        Map<Integer,Integer> paymentSucceeded = externalPaymentService.payWithCard(price, creditCard, cvv, month, year, holderID, userId, productList, acquisitionIdCounter, receiptIdCounter);
+        if (paymentSucceeded!=null)
         {
             Acquisition acquisition = new Acquisition(acquisitionIdCounter, userId, price, holderID, creditCard, cvv, month, year, productList, receiptIdCounter);
             IdAndAcquisition.put(acquisitionIdCounter, acquisition);
