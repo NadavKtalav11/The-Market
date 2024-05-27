@@ -138,9 +138,12 @@ public class StoreFacade {
         return getStoreByID(storeID) != null;
     }
 
-    public void closeStore(int store_ID)
+    public void closeStore(int store_ID) throws Exception
     {
         Store storeToClose = this.getStoreByID(store_ID);
+        if (!storeToClose.getIsOpened()){
+            throw new Exception("store is already closed");
+        }
         storeToClose.closeStore();
     }
 
