@@ -760,8 +760,16 @@ public class Market {
         List<Integer> stores = this.storeFacade.getStores();
         for(Integer store_ID: stores)
         {
-            filteredProductNames.addAll(inStoreProductSearch(userId, productName, categoryStr, keywords,store_ID));
+            try {
+                filteredProductNames.addAll(inStoreProductSearch(userId, productName, categoryStr, keywords,store_ID));
+            }
+            catch (Exception e)
+            {
+                continue;
+            }
         }
+        if (filteredProductNames.isEmpty())
+            throw new IllegalArgumentException("Products with the given name doesnt exist in the market");
         return filteredProductNames;
     }
 
