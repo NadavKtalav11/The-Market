@@ -25,7 +25,7 @@ public class RealToTest implements BridgeToTests {
     }
 
     @Override
-    public Response<String> payWithExternalPaymentService(int price,int cardNumber, int cvv, int month, int year, String holderID, int userID)
+    public Response<String> payWithExternalPaymentService(int price,String cardNumber, int cvv, int month, int year, String holderID, int userID)
     {
         return service.payWithExternalPaymentService(price, cardNumber, cvv, month, year, holderID, userID);
 

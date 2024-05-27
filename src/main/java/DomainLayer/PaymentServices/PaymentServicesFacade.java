@@ -34,7 +34,7 @@ public class PaymentServicesFacade {
         allPaymentServices.clear();
     }
 
-    public Map<Integer,Integer> pay(int price,int creditCard, int cvv, int month, int year, String holderID, int userId, Map<Integer, Map<String, Integer>> productList){
+    public Map<Integer,Integer> pay(int price,String creditCard, int cvv, int month, int year, String holderID, int userId, Map<Integer, Map<String, Integer>> productList){
         ExternalPaymentService externalPaymentService = allPaymentServices.values().iterator().next();
         Map<Integer,Integer> paymentSucceeded = externalPaymentService.payWithCard(price, creditCard, cvv, month, year, holderID, userId, productList, acquisitionIdCounter, receiptIdCounter);
         if (paymentSucceeded!=null)

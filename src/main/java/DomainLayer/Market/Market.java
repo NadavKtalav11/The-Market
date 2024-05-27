@@ -141,7 +141,7 @@ public class Market {
     }
 
 
-    public void payWithExternalPaymentService(int price,int creditCard, int cvv, int month, int year, String holderID, int userId, Map<Integer, Map<String, Integer>> productList) throws Exception{
+    public void payWithExternalPaymentService(int price,String creditCard, int cvv, int month, int year, String holderID, int userId, Map<Integer, Map<String, Integer>> productList) throws Exception{
         try {
             if(price<= 0 || month> 12 || month<1 ||year < 2020 ||holderID==null||userId<0 ||productList==null) {
                 throw new Exception("There is a problem with the provided payment measure or details of the order.\n");

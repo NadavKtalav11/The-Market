@@ -55,7 +55,7 @@ public class PaymentServicesFacadeTest {
     @Test
     public void testPay() {
         int price = 100;
-        int creditCard = 123456789;
+        String creditCard = "123456789";
         int cvv = 123;
         int month = 12;
         int year = 2023;

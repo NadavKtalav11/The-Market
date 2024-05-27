@@ -34,7 +34,7 @@ public class PurhcaseHistoryInfo {
         impl.addProductToStore(0, 0, "Yogurt", 4, 12, "Yogurt 20%", "food");
         impl.addProductToStore(0, 0, "Shoes", 4, 12, "Nike Shoes", "clothing");
         impl.addProductToBasket("Milk", 2, 0, 0);
-        impl.payWithExternalPaymentService(100, 12345, 123, 12, 2000, "389082132", 1);
+        impl.payWithExternalPaymentService(100, "12345", 123, 12, 2000, "389082132", 1);
 
     }
 

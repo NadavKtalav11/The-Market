@@ -30,7 +30,7 @@ public class ProxyToTest implements BridgeToTests {
     }
 
     @Override
-    public Response<String> payWithExternalPaymentService(int price,int cardNumber, int cvv, int month, int year, String holderID, int userID)
+    public Response<String> payWithExternalPaymentService(int price,String cardNumber, int cvv, int month, int year, String holderID, int userID)
     {
         if (realServiceAdaptor != null)
             return realServiceAdaptor.payWithExternalPaymentService(price, cardNumber, cvv, month, year, holderID, userID);

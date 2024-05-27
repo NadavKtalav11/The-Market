@@ -66,7 +66,7 @@ public class Payment {
     @Test
     public void testPayWithExternalPaymentService_Success() throws Exception {
         int price = 100;
-        int cardNumber = 12345678;
+        String cardNumber = "12345678";
         int cvv = 123;
         int month = 12;
         int year = 2024;
@@ -100,7 +100,7 @@ public class Payment {
     @Test
     public void invalidPaymentServiceTest() throws Exception {
         int price = 100;
-        int cardNumber = 12345678;
+        String cardNumber = "12345678";
         int cvv = 123;
         int month = 12;
         int year = 1997; // Invalid year
@@ -136,7 +136,7 @@ public class Payment {
     public void noAvailableExternalPaymentServiceTest() {
 
         int price = 100;
-        int cardNumber = 12345678;
+        String cardNumber = "12345678";
         int cvv = 123;
         int month = 12;
         int year = 20244;
