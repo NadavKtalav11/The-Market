@@ -51,11 +51,17 @@ public class UserFacade {
 
     public int getUsernameByUserID(int userID)
     {
+        if(!allUsers.containsKey(userID)){
+            return -1;
+        }
         User user = getUserByID(userID);
         return ((Member)user.getState()).getMemberID();
     }
 
     public boolean isMember(int userId){
+        if(!allUsers.containsKey(userId)){
+            return false;
+        }
         return getUserByID(userId).isMember();
     }
 
@@ -121,8 +127,10 @@ public class UserFacade {
 
 
     public void register(int userID, String username, String password, String birthday,String country, String city,String address, String name) throws Exception {
-        if (getUserByID(userID).isMember()) {
-            throw new Exception("member cannot register");
+        if(allUsers.containsKey(userID)) {
+            if (getUserByID(userID).isMember()) {
+                throw new Exception("member cannot register");
+            }
         }
         else {
             validateRegistrationDetails(username,password,birthday,country,city,address,name);
