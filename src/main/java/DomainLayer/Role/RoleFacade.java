@@ -35,6 +35,11 @@ public class RoleFacade {
         return roleFacadeInstance;
     }
 
+    public RoleFacade newForTest(){
+        roleFacadeInstance= new RoleFacade();
+        return roleFacadeInstance;
+    }
+
 
     public boolean verifyStoreOwner(int storeID, int memberID){
         return getStoreOwner(storeID, memberID) != null;

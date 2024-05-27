@@ -20,6 +20,11 @@ public class PaymentServicesFacade {
         return paymentServicesFacadeInstance;
     }
 
+    public PaymentServicesFacade newForTest(){
+        paymentServicesFacadeInstance= new PaymentServicesFacade();
+        return paymentServicesFacadeInstance;
+    }
+
     public void removeExternalService(int paymentId){
         allPaymentServices.remove(paymentId);
     }

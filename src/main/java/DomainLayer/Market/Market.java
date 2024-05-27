@@ -40,6 +40,27 @@ public class Market {
         this.systemManagerIds = new HashSet<>();
     }
 
+    public Market newForTests(){
+        MarketInstance = new Market();
+        StoreFacade storeFacade1 =  storeFacade.newForTest();
+        UserFacade userFacade1 =  userFacade.newForTest();
+        RoleFacade roleFacade1 =  roleFacade.newForTest();
+        AuthenticationAndSecurityFacade authenticationAndSecurityFacade1 =  authenticationAndSecurityFacade.newForTest();
+        PaymentServicesFacade paymentServicesFacade1 =  paymentServicesFacade.newForTest();
+        SupplyServicesFacade supplyServicesFacade1 = supplyServicesFacade.newForTest();
+        storeFacade=storeFacade1;
+        userFacade = userFacade1;
+        roleFacade = roleFacade1;
+        authenticationAndSecurityFacade = authenticationAndSecurityFacade1;
+        paymentServicesFacade = paymentServicesFacade1;
+        supplyServicesFacade = supplyServicesFacade1;
+        return MarketInstance;
+
+
+    }
+
+
+
     public void init(String userName, String password,String birthday, String country, String city, String address, String name, int licensedDealerNumber,
                      String paymentServiceName, String url,
                      int licensedDealerNumber1, String supplyServiceName, HashSet<String> countries, HashSet<String> cities) throws Exception {

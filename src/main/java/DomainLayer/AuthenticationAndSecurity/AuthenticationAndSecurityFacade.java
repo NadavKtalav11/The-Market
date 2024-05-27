@@ -17,6 +17,12 @@ public class AuthenticationAndSecurityFacade {
         passwordEncryptor = new PasswordEncryptor();
         tokensService = new TokensService();
     }
+
+    public AuthenticationAndSecurityFacade newForTest(){
+        instance= new AuthenticationAndSecurityFacade();
+        return instance;
+    }
+
     public String generateToken(int userId){
         return tokensService.generateToken(userId);
     }
