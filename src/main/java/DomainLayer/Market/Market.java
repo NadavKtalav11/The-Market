@@ -598,7 +598,7 @@ public class Market {
             List<Integer> stores = this.userFacade.getCartStoresByUser(user_ID);
             for(Integer store_ID: stores)
             {
-                Map<String, List<Integer>> products = this.userFacade.getCartProductsByStoreAndUser(user_ID, store_ID);
+                Map<String, List<Integer>> products = this.userFacade.getCartProductsByStoreAndUser(store_ID, user_ID);
                 int quantity;
                 String userName = this.userFacade.getUserByID(user_ID).getName();
                 for(String productName: products.keySet()) {

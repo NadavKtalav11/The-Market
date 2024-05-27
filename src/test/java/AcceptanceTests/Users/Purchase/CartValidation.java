@@ -24,7 +24,8 @@ public class CartValidation {
         HashSet<String> countries = new HashSet<>();
         countries.add("Israel");
         HashSet<String> cities = new HashSet<>();
-        countries.add("Beer Sheva");
+        cities.add("Beer Sheva");
+        impl.enterMarketSystem();
         impl.init("KobiM", "123", "27/4/95", "Israel", "Beer Sheva", "Mesada", "kobi Menashe", 1, "payementService", "kobi@gmail.com", 2, "supplyService", countries, cities);
         impl.enterMarketSystem();
         impl.register(1, "user1", "fSijsd281", "12/12/00", "Israel", "Beer Sheva", "Mesada", "Toy");
@@ -34,15 +35,17 @@ public class CartValidation {
         impl.addProductToStore(1, 0, "Cheese", 15, 8, "Cheese 22%", "food");
         impl.addProductToStore(1, 0, "Yogurt", 4, 12, "Yogurt 20%", "food");
         impl.addProductToStore(1, 0, "Shoes", 4, 12, "Nike Shoes", "clothing");
-        impl.addProductToBasket("Milk", 2, 0, 1);
-        impl.addProductToBasket("Cheese", 4, 0, 1);
-        impl.addProductToBasket("Yogurt", 5, 0, 1);
+        impl.enterMarketSystem();
+        impl.addProductToBasket("Milk", 2, 0, 2);
+        impl.addProductToBasket("Cheese", 4, 0, 2);
+        impl.addProductToBasket("Yogurt", 5, 0, 2);
+
     }
 
     @Test
     public void successfulCheckingTest() {
-        assertTrue(impl.checkingCartValidationBeforePurchase(0, "Israel", "Beer Sheva", "Mesada").isSuccess());
-        assertEquals(impl.checkingCartValidationBeforePurchase(0, "Israel", "Beer Sheva", "Mesada").getResult(), 100);
+        assertTrue(impl.checkingCartValidationBeforePurchase(2, "Israel", "Beer Sheva", "Mesada").isSuccess());
+        assertEquals(impl.checkingCartValidationBeforePurchase(2, "Israel", "Beer Sheva", "Mesada").getResult(), 100);
 
     }
 

@@ -174,7 +174,7 @@ public class StoreFacade {
     }
 
     public int calculateTotalCartPriceAfterDiscount(int store_ID, Map<String, List<Integer>> products, int totalPriceBeforeDiscount) {
-        return 0; //In the future - check discount and calculate price by policies
+        return totalPriceBeforeDiscount; //In the future - check discount and calculate price by policies
     }
     public List<String> inStoreProductSearch(String productName, String categoryStr, List<String> keywords, int storeId)
     {
