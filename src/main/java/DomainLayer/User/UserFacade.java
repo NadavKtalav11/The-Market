@@ -171,6 +171,10 @@ public class UserFacade {
                 address == null || name == null) {
             throw new Exception("All fields are required.");
         }
+        else if (username.equals("") || password.equals("") || birthDate.equals("") || country.equals("") || city.equals("") ||
+                address.equals("") || name.equals("")) {
+            throw new Exception("All fields are required.");
+        }
         //checking if username is already exist
         synchronized (members) {
             for (Member member : members.values()) {

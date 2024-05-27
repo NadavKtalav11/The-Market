@@ -197,7 +197,10 @@ public class Market {
     }
 
     public void register( int userId,String username, String password, String birthday,String country, String city, String address, String name) throws Exception {
-        //check validation
+        //check password validation
+        if (password == null || password.equals("")){
+            throw new Exception("All fields are required.");
+        }
         String encryptedPassword = authenticationAndSecurityFacade.encodePassword(password);
         userFacade.register(userId, username,encryptedPassword,birthday,country,city,address,name);
         authenticationAndSecurityFacade.generateToken(userId);
