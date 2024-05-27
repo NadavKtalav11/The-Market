@@ -7,7 +7,7 @@ public class Acquisition {
     private int userId;
     private int totalPrice;
     private String holderId;
-    private int creditCardNumber;
+    private String creditCardNumber;
     private int cvv;
     private int month;
     private int year;
@@ -15,7 +15,7 @@ public class Acquisition {
     private Map<Integer, Receipt> storeIdAndReceipt= new HashMap<>(); //<storeId, Receipt>
 
     public Acquisition(int acquisitionId, int userId, int totalPrice, String holderId,
-                       int creditCardNumber, int cvv, int month, int year, Map<Integer, Map<String, Integer>> productList, int receiptIdCounter) {
+                       String creditCardNumber, int cvv, int month, int year, Map<Integer, Map<String, Integer>> productList, int receiptIdCounter) {
         this.acquisitionId = acquisitionId;
         this.userId = userId;
         this.totalPrice = totalPrice;

@@ -141,36 +141,28 @@ public class Market {
     }
 
 
-    public void payWithExternalPaymentService(int price,int creditCard, int cvv, int month, int year, String holderID, int userId, Map<Integer, Map<String, Integer>> productList) throws Exception{
-        try {
-            if(price<= 0 || month> 12 || month<1 ||year < 2020 ||holderID==null||userId<0 ||productList==null) {
-                throw new Exception("There is a problem with the provided payment measure or details of the order.\n");
-            }
-            if(paymentServicesFacade.getAllPaymentServices().size()<1){
-                throw new Exception("There is no available external payment system.\n");
-            }
-            Map<Integer,Integer> receiptIdStoreId = paymentServicesFacade.pay(price, creditCard, cvv, month, year, holderID, userId, productList); //<receiptId, storeId>
-            //todo add this to the map of the user.
-            //print (purchsde successed)
-
-            //Add the receiptId and storeId to the user receipts map
-            if (userFacade.isMember(userId))
-            {
-                userFacade.addReceiptToUser(receiptIdStoreId, userId);
-            }
-            //Add the receiptId and userId to the store receipts map
-            for (Integer receiptId : receiptIdStoreId.keySet()) {
-                storeFacade.addReceiptToStore(receiptIdStoreId.get(receiptId), receiptId, userId);
-            }
+    public void payWithExternalPaymentService(int price,String creditCard, int cvv, int month, int year, String holderID, int userId, Map<Integer, Map<String, Integer>> productList) throws Exception{
+        if(price<= 0 || month> 12 || month<1 ||year < 2020 ||holderID==null||userId<0 ||productList==null) {
+            throw new Exception("There is a problem with the provided payment measure or details of the order.\n");
         }
-        catch (Exception e){
+        if(paymentServicesFacade.getAllPaymentServices().size()<1){
+            throw new Exception("There is no available external payment system.\n");
+        }
+        Map<Integer,Integer> receiptIdStoreId = paymentServicesFacade.pay(price, creditCard, cvv, month, year, holderID, userId, productList); //<receiptId, storeId>
+        //print when implement notifications (purchase successes)
 
-            throw e;
+        //Add the receiptId and storeId to the user receipts map
+        if (userFacade.isMember(userId))
+        {
+            userFacade.addReceiptToUser(receiptIdStoreId, userId);
+        }
+        //Add the receiptId and userId to the store receipts map
+        for (Integer receiptId : receiptIdStoreId.keySet()) {
+            storeFacade.addReceiptToStore(receiptIdStoreId.get(receiptId), receiptId, userId);
         }
     }
 
     public void paymentFailed(int user_ID) throws Exception {
-        List<Integer> stores = this.userFacade.getCartStoresByUser(user_ID);
         returnStock(getPurchaseList(user_ID));
     }
 
@@ -197,7 +189,10 @@ public class Market {
     }
 
     public void register( int userId,String username, String password, String birthday,String country, String city, String address, String name) throws Exception {
-        //check validation
+        //check password validation
+        if (password == null || password.equals("")){
+            throw new Exception("All fields are required.");
+        }
         String encryptedPassword = authenticationAndSecurityFacade.encodePassword(password);
         userFacade.register(userId, username,encryptedPassword,birthday,country,city,address,name);
         authenticationAndSecurityFacade.generateToken(userId);
@@ -705,21 +700,41 @@ public class Market {
                     quantity = products.get(productName).get(0);
                     if(!this.storeFacade.checkQuantityAndPolicies(productName, quantity, store_ID, user_ID))
                         throw new Exception("Item is not available or policy conditions are not met");
-                    //todo remove comment after david
                     int availibleExteranlSupplyService =this.supplyServicesFacade.checkAvailableExternalSupplyService(country,city);
                     if(-1==availibleExteranlSupplyService)
                         throw new Exception("Unfortunately, there is no shipping for the user address");
-                    //todo remove items from stock
                     if(!supplyServicesFacade.createShiftingDetails(availibleExteranlSupplyService, userName,country,city,address)){
                         throw new Exception("Unfortunately, there was problem in creating the shifting");
                     }
                 }
+                //remove items from stock
+                removeUserCartFromStock(user_ID);
                 int storeTotalPriceBeforeDiscount = this.userFacade.getCartPriceByUser(user_ID);
                 int storeTotalPrice = this.storeFacade.calculateTotalCartPriceAfterDiscount(store_ID, products, storeTotalPriceBeforeDiscount);
                 totalPrice += storeTotalPrice;
             }
         }
         return totalPrice;
+    }
+
+    public void removeUserCartFromStock(int userId) throws Exception {
+        if (userFacade.getUserByID(userId) == null) {
+            throw new Exception("User not found.");
+        }
+        if (userFacade.getUserByID(userId).getCart() == null || userFacade.getUserByID(userId).getCart().isCartEmpty()) {
+            throw new Exception("User cart is empty, there's nothing to remove from stock.");
+        }
+        List<Integer> storeIds = userFacade.getUserByID(userId).getCart().getCartStores();
+        for (int storeId : storeIds) {
+            Map<String, Integer> products = userFacade.getUserByID(userId).getCart().getProductsQuantityByStore(storeId);
+            for (Map.Entry<String, Integer> entry : products.entrySet()) {
+                String productName = entry.getKey();
+                int quantity = entry.getValue();
+                for (int i = 0; i < quantity; i++) {
+                    storeFacade.removeProductFromStore(storeId, productName);
+                }
+            }
+        }
     }
 
 

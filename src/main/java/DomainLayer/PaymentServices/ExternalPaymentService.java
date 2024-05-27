@@ -19,7 +19,7 @@ public  class ExternalPaymentService {
     }
 
     // Abstract method for paying with a card
-    public Map<Integer, Integer> payWithCard(int price, int creditCard, int cvv, int month, int year, String holder, int id, Map<Integer, Map<String, Integer>> productList,
+    public Map<Integer, Integer> payWithCard(int price, String creditCard, int cvv, int month, int year, String holder, int id, Map<Integer, Map<String, Integer>> productList,
                                              int acquisitionIdCounter, int receiptIdCounter) {
         Acquisition acquisition = new Acquisition(acquisitionIdCounter, id, price, holder, creditCard, cvv, month, year, productList, receiptIdCounter);
         idAndAcquisition.put(acquisitionIdCounter, acquisition);

@@ -87,13 +87,20 @@ public class Service_layer {
 
 
 
-    public Response<String> payWithExternalPaymentService(int price,int cardNumber, int cvv, int month, int year, String holderID, int userID) {
+    public Response<String> payWithExternalPaymentService(int price,String cardNumber, int cvv, int month, int year, String holderID, int userID) {
         logger.info("Reaching for the payment service in order to complete the purchase.");
         try {
             market.payWithExternalPaymentService( price, cardNumber, cvv,  month,  year,  holderID,  userID, market.getPurchaseList(userID) );
             return new Response<>("Successful payment", "payment went successfully.");
 
         } catch (Exception e) {
+            try {
+                market.paymentFailed(userID);
+            }
+            catch (Exception exception){
+                logger.error("Error occurred while restore stock data: {}", e.getMessage(), e);
+                return new Response<>(null, "restore stock data failed: " + e.getMessage());
+            }
             logger.error("Error occurred while paying: {}", e.getMessage(), e);
             return new Response<>(null, "Payment failed: " + e.getMessage());
         }
