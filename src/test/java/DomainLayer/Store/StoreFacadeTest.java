@@ -118,7 +118,7 @@ public class StoreFacadeTest {
     }
 
     @Test
-    void testCloseStore() {
+    void testCloseStore() throws Exception {
         storeFacade.closeStore(0);
 
         verify(mockStore).closeStore();
