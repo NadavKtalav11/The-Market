@@ -94,6 +94,13 @@ public class Service_layer {
             return new Response<>("Successful payment", "payment went successfully.");
 
         } catch (Exception e) {
+            try {
+                market.paymentFailed(userID);
+            }
+            catch (Exception exception){
+                logger.error("Error occurred while restore stock data: {}", e.getMessage(), e);
+                return new Response<>(null, "restore stock data failed: " + e.getMessage());
+            }
             logger.error("Error occurred while paying: {}", e.getMessage(), e);
             return new Response<>(null, "Payment failed: " + e.getMessage());
         }
