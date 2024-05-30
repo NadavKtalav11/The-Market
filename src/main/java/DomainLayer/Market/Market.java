@@ -6,6 +6,7 @@ import DomainLayer.Role.RoleFacade;
 import DomainLayer.Store.StoreFacade;
 import DomainLayer.User.UserFacade;
 import DomainLayer.SupplyServices.SupplyServicesFacade;
+import Util.ExceptionsEnum;
 
 import java.util.*;
 
@@ -233,7 +234,7 @@ public class Market {
             boolean succeeded = authenticationAndSecurityFacade.validateToken(authenticationAndSecurityFacade.getToken(memberId));
             if (!succeeded) {
                 logout(userId);
-                throw new Exception("your session was over please log in again");
+                throw new Exception(ExceptionsEnum.sessionOver.toString());
             }
         }
         boolean canAddToBasket = storeFacade.checkQuantityAndPolicies(productName, quantity, storeId, userId);
@@ -255,7 +256,7 @@ public class Market {
             boolean succeeded = authenticationAndSecurityFacade.validateToken(authenticationAndSecurityFacade.getToken(memberId));
             if (!succeeded) {
                 logout(userId);
-                throw new Exception("your session was over please log in again");
+                throw new Exception(ExceptionsEnum.sessionOver.toString());
             }
         }
         boolean canRemoveFromBasket = userFacade.checkIfCanRemove(productName, storeId, userId);
@@ -276,7 +277,7 @@ public class Market {
             boolean succeeded = authenticationAndSecurityFacade.validateToken(authenticationAndSecurityFacade.getToken(memberId));
             if (!succeeded) {
                 logout(user_ID);
-                throw new Exception("your session was over please log in again");
+                throw new Exception(ExceptionsEnum.sessionOver.toString());
             }
         }
         if (userFacade.isUserLoggedIn(user_ID)) {
@@ -300,7 +301,7 @@ public class Market {
                 boolean succeeded = authenticationAndSecurityFacade.validateToken(authenticationAndSecurityFacade.getToken(userId));
                 if (!succeeded) {
                     logout(userId);
-                    throw new Exception("your session was over please log in again");
+                    throw new Exception(ExceptionsEnum.sessionOver.toString());
                 }
                 int memberId = userFacade.getMemberIdByUserId(userId);
                 if (storeFacade.getStoreByID(storeId) != null){
@@ -312,13 +313,13 @@ public class Market {
                         throw new Exception("User has no inventory permissions");
                     }
                 } else {
-                    throw new Exception("Store does not exist");
+                    throw new Exception(ExceptionsEnum.storeNotExist.toString());
                 }
             } else {
                 throw new Exception("User has no inventory permissions");
             }
         } else {
-            throw new Exception("User does not exist");
+            throw new Exception(ExceptionsEnum.userNotExist.toString());
         }
     }
 
@@ -328,7 +329,7 @@ public class Market {
                 boolean succeeded = authenticationAndSecurityFacade.validateToken(authenticationAndSecurityFacade.getToken(userId));
                 if (!succeeded) {
                     logout(userId);
-                    throw new Exception("your session was over please log in again");
+                    throw new Exception(ExceptionsEnum.sessionOver.toString());
                 }
                 int memberId = userFacade.getMemberIdByUserId(userId);
                 if (storeFacade.getStoreByID(storeId) != null) {
@@ -340,13 +341,13 @@ public class Market {
                         throw new Exception("User has no inventory permissions");
                     }
                 } else {
-                    throw new Exception("Store does not exist");
+                    throw new Exception(ExceptionsEnum.storeNotExist.toString());
                 }
             } else {
                 throw new Exception("User has no inventory permissions");
             }
         } else {
-            throw new Exception("User does not exist");
+            throw new Exception(ExceptionsEnum.userNotExist.toString());
         }
     }
 
@@ -357,7 +358,7 @@ public class Market {
                 boolean succeeded = authenticationAndSecurityFacade.validateToken(authenticationAndSecurityFacade.getToken(userId));
                 if (!succeeded) {
                     logout(userId);
-                    throw new Exception("your session was over please log in again");
+                    throw new Exception(ExceptionsEnum.sessionOver.toString());
                 }
                 int memberId = userFacade.getMemberIdByUserId(userId);
                 if (storeFacade.getStoreByID(storeId) != null) {
@@ -369,13 +370,13 @@ public class Market {
                         throw new Exception("User has no inventory permissions");
                     }
                 } else {
-                    throw new Exception("Store does not exist");
+                    throw new Exception(ExceptionsEnum.storeNotExist.toString());
                 }
             } else {
                 throw new Exception("User has no inventory permissions");
             }
         } else {
-            throw new Exception("User does not exist");
+            throw new Exception(ExceptionsEnum.userNotExist.toString());
         }
     }
 
@@ -385,7 +386,7 @@ public class Market {
                 boolean succeeded = authenticationAndSecurityFacade.validateToken(authenticationAndSecurityFacade.getToken(nominatorUserId));
                 if (!succeeded) {
                     logout(nominatorUserId);
-                    throw new Exception("your session was over please log in again");
+                    throw new Exception(ExceptionsEnum.sessionOver.toString());
                 }
                 int nominatorMemberID = userFacade.getMemberIdByUserId(nominatorUserId);
                 if (storeFacade.getStoreByID(storeId) != null) {
@@ -400,13 +401,13 @@ public class Market {
                         throw new Exception("User has no permission to appoint store owner");
                     }
                 } else {
-                    throw new Exception("Store does not exist");
+                    throw new Exception(ExceptionsEnum.storeNotExist.toString());
                 }
             } else {
                 throw new Exception("User has no permission to appoint store owner");
             }
         } else {
-            throw new Exception("User does not exist");
+            throw new Exception(ExceptionsEnum.userNotExist.toString());
         }
     }
 
@@ -417,7 +418,7 @@ public class Market {
                 boolean succeeded = authenticationAndSecurityFacade.validateToken(authenticationAndSecurityFacade.getToken(nominatorUserId));
                 if (!succeeded) {
                     logout(nominatorUserId);
-                    throw new Exception("your session was over please log in again");
+                    throw new Exception(ExceptionsEnum.sessionOver.toString());
                 }
                 int nominatorMemberID = userFacade.getMemberIdByUserId(nominatorUserId);
                 if (storeFacade.getStoreByID(storeId) != null) {
@@ -432,13 +433,13 @@ public class Market {
                         throw new Exception("User has no permission to appoint store manager");
                     }
                 } else {
-                    throw new Exception("Store does not exist");
+                    throw new Exception(ExceptionsEnum.storeNotExist.toString());
                 }
             } else {
                 throw new Exception("User has no permission to appoint store manager");
             }
         } else {
-            throw new Exception("User does not exist");
+            throw new Exception(ExceptionsEnum.userNotExist.toString());
         }
     }
 
@@ -449,7 +450,7 @@ public class Market {
                 boolean succeeded = authenticationAndSecurityFacade.validateToken(authenticationAndSecurityFacade.getToken(nominatorUserId));
                 if (!succeeded) {
                     logout(nominatorUserId);
-                    throw new Exception("your session was over please log in again");
+                    throw new Exception(ExceptionsEnum.sessionOver.toString());
                 }
                 int nominatorMemberID = userFacade.getMemberIdByUserId(nominatorUserId);
                 if (storeFacade.getStoreByID(storeId) != null) {
@@ -464,13 +465,13 @@ public class Market {
                         throw new Exception("User has no permission to update store manager permissions");
                     }
                 } else {
-                    throw new Exception("Store does not exist");
+                    throw new Exception(ExceptionsEnum.storeNotExist.toString());
                 }
             } else {
                 throw new Exception("User has no permission to update store manager permissions");
             }
         } else {
-            throw new Exception("User does not exist");
+            throw new Exception(ExceptionsEnum.userNotExist.toString());
         }
     }
 
@@ -481,7 +482,7 @@ public class Market {
             boolean succeeded = authenticationAndSecurityFacade.validateToken(authenticationAndSecurityFacade.getToken(memberId));
             if (!succeeded) {
                 logout(user_ID);
-                throw new Exception("your session was over please log in again");
+                throw new Exception(ExceptionsEnum.sessionOver.toString());
             }
         }
         if (userFacade.isUserLoggedIn(user_ID)) {
@@ -494,7 +495,7 @@ public class Market {
                     //todo: add function which send notification to all store roles (notification component).
                     //todo: update use-case parameters
                 } else {
-                    throw new Exception("Store does not exist");
+                    throw new Exception(ExceptionsEnum.storeNotExist.toString());
                 }
             } else {
                 throw new Exception("Only store founder can close a store");
@@ -510,7 +511,7 @@ public class Market {
             boolean succeeded = authenticationAndSecurityFacade.validateToken(authenticationAndSecurityFacade.getToken(memberId));
             if (!succeeded) {
                 logout(user_ID);
-                throw new Exception("your session was over please log in again");
+                throw new Exception(ExceptionsEnum.sessionOver.toString());
             }
         }
         Map<Integer, String> information = null;
@@ -521,7 +522,7 @@ public class Market {
                 if (storeFacade.verifyStoreExist(store_ID)) {
                     information = roleFacade.getInformationAboutStoreRoles(store_ID);
                 }else {
-                    throw new Exception("Store does not exist");
+                    throw new Exception(ExceptionsEnum.storeNotExist.toString());
                 }
             } else {
                 throw new IllegalArgumentException("Only store owner get information about his store workers");
@@ -538,7 +539,7 @@ public class Market {
             boolean succeeded = authenticationAndSecurityFacade.validateToken(authenticationAndSecurityFacade.getToken(memberId));
             if (!succeeded) {
                 logout(user_ID);
-                throw new Exception("your session was over please log in again");
+                throw new Exception(ExceptionsEnum.sessionOver.toString());
             }
         }
         Map<Integer, List<Integer>> managersAuthorizations;
@@ -549,7 +550,7 @@ public class Market {
                 if (storeFacade.verifyStoreExist(store_ID)) {
                     managersAuthorizations = roleFacade.getStoreManagersAuthorizations(store_ID);
                 }else {
-                    throw new Exception("Store does not exist");
+                    throw new Exception(ExceptionsEnum.storeNotExist.toString());
                 }
             } else {
                 throw new IllegalArgumentException("Only store owner can get authorizations of his store managers");
@@ -570,7 +571,7 @@ public class Market {
             boolean succeeded = authenticationAndSecurityFacade.validateToken(authenticationAndSecurityFacade.getToken(memberId));
             if (!succeeded) {
                 logout(userId);
-                throw new Exception("your session was over please log in again");
+                throw new Exception(ExceptionsEnum.sessionOver.toString());
             }
         }
         Map<Integer, Map<String, Integer>> purchaseList = new HashMap<>();
@@ -593,7 +594,7 @@ public class Market {
             boolean succeeded = authenticationAndSecurityFacade.validateToken(authenticationAndSecurityFacade.getToken(memberId));
             if (!succeeded) {
                 logout(user_ID);
-                throw new Exception("your session was over please log in again");
+                throw new Exception(ExceptionsEnum.sessionOver.toString());
             }
         }
         List<Integer> openedStores = storeFacade.getInformationAboutOpenStores(); // open stores available for everyone
@@ -623,7 +624,7 @@ public class Market {
             boolean succeeded = authenticationAndSecurityFacade.validateToken(authenticationAndSecurityFacade.getToken(memberId));
             if (!succeeded) {
                 logout(userId);
-                throw new Exception("your session was over please log in again");
+                throw new Exception(ExceptionsEnum.sessionOver.toString());
             }
         }
         if (quantity == 0)
@@ -650,7 +651,7 @@ public class Market {
             boolean succeeded = authenticationAndSecurityFacade.validateToken(authenticationAndSecurityFacade.getToken(memberId));
             if (!succeeded) {
                 logout(user_ID);
-                throw new Exception("your session was over please log in again");
+                throw new Exception(ExceptionsEnum.sessionOver.toString());
             }
         }
         if (userFacade.isUserLoggedIn(user_ID)) {
@@ -677,7 +678,7 @@ public class Market {
             int memberId = userFacade.getMemberIdByUserId(user_ID);
             boolean succeeded = authenticationAndSecurityFacade.validateToken(authenticationAndSecurityFacade.getToken(memberId));if (!succeeded) {
                 logout(user_ID);
-                throw new Exception("your session was over please log in again");
+                throw new Exception(ExceptionsEnum.sessionOver.toString());
             }
         }
         Map<Integer, Integer> storeReceiptsAndTotalAmount = new HashMap<>();
@@ -688,7 +689,7 @@ public class Market {
                 if (storeFacade.verifyStoreExist(store_ID)) {
                     storeReceiptsAndTotalAmount = paymentServicesFacade.getStoreReceiptsAndTotalAmount(store_ID);
                 }else {
-                    throw new Exception("Store does not exist");
+                    throw new Exception(ExceptionsEnum.storeNotExist.toString());
                 }
             } else {
                 throw new IllegalArgumentException("Only store owner can get information of his purchases");
@@ -706,7 +707,7 @@ public class Market {
             int memberId = userFacade.getMemberIdByUserId(user_ID);
             boolean succeeded = authenticationAndSecurityFacade.validateToken(authenticationAndSecurityFacade.getToken(memberId));if (!succeeded) {
                 logout(user_ID);
-                throw new Exception("your session was over please log in again");
+                throw new Exception(ExceptionsEnum.sessionOver.toString());
             }
         }
         int totalPrice = 0;
@@ -767,7 +768,7 @@ public class Market {
             boolean succeeded = authenticationAndSecurityFacade.validateToken(authenticationAndSecurityFacade.getToken(memberId));
             if (!succeeded) {
                 logout(userId);
-                throw new Exception("your session was over please log in again");
+                throw new Exception(ExceptionsEnum.sessionOver.toString());
             }
         }
         if (categoryStr != null && !storeFacade.checkCategory(categoryStr))
@@ -790,7 +791,7 @@ public class Market {
             boolean succeeded = authenticationAndSecurityFacade.validateToken(authenticationAndSecurityFacade.getToken(memberId));
             if (!succeeded) {
                 logout(userId);
-                throw new Exception("your session was over please log in again");
+                throw new Exception(ExceptionsEnum.sessionOver.toString());
             }
         }
         List<String> filteredProductNames = new ArrayList<>();
@@ -817,7 +818,7 @@ public class Market {
             boolean succeeded = authenticationAndSecurityFacade.validateToken(authenticationAndSecurityFacade.getToken(memberId));
             if (!succeeded) {
                 logout(userId);
-                throw new Exception("your session was over please log in again");
+                throw new Exception(ExceptionsEnum.sessionOver.toString());
             }
         }
         List<String> filteredProductNames = null;
@@ -847,7 +848,7 @@ public class Market {
             boolean succeeded = authenticationAndSecurityFacade.validateToken(authenticationAndSecurityFacade.getToken(memberId));
             if (!succeeded) {
                 logout(userId);
-                throw new Exception("your session was over please log in again");
+                throw new Exception(ExceptionsEnum.sessionOver.toString());
             }
         }
         List<String> filteredProductNames = new ArrayList<>();
@@ -872,7 +873,7 @@ public class Market {
             boolean succeeded = authenticationAndSecurityFacade.validateToken(authenticationAndSecurityFacade.getToken(memberId));
             if (!succeeded) {
                 logout(userId);
-                throw new IllegalArgumentException("your session was over please log in again");
+                throw new IllegalArgumentException(ExceptionsEnum.sessionOver.toString());
             }
         }
     }

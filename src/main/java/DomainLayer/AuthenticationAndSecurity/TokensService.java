@@ -4,8 +4,10 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.security.Keys;
 
 import java.nio.charset.Charset;
+import java.security.Key;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.util.*;
@@ -41,12 +43,13 @@ public class TokensService {
 
     public String generateToken(int memberId) {
         long now = System.currentTimeMillis();
+        Key key = Keys.hmacShaKeyFor(SECRET_KEY.getBytes());
         Date expiryDate = new Date(now + TOKEN_VALIDITY_DURATION);
         String currToken = Jwts.builder()
-                .setSubject(String.valueOf(memberId))
-                .setIssuedAt(new Date(now))
-                .setExpiration(expiryDate)
-                .signWith(SignatureAlgorithm.HS256, SECRET_KEY)
+                .subject(String.valueOf(memberId))
+                .issuedAt(new Date(now))
+                .expiration(expiryDate)
+                .signWith(key)
                 .compact();
         synchronized (tokensLock) {
             tokens.put(memberId, currToken);
