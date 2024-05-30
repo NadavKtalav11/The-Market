@@ -8,11 +8,12 @@ import java.util.Objects;
 
 public class UserFacade {
     private static UserFacade userFacadeInstance;
-    Map<Integer, User> allUsers = new HashMap<Integer, User>(); //userID-User
+    //Map<Integer, User> allUsers = new HashMap<Integer, User>(); //userID-User
+    UserRepository<User> userRepository;
     Map<Integer, Member> members = new HashMap<>(); //memberID-Member
     private int currentUserID;
     private int currentMemberID;
-    Object allUserLock;
+    //Object allUserLock;
     Object membersLock;
     Object userIdLock;
     Object memberIdLock;
@@ -21,10 +22,11 @@ public class UserFacade {
     {
         this.currentUserID = 0;
         this.currentMemberID = 0;
-        allUserLock = new Object();
+        //allUserLock = new Object();
         membersLock = new Object();
         userIdLock = new Object();
         memberIdLock = new Object();
+        userRepository = new UserMemoryRepository<>();
     }
 
     public synchronized static UserFacade getInstance() {
@@ -44,9 +46,7 @@ public class UserFacade {
     }
 
     public User getUserByID(int userID){
-        synchronized (allUserLock) {
-            return allUsers.get(userID);
-        }
+        return userRepository.get(userID);
     }
 
     public boolean isUserLoggedIn(int userID){
@@ -54,9 +54,11 @@ public class UserFacade {
         return getUserByID(userID).isLoggedIn();
     }
 
+
+
     public int getUsernameByUserID(int userID)
     {
-        if(!allUsers.containsKey(userID)){
+        if(!userRepository.contain(userID)){
             return -1;
         }
         User user = getUserByID(userID);
@@ -64,7 +66,7 @@ public class UserFacade {
     }
 
     public boolean isMember(int userId){
-        if(!allUsers.containsKey(userId)){
+        if(!userRepository.contain(userId)){
             return false;
         }
         return getUserByID(userId).isMember();
@@ -81,11 +83,9 @@ public class UserFacade {
     }
 
     public void exitMarketSystem(int userID){
-        synchronized (allUserLock) {
-            allUsers.get(userID).exitMarketSystem();
-            allUsers.remove(userID); //todo do i need to remove the user from the list of users ?
 
-        }
+        userRepository.get(userID).exitMarketSystem();
+        userRepository.remove(userID); //todo do i need to remove the user from the list of users ?
     }
 
 
@@ -94,9 +94,8 @@ public class UserFacade {
         synchronized (userIdLock) {
             userId = currentUserID;
         }
-        synchronized (allUserLock) {
-            allUsers.put(currentUserID, new User(currentUserID));
-        }
+        userRepository.add(currentUserID, new User(currentUserID));
+
         synchronized (userIdLock) {
             currentUserID++;
         }
@@ -132,7 +131,7 @@ public class UserFacade {
 
 
     public int register(int userID, String username, String password, String birthday,String country, String city,String address, String name) throws Exception {
-        if(allUsers.containsKey(userID)&& getUserByID(userID).isMember()) {
+        if(userRepository.contain(userID)&& getUserByID(userID).isMember()) {
             throw new Exception("member cannot register");
         }
         else {
@@ -252,6 +251,6 @@ public class UserFacade {
 
     public void addReceiptToUser(Map<Integer, Integer> receiptIdAndStoreId, int userId)
     {
-        allUsers.get(userId).addReceipt(receiptIdAndStoreId);
+        userRepository.get(userId).addReceipt(receiptIdAndStoreId);
     }
 }

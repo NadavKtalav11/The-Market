@@ -34,11 +34,11 @@ public class UserFacadeTest {
 
         // Reset the UserFacade singleton for each test
         userFacade = UserFacade.getInstance();
-        userFacade.allUsers.clear();
+        userFacade.userRepository.clear();
         userFacade.members.clear();
 
         // Insert the mockUser into the UserFacade for userId = 1
-        userFacade.allUsers.put(1, mockUser);  // Assuming userId = 1
+        userFacade.userRepository.add(1, mockUser);  // Assuming userId = 1
     }
 
     @Test
