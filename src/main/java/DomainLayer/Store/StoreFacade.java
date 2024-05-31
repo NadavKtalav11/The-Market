@@ -69,7 +69,7 @@ public class StoreFacade {
         Store store = getStoreByID(storeId);
         if (!store.checkProductExists(productName))
         {
-            throw new IllegalArgumentException(ExceptionsEnum.productNotExist.toString());
+            throw new IllegalArgumentException(ExceptionsEnum.productNotExistInStore.toString());
         }
     }
 

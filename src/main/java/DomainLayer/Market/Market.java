@@ -816,7 +816,8 @@ public class Market {
             }
         }
         if (filteredProductNames.isEmpty())
-            throw new IllegalArgumentException("Products with the given name doesnt exist in the market");
+            throw new IllegalArgumentException(ExceptionsEnum.productNotExistInMarket.toString());
+
         return filteredProductNames;
     }
 
