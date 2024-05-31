@@ -72,7 +72,7 @@ public class CartValidation {
             assertFalse(response.isSuccess());
         });
 
-        assertEquals(ExceptionsEnum.productNotExist.toString(), exception.getMessage());
+        assertEquals(ExceptionsEnum.productNotExistInStore.toString(), exception.getMessage());
     }
 
     @Test

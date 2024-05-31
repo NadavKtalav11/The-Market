@@ -23,7 +23,7 @@ package Util;
                 return "User does not exist";
             }
         },
-        productNotExist{
+        productNotExistInStore{
             public String toString() {
                 return "product does not exist in store";
             }
@@ -48,6 +48,11 @@ package Util;
         },
         createShiftingError{
             public String toString() {return "Unfortunately, there was problem in creating the shifting";}
+        },
+        productNotExistInMarket{
+            public String toString() {
+                return "product does not exist in market";
+            }
         },
 
     }
