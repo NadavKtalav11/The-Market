@@ -50,10 +50,15 @@ public class CartValidation {
     }
 
     @Test
-    public void productNotExistTest() {
+    public void productQuantityUnavailableTest() {
         impl.addProductToBasket("Shoes", 13, 0, 1);
         assertFalse(impl.checkingCartValidationBeforePurchase(0, "Israel", "Beer Sheva", "Mesada").isSuccess());
 
+    }
+
+    public void productNotExistTest() {
+        impl.addProductToBasket("pants", 5, 0, 1);
+        assertFalse(impl.checkingCartValidationBeforePurchase(0, "Israel", "Beer Sheva", "Mesada").isSuccess());
     }
 
     @Test
