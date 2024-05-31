@@ -1,6 +1,8 @@
 package DomainLayer.User;
 
 
+import Util.ExceptionsEnum;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -233,9 +235,10 @@ public class UserFacade {
             return null;
     }
 
-    public boolean isUserCartEmpty(int user_ID)
+    public void isUserCartEmpty(int user_ID) throws Exception
     {
-        return getUserByID(user_ID).isCartEmpty();
+        if(getUserByID(user_ID).isCartEmpty())
+            throw new Exception(ExceptionsEnum.userCartIsEmpty.toString());
     }
 
     public String getUserAddress(int user_ID)
