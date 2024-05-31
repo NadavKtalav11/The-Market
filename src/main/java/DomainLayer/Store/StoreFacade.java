@@ -1,5 +1,7 @@
 package DomainLayer.Store;
 
+import Util.ExceptionsEnum;
+
 import java.util.*;
 
 public class StoreFacade {
@@ -51,36 +53,61 @@ public class StoreFacade {
         return newStore.getStoreID();
     }
 
-    public boolean checkQuantityAndPolicies(String productName, int quantity, int storeId, int userId)
-    {
+    public boolean checkQuantityAndPolicies(String productName, int quantity, int storeId, int userId) {
+        this.checkIfProductExists(productName, storeId);
+        this.checkProductQuantityAvailability(productName, storeId, quantity);
+        this.checkIfProductQuantityIsPositive(quantity);
+
+        //Check here all policies
+        this.checkPurchasePolicy(productName, storeId, userId);
+        this.checkDiscountPolicy(productName, storeId, userId);
+
+        return true;
+    }
+
+    public void checkIfProductExists(String productName, int storeId){
         Store store = getStoreByID(storeId);
         if (!store.checkProductExists(productName))
         {
-            throw new IllegalArgumentException("The product you try to add isn't in the store");
+            throw new IllegalArgumentException(ExceptionsEnum.productNotExist.toString());
         }
+    }
 
+    public void checkProductQuantityAvailability(String productName, int storeId, int quantity)
+    {
+        Store store = getStoreByID(storeId);
         if (!store.checkProductQuantity(productName, quantity))
         {
-            throw new IllegalArgumentException("The quantity you entered isn't available in the store");
+            throw new IllegalArgumentException(ExceptionsEnum.productQuantityNotExist.toString());
         }
+    }
 
+    public void checkIfProductQuantityIsPositive(int quantity)
+    {
         if (quantity < 0)
         {
-            throw new IllegalArgumentException("The quantity you entered is negative");
+            throw new IllegalArgumentException(ExceptionsEnum.productQuantityIsNegative.toString());
         }
+    }
 
-        //Check here all policies
+    public void checkPurchasePolicy(String productName, int storeId, int userId)
+    {
+        Store store = getStoreByID(storeId);
+
         if (!store.checkPurchasePolicy(userId, productName))
         {
-            throw new IllegalArgumentException("The product doesnt meet the store purchase policy");
+            throw new IllegalArgumentException(ExceptionsEnum.purchasePolicyIsNotMet.toString());
         }
+    }
+
+    public void checkDiscountPolicy(String productName, int storeId, int userId)
+    {
+        Store store = getStoreByID(storeId);
 
         if (!store.checkDiscountPolicy(userId, productName))
         {
-            throw new IllegalArgumentException("The product doesnt meet the store discount policy");
+            throw new IllegalArgumentException(ExceptionsEnum.discountPolicyIsNotMet.toString());
         }
-
-        return true;
     }
 
     public int calcPrice(String productName, int quantity, int storeId, int userId)

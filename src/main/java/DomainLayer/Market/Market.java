@@ -711,34 +711,42 @@ public class Market {
             }
         }
         int totalPrice = 0;
-        if(this.userFacade.isUserCartEmpty(user_ID))
-            throw new Exception("User cart is empty, there's nothing to purchase");
-        else {
-            List<Integer> stores = this.userFacade.getCartStoresByUser(user_ID);
-            for(Integer store_ID: stores)
-            {
-                Map<String, List<Integer>> products = this.userFacade.getCartProductsByStoreAndUser(store_ID, user_ID);
-                int quantity;
-                String userName = this.userFacade.getUserByID(user_ID).getName();
-                for(String productName: products.keySet()) {
-                    quantity = products.get(productName).get(0);
-                    if(!this.storeFacade.checkQuantityAndPolicies(productName, quantity, store_ID, user_ID))
-                        throw new Exception("Item is not available or policy conditions are not met");
-                    int availibleExteranlSupplyService =this.supplyServicesFacade.checkAvailableExternalSupplyService(country,city);
-                    if(-1==availibleExteranlSupplyService)
-                        throw new Exception("Unfortunately, there is no shipping for the user address");
-                    if(!supplyServicesFacade.createShiftingDetails(availibleExteranlSupplyService, userName,country,city,address)){
-                        throw new Exception("Unfortunately, there was problem in creating the shifting");
-                    }
-                }
-                //remove items from stock
-                removeUserCartFromStock(user_ID);
-                int storeTotalPriceBeforeDiscount = this.userFacade.getCartPriceByUser(user_ID);
-                int storeTotalPrice = this.storeFacade.calculateTotalCartPriceAfterDiscount(store_ID, products, storeTotalPriceBeforeDiscount);
-                totalPrice += storeTotalPrice;
+        this.userFacade.isUserCartEmpty(user_ID);
+
+        List<Integer> stores = this.userFacade.getCartStoresByUser(user_ID);
+        for(Integer store_ID: stores)
+        {
+            Map<String, List<Integer>> products = this.userFacade.getCartProductsByStoreAndUser(store_ID, user_ID);
+            int quantity;
+            for(String productName: products.keySet()) {
+                quantity = products.get(productName).get(0);
+                this.storeFacade.checkQuantityAndPolicies(productName, quantity, store_ID, user_ID);
+                int availableExternalSupplyService = this.checkAvailableExternalSupplyService(country, city);
+                this.createShiftingDetails(country, city, availableExternalSupplyService, address, user_ID);
             }
+            //remove items from stock
+            removeUserCartFromStock(user_ID);
+            int storeTotalPriceBeforeDiscount = this.userFacade.getCartPriceByUser(user_ID);
+            int storeTotalPrice = this.storeFacade.calculateTotalCartPriceAfterDiscount(store_ID, products, storeTotalPriceBeforeDiscount);
+            totalPrice += storeTotalPrice;
         }
+
         return totalPrice;
+    }
+
+    public int checkAvailableExternalSupplyService(String country, String city) throws Exception {
+        int availibleExteranlSupplyService =this.supplyServicesFacade.checkAvailableExternalSupplyService(country,city);
+        if(-1==availibleExteranlSupplyService)
+            throw new Exception(ExceptionsEnum.ExternalSupplyServiceIsNotAvailable.toString());
+        return availibleExteranlSupplyService;
+    }
+
+    public void createShiftingDetails(String country, String city, int availibleExteranlSupplyService, String address, int user_ID) throws Exception
+    {
+        String userName = this.userFacade.getUserByID(user_ID).getName();
+        if(!supplyServicesFacade.createShiftingDetails(availibleExteranlSupplyService, userName,country,city,address)){
+            throw new Exception(ExceptionsEnum.createShiftingError.toString());
+        }
     }
 
     public void removeUserCartFromStock(int userId) throws Exception {

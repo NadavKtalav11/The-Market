@@ -56,6 +56,7 @@ public class CartValidation {
 
     }
 
+    @Test
     public void productNotExistTest() {
         impl.addProductToBasket("pants", 5, 0, 1);
         assertFalse(impl.checkingCartValidationBeforePurchase(0, "Israel", "Beer Sheva", "Mesada").isSuccess());
