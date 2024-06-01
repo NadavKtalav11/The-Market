@@ -1,5 +1,6 @@
 package DomainLayer.Role;
 
+import Util.ExceptionsEnum;
 import com.fasterxml.jackson.databind.JsonSerializer;
 
 import java.util.ArrayList;
@@ -43,6 +44,11 @@ public class RoleFacade {
 
     public boolean verifyStoreOwner(int storeID, int memberID){
         return getStoreOwner(storeID, memberID) != null;
+    }
+
+    public void verifyStoreOwnerError(int storeID, int memberID) throws Exception{
+        if(!verifyStoreOwner(storeID, memberID))
+            throw new Exception(ExceptionsEnum.userIsNotStoreOwner.toString());
     }
 
     public StoreOwner getStoreOwner(int storeID, int memberID)

@@ -2,6 +2,8 @@ package AcceptanceTests.Users.StoreOwner;
 
 import AcceptanceTests.BridgeToTests;
 import AcceptanceTests.ProxyToTest;
+import ServiceLayer.Response;
+import Util.ExceptionsEnum;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
@@ -39,6 +41,11 @@ public class EmployeePermissionsInfo {
 
     @Test
     public void storeNotExistTest() {
-        assertFalse(impl.getInformationAboutRolesInStore(0, 0).isSuccess());
+        Exception exception = assertThrows(Exception.class, () -> {
+            Response<Map<Integer,String>> response = impl.getAuthorizationsOfManagersInStore(0, 0;
+            assertFalse(response.isSuccess());
+        });
+
+        assertEquals(ExceptionsEnum.storeNotExist.toString(), exception.getMessage());
     }
 }
