@@ -2,11 +2,13 @@ package AcceptanceTests.Users.StoreOwner;
 
 import AcceptanceTests.BridgeToTests;
 import AcceptanceTests.ProxyToTest;
+import ServiceLayer.Response;
+import Util.ExceptionsEnum;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class CloseStore {
     private static BridgeToTests impl;
@@ -34,7 +36,13 @@ public class CloseStore {
     @Test
     public void alreadyClosedTest() {
         impl.closeStore(0, 0);
-        assertFalse(impl.closeStore(0, 0).isSuccess());
+
+        Exception exception = assertThrows(Exception.class, () -> {
+            Response<String> response = impl.closeStore(0, 0);;
+            assertFalse(response.isSuccess());
+        });
+
+        assertEquals(ExceptionsEnum.storeNotExist.toString(), exception.getMessage());
     }
 
 }

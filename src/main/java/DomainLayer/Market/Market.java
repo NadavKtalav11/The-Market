@@ -485,19 +485,14 @@ public class Market {
         }
         userFacade.isUserLoggedInError(user_ID);
         int member_ID = this.userFacade.getUsernameByUserID(user_ID);
-        if (roleFacade.verifyStoreOwner(store_ID, member_ID) && roleFacade.verifyStoreOwnerIsFounder(store_ID, member_ID)) {
-            if (storeFacade.verifyStoreExist(store_ID)) {
-                storeFacade.closeStore(store_ID);
-                List<Integer> storeManagers = roleFacade.getAllStoreManagers(store_ID);
-                List<Integer> storeOwners = roleFacade.getAllStoreOwners(store_ID);
-                //todo: add function which send notification to all store roles (notification component).
-                //todo: update use-case parameters
-            } else {
-                throw new Exception(ExceptionsEnum.storeNotExist.toString());
-            }
-        } else {
-            throw new Exception("Only store founder can close a store");
-        }
+        roleFacade.verifyStoreOwnerError(store_ID, member_ID);
+        roleFacade.verifyStoreOwnerIsFounderError(store_ID, member_ID);
+        storeFacade.verifyStoreExistError(store_ID);
+        storeFacade.closeStore(store_ID);
+        List<Integer> storeManagers = roleFacade.getAllStoreManagers(store_ID);
+        List<Integer> storeOwners = roleFacade.getAllStoreOwners(store_ID);
+        //todo: add function which send notification to all store roles (notification component).
+        //todo: update use-case parameters
     }
 
     public Map<Integer, String> getInformationAboutRolesInStore(int user_ID, int store_ID) throws Exception {

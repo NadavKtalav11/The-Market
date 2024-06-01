@@ -57,6 +57,10 @@ package Util;
         userIsNotStoreOwnerSoCantGetEmployeeInfo{
             public String toString() {
                 return "Only store owner get information about his store workers";}
+        },
+        storeOwnerIsNotFounder{
+            public String toString() {
+                return "Only store founder can close a store";}
         }
 
     }
