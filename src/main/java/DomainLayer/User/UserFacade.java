@@ -11,29 +11,33 @@ import java.util.Objects;
 
 public class UserFacade {
     private static UserFacade userFacadeInstance;
-    //Map<Integer, User> allUsers = new HashMap<Integer, User>(); //userID-User
     UserRepository<User> userRepository;
+    MemberRepository members;
+    //private Object membersLock;
     //Map<String, Member> members = new HashMap<>(); //memberID-Member
     //private String memberIdPrefix;
     //private String userIdPrefix;
     //private int currentUserID;
     //private int currentMemberID;
     //Object allUserLock;
-    MemberRepository members;
-    private Object membersLock;
+
     //private Object userIdLock;
     //private Object memberIdLock;
+    //Map<Integer, User> allUsers = new HashMap<Integer, User>(); //userID-User
 
     private UserFacade()
     {
         //this.currentUserID = 0;
         //this.currentMemberID = 0;
         //allUserLock = new Object();
-        membersLock = new Object();
-        //userIdLock = new Object();
-        //memberIdLock = new Object();
+
+        //membersLock = new Object();
         userRepository = new UserMemoryRepository<>();
         members = new MemberMemoryRepository();
+
+        //userIdLock = new Object();
+        //memberIdLock = new Object();
+
         //memberIdPrefix = "member";
         //memberIdPrefix = "user";
     }
@@ -52,13 +56,13 @@ public class UserFacade {
 
     public String getCurrentUserID (){
         UUID uuid = UUID.randomUUID();
-        String uniqueId = "user-" + uuid.toString();
+        String uniqueId = "user-" + uuid;
         return uniqueId;
     }
 
     public String getCurrentMemberID (){
         UUID uuid = UUID.randomUUID();
-        String uniqueId = "member-" + uuid.toString();
+        String uniqueId = "member-" + uuid;
         return uniqueId;
     }
 
@@ -152,10 +156,7 @@ public class UserFacade {
 
 
             Member newMember = new Member(memberId, username,password,birthday,country,city,address,name);
-            synchronized (membersLock) {
-                members.add(memberId, newMember);
-
-            }
+            members.add(memberId, newMember);
             //todo pass the user to login page.
             return memberId;
         }
@@ -167,9 +168,7 @@ public class UserFacade {
         String memberId = getCurrentMemberID();
 
         Member newMember = new Member(memberId, username,password,birthday,country,city,address,name);
-        synchronized (membersLock) {
             members.add(memberId, newMember);
-        }
 
         return memberId;
         //todo pass the user to login page.

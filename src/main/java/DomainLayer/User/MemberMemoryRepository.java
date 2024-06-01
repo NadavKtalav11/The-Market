@@ -59,9 +59,11 @@ public class MemberMemoryRepository implements MemberRepository {
 
     @Override
     public Member getByUserName(String member) {
-        for (Member curr_member : allMembers.values()){
-            if (curr_member.getUsername().equals(member)){
-                return curr_member;
+        synchronized (allMembersLock) {
+            for (Member curr_member : allMembers.values()) {
+                if (curr_member.getUsername().equals(member)) {
+                    return curr_member;
+                }
             }
         }
         return null;

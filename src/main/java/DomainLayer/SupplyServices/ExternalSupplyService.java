@@ -10,6 +10,10 @@ public class ExternalSupplyService {
     private HashSet<String> countries = new HashSet<>();
     private HashSet<String> cities = new HashSet<>();
     private HashMap<Integer, ShiftingDetails> shiftIdAndDetails = new HashMap<>();
+    private final Object countriesLock;
+    private final Object citiesLock;
+    private final Object shiftLock;
+
     int ShiftIDCounter= 1;
 
     public ExternalSupplyService(int licensedDealerNumber, String supplyServiceName, HashSet<String> countries, HashSet<String> cities){
@@ -18,6 +22,9 @@ public class ExternalSupplyService {
         this.supplyServiceName = supplyServiceName;
         this.countries  = countries;
         this.cities = cities;
+        countriesLock =new Object();
+        citiesLock = new Object();
+        shiftLock = new Object();
     }
 
     public int getLicensedDealerNumber(){
@@ -25,42 +32,58 @@ public class ExternalSupplyService {
     }
 
     public boolean checkAreaAvailability(String country, String city){
-        if(!countries.contains(country)){
-            return false;
+        synchronized (countriesLock) {
+            if (!countries.contains(country)) {
+                return false;
+            }
         }
-        if(!cities.contains((city))){
-            return false;
+        synchronized (citiesLock) {
+            if (!cities.contains((city))) {
+                return false;
+            }
         }
         return true;
     }
 
     public void addCountries(HashSet<String> countriesToAdd){
-        countries.addAll(countriesToAdd);
+        synchronized (countriesLock) {
+            countries.addAll(countriesToAdd);
+        }
 
     }
 
     public void addCities(HashSet<String> citiesToAdd){
-        cities.addAll(citiesToAdd);
+        synchronized (citiesLock) {
+            cities.addAll(citiesToAdd);
+        }
 
     }
 
     public HashSet<String> getCountries(){
-        return this.countries;
+        synchronized (countriesLock) {
+            return this.countries;
+        }
     }
     public HashSet<String> getCities(){
-        return this.cities;
+        synchronized (citiesLock) {
+            return this.cities;
+        }
     }
 
 
     public boolean createShiftingDetails(String userName, String country,String city,String address){
-        int size = shiftIdAndDetails.size();
-        ShiftingDetails shiftingDetails = new ShiftingDetails(ShiftIDCounter, userName, country, city, address);
-        shiftIdAndDetails.put(ShiftIDCounter,shiftingDetails);
-        ShiftIDCounter++;
-        return shiftIdAndDetails.size() == size+1;
+        synchronized (shiftLock) {
+            int size = shiftIdAndDetails.size();
+            ShiftingDetails shiftingDetails = new ShiftingDetails(ShiftIDCounter, userName, country, city, address);
+            shiftIdAndDetails.put(ShiftIDCounter, shiftingDetails);
+            ShiftIDCounter++;
+            return shiftIdAndDetails.size() == size + 1;
+        }
     }
     public HashMap<Integer,ShiftingDetails> getShiftIdAndDetails(){
-        return this.shiftIdAndDetails;
+        synchronized (shiftLock) {
+            return this.shiftIdAndDetails;
+        }
     }
 
 }

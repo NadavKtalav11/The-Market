@@ -21,7 +21,8 @@ public class Market {
     private UserFacade userFacade;
     private RoleFacade roleFacade;
     private boolean initialized= false;
-    Object initializedLock;
+    private final Object initializedLock;
+    private final Object managersLock;
 
     public synchronized static Market getInstance() {
         if (MarketInstance == null) {
@@ -39,6 +40,7 @@ public class Market {
         supplyServicesFacade= SupplyServicesFacade.getInstance();
         initializedLock= new Object();
         this.systemManagerIds = new HashSet<>();
+        managersLock = new Object();
     }
 
     public Market newForTests(){
@@ -80,7 +82,9 @@ public class Market {
                 throw new Exception("The system has not been able to be launched since there is a problem with the payment service details");
             }
             // Initialization logic here
-            initialized = true;
+            synchronized (initializedLock) {
+                initialized = true;
+            }
         } catch (Exception e) {
             // Log the error or handle it as needed
             throw e;  // Re-throwing the exception to be handled by the caller
@@ -89,7 +93,9 @@ public class Market {
         String firstUserID = enterMarketSystem();
         String systemMangerId = userFacade.register(firstUserID,userName, encrypted, birthday,country,city,address,name);
         //int systemMangerId = userFacade.registerSystemAdmin(userName, encrypted, birthday,country,city,address,name);
-        systemManagerIds.add(systemMangerId);
+        synchronized (managersLock) {
+            systemManagerIds.add(systemMangerId);
+        }
         paymentServicesFacade.addExternalService(licensedDealerNumber,paymentServiceName,url);
         supplyServicesFacade.addExternalService(licensedDealerNumber1,supplyServiceName, countries, cities);
         synchronized (initializedLock) {
@@ -99,8 +105,10 @@ public class Market {
 
     public void addExternalPaymentService(int licensedDealerNumber,String paymentServiceName, String url, int systemMangerId) throws Exception {
         try {
-            if(!systemManagerIds.contains(systemMangerId)){
-                throw new Exception("Only system manager is allowed to add new external payment service");
+            synchronized (managersLock) {
+                if (!systemManagerIds.contains(systemMangerId)) {
+                    throw new Exception("Only system manager is allowed to add new external payment service");
+                }
             }
             if (paymentServiceName == null || licensedDealerNumber<0 || url==null ) {
                 throw new Exception("The system has not been able to add the payment service due to invalid details");
@@ -114,8 +122,10 @@ public class Market {
 
     public void removeExternalPaymentService(int licensedDealerNumber, int systemMangerId) throws Exception {
         try {
-            if (!systemManagerIds.contains(systemMangerId)) {
-                throw new Exception("Only system manager is allowed to remove external payment services");
+            synchronized (managersLock) {
+                if (!systemManagerIds.contains(systemMangerId)) {
+                    throw new Exception("Only system manager is allowed to remove external payment services");
+                }
             }
             if (paymentServicesFacade.getAllPaymentServices().size() <= 1) {
                 throw new Exception("There must remain at least one external payment service in the system");
@@ -131,8 +141,10 @@ public class Market {
 
     public void addExternalSupplyService(int licensedDealerNumber, String supplyServiceName, HashSet<String> countries, HashSet<String> cities, int systemManagerId) throws Exception {
         try {
-            if (!systemManagerIds.contains(systemManagerId)) {
-                throw new Exception("Only system manager is allowed to add new external supply service");
+            synchronized (managersLock) {
+                if (!systemManagerIds.contains(systemManagerId)) {
+                    throw new Exception("Only system manager is allowed to add new external supply service");
+                }
             }
             if (supplyServiceName == null || countries ==null || cities ==null || licensedDealerNumber < 0 || supplyServiceName == null ) {
                 throw new Exception("The system has not been able to add the supply service due to invalid details");
@@ -145,10 +157,12 @@ public class Market {
     }
 
     public void removeExternalSupplyService(int licensedDealerNumber, int systemManagerId) throws Exception {
-        synchronized (initializedLock) {
+
             try {
-                if (!systemManagerIds.contains(systemManagerId)) {
-                    throw new Exception("Only system manager is allowed to remove external supply service");
+                synchronized (managersLock) {
+                    if (!systemManagerIds.contains(systemManagerId)) {
+                        throw new Exception("Only system manager is allowed to remove external supply service");
+                    }
                 }
                 if (supplyServicesFacade.getAllSupplyServices().size() <= 1) {
                     throw new Exception("There must remain at least one external supply service in the system");
@@ -157,11 +171,12 @@ public class Market {
             } catch (Exception e) {
                 throw e;  // Re-throwing the exception to be handled by the caller
             }
-        }
     }
 
     public Set<String> getSystemManagerIds(){
-        return systemManagerIds;
+        synchronized (managersLock) {
+            return systemManagerIds;
+        }
     }
 
 

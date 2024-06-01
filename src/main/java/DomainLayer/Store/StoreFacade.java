@@ -6,20 +6,25 @@ import java.util.*;
 
 public class StoreFacade {
     private static StoreFacade storeFacadeInstance;
-    //Map<Integer, Store> allStores = new HashMap<Integer, Store>();
+
     private StoreRepository allStores ;
+
+
+
     //private int currentStoreID;
     //private Object allStoresLock;
     //private Object storeIdLock;
+    //Map<Integer, Store> allStores = new HashMap<Integer, Store>();
 
 
     private StoreFacade()
     {
-        //this.currentStoreID = 0;
+
         allStores = new StoreMemoryRepository();
 
         //allStoresLock = new Object();
         //storeIdLock = new Object();
+        //this.currentStoreID = 0;
 
     }
 
@@ -67,6 +72,8 @@ public class StoreFacade {
         //Check here all policies
         this.checkPurchasePolicy(productName, storeId, userId);
         this.checkDiscountPolicy(productName, storeId, userId);
+        return true;
+        //todo nitzan check merge ;
 
     }
 

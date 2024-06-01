@@ -9,6 +9,17 @@ public class PaymentServicesFacade {
     private static PaymentServicesFacade paymentServicesFacadeInstance;
     private Map<Integer, ExternalPaymentService>  allPaymentServices = new HashMap<Integer, ExternalPaymentService>();
     private Map<String, Acquisition> IdAndAcquisition = new HashMap<>();
+
+    private final Object paymentServiceLock;
+    private final Object acquisitionLock;
+
+    public PaymentServicesFacade(){
+        paymentServiceLock =new Object();
+        acquisitionLock = new Object();
+    }
+
+
+
     //private int acquisitionIdCounter = 1;
     //private int receiptIdCounter = 1;
 
@@ -27,29 +38,40 @@ public class PaymentServicesFacade {
     }
 
     public void removeExternalService(int paymentId){
-        allPaymentServices.remove(paymentId);
+        synchronized (paymentServiceLock) {
+            allPaymentServices.remove(paymentId);
+        }
     }
 
     public boolean addExternalService(int licensedDealerNumber, String paymentServiceName, String url){
-            int size_before= allPaymentServices.size();
-            ExternalPaymentService externalPaymentService = new ExternalPaymentService(licensedDealerNumber,paymentServiceName, url);
+        synchronized (paymentServiceLock) {
+            int size_before = allPaymentServices.size();
+            ExternalPaymentService externalPaymentService = new ExternalPaymentService(licensedDealerNumber, paymentServiceName, url);
             allPaymentServices.put(licensedDealerNumber, externalPaymentService);
-            return allPaymentServices.size()==size_before+1;
+            return allPaymentServices.size() == size_before + 1;
+        }
     }
     public void clearPaymentServices() {
-        allPaymentServices.clear();
+        synchronized (paymentServiceLock) {
+            allPaymentServices.clear();
+        }
     }
 
     public Map<String,String> pay(int price,String creditCard, int cvv, int month, int year, String holderID, String userId, Map<String, Map<String, Integer>> productList){
         String acquisitionId  = getNewAcquisitionId();
         String receiptId = getNewReceiptId();
-        ExternalPaymentService externalPaymentService = allPaymentServices.values().iterator().next();
+        ExternalPaymentService externalPaymentService;
+        synchronized (paymentServiceLock) {
+            externalPaymentService = allPaymentServices.values().iterator().next();
+        }
         Map<String,String> paymentSucceeded = externalPaymentService.payWithCard(price, creditCard, cvv, month, year, holderID, userId, productList, acquisitionId, receiptId);
         if (paymentSucceeded!=null)
         {
             //String acquisitionId1  = getNewAcquisitionId();
             Acquisition acquisition = new Acquisition(acquisitionId, userId, price, holderID, creditCard, cvv, month, year, productList, getNewReceiptId());
-            IdAndAcquisition.put(acquisitionId, acquisition);
+            synchronized (acquisitionLock) {
+                IdAndAcquisition.put(acquisitionId, acquisition);
+            }
             //acquisitionIdCounter++;
             //receiptIdCounter += productList.size();
             return acquisition.getReceiptIdAndStoreIdMap();
@@ -73,7 +95,9 @@ public class PaymentServicesFacade {
     }
 
     public Map<Integer, ExternalPaymentService> getAllPaymentServices(){
-        return this.allPaymentServices;
+        synchronized (allPaymentServices) {
+            return this.allPaymentServices;
+        }
     }
 
     //public int getAcquisitionIdCounter(){
@@ -89,11 +113,13 @@ public class PaymentServicesFacade {
     public Map<String, Integer> getStorePurchaseInfo()
     {
         Map<String, Integer> storePurchaseStats = new HashMap<>();
-        for (String acqId : IdAndAcquisition.keySet()) {
-            Map<String, Receipt> acqReceipts = IdAndAcquisition.get(acqId).getStoreIdAndReceipt();
-            for (String receiptId : acqReceipts.keySet()) {
-                String storeId = acqReceipts.get(receiptId).getStoreId();
-                storePurchaseStats.put(storeId, storePurchaseStats.getOrDefault(storeId, 0) + 1);
+        synchronized (acquisitionLock) {
+            for (String acqId : IdAndAcquisition.keySet()) {
+                Map<String, Receipt> acqReceipts = IdAndAcquisition.get(acqId).getStoreIdAndReceipt();
+                for (String receiptId : acqReceipts.keySet()) {
+                    String storeId = acqReceipts.get(receiptId).getStoreId();
+                    storePurchaseStats.put(storeId, storePurchaseStats.getOrDefault(storeId, 0) + 1);
+                }
             }
         }
         return storePurchaseStats;
@@ -103,12 +129,12 @@ public class PaymentServicesFacade {
     public Map<String, Integer> getStoreReceiptsAndTotalAmount(String storeId)
     {
         Map<String, Integer> receiptAndTotalPrice = new HashMap<>();
-
-        for (String acqId : IdAndAcquisition.keySet()) {
-            Acquisition acq = IdAndAcquisition.get(acqId);
-            if (acq.getStoreIdAndReceipt().containsKey(storeId))
-            {
-                receiptAndTotalPrice.put(acq.getReceiptIdByStoreId(storeId), acq.getTotalPriceOfStoreInAcquisition(storeId));
+        synchronized (acquisitionLock) {
+            for (String acqId : IdAndAcquisition.keySet()) {
+                Acquisition acq = IdAndAcquisition.get(acqId);
+                if (acq.getStoreIdAndReceipt().containsKey(storeId)) {
+                    receiptAndTotalPrice.put(acq.getReceiptIdByStoreId(storeId), acq.getTotalPriceOfStoreInAcquisition(storeId));
+                }
             }
         }
 
@@ -116,6 +142,8 @@ public class PaymentServicesFacade {
     }
 
     public Map<String, Acquisition> getIdAndAcquisition() {
-        return IdAndAcquisition;
+        synchronized (acquisitionLock) {
+            return IdAndAcquisition;
+        }
     }
 }
