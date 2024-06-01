@@ -53,7 +53,7 @@ public class StoreFacade {
         return newStore.getStoreID();
     }
 
-    public boolean checkQuantityAndPolicies(String productName, int quantity, int storeId, int userId) {
+    public void checkQuantityAndPolicies(String productName, int quantity, int storeId, int userId) {
         this.checkIfProductExists(productName, storeId);
         this.checkProductQuantityAvailability(productName, storeId, quantity);
         this.checkIfProductQuantityIsPositive(quantity);
@@ -62,7 +62,6 @@ public class StoreFacade {
         this.checkPurchasePolicy(productName, storeId, userId);
         this.checkDiscountPolicy(productName, storeId, userId);
 
-        return true;
     }
 
     public void checkIfProductExists(String productName, int storeId){

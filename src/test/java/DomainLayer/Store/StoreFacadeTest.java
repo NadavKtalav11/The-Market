@@ -3,6 +3,7 @@ package DomainLayer.Store;
 import DomainLayer.User.Member;
 import DomainLayer.User.User;
 import DomainLayer.User.UserFacade;
+import ServiceLayer.Response;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -26,7 +27,7 @@ public class StoreFacadeTest {
     public void setUp() {
         storeFacade = StoreFacade.getInstance();
         mockStore = mock(Store.class);
-        storeFacade.allStores.put(0, mockStore);
+        storeFacade.openStore("Grocery", "");
     }
 
     @Test
@@ -84,13 +85,19 @@ public class StoreFacadeTest {
         when(mockStore.checkPurchasePolicy(1, "Milk")).thenReturn(true);
         when(mockStore.checkDiscountPolicy(1, "Milk")).thenReturn(true);
 
-        boolean result = storeFacade.checkQuantityAndPolicies("Milk", 5, 0, 1);
 
-        assertTrue(result);
+        //if no exceptions thrown, this test passes
+        storeFacade.checkQuantityAndPolicies("Milk", 5, 0, 1);
+
         verify(mockStore).checkProductExists("Milk");
         verify(mockStore).checkProductQuantity("Milk", 5);
         verify(mockStore).checkPurchasePolicy(1, "Milk");
         verify(mockStore).checkDiscountPolicy(1, "Milk");
+
+        //fail case for the test
+        when(mockStore.checkProductExists("Milk")).thenReturn(false);
+        assertThrows(Exception.class, () -> storeFacade.checkQuantityAndPolicies("Milk", 5, 0, 1));
+
     }
 
     @Test
