@@ -57,8 +57,16 @@ package Util;
         userIsNotStoreOwner{
             public String toString() {
                 return "User is not a store owner, only store owner can perform this operation";}
+        },
+        illegalStoreName{
+            public String toString() {
+                return "Illegal store name. Store name is empty.";}
+        },
+        memberIsAlreadyStoreOwner{
+            public String toString() {
+                return "Member is already owner of this store";
+            }
         }
-
     }
 
 
