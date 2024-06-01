@@ -8,6 +8,7 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -42,7 +43,7 @@ public class EmployeePermissionsInfo {
     @Test
     public void storeNotExistTest() {
         Exception exception = assertThrows(Exception.class, () -> {
-            Response<Map<Integer,String>> response = impl.getAuthorizationsOfManagersInStore(0, 0;
+            Response<Map<Integer, List<Integer>>> response = impl.getAuthorizationsOfManagersInStore(0, 0);
             assertFalse(response.isSuccess());
         });
 
