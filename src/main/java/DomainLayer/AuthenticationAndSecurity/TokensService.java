@@ -49,9 +49,7 @@ public class TokensService {
             Date expiration = claims.getExpiration();
             String memberId= getMemberId(token);
             if (expiration.after(new Date())){
-                synchronized (tokensLock){
                     generateToken(memberId);
-                }
                 return true;
             }
             else{

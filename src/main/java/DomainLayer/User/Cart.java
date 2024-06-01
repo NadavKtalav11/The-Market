@@ -5,12 +5,15 @@ import java.util.*;
 public class Cart {
     Map<String, Basket> baskets ; //key = storeID
     private int cartPrice;
-    private Object basketsLock;
+
+    private final Object basketsLock;
+    private final Object priceLock;
 
     public Cart() {
         this.cartPrice = 0;
         basketsLock = new Object();
         baskets = new HashMap<>();
+        priceLock = new Object();
     }
 
     public int getCartPrice()
@@ -21,7 +24,9 @@ public class Cart {
 
     private void setCartPrice(int price)
     {
-        this.cartPrice = price;
+        synchronized (priceLock) {
+            this.cartPrice = price;
+        }
     }
 
     public void addItemsToCart(String productName, int quantity, String storeId, int totalPrice)
@@ -132,6 +137,8 @@ public class Cart {
     public List<String> getCartStores()
     {
         /*this function returns the stores from which the user added his products*/
-        return new ArrayList<>(baskets.keySet());
+        synchronized (basketsLock) {
+            return new ArrayList<>(baskets.keySet());
+        }
     }
 }

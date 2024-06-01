@@ -16,9 +16,10 @@ public class Store {
     private String storeName;
     private String description;
 
-    private Object storeProductLock;
-    private Object storeIdLock;
-    private Object isOpenedLock;
+    private final Object storeProductLock;
+    private final Object storeIdLock;
+    private final Object isOpenedLock;
+    private final Object receiptsLock;
 
     Store(String store_ID, String storeName, String description)
     {
@@ -34,12 +35,15 @@ public class Store {
         this.numOfRatings = 0;
         this.storeName = storeName;
         this.description = description;
+        receiptsLock = new Object();
     }
 
 
     public void returnProductToStore(Map<String, Integer> products){
-        for (String product : products.keySet()){
-            storeProducts.get(product).addToStock(products.get(product));
+        synchronized (storeProductLock) {
+            for (String product : products.keySet()) {
+                storeProducts.get(product).addToStock(products.get(product));
+            }
         }
     }
 
@@ -172,6 +176,8 @@ public class Store {
 
     public void addReceipt(String receiptId, String userId)
     {
-        receiptsIdsUserIds.put(receiptId, userId);
+        synchronized (receiptId) {
+            receiptsIdsUserIds.put(receiptId, userId);
+        }
     }
 }

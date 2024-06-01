@@ -9,21 +9,26 @@ public class Receipt {
     private String userId;
     private Map<String, Integer> productList = new HashMap<>(); //<productName, price>
 
+    private final Object productListLock;
+
     public Receipt(String receiptId, String storeId, String userId, Map<String, Integer> productList)
     {
         this.receiptId = receiptId;
         this.storeId = storeId;
         this.userId = userId;
         this. productList = productList;
+        productListLock= new Object();
     }
 
     public int getTotalPriceOfStoreReceipt()
     {
-        int storePrice = 0;
-        for (String productName : productList.keySet()) {
-            storePrice += productList.get(productName);
+        synchronized (productListLock) {
+            int storePrice = 0;
+            for (String productName : productList.keySet()) {
+                storePrice += productList.get(productName);
+            }
+            return storePrice;
         }
-        return storePrice;
     }
 
     public String getStoreId()

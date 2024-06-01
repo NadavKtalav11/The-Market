@@ -14,9 +14,9 @@ public class RoleFacade {
     private Map<String,List<StoreOwner>> memberId_storeOwnersMap;  //todo: move this to repository
     private Map<String,List<StoreManager>> memberId_storeManagerMap;
     private List<SystemManager> systemManagers ;
-    Object storeOwnerLock;
-    Object storeManagerLock;
-    Object systemManagerLock;
+    private final Object storeOwnerLock;
+    private final Object storeManagerLock;
+    private final Object systemManagerLock;
 
 
     private RoleFacade()

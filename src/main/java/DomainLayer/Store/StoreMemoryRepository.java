@@ -8,7 +8,7 @@ import java.util.Map;
 public class StoreMemoryRepository implements StoreRepository{
 
     private Map<String, Store> allStores ;
-    private Object storesLock;
+    private final Object storesLock;
 
 
     public StoreMemoryRepository(){
@@ -50,11 +50,15 @@ public class StoreMemoryRepository implements StoreRepository{
 
     @Override
     public boolean contain(String storeId) {
-        return allStores.containsKey(storeId);
+        synchronized (storesLock) {
+            return allStores.containsKey(storeId);
+        }
     }
 
     @Override
     public List<String> getAllIds() {
-        return new ArrayList<>(allStores.keySet());
+        synchronized (storesLock) {
+            return new ArrayList<>(allStores.keySet());
+        }
     }
 }
