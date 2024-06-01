@@ -237,16 +237,10 @@ public class Market {
                 throw new Exception(ExceptionsEnum.sessionOver.toString());
             }
         }
-        boolean canAddToBasket = storeFacade.checkQuantityAndPolicies(productName, quantity, storeId, userId);
-        if (canAddToBasket)
-        {
-            int totalPrice = storeFacade.calcPrice(productName, quantity, storeId, userId);
-            userFacade.addItemsToBasket(productName, quantity, storeId, userId, totalPrice);
-        }
-        else
-        {
-            throw new IllegalArgumentException("The product you try to add doesn't meet the store policies");
-        }
+        storeFacade.checkQuantityAndPolicies(productName, quantity, storeId, userId);
+        int totalPrice = storeFacade.calcPrice(productName, quantity, storeId, userId);
+        userFacade.addItemsToBasket(productName, quantity, storeId, userId, totalPrice);
+
     }
 
     public void removeProductFromBasket(String productName, int storeId, int userId)throws Exception
@@ -631,16 +625,9 @@ public class Market {
             removeProductFromBasket(productName, storeId, userId);
         else
         {
-            boolean canModify = storeFacade.checkQuantityAndPolicies(productName, quantity, storeId, userId);
-            if (canModify)
-            {
-                int totalPrice = storeFacade.calcPrice(productName, quantity, storeId, userId);
-                userFacade.modifyBasketProduct(productName, quantity, storeId, userId, totalPrice);
-            }
-            else
-            {
-                throw new IllegalArgumentException("The product you try to add doesn't meet the store policies");
-            }
+            storeFacade.checkQuantityAndPolicies(productName, quantity, storeId, userId);
+            int totalPrice = storeFacade.calcPrice(productName, quantity, storeId, userId);
+            userFacade.modifyBasketProduct(productName, quantity, storeId, userId, totalPrice);
         }
     }
 
