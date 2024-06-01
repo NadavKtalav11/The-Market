@@ -54,11 +54,24 @@ package Util;
                 return "product does not exist in market";
             }
         },
-        userIsNotStoreOwnerSoCantGetEmployeeInfo{
+        userIsNotStoreOwner{
             public String toString() {
-                return "Only store owner get information about his store workers";}
+                return "User is not a store owner, only store owner can perform this operation";}
+        },
+        storeOwnerIsNotFounder {
+            public String toString() {
+                return "Only store founder can close a store";
+            }
+        },
+        illegalStoreName{
+            public String toString() {
+                return "Illegal store name. Store name is empty.";}
+        },
+        memberIsAlreadyStoreOwner{
+            public String toString() {
+                return "Member is already owner of this store";
+            }
         }
-
     }
 
 
