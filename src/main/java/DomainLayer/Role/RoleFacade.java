@@ -91,9 +91,9 @@ public class RoleFacade {
         return storeOwner != null && storeOwner.verifyStoreOwnerIsFounder();
     }
 
-    public void verifyStoreOwnerIsFounderError(int storeID, int memberID){
+    public void verifyStoreOwnerIsFounderError(int storeID, int memberID) throws Exception {
         if(!verifyStoreOwnerIsFounder(storeID, memberID))
-            throw new Exception(ExceptionsEnum.)
+            throw new Exception(ExceptionsEnum.storeOwnerIsNotFounder.toString());
     }
 
     public void createStoreOwner(int memberId, int storeId, boolean founder, int nominatorMemberId) throws Exception {
