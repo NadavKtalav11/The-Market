@@ -10,7 +10,7 @@ package Util;
         },
         userIsNotMember{
             public String toString() {
-                return "your session was over please log in again";
+                return "User is not logged in, so he can't perform this operation";
             }
         },
         storeNotExist{
@@ -54,6 +54,10 @@ package Util;
                 return "product does not exist in market";
             }
         },
+        userIsNotStoreOwnerSoCantGetEmployeeInfo{
+            public String toString() {
+                return "Only store owner get information about his store workers";}
+        }
 
     }
 

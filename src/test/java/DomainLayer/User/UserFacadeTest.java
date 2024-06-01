@@ -56,7 +56,7 @@ public class UserFacadeTest {
     @Test
     public void testIsUserLoggedIn() {
         when(mockUser.isLoggedIn()).thenReturn(true);
-        assertTrue(userFacade.isUserLoggedIn(1));
+        assertTrue(userFacade.isMember(1));
     }
 
     @Test

@@ -154,11 +154,14 @@ public class StoreFacade {
         }
     }
 
-
-
     public boolean verifyStoreExist(int storeID)
     {
         return getStoreByID(storeID) != null;
+    }
+
+    public void verifyStoreExistError(int storeID) throws Exception {
+        if(!verifyStoreExist(storeID))
+            throw new Exception(ExceptionsEnum.storeNotExist.toString());
     }
 
     public void closeStore(int store_ID) throws Exception
