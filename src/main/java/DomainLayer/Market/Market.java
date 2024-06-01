@@ -279,9 +279,9 @@ public class Market {
         if(name == null || name.equals("")) {
             throw new IllegalArgumentException(ExceptionsEnum.illegalStoreName.toString());
         }
-        int store_ID = this.storeFacade.openStore(name, description);
-        int member_ID = this.userFacade.getUsernameByUserID(user_ID);
-        this.roleFacade.createStoreOwner(member_ID, store_ID, true, -1);
+        String store_ID = this.storeFacade.openStore(name, description);
+        String member_ID = this.userFacade.getMemberIdByUserId(user_ID);
+        this.roleFacade.createStoreOwner(member_ID, store_ID, true, "no nominator");
     }
 
     public void addProductToStore(String userId, String storeId, String productName, int price, int quantity,
@@ -476,13 +476,13 @@ public class Market {
             }
         }
         userFacade.isUserLoggedInError(user_ID);
-        String member_ID = this.userFacade.getUsernameByUserID(user_ID);
+        String member_ID = this.userFacade.getMemberIdByUserId(user_ID);
         roleFacade.verifyStoreOwnerError(store_ID, member_ID);
-        roleFacade.verifyStoreOwnerIsFounderError(store_ID, member_ID);
+        roleFacade.verifyStoreOwnerIsFounder(store_ID, member_ID);
         storeFacade.verifyStoreExistError(store_ID);
         storeFacade.closeStore(store_ID);
-        List<Integer> storeManagers = roleFacade.getAllStoreManagers(store_ID);
-        List<Integer> storeOwners = roleFacade.getAllStoreOwners(store_ID);
+        List<String> storeManagers = roleFacade.getAllStoreManagers(store_ID);
+        List<String> storeOwners = roleFacade.getAllStoreOwners(store_ID);
         //todo: add function which send notification to all store roles (notification component).
         //todo: update use-case parameters
 
@@ -500,7 +500,7 @@ public class Market {
         Map<String, String> information = null;
 
         userFacade.isUserLoggedInError(user_ID);
-        int member_ID = this.userFacade.getUsernameByUserID(user_ID);
+        String member_ID = this.userFacade.getMemberIdByUserId(user_ID);
         roleFacade.verifyStoreOwnerError(store_ID, member_ID);
         storeFacade.verifyStoreExistError(store_ID);
         information = roleFacade.getInformationAboutStoreRoles(store_ID);
@@ -523,7 +523,7 @@ public class Market {
 
         userFacade.isUserLoggedInError(user_ID);
 
-        String member_ID = this.userFacade.getUsernameByUserID(user_ID);
+        String member_ID = this.userFacade.getMemberIdByUserId(user_ID);
         roleFacade.verifyStoreOwnerError(store_ID, member_ID);
         storeFacade.verifyStoreExistError(store_ID);
         managersAuthorizations = roleFacade.getStoreManagersAuthorizations(store_ID);

@@ -13,12 +13,13 @@ public class UserFacade {
     private static UserFacade userFacadeInstance;
     //Map<Integer, User> allUsers = new HashMap<Integer, User>(); //userID-User
     UserRepository<User> userRepository;
-    Map<String, Member> members = new HashMap<>(); //memberID-Member
+    //Map<String, Member> members = new HashMap<>(); //memberID-Member
     //private String memberIdPrefix;
     //private String userIdPrefix;
     //private int currentUserID;
     //private int currentMemberID;
     //Object allUserLock;
+    MemberRepository members;
     private Object membersLock;
     //private Object userIdLock;
     //private Object memberIdLock;
@@ -32,6 +33,7 @@ public class UserFacade {
         //userIdLock = new Object();
         //memberIdLock = new Object();
         userRepository = new UserMemoryRepository<>();
+        members = new MemberMemoryRepository();
         //memberIdPrefix = "member";
         //memberIdPrefix = "user";
     }
@@ -151,7 +153,7 @@ public class UserFacade {
 
             Member newMember = new Member(memberId, username,password,birthday,country,city,address,name);
             synchronized (membersLock) {
-                members.put(memberId, newMember);
+                members.add(memberId, newMember);
 
             }
             //todo pass the user to login page.
@@ -166,7 +168,7 @@ public class UserFacade {
 
         Member newMember = new Member(memberId, username,password,birthday,country,city,address,name);
         synchronized (membersLock) {
-            members.put(memberId, newMember);
+            members.add(memberId, newMember);
         }
 
         return memberId;
@@ -185,12 +187,11 @@ public class UserFacade {
             throw new Exception("All fields are required.");
         }
         //checking if username is already exist
-        synchronized (members) {
-            for (Member member : members.values()) {
-                if (Objects.equals(member.getUsername(), username)) {
-                    throw new Exception("Username already exists. Please choose a different username.");
-                }
-            }
+
+        Member mem = members.getByUserName(username);
+        if (mem!=null) {
+            throw new Exception("Username already exists. Please choose a different username.");
+
         }
         //todo check validation of the password. - do encription passwords only.
         //todo check validation of the birthday. - do we need to check this, in the gui the user will choose date from the calender.
@@ -211,12 +212,7 @@ public class UserFacade {
     }
 
     public Member getMemberByUsername(String userName) throws Exception {
-        for (Member member : members.values()) {
-            if (member.getUsername().equals(userName)) {
-                return member;
-            }
-        }
-        return null;
+        return getMemberByUsername(userName);
     }
 
     public List<String> getCartStoresByUser(String user_ID)
