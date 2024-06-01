@@ -280,18 +280,16 @@ public class Market {
                 throw new Exception(ExceptionsEnum.sessionOver.toString());
             }
         }
-        if (userFacade.isUserLoggedIn(user_ID)) {
-            if(name != null && !name.equals("")) {
-                int store_ID = this.storeFacade.openStore(name, description);
-                int member_ID = this.userFacade.getUsernameByUserID(user_ID);
-                this.roleFacade.createStoreOwner(member_ID, store_ID, true, -1);
-            }
-            else {
-                throw new IllegalArgumentException("Illegal store name. Store name is empty.");
-            }
-        } else {
-            throw new IllegalArgumentException("The user is not logged in so he cannot open a store");
+        userFacade.isUserLoggedInError(user_ID);
+        if(name != null && !name.equals("")) {
+            int store_ID = this.storeFacade.openStore(name, description);
+            int member_ID = this.userFacade.getUsernameByUserID(user_ID);
+            this.roleFacade.createStoreOwner(member_ID, store_ID, true, -1);
         }
+        else {
+            throw new IllegalArgumentException("Illegal store name. Store name is empty.");
+        }
+
     }
 
     public void addProductToStore(int userId, int storeId, String productName, int price, int quantity,
@@ -485,24 +483,21 @@ public class Market {
                 throw new Exception(ExceptionsEnum.sessionOver.toString());
             }
         }
-        if (userFacade.isUserLoggedIn(user_ID)) {
-            int member_ID = this.userFacade.getUsernameByUserID(user_ID);
-            if (roleFacade.verifyStoreOwner(store_ID, member_ID) && roleFacade.verifyStoreOwnerIsFounder(store_ID, member_ID)) {
-                if (storeFacade.verifyStoreExist(store_ID)) {
-                    storeFacade.closeStore(store_ID);
-                    List<Integer> storeManagers = roleFacade.getAllStoreManagers(store_ID);
-                    List<Integer> storeOwners = roleFacade.getAllStoreOwners(store_ID);
-                    //todo: add function which send notification to all store roles (notification component).
-                    //todo: update use-case parameters
-                } else {
-                    throw new Exception(ExceptionsEnum.storeNotExist.toString());
-                }
+        userFacade.isUserLoggedInError(user_ID);
+        int member_ID = this.userFacade.getUsernameByUserID(user_ID);
+        if (roleFacade.verifyStoreOwner(store_ID, member_ID) && roleFacade.verifyStoreOwnerIsFounder(store_ID, member_ID)) {
+            if (storeFacade.verifyStoreExist(store_ID)) {
+                storeFacade.closeStore(store_ID);
+                List<Integer> storeManagers = roleFacade.getAllStoreManagers(store_ID);
+                List<Integer> storeOwners = roleFacade.getAllStoreOwners(store_ID);
+                //todo: add function which send notification to all store roles (notification component).
+                //todo: update use-case parameters
             } else {
-                throw new Exception("Only store founder can close a store");
+                throw new Exception(ExceptionsEnum.storeNotExist.toString());
             }
+        } else {
+            throw new Exception("Only store founder can close a store");
         }
-        else throw new IllegalArgumentException("User is not logged in, so he cannot close a store");
-
     }
 
     public Map<Integer, String> getInformationAboutRolesInStore(int user_ID, int store_ID) throws Exception {
@@ -516,21 +511,18 @@ public class Market {
         }
         Map<Integer, String> information = null;
 
-        if (userFacade.isUserLoggedIn(user_ID)) {
-            int member_ID = this.userFacade.getUsernameByUserID(user_ID);
-            if (roleFacade.verifyStoreOwner(store_ID, member_ID)) {
-                if (storeFacade.verifyStoreExist(store_ID)) {
-                    information = roleFacade.getInformationAboutStoreRoles(store_ID);
-                }else {
-                    throw new Exception(ExceptionsEnum.storeNotExist.toString());
-                }
-            } else {
-                throw new IllegalArgumentException("Only store owner get information about his store workers");
-            }
-        } else{
-            throw new IllegalArgumentException("User is not logged in, so he get information about the roles int his store");
-        }
+        userFacade.isUserLoggedInError(user_ID);
+        this.verifyUserGetEmployeeInfoIsStoreOwner(user_ID, store_ID);
+        storeFacade.verifyStoreExistError(store_ID);
+        information = roleFacade.getInformationAboutStoreRoles(store_ID);
+
         return information;
+    }
+
+    public void verifyUserGetEmployeeInfoIsStoreOwner(int user_ID, int store_ID){
+        int member_ID = this.userFacade.getUsernameByUserID(user_ID);
+        if (!roleFacade.verifyStoreOwner(store_ID, member_ID))
+            throw new IllegalArgumentException(ExceptionsEnum.userIsNotStoreOwnerSoCantGetEmployeeInfo.toString());
     }
 
     public Map<Integer, List<Integer>> getAuthorizationsOfManagersInStore(int user_ID, int store_ID) throws Exception {
@@ -544,19 +536,16 @@ public class Market {
         }
         Map<Integer, List<Integer>> managersAuthorizations;
 
-        if (userFacade.isUserLoggedIn(user_ID)) {
-            int member_ID = this.userFacade.getUsernameByUserID(user_ID);
-            if (roleFacade.verifyStoreOwner(store_ID, member_ID)) {
-                if (storeFacade.verifyStoreExist(store_ID)) {
-                    managersAuthorizations = roleFacade.getStoreManagersAuthorizations(store_ID);
-                }else {
-                    throw new Exception(ExceptionsEnum.storeNotExist.toString());
-                }
-            } else {
-                throw new IllegalArgumentException("Only store owner can get authorizations of his store managers");
+        userFacade.isUserLoggedInError(user_ID);
+        int member_ID = this.userFacade.getUsernameByUserID(user_ID);
+        if (roleFacade.verifyStoreOwner(store_ID, member_ID)) {
+            if (storeFacade.verifyStoreExist(store_ID)) {
+                managersAuthorizations = roleFacade.getStoreManagersAuthorizations(store_ID);
+            }else {
+                throw new Exception(ExceptionsEnum.storeNotExist.toString());
             }
-        } else{
-            throw new IllegalArgumentException("User is not logged in, so he can't get the authorizations of his store managers");
+        } else {
+            throw new IllegalArgumentException("Only store owner can get authorizations of his store managers");
         }
         return managersAuthorizations;
 
@@ -601,13 +590,12 @@ public class Market {
         List<Integer> closedStores = storeFacade.getInformationAboutClosedStores(); //closed stores available only for owners/ system managers
         List<Integer> closedStoreAvailable = null;
 
-        if (userFacade.isUserLoggedIn(user_ID)) {
-            int member_ID = this.userFacade.getUsernameByUserID(user_ID);
-            if (!this.roleFacade.verifyMemberIsSystemManager(user_ID))
-                closedStoreAvailable = roleFacade.getStoresByOwner(closedStores, member_ID);
-            else
-                closedStoreAvailable = closedStores;
-        }
+        userFacade.isUserLoggedInError(user_ID);
+        int member_ID = this.userFacade.getUsernameByUserID(user_ID);
+        if (!this.roleFacade.verifyMemberIsSystemManager(user_ID))
+            closedStoreAvailable = roleFacade.getStoresByOwner(closedStores, member_ID);
+        else
+            closedStoreAvailable = closedStores;
 
         List<Integer> allAvailableStores = new ArrayList<>(openedStores);
         if (closedStoreAvailable != null) {
@@ -654,20 +642,16 @@ public class Market {
                 throw new Exception(ExceptionsEnum.sessionOver.toString());
             }
         }
-        if (userFacade.isUserLoggedIn(user_ID)) {
-            if (this.roleFacade.verifyMemberIsSystemManager(user_ID))
-            {
-                return paymentServicesFacade.getStorePurchaseInfo(); //returns StoreId and amount of purchases in the store
-            }
-            else
-            {
-                throw new IllegalArgumentException("You are not the system manager, so you can do this action.");
-            }
+        userFacade.isUserLoggedInError(user_ID);
+        if (this.roleFacade.verifyMemberIsSystemManager(user_ID))
+        {
+            return paymentServicesFacade.getStorePurchaseInfo(); //returns StoreId and amount of purchases in the store
         }
         else
         {
-            throw new IllegalArgumentException("You are not logged in.");
+            throw new IllegalArgumentException("You are not the system manager, so you can do this action.");
         }
+
     }
 
 
@@ -683,19 +667,16 @@ public class Market {
         }
         Map<Integer, Integer> storeReceiptsAndTotalAmount = new HashMap<>();
 
-        if (userFacade.isUserLoggedIn(user_ID)) {
-            int member_ID = this.userFacade.getUsernameByUserID(user_ID);
-            if (roleFacade.verifyStoreOwner(store_ID, member_ID)) {
-                if (storeFacade.verifyStoreExist(store_ID)) {
-                    storeReceiptsAndTotalAmount = paymentServicesFacade.getStoreReceiptsAndTotalAmount(store_ID);
-                }else {
-                    throw new Exception(ExceptionsEnum.storeNotExist.toString());
-                }
-            } else {
-                throw new IllegalArgumentException("Only store owner can get information of his purchases");
+        userFacade.isUserLoggedInError(user_ID);
+        int member_ID = this.userFacade.getUsernameByUserID(user_ID);
+        if (roleFacade.verifyStoreOwner(store_ID, member_ID)) {
+            if (storeFacade.verifyStoreExist(store_ID)) {
+                storeReceiptsAndTotalAmount = paymentServicesFacade.getStoreReceiptsAndTotalAmount(store_ID);
+            }else {
+                throw new Exception(ExceptionsEnum.storeNotExist.toString());
             }
-        } else{
-            throw new IllegalArgumentException("User is not logged in, so he can't get purchase history");
+        } else {
+            throw new IllegalArgumentException("Only store owner can get information of his purchases");
         }
         if (storeReceiptsAndTotalAmount.isEmpty())
             throw new IllegalArgumentException("There are no purchases in the store");

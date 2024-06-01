@@ -51,12 +51,10 @@ public class UserFacade {
         return userRepository.get(userID);
     }
 
-    public boolean isUserLoggedIn(int userID){
-
-        return getUserByID(userID).isLoggedIn();
+    public void isUserLoggedInError(int userID){
+        if(!isMember(userID))
+            throw new IllegalArgumentException(ExceptionsEnum.userIsNotMember.toString());
     }
-
-
 
     public int getUsernameByUserID(int userID)
     {
