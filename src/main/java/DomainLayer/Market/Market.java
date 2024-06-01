@@ -275,15 +275,12 @@ public class Market {
             }
         }
         userFacade.isUserLoggedInError(user_ID);
-        if(name != null && !name.equals("")) {
-            int store_ID = this.storeFacade.openStore(name, description);
-            int member_ID = this.userFacade.getUsernameByUserID(user_ID);
-            this.roleFacade.createStoreOwner(member_ID, store_ID, true, -1);
+        if(name == null || name.equals("")) {
+            throw new IllegalArgumentException(ExceptionsEnum.illegalStoreName.toString());
         }
-        else {
-            throw new IllegalArgumentException("Illegal store name. Store name is empty.");
-        }
-
+        int store_ID = this.storeFacade.openStore(name, description);
+        int member_ID = this.userFacade.getUsernameByUserID(user_ID);
+        this.roleFacade.createStoreOwner(member_ID, store_ID, true, -1);
     }
 
     public void addProductToStore(int userId, int storeId, String productName, int price, int quantity,

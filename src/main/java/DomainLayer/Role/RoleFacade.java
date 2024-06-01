@@ -102,12 +102,11 @@ public class RoleFacade {
     }
 
     public void createStoreOwner(int memberId, int storeId, boolean founder, int nominatorMemberId) throws Exception {
-        if (!verifyStoreOwner(storeId, memberId)) {
-            StoreOwner newStoreOwner = new StoreOwner(memberId, storeId, founder, nominatorMemberId);
-            addNewStoreOwnerToTheMarket(newStoreOwner);
-        } else {
-            throw new Exception("Member is already owner of this store");
-        }
+        if(verifyStoreOwner(storeId, memberId))
+            throw new Exception(ExceptionsEnum.memberIsAlreadyStoreOwner.toString());
+
+        StoreOwner newStoreOwner = new StoreOwner(memberId, storeId, founder, nominatorMemberId);
+        addNewStoreOwnerToTheMarket(newStoreOwner);
     }
 
     public void createStoreManager(int memberId, int storeId,

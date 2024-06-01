@@ -61,8 +61,15 @@ package Util;
         storeOwnerIsNotFounder{
             public String toString() {
                 return "Only store founder can close a store";}
+        illegalStoreName{
+            public String toString() {
+                return "Illegal store name. Store name is empty.";}
+        },
+        memberIsAlreadyStoreOwner{
+            public String toString() {
+                return "Member is already owner of this store";
+            }
         }
-
     }
 
 
