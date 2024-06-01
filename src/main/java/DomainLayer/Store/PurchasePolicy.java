@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class PurchasePolicy {
-    private List<Integer> usersIdsActivatePolicy;
+    private List<String> usersIdsActivatePolicy;
     private List<String> productNamesActivatePolicy;
     private Purchase purchase;
 
@@ -15,7 +15,7 @@ public class PurchasePolicy {
         this.purchase = new Purchase(); //Default purchase policy
     }
 
-    public boolean checkPurchasePolicy(int userId, String productName)
+    public boolean checkPurchasePolicy(String userId, String productName)
     {
         //No requirement to policy policy, return true
         return true;

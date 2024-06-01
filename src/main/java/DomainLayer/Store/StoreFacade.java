@@ -8,18 +8,18 @@ public class StoreFacade {
     private static StoreFacade storeFacadeInstance;
     //Map<Integer, Store> allStores = new HashMap<Integer, Store>();
     private StoreRepository allStores ;
-    private int currentStoreID;
+    //private int currentStoreID;
     //private Object allStoresLock;
-    private Object storeIdLock;
+    //private Object storeIdLock;
 
 
     private StoreFacade()
     {
-        this.currentStoreID = 0;
+        //this.currentStoreID = 0;
         allStores = new StoreMemoryRepository();
 
         //allStoresLock = new Object();
-        storeIdLock = new Object();
+        //storeIdLock = new Object();
 
     }
 
@@ -35,25 +35,29 @@ public class StoreFacade {
         return storeFacadeInstance;
     }
 
-    public void returnProductToStore(Map<String, Integer> products , int storeId){
+    public void returnProductToStore(Map<String, Integer> products , String storeId){
         getStoreByID(storeId).returnProductToStore(products);
     }
 
-    public Store getStoreByID(int storeID){
+    public Store getStoreByID(String storeID){
         return allStores.get(storeID);
     }
 
-    public int openStore(String name, String description)
+    public String getNewStoreId(){
+        UUID uuid = UUID.randomUUID();
+        String storeId = "store" + uuid.toString();
+        return storeId;
+    }
+
+    public String openStore(String name, String description)
     {
-        Store newStore = new Store(currentStoreID, name, description); //todo: add this to list in repository
-        this.allStores.add(currentStoreID, newStore);
-        synchronized (storeIdLock) {
-            this.currentStoreID++;
-        }
+        String storeId = getNewStoreId();
+        Store newStore = new Store(storeId, name, description); //todo: add this to list in repository
+        this.allStores.add(storeId, newStore);
         return newStore.getStoreID();
     }
 
-    public boolean checkQuantityAndPolicies(String productName, int quantity, int storeId, int userId) {
+    public boolean checkQuantityAndPolicies(String productName, int quantity, String storeId, String userId) {
         this.checkIfProductExists(productName, storeId);
         this.checkProductQuantityAvailability(productName, storeId, quantity);
         this.checkIfProductQuantityIsPositive(quantity);
@@ -65,7 +69,7 @@ public class StoreFacade {
         return true;
     }
 
-    public void checkIfProductExists(String productName, int storeId){
+    public void checkIfProductExists(String productName, String storeId){
         Store store = getStoreByID(storeId);
         if (!store.checkProductExists(productName))
         {
@@ -73,7 +77,7 @@ public class StoreFacade {
         }
     }
 
-    public void checkProductQuantityAvailability(String productName, int storeId, int quantity)
+    public void checkProductQuantityAvailability(String productName, String storeId, int quantity)
     {
         Store store = getStoreByID(storeId);
         if (!store.checkProductQuantity(productName, quantity))
@@ -90,7 +94,7 @@ public class StoreFacade {
         }
     }
 
-    public void checkPurchasePolicy(String productName, int storeId, int userId)
+    public void checkPurchasePolicy(String productName, String storeId, String userId)
     {
         Store store = getStoreByID(storeId);
 
@@ -100,7 +104,7 @@ public class StoreFacade {
         }
     }
 
-    public void checkDiscountPolicy(String productName, int storeId, int userId)
+    public void checkDiscountPolicy(String productName, String storeId, String userId)
     {
         Store store = getStoreByID(storeId);
 
@@ -110,14 +114,14 @@ public class StoreFacade {
         }
     }
 
-    public int calcPrice(String productName, int quantity, int storeId, int userId)
+    public int calcPrice(String productName, int quantity, String storeId, String userId)
     {
         Store store = getStoreByID(storeId);
         return store.calcPriceInStore(productName, quantity, userId);
     }
 
 
-    public void addProductToStore(int storeId, String productName, int price, int quantity,
+    public void addProductToStore(String storeId, String productName, int price, int quantity,
                                                                 String description, String categoryStr) throws Exception {
 
         if (!checkProductExistInStore(productName, storeId)) {
@@ -131,7 +135,7 @@ public class StoreFacade {
         }
     }
 
-    public void removeProductFromStore(int storeId, String productName) throws Exception {
+    public void removeProductFromStore(String storeId, String productName) throws Exception {
         if (checkProductExistInStore(productName, storeId)) {
             allStores.get(storeId).removeProduct(productName);
         } else {
@@ -140,7 +144,7 @@ public class StoreFacade {
 
     }
 
-    public void updateProductInStore(int storeId, String productName, int price, int quantity,
+    public void updateProductInStore(String storeId, String productName, int price, int quantity,
                                                                 String description, String categoryStr) throws Exception {
 
         if (checkProductExistInStore(productName, storeId)) {
@@ -154,17 +158,17 @@ public class StoreFacade {
         }
     }
 
-    public boolean verifyStoreExist(int storeID)
+    public boolean verifyStoreExist(String storeID)
     {
         return getStoreByID(storeID) != null;
     }
 
-    public void verifyStoreExistError(int storeID) throws Exception {
+    public void verifyStoreExistError(String storeID) throws Exception {
         if(!verifyStoreExist(storeID))
             throw new Exception(ExceptionsEnum.storeNotExist.toString());
     }
 
-    public void closeStore(int store_ID) throws Exception
+    public void closeStore(String store_ID) throws Exception
     {
         Store storeToClose = this.getStoreByID(store_ID);
         if (!storeToClose.getIsOpened()){
@@ -173,9 +177,9 @@ public class StoreFacade {
         storeToClose.closeStore();
     }
 
-    public List<Integer> getInformationAboutOpenStores()
+    public List<String> getInformationAboutOpenStores()
     {
-        List<Integer> openStoreInformation = new ArrayList<>();
+        List<String> openStoreInformation = new ArrayList<>();
             for (Store store : allStores.getAll()) {
                 //int storeId = entry.getKey();
                 //Store store = entry.getValue();
@@ -185,8 +189,8 @@ public class StoreFacade {
         return openStoreInformation;
     }
 
-    public List<Integer> getInformationAboutClosedStores() {
-        List<Integer> closedStoreInformation = new ArrayList<>();
+    public List<String> getInformationAboutClosedStores() {
+        List<String> closedStoreInformation = new ArrayList<>();
         for (Store store : allStores.getAll()) {
             //int storeId = entry.getKey();
             //Store store = entry.getValue();
@@ -198,23 +202,23 @@ public class StoreFacade {
         return closedStoreInformation;
     }
 
-    public List<String> getStoreProducts(int store_ID)
+    public List<String> getStoreProducts(String store_ID)
     {
         Store store = getStoreByID(store_ID);
         return store.getProducts();
     }
 
-    public int calculateTotalCartPriceAfterDiscount(int store_ID, Map<String, List<Integer>> products, int totalPriceBeforeDiscount) {
+    public int calculateTotalCartPriceAfterDiscount(String store_ID, Map<String, List<Integer>> products, int totalPriceBeforeDiscount) {
         return totalPriceBeforeDiscount; //In the future - check discount and calculate price by policies
     }
-    public List<String> inStoreProductSearch(String productName, String categoryStr, List<String> keywords, int storeId)
+    public List<String> inStoreProductSearch(String productName, String categoryStr, List<String> keywords, String storeId)
     {
         Store storeToSearchIn = getStoreByID(storeId);
         List<String> filteredProducts = storeToSearchIn.matchProducts(productName, categoryStr, keywords);
         return filteredProducts;
     }
 
-    public List<String> inStoreProductFilter(String categoryStr, List<String> keywords, Integer minPrice, Integer maxPrice, Double minRating, Integer storeId, List<String> productsFromSearch, Double storeMinRating)
+    public List<String> inStoreProductFilter(String categoryStr, List<String> keywords, Integer minPrice, Integer maxPrice, Double minRating, String storeId, List<String> productsFromSearch, Double storeMinRating)
     {
         Store storeToSearchIn = getStoreByID(storeId);
         List<String> filteredProducts = storeToSearchIn.filterProducts(categoryStr, keywords, minPrice, maxPrice, minRating, productsFromSearch, storeMinRating);
@@ -226,19 +230,19 @@ public class StoreFacade {
         return !(Category.fromString(categoryStr) == null);
     }
 
-    public boolean checkProductExistInStore(String productName, int storeId)
+    public boolean checkProductExistInStore(String productName, String storeId)
     {
         Store store = getStoreByID(storeId);
         return store.checkProductExists(productName);
     }
 
-    public List<Integer> getStores() {
+    public List<String> getStores() {
 
             return allStores.getAllIds();
         }
 
 
-    public void addReceiptToStore(int storeId, int receiptId, int userId)
+    public void addReceiptToStore(String storeId, String  receiptId, String userId)
     {
         allStores.get(storeId).addReceipt(receiptId, userId);
     }

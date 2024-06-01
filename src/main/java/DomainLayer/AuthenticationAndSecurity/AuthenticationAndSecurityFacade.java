@@ -23,11 +23,11 @@ public class AuthenticationAndSecurityFacade {
         return instance;
     }
 
-    public String generateToken(int userId){
+    public String generateToken(String userId){
         return tokensService.generateToken(userId);
     }
 
-    public String getToken(int userId){
+    public String getToken(String userId){
         return tokensService.getToken(userId);
     }
 
@@ -35,7 +35,7 @@ public class AuthenticationAndSecurityFacade {
         return passwordEncryptor.encryptPassword(password);
     }
 
-    public void removeToken(int userId){
+    public void removeToken(String userId){
         tokensService.removeToken(userId);
     }
 

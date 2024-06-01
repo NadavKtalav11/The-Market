@@ -15,7 +15,7 @@ public class Market {
     private static Market MarketInstance;
     private PaymentServicesFacade paymentServicesFacade;
     private SupplyServicesFacade supplyServicesFacade;
-    private Set<Integer> systemManagerIds;
+    private Set<String> systemManagerIds;
     private AuthenticationAndSecurityFacade authenticationAndSecurityFacade;
     private StoreFacade storeFacade;
     private UserFacade userFacade;
@@ -86,8 +86,8 @@ public class Market {
             throw e;  // Re-throwing the exception to be handled by the caller
         }
         String encrypted = authenticationAndSecurityFacade.encodePassword(password);
-        int firstUserID = enterMarketSystem();
-        int systemMangerId = userFacade.register(firstUserID,userName, encrypted, birthday,country,city,address,name);
+        String firstUserID = enterMarketSystem();
+        String systemMangerId = userFacade.register(firstUserID,userName, encrypted, birthday,country,city,address,name);
         //int systemMangerId = userFacade.registerSystemAdmin(userName, encrypted, birthday,country,city,address,name);
         systemManagerIds.add(systemMangerId);
         paymentServicesFacade.addExternalService(licensedDealerNumber,paymentServiceName,url);
@@ -160,19 +160,19 @@ public class Market {
         }
     }
 
-    public Set<Integer> getSystemManagerIds(){
+    public Set<String> getSystemManagerIds(){
         return systemManagerIds;
     }
 
 
-    public void payWithExternalPaymentService(int price,String creditCard, int cvv, int month, int year, String holderID, int userId, Map<Integer, Map<String, Integer>> productList) throws Exception{
-        if(price<= 0 || month> 12 || month<1 ||year < 2020 ||holderID==null||userId<0 ||productList==null) {
+    public void payWithExternalPaymentService(int price,String creditCard, int cvv, int month, int year, String holderID, String userId, Map<String, Map<String, Integer>> productList) throws Exception{
+        if(price<= 0 || month> 12 || month<1 ||year < 2020 ||holderID==null ||productList==null) {
             throw new Exception("There is a problem with the provided payment measure or details of the order.\n");
         }
         if(paymentServicesFacade.getAllPaymentServices().size()<1){
             throw new Exception("There is no available external payment system.\n");
         }
-        Map<Integer,Integer> receiptIdStoreId = paymentServicesFacade.pay(price, creditCard, cvv, month, year, holderID, userId, productList); //<receiptId, storeId>
+        Map<String,String> receiptIdStoreId = paymentServicesFacade.pay(price, creditCard, cvv, month, year, holderID, userId, productList); //<receiptId, storeId>
         //print when implement notifications (purchase successes)
 
         //Add the receiptId and storeId to the user receipts map
@@ -181,38 +181,38 @@ public class Market {
             userFacade.addReceiptToUser(receiptIdStoreId, userId);
         }
         //Add the receiptId and userId to the store receipts map
-        for (Integer receiptId : receiptIdStoreId.keySet()) {
+        for (String receiptId : receiptIdStoreId.keySet()) {
             storeFacade.addReceiptToStore(receiptIdStoreId.get(receiptId), receiptId, userId);
         }
     }
 
-    public void paymentFailed(int user_ID) throws Exception {
+    public void paymentFailed(String user_ID) throws Exception {
         returnStock(getPurchaseList(user_ID));
     }
 
-    public void returnStock(Map<Integer, Map<String, Integer>> products){
-        for (Integer storeId: products.keySet()){
+    public void returnStock(Map<String, Map<String, Integer>> products){
+        for (String storeId: products.keySet()){
             storeFacade.returnProductToStore(products.get(storeId), storeId);
         }
     }
 
-    public void logout(int userId){
+    public void logout(String userId){
         //todo add condition if the user is logged in
         userFacade.getUserByID(userId).Logout();
         authenticationAndSecurityFacade.removeToken(userId);
     }
 
 
-    public void exitMarketSystem(int userID){
-        userFacade.exitMarketSystem(userID);
+    public void exitMarketSystem(String userId){
+        userFacade.exitMarketSystem(userId);
     }
 
 
-    public int enterMarketSystem(){
+    public String enterMarketSystem(){
         return userFacade.addUser();
     }
 
-    public void register( int userId,String username, String password, String birthday,String country, String city, String address, String name) throws Exception {
+    public void register( String userId,String username, String password, String birthday,String country, String city, String address, String name) throws Exception {
         //check password validation
         if (password == null || password.equals("")){
             throw new Exception("All fields are required.");
@@ -222,15 +222,15 @@ public class Market {
         authenticationAndSecurityFacade.generateToken(userId);
     }
 
-    public void Login(int userID,String username, String password) throws Exception {
+    public void Login(String userId,String username, String password) throws Exception {
         String encryptedPassword = authenticationAndSecurityFacade.encodePassword(password);
-        userFacade.Login(userID, username,encryptedPassword);
-        authenticationAndSecurityFacade.generateToken(userID);
+        userFacade.Login(userId, username,encryptedPassword);
+        authenticationAndSecurityFacade.generateToken(userId);
     }
 
-    public void addProductToBasket(String productName, int quantity, int storeId, int userId) throws Exception {
+    public void addProductToBasket(String productName, int quantity, String storeId, String userId) throws Exception {
         if (userFacade.isMember(userId)){
-            int memberId = userFacade.getMemberIdByUserId(userId);
+            String memberId = userFacade.getMemberIdByUserId(userId);
             boolean succeeded = authenticationAndSecurityFacade.validateToken(authenticationAndSecurityFacade.getToken(memberId));
             if (!succeeded) {
                 logout(userId);
@@ -249,10 +249,10 @@ public class Market {
         }
     }
 
-    public void removeProductFromBasket(String productName, int storeId, int userId)throws Exception
+    public void removeProductFromBasket(String productName, String storeId, String userId)throws Exception
     {
         if (userFacade.isMember(userId)) {
-            int memberId = userFacade.getMemberIdByUserId(userId);
+            String memberId = userFacade.getMemberIdByUserId(userId);
             boolean succeeded = authenticationAndSecurityFacade.validateToken(authenticationAndSecurityFacade.getToken(memberId));
             if (!succeeded) {
                 logout(userId);
@@ -271,9 +271,9 @@ public class Market {
     }
 
 
-    public void openStore(int user_ID, String name, String description)throws Exception {
+    public void openStore(String user_ID, String name, String description)throws Exception {
         if (userFacade.isMember(user_ID)) {
-            int memberId = userFacade.getMemberIdByUserId(user_ID);
+            String memberId = userFacade.getMemberIdByUserId(user_ID);
             boolean succeeded = authenticationAndSecurityFacade.validateToken(authenticationAndSecurityFacade.getToken(memberId));
             if (!succeeded) {
                 logout(user_ID);
@@ -282,9 +282,9 @@ public class Market {
         }
         userFacade.isUserLoggedInError(user_ID);
         if(name != null && !name.equals("")) {
-            int store_ID = this.storeFacade.openStore(name, description);
-            int member_ID = this.userFacade.getUsernameByUserID(user_ID);
-            this.roleFacade.createStoreOwner(member_ID, store_ID, true, -1);
+            String store_ID = this.storeFacade.openStore(name, description);
+            String member_ID = this.userFacade.getMemberIdByUserId(user_ID);
+            this.roleFacade.createStoreOwner(member_ID, store_ID, true, "no nominator");
         }
         else {
             throw new IllegalArgumentException("Illegal store name. Store name is empty.");
@@ -292,7 +292,7 @@ public class Market {
 
     }
 
-    public void addProductToStore(int userId, int storeId, String productName, int price, int quantity,
+    public void addProductToStore(String userId, String storeId, String productName, int price, int quantity,
                                                         String description, String categoryStr) throws Exception {
         if (userFacade.getUserByID(userId) != null){
             if (userFacade.isMember(userId)) {
@@ -301,7 +301,7 @@ public class Market {
                     logout(userId);
                     throw new Exception(ExceptionsEnum.sessionOver.toString());
                 }
-                int memberId = userFacade.getMemberIdByUserId(userId);
+                String memberId = userFacade.getMemberIdByUserId(userId);
                 if (storeFacade.getStoreByID(storeId) != null){
                     if (roleFacade.verifyStoreOwner(storeId, memberId) ||
                             (roleFacade.verifyStoreManager(storeId, memberId) &&
@@ -321,7 +321,7 @@ public class Market {
         }
     }
 
-    public void removeProductFromStore(int userId, int storeId, String productName) throws Exception {
+    public void removeProductFromStore(String userId, String storeId, String productName) throws Exception {
         if (userFacade.getUserByID(userId) != null){
             if (userFacade.isMember(userId)) {
                 boolean succeeded = authenticationAndSecurityFacade.validateToken(authenticationAndSecurityFacade.getToken(userId));
@@ -329,7 +329,7 @@ public class Market {
                     logout(userId);
                     throw new Exception(ExceptionsEnum.sessionOver.toString());
                 }
-                int memberId = userFacade.getMemberIdByUserId(userId);
+                String memberId = userFacade.getMemberIdByUserId(userId);
                 if (storeFacade.getStoreByID(storeId) != null) {
                     if (roleFacade.verifyStoreOwner(storeId, memberId) ||
                             (roleFacade.verifyStoreManager(storeId, memberId) &&
@@ -349,7 +349,7 @@ public class Market {
         }
     }
 
-    public void updateProductInStore(int userId, int storeId, String productName, int price, int quantity,
+    public void updateProductInStore(String userId, String storeId, String productName, int price, int quantity,
                                                         String description, String categoryStr) throws Exception {
         if (userFacade.getUserByID(userId) != null) {
             if (userFacade.isMember(userId)) {
@@ -358,7 +358,7 @@ public class Market {
                     logout(userId);
                     throw new Exception(ExceptionsEnum.sessionOver.toString());
                 }
-                int memberId = userFacade.getMemberIdByUserId(userId);
+                String memberId = userFacade.getMemberIdByUserId(userId);
                 if (storeFacade.getStoreByID(storeId) != null) {
                     if (roleFacade.verifyStoreOwner(storeId, memberId) ||
                             (roleFacade.verifyStoreManager(storeId, memberId) &&
@@ -378,7 +378,7 @@ public class Market {
         }
     }
 
-    public void appointStoreOwner(int nominatorUserId, String nominatedUsername, int storeId) throws Exception {
+    public void appointStoreOwner(String nominatorUserId, String nominatedUsername, String storeId) throws Exception {
         if (userFacade.getUserByID(nominatorUserId) != null) {
             if (userFacade.isMember(nominatorUserId)) {
                 boolean succeeded = authenticationAndSecurityFacade.validateToken(authenticationAndSecurityFacade.getToken(nominatorUserId));
@@ -386,30 +386,30 @@ public class Market {
                     logout(nominatorUserId);
                     throw new Exception(ExceptionsEnum.sessionOver.toString());
                 }
-                int nominatorMemberID = userFacade.getMemberIdByUserId(nominatorUserId);
+                String nominatorMemberID = userFacade.getMemberIdByUserId(nominatorUserId);
                 if (storeFacade.getStoreByID(storeId) != null) {
                     if (roleFacade.verifyStoreOwner(storeId, nominatorMemberID)) {
                         if (userFacade.getMemberByUsername(nominatedUsername) != null) {
-                            int nominatedMemberID = userFacade.getMemberByUsername(nominatedUsername).getMemberID();
+                            String nominatedMemberID = userFacade.getMemberByUsername(nominatedUsername).getMemberID();
                             roleFacade.createStoreOwner(nominatedMemberID, storeId, false, nominatorMemberID);
                         } else {
                             throw new Exception("Username was not found");
                         }
                     } else {
-                        throw new Exception("User has no permission to appoint store owner");
+                        throw new Exception("User has no permission to appoString store owner");
                     }
                 } else {
                     throw new Exception(ExceptionsEnum.storeNotExist.toString());
                 }
             } else {
-                throw new Exception("User has no permission to appoint store owner");
+                throw new Exception("User has no permission to appoString store owner");
             }
         } else {
             throw new Exception(ExceptionsEnum.userNotExist.toString());
         }
     }
 
-    public void appointStoreManager(int nominatorUserId, String nominatedUsername, int storeId,
+    public void appointStoreManager(String nominatorUserId, String nominatedUsername, String storeId,
                                     boolean inventoryPermissions, boolean purchasePermissions) throws Exception {
         if (userFacade.getUserByID(nominatorUserId) != null) {
             if (userFacade.isMember(nominatorUserId)) {
@@ -418,30 +418,30 @@ public class Market {
                     logout(nominatorUserId);
                     throw new Exception(ExceptionsEnum.sessionOver.toString());
                 }
-                int nominatorMemberID = userFacade.getMemberIdByUserId(nominatorUserId);
+                String nominatorMemberID = userFacade.getMemberIdByUserId(nominatorUserId);
                 if (storeFacade.getStoreByID(storeId) != null) {
                     if (roleFacade.verifyStoreOwner(storeId, nominatorMemberID)) {
                         if (userFacade.getMemberByUsername(nominatedUsername) != null) {
-                            int nominatedMemberID = userFacade.getMemberByUsername(nominatedUsername).getMemberID();
+                            String nominatedMemberID = userFacade.getMemberByUsername(nominatedUsername).getMemberID();
                             roleFacade.createStoreManager(nominatedMemberID, storeId, inventoryPermissions, purchasePermissions, nominatorMemberID);
                         } else {
                             throw new Exception("Username was not found");
                         }
                     } else {
-                        throw new Exception("User has no permission to appoint store manager");
+                        throw new Exception("User has no permission to appoString store manager");
                     }
                 } else {
                     throw new Exception(ExceptionsEnum.storeNotExist.toString());
                 }
             } else {
-                throw new Exception("User has no permission to appoint store manager");
+                throw new Exception("User has no permission to appoString store manager");
             }
         } else {
             throw new Exception(ExceptionsEnum.userNotExist.toString());
         }
     }
 
-    public void updateStoreManagerPermissions(int nominatorUserId, String nominatedUsername, int storeId,
+    public void updateStoreManagerPermissions(String nominatorUserId, String nominatedUsername, String storeId,
                                     boolean inventoryPermissions, boolean purchasePermissions) throws Exception {
         if (userFacade.getUserByID(nominatorUserId) != null) {
             if (userFacade.isMember(nominatorUserId)) {
@@ -450,11 +450,11 @@ public class Market {
                     logout(nominatorUserId);
                     throw new Exception(ExceptionsEnum.sessionOver.toString());
                 }
-                int nominatorMemberID = userFacade.getMemberIdByUserId(nominatorUserId);
+                String nominatorMemberID = userFacade.getMemberIdByUserId(nominatorUserId);
                 if (storeFacade.getStoreByID(storeId) != null) {
                     if (roleFacade.verifyStoreOwner(storeId, nominatorMemberID)) {
                         if (userFacade.getMemberByUsername(nominatedUsername) != null) {
-                            int nominatedMemberID = userFacade.getMemberByUsername(nominatedUsername).getMemberID();
+                            String nominatedMemberID = userFacade.getMemberByUsername(nominatedUsername).getMemberID();
                             roleFacade.updateStoreManagerPermissions(nominatedMemberID, storeId, inventoryPermissions, purchasePermissions, nominatorMemberID);
                         } else {
                             throw new Exception("Username was not found");
@@ -473,10 +473,10 @@ public class Market {
         }
     }
 
-    public void closeStore(int user_ID, int store_ID) throws Exception
+    public void closeStore(String user_ID, String store_ID) throws Exception
     {
         if (userFacade.isMember(user_ID)) {
-            int memberId = userFacade.getMemberIdByUserId(user_ID);
+            String memberId = userFacade.getMemberIdByUserId(user_ID);
             boolean succeeded = authenticationAndSecurityFacade.validateToken(authenticationAndSecurityFacade.getToken(memberId));
             if (!succeeded) {
                 logout(user_ID);
@@ -484,12 +484,12 @@ public class Market {
             }
         }
         userFacade.isUserLoggedInError(user_ID);
-        int member_ID = this.userFacade.getUsernameByUserID(user_ID);
+        String member_ID = this.userFacade.getMemberIdByUserId(user_ID);
         if (roleFacade.verifyStoreOwner(store_ID, member_ID) && roleFacade.verifyStoreOwnerIsFounder(store_ID, member_ID)) {
             if (storeFacade.verifyStoreExist(store_ID)) {
                 storeFacade.closeStore(store_ID);
-                List<Integer> storeManagers = roleFacade.getAllStoreManagers(store_ID);
-                List<Integer> storeOwners = roleFacade.getAllStoreOwners(store_ID);
+                List<String> storeManagers = roleFacade.getAllStoreManagers(store_ID);
+                List<String> storeOwners = roleFacade.getAllStoreOwners(store_ID);
                 //todo: add function which send notification to all store roles (notification component).
                 //todo: update use-case parameters
             } else {
@@ -500,16 +500,16 @@ public class Market {
         }
     }
 
-    public Map<Integer, String> getInformationAboutRolesInStore(int user_ID, int store_ID) throws Exception {
+    public Map<String, String> getInformationAboutRolesInStore(String user_ID, String store_ID) throws Exception {
         if (userFacade.isMember(user_ID)) {
-            int memberId = userFacade.getMemberIdByUserId(user_ID);
+            String memberId = userFacade.getMemberIdByUserId(user_ID);
             boolean succeeded = authenticationAndSecurityFacade.validateToken(authenticationAndSecurityFacade.getToken(memberId));
             if (!succeeded) {
                 logout(user_ID);
                 throw new Exception(ExceptionsEnum.sessionOver.toString());
             }
         }
-        Map<Integer, String> information = null;
+        Map<String, String> information = null;
 
         userFacade.isUserLoggedInError(user_ID);
         this.verifyUserGetEmployeeInfoIsStoreOwner(user_ID, store_ID);
@@ -519,25 +519,25 @@ public class Market {
         return information;
     }
 
-    public void verifyUserGetEmployeeInfoIsStoreOwner(int user_ID, int store_ID){
-        int member_ID = this.userFacade.getUsernameByUserID(user_ID);
+    public void verifyUserGetEmployeeInfoIsStoreOwner(String user_ID, String store_ID) throws Exception {
+        String member_ID = this.userFacade.getMemberIdByUserId(user_ID);
         if (!roleFacade.verifyStoreOwner(store_ID, member_ID))
             throw new IllegalArgumentException(ExceptionsEnum.userIsNotStoreOwnerSoCantGetEmployeeInfo.toString());
     }
 
-    public Map<Integer, List<Integer>> getAuthorizationsOfManagersInStore(int user_ID, int store_ID) throws Exception {
+    public Map<String, List<Integer>> getAuthorizationsOfManagersInStore(String user_ID, String store_ID) throws Exception {
         if (userFacade.isMember(user_ID)) {
-            int memberId = userFacade.getMemberIdByUserId(user_ID);
+            String memberId = userFacade.getMemberIdByUserId(user_ID);
             boolean succeeded = authenticationAndSecurityFacade.validateToken(authenticationAndSecurityFacade.getToken(memberId));
             if (!succeeded) {
                 logout(user_ID);
                 throw new Exception(ExceptionsEnum.sessionOver.toString());
             }
         }
-        Map<Integer, List<Integer>> managersAuthorizations;
+        Map<String, List<Integer>> managersAuthorizations;
 
         userFacade.isUserLoggedInError(user_ID);
-        int member_ID = this.userFacade.getUsernameByUserID(user_ID);
+        String member_ID = this.userFacade.getMemberIdByUserId(user_ID);
         if (roleFacade.verifyStoreOwner(store_ID, member_ID)) {
             if (storeFacade.verifyStoreExist(store_ID)) {
                 managersAuthorizations = roleFacade.getStoreManagersAuthorizations(store_ID);
@@ -552,20 +552,20 @@ public class Market {
     }
 
 
-   // public List<Integer> getInformationAboutStores(int user_ID)throws Exception
+   // public List<Integer> getInformationAboutStores(String user_ID)throws Exception
 
-    public Map<Integer, Map<String, Integer>> getPurchaseList(int userId)throws Exception{
+    public Map<String, Map<String, Integer>> getPurchaseList(String userId)throws Exception{
         if (userFacade.isMember(userId)) {
-            int memberId = userFacade.getMemberIdByUserId(userId);
+            String memberId = userFacade.getMemberIdByUserId(userId);
             boolean succeeded = authenticationAndSecurityFacade.validateToken(authenticationAndSecurityFacade.getToken(memberId));
             if (!succeeded) {
                 logout(userId);
                 throw new Exception(ExceptionsEnum.sessionOver.toString());
             }
         }
-        Map<Integer, Map<String, Integer>> purchaseList = new HashMap<>();
-        List<Integer> usersStores = userFacade.getCartStoresByUser(userId);
-        for (Integer storeId: usersStores) {
+        Map<String, Map<String, Integer>> purchaseList = new HashMap<>();
+        List<String> usersStores = userFacade.getCartStoresByUser(userId);
+        for (String storeId: usersStores) {
             Map<String, Integer> productAndQuantity = new HashMap<>();
             purchaseList.put(storeId, productAndQuantity) ;
             Map <String, List<Integer>> returnedMap = userFacade.getCartProductsByStoreAndUser(storeId , userId);
@@ -577,27 +577,27 @@ public class Market {
         return purchaseList;
     }
 
-    public List<Integer> getInformationAboutStores(int user_ID) throws Exception {
+    public List<String> getInformationAboutStores(String user_ID) throws Exception {
         if (userFacade.isMember(user_ID)) {
-            int memberId = userFacade.getMemberIdByUserId(user_ID);
+            String memberId = userFacade.getMemberIdByUserId(user_ID);
             boolean succeeded = authenticationAndSecurityFacade.validateToken(authenticationAndSecurityFacade.getToken(memberId));
             if (!succeeded) {
                 logout(user_ID);
                 throw new Exception(ExceptionsEnum.sessionOver.toString());
             }
         }
-        List<Integer> openedStores = storeFacade.getInformationAboutOpenStores(); // open stores available for everyone
-        List<Integer> closedStores = storeFacade.getInformationAboutClosedStores(); //closed stores available only for owners/ system managers
-        List<Integer> closedStoreAvailable = null;
+        List<String> openedStores = storeFacade.getInformationAboutOpenStores(); // open stores available for everyone
+        List<String> closedStores = storeFacade.getInformationAboutClosedStores(); //closed stores available only for owners/ system managers
+        List<String> closedStoreAvailable = null;
 
         userFacade.isUserLoggedInError(user_ID);
-        int member_ID = this.userFacade.getUsernameByUserID(user_ID);
+        String member_ID = this.userFacade.getMemberIdByUserId(user_ID);
         if (!this.roleFacade.verifyMemberIsSystemManager(user_ID))
             closedStoreAvailable = roleFacade.getStoresByOwner(closedStores, member_ID);
         else
             closedStoreAvailable = closedStores;
 
-        List<Integer> allAvailableStores = new ArrayList<>(openedStores);
+        List<String> allAvailableStores = new ArrayList<>(openedStores);
         if (closedStoreAvailable != null) {
             allAvailableStores.addAll(closedStoreAvailable);
         }
@@ -605,10 +605,10 @@ public class Market {
         return allAvailableStores;
     }
 
-    public void modifyShoppingCart(String productName, int quantity, int storeId, int userId)throws Exception
+    public void modifyShoppingCart(String productName, int quantity, String storeId, String userId)throws Exception
     {
         if (userFacade.isMember(userId)) {
-            int memberId = userFacade.getMemberIdByUserId(userId);
+            String memberId = userFacade.getMemberIdByUserId(userId);
             boolean succeeded = authenticationAndSecurityFacade.validateToken(authenticationAndSecurityFacade.getToken(memberId));
             if (!succeeded) {
                 logout(userId);
@@ -632,10 +632,10 @@ public class Market {
         }
     }
 
-    public Map<Integer, Integer> marketManagerAskInfo(int user_ID)throws Exception
+    public Map<String, Integer> marketManagerAskInfo(String user_ID)throws Exception
     {
         if (userFacade.isMember(user_ID)) {
-            int memberId = userFacade.getMemberIdByUserId(user_ID);
+            String memberId = userFacade.getMemberIdByUserId(user_ID);
             boolean succeeded = authenticationAndSecurityFacade.validateToken(authenticationAndSecurityFacade.getToken(memberId));
             if (!succeeded) {
                 logout(user_ID);
@@ -656,19 +656,19 @@ public class Market {
 
 
 
-    public Map<Integer, Integer> storeOwnerGetInfoAboutStore(int user_ID, int store_ID) throws Exception //return receiptId and total amount in the receipt for the specific store
+    public Map<String, Integer> storeOwnerGetInfoAboutStore(String user_ID, String store_ID) throws Exception //return receiptId and total amount in the receipt for the specific store
     {
         if (userFacade.isMember(user_ID)) {
-            int memberId = userFacade.getMemberIdByUserId(user_ID);
+            String memberId = userFacade.getMemberIdByUserId(user_ID);
             boolean succeeded = authenticationAndSecurityFacade.validateToken(authenticationAndSecurityFacade.getToken(memberId));if (!succeeded) {
                 logout(user_ID);
                 throw new Exception(ExceptionsEnum.sessionOver.toString());
             }
         }
-        Map<Integer, Integer> storeReceiptsAndTotalAmount = new HashMap<>();
+        Map<String, Integer> storeReceiptsAndTotalAmount = new HashMap<>();
 
         userFacade.isUserLoggedInError(user_ID);
-        int member_ID = this.userFacade.getUsernameByUserID(user_ID);
+        String member_ID = this.userFacade.getMemberIdByUserId(user_ID);
         if (roleFacade.verifyStoreOwner(store_ID, member_ID)) {
             if (storeFacade.verifyStoreExist(store_ID)) {
                 storeReceiptsAndTotalAmount = paymentServicesFacade.getStoreReceiptsAndTotalAmount(store_ID);
@@ -683,9 +683,9 @@ public class Market {
         return storeReceiptsAndTotalAmount;
     }
 
-    public int checkingCartValidationBeforePurchase(int user_ID, String country, String city, String address) throws Exception {
+    public int checkingCartValidationBeforePurchase(String user_ID, String country, String city, String address) throws Exception {
         if (userFacade.isMember(user_ID)) {
-            int memberId = userFacade.getMemberIdByUserId(user_ID);
+            String memberId = userFacade.getMemberIdByUserId(user_ID);
             boolean succeeded = authenticationAndSecurityFacade.validateToken(authenticationAndSecurityFacade.getToken(memberId));if (!succeeded) {
                 logout(user_ID);
                 throw new Exception(ExceptionsEnum.sessionOver.toString());
@@ -694,8 +694,8 @@ public class Market {
         int totalPrice = 0;
         this.userFacade.isUserCartEmpty(user_ID);
 
-        List<Integer> stores = this.userFacade.getCartStoresByUser(user_ID);
-        for(Integer store_ID: stores)
+        List<String> stores = this.userFacade.getCartStoresByUser(user_ID);
+        for(String store_ID: stores)
         {
             Map<String, List<Integer>> products = this.userFacade.getCartProductsByStoreAndUser(store_ID, user_ID);
             int quantity;
@@ -722,7 +722,7 @@ public class Market {
         return availibleExteranlSupplyService;
     }
 
-    public void createShiftingDetails(String country, String city, int availibleExteranlSupplyService, String address, int user_ID) throws Exception
+    public void createShiftingDetails(String country, String city, int availibleExteranlSupplyService, String address, String user_ID) throws Exception
     {
         String userName = this.userFacade.getUserByID(user_ID).getName();
         if(!supplyServicesFacade.createShiftingDetails(availibleExteranlSupplyService, userName,country,city,address)){
@@ -730,15 +730,15 @@ public class Market {
         }
     }
 
-    public void removeUserCartFromStock(int userId) throws Exception {
+    public void removeUserCartFromStock(String userId) throws Exception {
         if (userFacade.getUserByID(userId) == null) {
             throw new Exception("User not found.");
         }
         if (userFacade.getUserByID(userId).getCart() == null || userFacade.getUserByID(userId).getCart().isCartEmpty()) {
             throw new Exception("User cart is empty, there's nothing to remove from stock.");
         }
-        List<Integer> storeIds = userFacade.getUserByID(userId).getCart().getCartStores();
-        for (int storeId : storeIds) {
+        List<String> storeIds = userFacade.getUserByID(userId).getCart().getCartStores();
+        for (String storeId : storeIds) {
             Map<String, Integer> products = userFacade.getUserByID(userId).getCart().getProductsQuantityByStore(storeId);
             for (Map.Entry<String, Integer> entry : products.entrySet()) {
                 String productName = entry.getKey();
@@ -751,9 +751,9 @@ public class Market {
     }
 
 
-    public List<String> inStoreProductSearch(int userId, String productName, String categoryStr, List<String> keywords, int storeId) throws Exception {
+    public List<String> inStoreProductSearch(String userId, String productName, String categoryStr, List<String> keywords, String storeId) throws Exception {
         if (userFacade.isMember(userId)) {
-            int memberId = userFacade.getMemberIdByUserId(userId);
+            String memberId = userFacade.getMemberIdByUserId(userId);
             boolean succeeded = authenticationAndSecurityFacade.validateToken(authenticationAndSecurityFacade.getToken(memberId));
             if (!succeeded) {
                 logout(userId);
@@ -774,9 +774,9 @@ public class Market {
             throw new IllegalArgumentException("The store you try to search in doesnt exist.");
     }
 
-    public List<String> generalProductSearch(int userId, String productName, String categoryStr, List<String> keywords) throws Exception {
+    public List<String> generalProductSearch(String userId, String productName, String categoryStr, List<String> keywords) throws Exception {
         if (userFacade.isMember(userId)) {
-            int memberId = userFacade.getMemberIdByUserId(userId);
+            String memberId = userFacade.getMemberIdByUserId(userId);
             boolean succeeded = authenticationAndSecurityFacade.validateToken(authenticationAndSecurityFacade.getToken(memberId));
             if (!succeeded) {
                 logout(userId);
@@ -785,8 +785,8 @@ public class Market {
         }
         List<String> filteredProductNames = new ArrayList<>();
 
-        List<Integer> stores = this.storeFacade.getStores();
-        for(Integer store_ID: stores)
+        List<String> stores = this.storeFacade.getStores();
+        for(String store_ID: stores)
         {
             try {
                 filteredProductNames.addAll(inStoreProductSearch(userId, productName, categoryStr, keywords,store_ID));
@@ -802,9 +802,9 @@ public class Market {
         return filteredProductNames;
     }
 
-    public List<String> inStoreProductFilter(int userId, String categoryStr, List<String> keywords, Integer minPrice, Integer maxPrice, Double productMinRating, int storeId, List<String> productsFromSearch, Double storeMinRating)throws Exception {
+    public List<String> inStoreProductFilter(String userId, String categoryStr, List<String> keywords, Integer minPrice, Integer maxPrice, Double productMinRating, String storeId, List<String> productsFromSearch, Double storeMinRating)throws Exception {
         if (userFacade.isMember(userId)) {
-            int memberId = userFacade.getMemberIdByUserId(userId);
+            String memberId = userFacade.getMemberIdByUserId(userId);
             boolean succeeded = authenticationAndSecurityFacade.validateToken(authenticationAndSecurityFacade.getToken(memberId));
             if (!succeeded) {
                 logout(userId);
@@ -832,9 +832,9 @@ public class Market {
         return filteredProductNames;
     }
 
-    public List<String> generalProductFilter(int userId, String categoryStr, List<String> keywords, Integer minPrice, Integer maxPrice, Double productMinRating, List<String> productsFromSearch, Double storeMinRating) throws Exception {
+    public List<String> generalProductFilter(String userId, String categoryStr, List<String> keywords, Integer minPrice, Integer maxPrice, Double productMinRating, List<String> productsFromSearch, Double storeMinRating) throws Exception {
         if (userFacade.isMember(userId)) {
-            int memberId = userFacade.getMemberIdByUserId(userId);
+            String memberId = userFacade.getMemberIdByUserId(userId);
             boolean succeeded = authenticationAndSecurityFacade.validateToken(authenticationAndSecurityFacade.getToken(memberId));
             if (!succeeded) {
                 logout(userId);
@@ -843,8 +843,8 @@ public class Market {
         }
         List<String> filteredProductNames = new ArrayList<>();
 
-        List<Integer> stores = this.storeFacade.getStores();
-        for(Integer store_ID: stores)
+        List<String > stores = this.storeFacade.getStores();
+        for(String store_ID: stores)
         {
             filteredProductNames.addAll(inStoreProductFilter(userId, categoryStr, keywords, minPrice, maxPrice, productMinRating, store_ID, productsFromSearch, storeMinRating));
         }
@@ -857,9 +857,9 @@ public class Market {
         }
     }
 
-    public void tokensChecking(int userId) throws Exception{
+    public void tokensChecking(String userId) throws Exception{
         if (userFacade.isMember(userId)){
-            int memberId = userFacade.getMemberIdByUserId(userId);
+            String memberId = userFacade.getMemberIdByUserId(userId);
             boolean succeeded = authenticationAndSecurityFacade.validateToken(authenticationAndSecurityFacade.getToken(memberId));
             if (!succeeded) {
                 logout(userId);
