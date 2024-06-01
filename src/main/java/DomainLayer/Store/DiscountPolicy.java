@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class DiscountPolicy {
-    private List<Integer> usersIdsToDiscount;
+    private List<String> usersIdsToDiscount;
     private List<String> productNameToDiscount;
     private Discount discount;
 
@@ -15,7 +15,7 @@ public class DiscountPolicy {
         this.discount = new Discount(0); //Default discount percentage is 0
     }
 
-    public boolean checkDiscountPolicy(int userId, String productName)
+    public boolean checkDiscountPolicy(String userId, String productName)
     {
         //No requirement to discount policy, return true
         return true;

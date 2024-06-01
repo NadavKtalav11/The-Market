@@ -7,7 +7,7 @@ import java.util.Map;
 
 public class UserMemoryRepository<User> implements UserRepository<User> {
 
-    Map<Integer, User> allUsers;
+    Map<String, User> allUsers;
     Object allUsersLock;
 
     public UserMemoryRepository(){
@@ -16,21 +16,21 @@ public class UserMemoryRepository<User> implements UserRepository<User> {
     }
 
     @Override
-    public User get(int i) {
+    public User get(String i) {
         synchronized (allUsersLock) {
             return allUsers.get(i);
         }
     }
 
     @Override
-    public void add(int userId , User to_add) {
+    public void add(String userId , User to_add) {
         synchronized (allUsersLock) {
             allUsers.put(userId, to_add);
         }
     }
 
     @Override
-    public void remove(int userId) {
+    public void remove(String userId) {
         synchronized (allUsersLock) {
 
         allUsers.remove(userId);
@@ -45,7 +45,7 @@ public class UserMemoryRepository<User> implements UserRepository<User> {
     }
 
     @Override
-    public boolean contain(int userId) {
+    public boolean contain(String userId) {
         synchronized (allUsersLock) {
             return allUsers.containsKey(allUsers);
         }

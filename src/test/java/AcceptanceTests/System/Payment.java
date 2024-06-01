@@ -74,7 +74,7 @@ public class Payment {
         int userID = 77;
         userFacade.register(userID,  "username",  "password",  "birthday", "country",  "city", "address",  "name");
 
-        int systemMangerId = 77;
+        String systemMangerId = 77;
 
         //  int systemMangerId1 = userFacade.registerSystemAdmin("david", "password", "birthday","country","city","address","name");
         market.getSystemManagerIds().add(systemMangerId);

@@ -6,19 +6,19 @@ import java.util.List;
 import java.util.Map;
 
 public class Basket {
-    private final int storeId;
+    private final String storeId;
     Map<String, List<Integer>> products; //key = product name, value = [quantity, products total price]
     int basketPrice;
     Object basketPriceLock;
 
-    public Basket(int storeId) {
+    public Basket(String storeId) {
         this.storeId = storeId;
         this.basketPrice = 0;
         basketPriceLock = new Object();
         products = new HashMap<>();
     }
 
-    public int getStoreId()
+    public String getStoreId()
     {
         return this.storeId;
     }
