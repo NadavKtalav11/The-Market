@@ -237,16 +237,10 @@ public class Market {
                 throw new Exception(ExceptionsEnum.sessionOver.toString());
             }
         }
-        boolean canAddToBasket = storeFacade.checkQuantityAndPolicies(productName, quantity, storeId, userId);
-        if (canAddToBasket)
-        {
-            int totalPrice = storeFacade.calcPrice(productName, quantity, storeId, userId);
-            userFacade.addItemsToBasket(productName, quantity, storeId, userId, totalPrice);
-        }
-        else
-        {
-            throw new IllegalArgumentException("The product you try to add doesn't meet the store policies");
-        }
+        storeFacade.checkQuantityAndPolicies(productName, quantity, storeId, userId);
+        int totalPrice = storeFacade.calcPrice(productName, quantity, storeId, userId);
+        userFacade.addItemsToBasket(productName, quantity, storeId, userId, totalPrice);
+
     }
 
     public void removeProductFromBasket(String productName, int storeId, int userId)throws Exception
@@ -507,17 +501,12 @@ public class Market {
         Map<Integer, String> information = null;
 
         userFacade.isUserLoggedInError(user_ID);
-        this.verifyUserGetEmployeeInfoIsStoreOwner(user_ID, store_ID);
+        int member_ID = this.userFacade.getUsernameByUserID(user_ID);
+        roleFacade.verifyStoreOwnerError(store_ID, member_ID);
         storeFacade.verifyStoreExistError(store_ID);
         information = roleFacade.getInformationAboutStoreRoles(store_ID);
 
         return information;
-    }
-
-    public void verifyUserGetEmployeeInfoIsStoreOwner(int user_ID, int store_ID){
-        int member_ID = this.userFacade.getUsernameByUserID(user_ID);
-        if (!roleFacade.verifyStoreOwner(store_ID, member_ID))
-            throw new IllegalArgumentException(ExceptionsEnum.userIsNotStoreOwnerSoCantGetEmployeeInfo.toString());
     }
 
     public Map<Integer, List<Integer>> getAuthorizationsOfManagersInStore(int user_ID, int store_ID) throws Exception {
@@ -533,17 +522,11 @@ public class Market {
 
         userFacade.isUserLoggedInError(user_ID);
         int member_ID = this.userFacade.getUsernameByUserID(user_ID);
-        if (roleFacade.verifyStoreOwner(store_ID, member_ID)) {
-            if (storeFacade.verifyStoreExist(store_ID)) {
-                managersAuthorizations = roleFacade.getStoreManagersAuthorizations(store_ID);
-            }else {
-                throw new Exception(ExceptionsEnum.storeNotExist.toString());
-            }
-        } else {
-            throw new IllegalArgumentException("Only store owner can get authorizations of his store managers");
-        }
-        return managersAuthorizations;
+        roleFacade.verifyStoreOwnerError(store_ID, member_ID);
+        storeFacade.verifyStoreExistError(store_ID);
+        managersAuthorizations = roleFacade.getStoreManagersAuthorizations(store_ID);
 
+        return managersAuthorizations;
     }
 
 
@@ -614,16 +597,9 @@ public class Market {
             removeProductFromBasket(productName, storeId, userId);
         else
         {
-            boolean canModify = storeFacade.checkQuantityAndPolicies(productName, quantity, storeId, userId);
-            if (canModify)
-            {
-                int totalPrice = storeFacade.calcPrice(productName, quantity, storeId, userId);
-                userFacade.modifyBasketProduct(productName, quantity, storeId, userId, totalPrice);
-            }
-            else
-            {
-                throw new IllegalArgumentException("The product you try to add doesn't meet the store policies");
-            }
+            storeFacade.checkQuantityAndPolicies(productName, quantity, storeId, userId);
+            int totalPrice = storeFacade.calcPrice(productName, quantity, storeId, userId);
+            userFacade.modifyBasketProduct(productName, quantity, storeId, userId, totalPrice);
         }
     }
 
