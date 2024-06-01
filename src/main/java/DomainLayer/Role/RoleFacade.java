@@ -46,6 +46,11 @@ public class RoleFacade {
         return getStoreOwner(storeID, memberID) != null;
     }
 
+    public void verifyStoreOwnerError(int storeID, int memberID) throws Exception{
+        if(!verifyStoreOwner(storeID, memberID))
+            throw new Exception(ExceptionsEnum.userIsNotStoreOwner.toString());
+    }
+
     public StoreOwner getStoreOwner(int storeID, int memberID)
     {
 
