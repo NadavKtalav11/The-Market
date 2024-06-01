@@ -57,8 +57,16 @@ package Util;
         userIsNotStoreOwnerSoCantGetEmployeeInfo{
             public String toString() {
                 return "Only store owner get information about his store workers";}
+        },
+        illegalStoreName{
+            public String toString() {
+                return "Illegal store name. Store name is empty.";}
+        },
+        memberIsAlreadyStoreOwner{
+            public String toString() {
+                return "Member is already owner of this store";
+            }
         }
-
     }
 
 

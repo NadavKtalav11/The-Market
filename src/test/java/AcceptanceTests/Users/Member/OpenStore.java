@@ -2,11 +2,13 @@ package AcceptanceTests.Users.Member;
 
 import AcceptanceTests.BridgeToTests;
 import AcceptanceTests.ProxyToTest;
+import ServiceLayer.Response;
+import Util.ExceptionsEnum;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class OpenStore {
     private static BridgeToTests impl;
@@ -31,9 +33,19 @@ public class OpenStore {
     }
 
     @Test
-    public void missingDetailsTest() {
-        assertFalse(impl.openStore(0, null, "clothing store").isSuccess());
-        assertFalse(impl.openStore(0, null, "Food store").isSuccess());
-        assertFalse(impl.openStore(0, "", "Electronics store").isSuccess());
+    public void missingStoreNameTest() {
+        Exception exception1 = assertThrows(Exception.class, () -> {
+            Response<String> response = impl.openStore(0, null, "clothing store");
+            assertFalse(response.isSuccess());
+        });
+
+        assertEquals(ExceptionsEnum.illegalStoreName.toString(), exception1.getMessage());
+
+        Exception exception2 = assertThrows(Exception.class, () -> {
+            Response<String> response = impl.openStore(0, "", "Electronics store");
+            assertFalse(response.isSuccess());
+        });
+
+        assertEquals(ExceptionsEnum.illegalStoreName.toString(), exception2.getMessage());
     }
 }
