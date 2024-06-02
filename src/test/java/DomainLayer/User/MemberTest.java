@@ -1,5 +1,6 @@
 package DomainLayer.User;
 
+import Util.UserDTO;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -21,7 +22,7 @@ public class MemberTest {
 
     @BeforeEach
     public void setUp() {
-        member = new Member(memberId, username, password,birthday,country,city,address, name);
+        member = new Member(memberId, new UserDTO(username,birthday,country,city,address, name), password);
     }
 
 

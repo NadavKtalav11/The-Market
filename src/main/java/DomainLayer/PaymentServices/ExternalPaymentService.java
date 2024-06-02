@@ -3,6 +3,8 @@ package DomainLayer.PaymentServices;
 
 // this class is for external payment service itself
 
+import Util.PaymentDTO;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -11,37 +13,35 @@ public  class ExternalPaymentService {
     private String paymentServiceName;
     private String url;
     private Map<String, Acquisition> idAndAcquisition = new HashMap<>();
-    private final Object acquisitionLock = new Object();
+    private HttpClient httpClient;
+    private final Object acquisitionLock;
 
     public ExternalPaymentService(int licensedDealerNumber, String paymentServiceName, String url) {
         this.licensedDealerNumber = licensedDealerNumber;
         this.paymentServiceName = paymentServiceName;
         this.url = url;
 
-
+        this.httpClient = httpClient;
 
     }
 
     // Abstract method for paying with a card
-    public Map<String, String> payWithCard(int price, String creditCard, int cvv, int month, int year, String holder, String id, Map<String, Map<String, Integer>> productList,
-                                             String acquisitionIdCounter, String receiptIdCounter) throws Exception {
+    public Map<Integer, Integer> payWithCard(int price, PaymentDTO payment, int id, Map<Integer, Map<String, Integer>> productList,
+                                             int acquisitionIdCounter, int receiptIdCounter) throws Exception {
         // Mocking HTTP request to check if there is enough money in the card
-        boolean response = mockHttpRequest(url, creditCard, price);
+        boolean response = httpClient.get(url + "?creditCard=" + payment.getCreditCardNumber() + "&amount=" + price);
         if(!response){
             throw new Exception("There is not enough money in the credit card");
         }
-      Acquisition acquisition = new Acquisition(acquisitionIdCounter, id, price, holder, creditCard, cvv, month, year, productList, receiptIdCounter);
+        acquisitionLock = new Object();
+      Acquisition acquisition = new Acquisition(acquisitionIdCounter, id, price, payment, productList, receiptIdCounter);
         synchronized (acquisitionLock) {
             idAndAcquisition.put(acquisitionIdCounter, acquisition);
         }
         return acquisition.getReceiptIdAndStoreIdMap();
       
     }
-    // Method to mock the HTTP request
-    public static boolean mockHttpRequest(String url, String creditCard, int amount) {
 
-        return true;
-    }
    
 
     // Abstract method for refunding to a card

@@ -1,6 +1,7 @@
 package DomainLayer.User;
 
 
+import Util.UserDTO;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -18,8 +19,8 @@ public class UserFacadeTest {
     @InjectMocks
     private UserFacade userFacade;  // Ensure this is injected with mocks
 
-    private final String userId = "1";
-    private final String storeId = "1";
+    private final int userId = 1;
+    private final int storeId = 1;
     private final String productName = "Product1";
     private final int quantity = 2;
     private final int totalPrice = 100;
@@ -30,7 +31,7 @@ public class UserFacadeTest {
         MockitoAnnotations.openMocks(this);
 
         // Configure mockUser to return a specific userId when getUserID() is called
-        when(mockUser.getUserID()).thenReturn("1");
+        when(mockUser.getUserID()).thenReturn(1);
 
         // Reset the UserFacade singleton for each test
         userFacade = UserFacade.getInstance();
@@ -38,7 +39,7 @@ public class UserFacadeTest {
         userFacade.members.clear();
 
         // Insert the mockUser into the UserFacade for userId = 1
-        userFacade.userRepository.add("1", mockUser);  // Assuming userId = 1
+        userFacade.userRepository.add(1, mockUser);  // Assuming userId = 1
     }
 
     @Test
@@ -50,26 +51,26 @@ public class UserFacadeTest {
 
     @Test
     public void testGetUserByID() {
-        assertEquals(mockUser, userFacade.getUserByID("1"));
+        assertEquals(mockUser, userFacade.getUserByID(1));
     }
 
     @Test
     public void testIsUserLoggedIn() {
         when(mockUser.isLoggedIn()).thenReturn(true);
-        assertTrue(userFacade.isMember("1"));
+        assertTrue(userFacade.isMember(1));
     }
 
     @Test
     public void testAddUser() {
-        String userId = userFacade.addUser();
+        int userId = userFacade.addUser();
         assertNotNull(userFacade.getUserByID(userId));
-        //assertEquals(userId, userFacade.getCurrentUserID() - 1);
+        assertEquals(userId, userFacade.getCurrentUserID() - 1);
     }
 
     @Test
     public void testRegister() throws Exception {
-        String userId = userFacade.addUser();
-        userFacade.register(userId, "testUser", "testPass", "01-01-2000", "Test Country", "Test City", "123 Test St", "Test Name");
+        int userId = userFacade.addUser();
+        userFacade.register(userId, new UserDTO("testUser", "01-01-2000", "Test Country", "Test City", "123 Test St", "Test Name"), "testPass");
 
         Member member = userFacade.getMemberByUsername("testUser");
         assertNotNull(member);
@@ -87,13 +88,13 @@ public class UserFacadeTest {
         when(mockUser.getState()).thenReturn(mockMember);
         when(mockMember.getMemberID()).thenReturn(userId);
 
-       // assertEquals(userId, userFacade.getUsernameByUserID(userId));
+        assertEquals(userId, userFacade.getUsernameByUserID(userId));
         verify(mockMember).getMemberID();
     }
 
     @Test
     public void testAddItemsToBasket() {
-        doNothing().when(mockUser).addToCart(anyString(), anyInt(), anyString(), anyInt());
+        doNothing().when(mockUser).addToCart(anyString(), anyInt(), anyInt(), anyInt());
         doNothing().when(mockUser).updateCartPrice();
 
         userFacade.addItemsToBasket(productName, quantity, storeId, userId, totalPrice);
@@ -103,7 +104,7 @@ public class UserFacadeTest {
 
     @Test
     public void testModifyBasketProduct() {
-        doNothing().when(mockUser).modifyProductInCart(anyString(), anyInt(), anyString(), anyInt());
+        doNothing().when(mockUser).modifyProductInCart(anyString(), anyInt(), anyInt(), anyInt());
         doNothing().when(mockUser).updateCartPrice();
 
         userFacade.modifyBasketProduct(productName, quantity, storeId, userId, totalPrice);
@@ -120,7 +121,7 @@ public class UserFacadeTest {
 
     @Test
     public void testRemoveItemFromUserCart() {
-        doNothing().when(mockUser).removeItemFromUserCart(anyString(), anyString());
+        doNothing().when(mockUser).removeItemFromUserCart(anyString(), anyInt());
 
         userFacade.removeItemFromUserCart(productName, storeId, userId);
         verify(mockUser).removeItemFromUserCart(productName, storeId);

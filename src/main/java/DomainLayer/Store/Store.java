@@ -1,5 +1,7 @@
 package DomainLayer.Store;
 
+import Util.ProductDTO;
+
 import java.util.*;
 import java.util.ArrayList;
 import java.util.stream.Collectors;
@@ -54,10 +56,10 @@ public class Store {
         }
     }
 
-    public void addProduct(String productName, int price, int quantity, String description, String categoryStr) {
-        Category category = Category.fromString(categoryStr);
+    public void addProduct(ProductDTO product) {
+        Category category = Category.fromString(product.getCategoryStr());
         synchronized (storeProductLock) {
-            storeProducts.put(productName, new Product(productName, price, quantity, description, category));
+            storeProducts.put(product.getName(), new Product(product, category));
         }
     }
 
@@ -95,13 +97,13 @@ public class Store {
         }
     }
 
-    public void updateProduct(String productName, int price, int quantity, String description, String categoryStr){
+    public void updateProduct(ProductDTO product){
         synchronized (storeProductLock) {
-            storeProducts.get(productName).setPrice(price);
-            storeProducts.get(productName).setQuantity(quantity);
-            storeProducts.get(productName).setDescription(description);
-            Category category = Category.fromString(categoryStr);
-            storeProducts.get(productName).setCategory(category);
+            storeProducts.get(product.getName()).setPrice(product.getPrice());
+            storeProducts.get(product.getName()).setQuantity(product.getQuantity());
+            storeProducts.get(product.getName()).setDescription(product.getDescription());
+            Category category = Category.fromString(product.getCategoryStr());
+            storeProducts.get(product.getName()).setCategory(category);
         }
     }
 

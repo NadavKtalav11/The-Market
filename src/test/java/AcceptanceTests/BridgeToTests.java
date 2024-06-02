@@ -1,6 +1,8 @@
 package AcceptanceTests;
 
 import ServiceLayer.Response;
+import Util.ProductDTO;
+import Util.UserDTO;
 
 import java.util.HashSet;
 import java.util.List;
@@ -18,19 +20,17 @@ public interface BridgeToTests {
 
     Response<String> enterMarketSystem();
 
-    Response<String> register(String userID, String username, String password, String birthday,String country, String city, String address, String name);
+    Response<String> register(String userID, UserDTO user, String password);
 
     Response<String> login(String userID, String username, String password);
 
     Response<String> logout(String userId);
 
-    Response<String> addProductToStore(String userId, String storeID, String productName, int price, int quantity,
-                                       String description, String categoryStr);
+    Response<String> addProductToStore(String userId, String storeID, ProductDTO product);
 
     Response<String> removeProductFromStore(String userId, String storeID, String productName);
 
-    Response<String> updateProductInStore(String userId, String storeID, String productName, int price, int quantity,
-                                          String description, String categoryStr);
+    Response<String> updateProductInStore(String userId, String storeID, ProductDTO product);
 
     Response<String> appointStoreOwner(String nominatorUserId, String nominatedUsername, String storeID);
 

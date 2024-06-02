@@ -1,5 +1,7 @@
 package DomainLayer.Store;
 
+import Util.ProductDTO;
+
 public class Product {
     private String productName;
     private int price;
@@ -25,13 +27,13 @@ public class Product {
         this.quantity = quantity;
     }
 
-    public Product(String productName, int price, int quantity, String description, Category category){
-        this.productName = productName;
-        this.price = price;
-        this.quantity = quantity;
+    public Product(ProductDTO product, Category category){
+        this.productName = product.getName();
+        this.price = product.getPrice();
+        this.quantity = product.getQuantity();
         this.rating = 0;
         this.numOfRatings = 0;
-        this.description = description;
+        this.description = product.getDescription();
         this.category = category;
     }
 

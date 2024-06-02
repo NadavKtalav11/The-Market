@@ -1,4 +1,8 @@
 package ServiceLayer;
+import Util.PayementDTO;
+import Util.PaymentDTO;
+import Util.ProductDTO;
+import Util.UserDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -26,11 +30,11 @@ public class Service_layer {
 
 
 
-    public Response<String> init(String userName, String password,String birthday, String country, String city, String address, String name, int licensedDealerNumber,
+    public Response<String> init(UserDTO user, String password, int licensedDealerNumber,
                                  String paymentServiceName, String url, int licensedDealerNumber1, String supplyServiceName, HashSet<String> countries, HashSet<String> cities){
         logger.info("Starting the initialization of the system.");
         try {
-            market.init(userName, password, birthday,  country,  city,  address,  name, licensedDealerNumber, paymentServiceName,
+            market.init(user, password, licensedDealerNumber, paymentServiceName,
                     url, licensedDealerNumber1, supplyServiceName, countries, cities);
             logger.info("System initialized successfully.");
             return new Response<>("Initialization successful", "System initialized successfully.");
@@ -41,7 +45,7 @@ public class Service_layer {
         }
     }
 
-    public Response<String> addExternalPaymentService(int licensedDealerNumber,String paymentServiceName, String url, String systemMangerId) throws Exception {
+    public Response<String> addExternalPaymentService(int licensedDealerNumber,String paymentServiceName, String url, int systemMangerId) throws Exception {
         logger.info("Trying to add a new external payment service");
         try {
             market.addExternalPaymentService(licensedDealerNumber, paymentServiceName, url, systemMangerId);
@@ -54,7 +58,7 @@ public class Service_layer {
         }
     }
 
-    public Response<String> removeExternalPaymentService(int  licensedDealerNumber, String systemMangerId){
+    public Response<String> removeExternalPaymentService(int  licensedDealerNumber, int systemMangerId){
         logger.info("Trying to remove the payment service number: {}",licensedDealerNumber );
         try {
             market.removeExternalPaymentService(licensedDealerNumber,systemMangerId);
@@ -68,7 +72,7 @@ public class Service_layer {
 
     }
 
-    public Response<String> addExternalSupplyService(int licensedDealerNumber, String supplyServiceName, HashSet<String> countries, HashSet<String> cities, String systemManagerId) throws Exception {
+    public Response<String> addExternalSupplyService(int licensedDealerNumber, String supplyServiceName, HashSet<String> countries, HashSet<String> cities, int systemManagerId) throws Exception {
         logger.info("Trying to add a new external supply service");
         try {
             market.addExternalSupplyService(licensedDealerNumber, supplyServiceName, countries, cities, systemManagerId);
@@ -80,7 +84,7 @@ public class Service_layer {
         }
     }
 
-    public Response<String> removeExternalSupplyService(int licensedDealerNumber, String systemManagerId) {
+    public Response<String> removeExternalSupplyService(int licensedDealerNumber, int systemManagerId) {
         logger.info("Trying to remove the supply service number: {}", licensedDealerNumber);
         try {
             market.removeExternalSupplyService(licensedDealerNumber, systemManagerId);
@@ -92,37 +96,26 @@ public class Service_layer {
         }
     }
 
-    public Response<String> purchase(String user_ID, String country, String city, String address, int price,String cardNumber, int cvv, int month, int year, String holderID){
-        logger.info("Initiating purchase for user: {}", user_ID);
-        try{
-            market.purchase(user_ID, new CardDTO(), new UserDTO());
-            logger.info("Purchase successful for user: {}", user_ID);
-            return new Response<>("Purchase successful", "");
+
+
+    public Response<String> payWithExternalPaymentService(int price, PaymentDTO payment, String userID) {
+        logger.info("Reaching for the payment service in order to complete the purchase.");
+        try {
+            market.payWithExternalPaymentService( price, payment,  userID, market.getPurchaseList(userID) );
+            return new Response<>("Successful payment", "payment went successfully.");
+
         } catch (Exception e) {
-            logger.error("Purchase failed for user: {} with error: {}", user_ID, e.getMessage(), e);
-            return new Response<>(null, "Purchase failed: " + e.getMessage());
+            try {
+                market.paymentFailed(userID);
+            }
+            catch (Exception exception){
+                logger.error("Error occurred while restore stock data: {}", e.getMessage(), e);
+                return new Response<>(null, "restore stock data failed: " + e.getMessage());
+            }
+            logger.error("Error occurred while paying: {}", e.getMessage(), e);
+            return new Response<>(null, "Payment failed: " + e.getMessage());
         }
     }
-
-
-//    public Response<String> payWithExternalPaymentService(int price,String cardNumber, int cvv, int month, int year, String holderID, String userID) {
-//        logger.info("Reaching for the payment service in order to complete the purchase.");
-//        try {
-//            market.payWithExternalPaymentService( price, cardNumber, cvv,  month,  year,  holderID,  userID, market.getPurchaseList(userID) );
-//            return new Response<>("Successful payment", "payment went successfully.");
-//
-//        } catch (Exception e) {
-//            try {
-//                market.paymentFailed(userID);
-//            }
-//            catch (Exception exception){
-//                logger.error("Error occurred while restore stock data: {}", e.getMessage(), e);
-//                return new Response<>(null, "restore stock data failed: " + e.getMessage());
-//            }
-//            logger.error("Error occurred while paying: {}", e.getMessage(), e);
-//            return new Response<>(null, "Payment failed: " + e.getMessage());
-//        }
-//    }
 
 
     public Response<String> exitMarketSystem(String userID) {
@@ -150,10 +143,10 @@ public class Service_layer {
         }
     }
 
-    public Response<String> register(String userID, String username, String password, String birthday,String country, String city, String address, String name) {
+    public Response<String> register(String userID, UserDTO user, String password) {
         logger.info("Registration");
         try {
-            market.register(userID, username, password, birthday, country, city, address, name);
+            market.register(userID, user, password);
             return new Response<>("Registration successful", "User registered successfully.");
         } catch (Exception e) {
             logger.error("Error occurred during registration", e.getMessage(), e);
@@ -184,12 +177,11 @@ public class Service_layer {
         }
     }
 
-    public Response<String> addProductToStore(String userId, String storeID, String productName, int price, int quantity,
-                                  String description, String categoryStr) {
+    public Response<String> addProductToStore(String userId, String storeID, ProductDTO product) {
         logger.info("Adding product to store");
 
         try {
-            market.addProductToStore(userId, storeID, productName, price, quantity, description, categoryStr);
+            market.addProductToStore(userId, storeID, product);
             return new Response<>("Product added successfully", "Product added to store successfully.");
         } catch (Exception e) {
             logger.error("Error occurred during adding product to store", e.getMessage(), e);
@@ -211,12 +203,11 @@ public class Service_layer {
         }
     }
 
-    public Response<String> updateProductInStore(String userId, String storeID, String productName, int price, int quantity,
-                                     String description, String categoryStr) {
+    public Response<String> updateProductInStore(String userId, String storeID, ProductDTO product) {
 
         logger.info("Updating product in store");
         try {
-            market.updateProductInStore(userId, storeID, productName, price, quantity, description, categoryStr);
+            market.updateProductInStore(userId, storeID, product);
             return new Response<>("Product updated successfully", "Product updated in store successfully.");
         } catch (Exception e) {
 
@@ -298,18 +289,18 @@ public class Service_layer {
         }
     }
 
-//    public Response<Integer> checkingCartValidationBeforePurchase(String user_ID, String country, String city, String address)
-//    {
-//        logger.info("Starting care validation and price calculation before purchase.");
-//
-//        try {
-//            int totalPrice = market.checkingCartValidationBeforePurchase(user_ID, country,city,address);
-//            return new Response<>(totalPrice, "Cart validation and price calculation completed successfully.");
-//        } catch (Exception e) {
-//            logger.error("Error occurred during the validation of the cart: {}", e.getMessage(), e);
-//            return new Response<>(null, "Cart validation failed: " + e.getMessage());
-//        }
-//    }
+    public Response<Integer> checkingCartValidationBeforePurchase(String user_ID, String country, String city, String address)
+    {
+        logger.info("Starting care validation and price calculation before purchase.");
+
+        try {
+            int totalPrice = market.checkingCartValidationBeforePurchase(user_ID, country,city,address);
+            return new Response<>(totalPrice, "Cart validation and price calculation completed successfully.");
+        } catch (Exception e) {
+            logger.error("Error occurred during the validation of the cart: {}", e.getMessage(), e);
+            return new Response<>(null, "Cart validation failed: " + e.getMessage());
+        }
+    }
 
 
     public Response<List<String>> getInformationAboutStores(String user_ID)

@@ -2,6 +2,8 @@ package AcceptanceTests.Users.Purchase;
 
 import AcceptanceTests.BridgeToTests;
 import AcceptanceTests.ProxyToTest;
+import Util.ProductDTO;
+import Util.UserDTO;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -19,56 +21,56 @@ public class AddProductCart {
         impl = new ProxyToTest("Real");
         //Do what you need
         impl.enterMarketSystem();
-        impl.register("0", "user1", "fSijsd281", "12/12/00", "Israel", "Beer Sheva", "Mesada", "Toy");
-        impl.login("0", "user1", "fSijsd281");
+        impl.register(0, new UserDTO("user1", "12/12/00", "Israel", "Beer Sheva", "Mesada", "Toy"), "fSijsd281");
+        impl.login(0, "user1", "fSijsd281");
 
-        impl.openStore("0", "Zara", "clothing store");
-        impl.addProductToStore("0", "0", "Milk", 10, 5, "Milk 5%", "food");
-        impl.addProductToStore("0", "0", "Cheese", 15, 8, "Cheese 22%", "food");
-        impl.addProductToStore("0", "0", "Yogurt", 4, 12, "Yogurt 20%", "food");
-        impl.addProductToStore("0", "0", "Shoes", 4, 12, "Nike Shoes", "clothing");
+        impl.openStore(0, "Zara", "clothing store");
+        impl.addProductToStore(0, 0, new ProductDTO("Milk", 10, 5, "Milk 5%", "food"));
+        impl.addProductToStore(0, 0, new ProductDTO("Cheese", 15, 8, "Cheese 22%", "food"));
+        impl.addProductToStore(0, 0, new ProductDTO("Yogurt", 4, 12, "Yogurt 20%", "food"));
+        impl.addProductToStore(0, 0, new ProductDTO("Shoes", 4, 12, "Nike Shoes", "clothing"));
     }
 
 
     @Test
     public void successfulAdditionTest()
     {
-        assertTrue(impl.addProductToBasket("Milk", 2, "0", "0").isSuccess());
-        assertTrue(impl.addProductToBasket("Cheese", 4, "0", "0").isSuccess());
-        assertTrue(impl.addProductToBasket("Yogurt", 5, "0", "0").isSuccess());
+        assertTrue(impl.addProductToBasket("Milk", 2, 0, 0).isSuccess());
+        assertTrue(impl.addProductToBasket("Cheese", 4, 0, 0).isSuccess());
+        assertTrue(impl.addProductToBasket("Yogurt", 5, 0, 0).isSuccess());
     }
 
     @Test
     public void invalidProductNameTest()
     {
-        assertFalse(impl.addProductToBasket("Computer", 2, "0", "0").isSuccess());
-        assertFalse(impl.addProductToBasket("Shirt", 4, "0", "0").isSuccess());
-        assertFalse(impl.addProductToBasket("TV", 5, "0", "0").isSuccess());
+        assertFalse(impl.addProductToBasket("Computer", 2, 0, 0).isSuccess());
+        assertFalse(impl.addProductToBasket("Shirt", 4, 0, 0).isSuccess());
+        assertFalse(impl.addProductToBasket("TV", 5, 0, 0).isSuccess());
     }
 
     @Test
     public void outOfStockProductTest()
     {
-        impl.addProductToStore("0", "0", "Mouse", 10, 0, "HP Mouse", "electronics");
-        impl.addProductToStore("0", "0", "Laptop", 15, 0, "HP Laptop ", "electronics");
-        assertFalse(impl.addProductToBasket("Mouse", 1, "0", "0").isSuccess());
-        assertFalse(impl.addProductToBasket("Laptop", 2, "0", "0").isSuccess());
+        impl.addProductToStore(0, 0, new ProductDTO("Mouse", 10, 0, "HP Mouse", "electronics"));
+        impl.addProductToStore(0, 0, new ProductDTO("Laptop", 15, 0, "HP Laptop ", "electronics"));
+        assertFalse(impl.addProductToBasket("Mouse", 1, 0, 0).isSuccess());
+        assertFalse(impl.addProductToBasket("Laptop", 2, 0, 0).isSuccess());
     }
 
     @Test
     public void bigQuantityTest()
     {
-        assertFalse(impl.addProductToBasket("Milk", 10, "0", "0").isSuccess());
-        assertFalse(impl.addProductToBasket("Cheese", 100, "0", "0").isSuccess());
-        assertFalse(impl.addProductToBasket("Yogurt", 90, "0", "0").isSuccess());
+        assertFalse(impl.addProductToBasket("Milk", 10, 0, 0).isSuccess());
+        assertFalse(impl.addProductToBasket("Cheese", 100, 0, 0).isSuccess());
+        assertFalse(impl.addProductToBasket("Yogurt", 90, 0, 0).isSuccess());
     }
 
     @Test
     public void negQuantityTest()
     {
-        assertFalse(impl.addProductToBasket("Milk", -4, "0", "0").isSuccess());
-        assertFalse(impl.addProductToBasket("Cheese", -1, "0", "0").isSuccess());
-        assertFalse(impl.addProductToBasket("Yogurt", -8, "0", "0").isSuccess());
+        assertFalse(impl.addProductToBasket("Milk", -4, 0, 0).isSuccess());
+        assertFalse(impl.addProductToBasket("Cheese", -1, 0, 0).isSuccess());
+        assertFalse(impl.addProductToBasket("Yogurt", -8, 0, 0).isSuccess());
     }
 
     @Test
