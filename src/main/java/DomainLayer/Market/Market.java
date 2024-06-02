@@ -6,6 +6,7 @@ import DomainLayer.Role.RoleFacade;
 import DomainLayer.Store.StoreFacade;
 import DomainLayer.User.UserFacade;
 import DomainLayer.SupplyServices.SupplyServicesFacade;
+import Util.CartDTO;
 import Util.ExceptionsEnum;
 
 import java.util.*;
@@ -179,6 +180,21 @@ public class Market {
         }
     }
 
+    public void purchase(int userID, CardDTO cardDTO, UserDTO userDTO) throws Exception {
+        CartDTO cartDTO = null;
+        try{
+            cartDTO = checkingCartValidationBeforePurchase(userID, userDTO);
+            payWithExternalPaymentService(cartDTO.getCartPrice(), cardDTO, cartDTO.getStoreToProducts());
+        }
+        catch (Exception e){
+            if (cartDTO != null) {
+                returnCartToStock(cartDTO.getStoreToProducts());
+            }
+            throw new Exception (e);
+        }
+
+    }
+
 
     public void payWithExternalPaymentService(int price,String creditCard, int cvv, int month, int year, String holderID, String userId, Map<String, Map<String, Integer>> productList) throws Exception{
         if(price<= 0 || month> 12 || month<1 ||year < 2020 ||holderID==null ||productList==null) {
@@ -201,11 +217,12 @@ public class Market {
         }
     }
 
-    public void paymentFailed(String user_ID) throws Exception {
-        returnStock(getPurchaseList(user_ID));
+    public void paymentFailed(CartDTO cartDTO) throws Exception {
+        returnCartToStock(cartDTO.getStoreToProducts());
     }
 
-    public void returnStock(Map<String, Map<String, Integer>> products){
+    //Map<StoreID, Map<ProductName, quantity>>
+    public void returnCartToStock(Map<String, Map<String, Integer>> products){
         for (String storeId: products.keySet()){
             storeFacade.returnProductToStore(products.get(storeId), storeId);
         }
@@ -672,7 +689,7 @@ public class Market {
         return storeReceiptsAndTotalAmount;
     }
 
-    public int checkingCartValidationBeforePurchase(String user_ID, String country, String city, String address) throws Exception {
+    public CartDTO checkingCartValidationBeforePurchase(String user_ID, String country, String city, String address) throws Exception {
         if (userFacade.isMember(user_ID)) {
             String memberId = userFacade.getMemberIdByUserId(user_ID);
             boolean succeeded = authenticationAndSecurityFacade.validateToken(authenticationAndSecurityFacade.getToken(memberId));if (!succeeded) {
@@ -694,14 +711,14 @@ public class Market {
                 int availableExternalSupplyService = this.checkAvailableExternalSupplyService(country, city);
                 this.createShiftingDetails(country, city, availableExternalSupplyService, address, user_ID);
             }
-            //remove items from stock
-            removeUserCartFromStock(user_ID);
+
             int storeTotalPriceBeforeDiscount = this.userFacade.getCartPriceByUser(user_ID);
             int storeTotalPrice = this.storeFacade.calculateTotalCartPriceAfterDiscount(store_ID, products, storeTotalPriceBeforeDiscount);
             totalPrice += storeTotalPrice;
         }
-
-        return totalPrice;
+        //remove items from stock
+        removeUserCartFromStock(user_ID);
+        return new CartDTO(user_ID,totalPrice,getPurchaseList(user_ID));
     }
 
     public int checkAvailableExternalSupplyService(String country, String city) throws Exception {

@@ -92,26 +92,37 @@ public class Service_layer {
         }
     }
 
-
-
-    public Response<String> payWithExternalPaymentService(int price,String cardNumber, int cvv, int month, int year, String holderID, String userID) {
-        logger.info("Reaching for the payment service in order to complete the purchase.");
-        try {
-            market.payWithExternalPaymentService( price, cardNumber, cvv,  month,  year,  holderID,  userID, market.getPurchaseList(userID) );
-            return new Response<>("Successful payment", "payment went successfully.");
-
+    public Response<String> purchase(String user_ID, String country, String city, String address, int price,String cardNumber, int cvv, int month, int year, String holderID){
+        logger.info("Initiating purchase for user: {}", user_ID);
+        try{
+            market.purchase(user_ID, new CardDTO(), new UserDTO());
+            logger.info("Purchase successful for user: {}", user_ID);
+            return new Response<>("Purchase successful", "");
         } catch (Exception e) {
-            try {
-                market.paymentFailed(userID);
-            }
-            catch (Exception exception){
-                logger.error("Error occurred while restore stock data: {}", e.getMessage(), e);
-                return new Response<>(null, "restore stock data failed: " + e.getMessage());
-            }
-            logger.error("Error occurred while paying: {}", e.getMessage(), e);
-            return new Response<>(null, "Payment failed: " + e.getMessage());
+            logger.error("Purchase failed for user: {} with error: {}", user_ID, e.getMessage(), e);
+            return new Response<>(null, "Purchase failed: " + e.getMessage());
         }
     }
+
+
+//    public Response<String> payWithExternalPaymentService(int price,String cardNumber, int cvv, int month, int year, String holderID, String userID) {
+//        logger.info("Reaching for the payment service in order to complete the purchase.");
+//        try {
+//            market.payWithExternalPaymentService( price, cardNumber, cvv,  month,  year,  holderID,  userID, market.getPurchaseList(userID) );
+//            return new Response<>("Successful payment", "payment went successfully.");
+//
+//        } catch (Exception e) {
+//            try {
+//                market.paymentFailed(userID);
+//            }
+//            catch (Exception exception){
+//                logger.error("Error occurred while restore stock data: {}", e.getMessage(), e);
+//                return new Response<>(null, "restore stock data failed: " + e.getMessage());
+//            }
+//            logger.error("Error occurred while paying: {}", e.getMessage(), e);
+//            return new Response<>(null, "Payment failed: " + e.getMessage());
+//        }
+//    }
 
 
     public Response<String> exitMarketSystem(String userID) {
@@ -287,18 +298,18 @@ public class Service_layer {
         }
     }
 
-    public Response<Integer> checkingCartValidationBeforePurchase(String user_ID, String country, String city, String address)
-    {
-        logger.info("Starting care validation and price calculation before purchase.");
-
-        try {
-            int totalPrice = market.checkingCartValidationBeforePurchase(user_ID, country,city,address);
-            return new Response<>(totalPrice, "Cart validation and price calculation completed successfully.");
-        } catch (Exception e) {
-            logger.error("Error occurred during the validation of the cart: {}", e.getMessage(), e);
-            return new Response<>(null, "Cart validation failed: " + e.getMessage());
-        }
-    }
+//    public Response<Integer> checkingCartValidationBeforePurchase(String user_ID, String country, String city, String address)
+//    {
+//        logger.info("Starting care validation and price calculation before purchase.");
+//
+//        try {
+//            int totalPrice = market.checkingCartValidationBeforePurchase(user_ID, country,city,address);
+//            return new Response<>(totalPrice, "Cart validation and price calculation completed successfully.");
+//        } catch (Exception e) {
+//            logger.error("Error occurred during the validation of the cart: {}", e.getMessage(), e);
+//            return new Response<>(null, "Cart validation failed: " + e.getMessage());
+//        }
+//    }
 
 
     public Response<List<String>> getInformationAboutStores(String user_ID)
