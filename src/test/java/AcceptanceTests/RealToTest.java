@@ -28,12 +28,12 @@ public class RealToTest implements BridgeToTests {
 
     }
 
-    @Override
-    public Response<String> payWithExternalPaymentService(int price,String cardNumber, int cvv, int month, int year, String holderID, String userID)
-    {
-        return service.payWithExternalPaymentService(price, cardNumber, cvv, month, year, holderID, userID);
-
-    }
+//    @Override
+//    public Response<String> payWithExternalPaymentService(int price,String cardNumber, int cvv, int month, int year, String holderID, String userID)
+//    {
+//       // return service.payWithExternalPaymentService(price, cardNumber, cvv, month, year, holderID, userID);
+//        // TODO
+//    }
 
     public Response<String> exitMarketSystem(String userID)
     {
@@ -104,10 +104,10 @@ public class RealToTest implements BridgeToTests {
         return service.generalProductSearch(userId, productName, categoryStr, keywords);
     }
 
-    public Response<Integer> checkingCartValidationBeforePurchase(String user_ID, String country, String city, String address)
-    {
-        return service.checkingCartValidationBeforePurchase(user_ID, country, city,address);
-    }
+//    public Response<Integer> checkingCartValidationBeforePurchase(String user_ID, String country, String city, String address)
+//    {
+//        return service.checkingCartValidationBeforePurchase(user_ID, country, city,address);
+//    }
 
     public Response<List<String>> getInformationAboutStores(String user_ID)
     {

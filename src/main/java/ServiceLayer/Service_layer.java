@@ -44,7 +44,7 @@ public class Service_layer {
         }
     }
 
-    public Response<String> addExternalPaymentService(int licensedDealerNumber,String paymentServiceName, String url, int systemMangerId) throws Exception {
+    public Response<String> addExternalPaymentService(int licensedDealerNumber,String paymentServiceName, String url, String systemMangerId) throws Exception {
         logger.info("Trying to add a new external payment service");
         try {
             market.addExternalPaymentService(licensedDealerNumber, paymentServiceName, url, systemMangerId);
@@ -57,7 +57,7 @@ public class Service_layer {
         }
     }
 
-    public Response<String> removeExternalPaymentService(int  licensedDealerNumber, int systemMangerId){
+    public Response<String> removeExternalPaymentService(int  licensedDealerNumber, String systemMangerId){
         logger.info("Trying to remove the payment service number: {}",licensedDealerNumber );
         try {
             market.removeExternalPaymentService(licensedDealerNumber,systemMangerId);
@@ -71,7 +71,7 @@ public class Service_layer {
 
     }
 
-    public Response<String> addExternalSupplyService(int licensedDealerNumber, String supplyServiceName, HashSet<String> countries, HashSet<String> cities, int systemManagerId) throws Exception {
+    public Response<String> addExternalSupplyService(int licensedDealerNumber, String supplyServiceName, HashSet<String> countries, HashSet<String> cities, String systemManagerId) throws Exception {
         logger.info("Trying to add a new external supply service");
         try {
             market.addExternalSupplyService(licensedDealerNumber, supplyServiceName, countries, cities, systemManagerId);
@@ -83,7 +83,7 @@ public class Service_layer {
         }
     }
 
-    public Response<String> removeExternalSupplyService(int licensedDealerNumber, int systemManagerId) {
+    public Response<String> removeExternalSupplyService(int licensedDealerNumber, String systemManagerId) {
         logger.info("Trying to remove the supply service number: {}", licensedDealerNumber);
         try {
             market.removeExternalSupplyService(licensedDealerNumber, systemManagerId);

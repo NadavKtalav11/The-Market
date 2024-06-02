@@ -21,29 +21,29 @@ public class OpenStore {
         //Do what you need
 
         impl.enterMarketSystem();
-        impl.register(0, new UserDTO("user1",  "12/12/00", "Israel", "Beer Sheva", "Mesada", "Toy"), "fSijsd281");
-        impl.login(0, "user1", "fSijsd281");
+        impl.register("0", new UserDTO("user1",  "12/12/00", "Israel", "Beer Sheva", "Mesada", "Toy"), "fSijsd281");
+        impl.login("0", "user1", "fSijsd281");
 
     }
 
     @Test
     public void successfulOpenStoreTest() {
-        assertTrue(impl.openStore(0, "Bershka", "clothing store").isSuccess());
-        assertTrue(impl.openStore(0, "Zara", "clothing store").isSuccess());
-        assertTrue(impl.openStore(0, "shufersal", "Food store").isSuccess());
+        assertTrue(impl.openStore("0", "Bershka", "clothing store").isSuccess());
+        assertTrue(impl.openStore("0", "Zara", "clothing store").isSuccess());
+        assertTrue(impl.openStore("0", "shufersal", "Food store").isSuccess());
     }
 
     @Test
     public void missingStoreNameTest() {
         Exception exception1 = assertThrows(Exception.class, () -> {
-            Response<String> response = impl.openStore(0, null, "clothing store");
+            Response<String> response = impl.openStore("0", null, "clothing store");
             assertFalse(response.isSuccess());
         });
 
         assertEquals(ExceptionsEnum.illegalStoreName.toString(), exception1.getMessage());
 
         Exception exception2 = assertThrows(Exception.class, () -> {
-            Response<String> response = impl.openStore(0, "", "Electronics store");
+            Response<String> response = impl.openStore("0", "", "Electronics store");
             assertFalse(response.isSuccess());
         });
 

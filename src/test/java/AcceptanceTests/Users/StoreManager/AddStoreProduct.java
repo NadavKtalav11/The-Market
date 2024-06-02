@@ -25,28 +25,28 @@ public class AddStoreProduct {
         impl.login(saarUserID, "saar", "fadida");
         impl.login(tomUserID, "tom", "shlaifer");
         impl.openStore(saarUserID, "alona", "shopping");
-        impl.appointStoreManager(saarUserID, "tom", 0, true, false);
-        impl.addProductToStore(saarUserID, 0, new ProductDTO("weddingDress", 10, 5, "pink", "clothes"));
+        impl.appointStoreManager(saarUserID, "tom", "0", true, false);
+        impl.addProductToStore(saarUserID, "0", new ProductDTO("weddingDress", 10, 5, "pink", "clothes"));
     }
 
     @Test
     public void successfulAdditionTest() {
-        assertTrue(impl.addProductToStore(tomUserID,0,new ProductDTO("heels", 4, 2, "black", "shoes")).isSuccess());
+        assertTrue(impl.addProductToStore(tomUserID,"0",new ProductDTO("heels", 4, 2, "black", "shoes")).isSuccess());
     }
 
     @Test
     public void alreadyExistTest() {
-        assertFalse(impl.addProductToStore(tomUserID,0,new ProductDTO("weddingDress", 3, 6, "pink", "clothes")).isSuccess());
+        assertFalse(impl.addProductToStore(tomUserID,"0",new ProductDTO("weddingDress", 3, 6, "pink", "clothes")).isSuccess());
     }
 
     @Test
     public void negQuantityTest() {
-        assertFalse(impl.addProductToStore(tomUserID,0,new ProductDTO("shirt", 5, -4, "green", "clothes")).isSuccess());
+        assertFalse(impl.addProductToStore(tomUserID,"0",new ProductDTO("shirt", 5, -4, "green", "clothes")).isSuccess());
     }
 
     @Test
     public void noPermissionTest() {
-        impl.updateStoreManagerPermissions(saarUserID,"tom",0,false,false);
-        assertFalse(impl.addProductToStore(tomUserID,0,new ProductDTO("heels", 3, 3, "black", "shoes")).isSuccess());
+        impl.updateStoreManagerPermissions(saarUserID,"tom","0",false,false);
+        assertFalse(impl.addProductToStore(tomUserID,"0",new ProductDTO("heels", 3, 3, "black", "shoes")).isSuccess());
     }
 }

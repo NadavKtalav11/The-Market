@@ -2,6 +2,7 @@ package AcceptanceTests;
 
 import ServiceLayer.Response;
 import Util.ProductDTO;
+import Util.UserDTO;
 
 import java.util.HashSet;
 import java.util.List;
@@ -57,9 +58,9 @@ public class ProxyToTest implements BridgeToTests {
     }
 
     @Override
-    public Response<String> register(String userID, String username, String password, String birthday,String country, String city, String address, String name) {
+    public Response<String> register(String userID, UserDTO user, String password) {
         if (realServiceAdaptor != null)
-            return realServiceAdaptor.register(userID, username, password, birthday, country, city, address, name);
+            return realServiceAdaptor.register(userID, user, password);
         else
             return new Response<>(null, "Not Implemented yet");
     }
@@ -81,9 +82,9 @@ public class ProxyToTest implements BridgeToTests {
     }
 
     @Override
-    public Response<String> addProductToStore(String userId, String storeID, String productName, int price, int quantity, String description, String categoryStr) {
+    public Response<String> addProductToStore(String userId, String storeID, ProductDTO product) {
         if (realServiceAdaptor != null)
-            return realServiceAdaptor.addProductToStore(userId, storeID, productName, price, quantity, description, categoryStr);
+            return realServiceAdaptor.addProductToStore(userId, storeID, product);
         else
             return new Response<>(null, "Not Implemented yet");
     }

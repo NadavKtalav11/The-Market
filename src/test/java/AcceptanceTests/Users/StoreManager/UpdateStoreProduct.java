@@ -24,32 +24,32 @@ public class UpdateStoreProduct {
         impl.register(tomUserID, new UserDTO("tom", "27/11/85", "Israel", "Jerusalem", "Yehuda halevi 17", "tom"), "shlaifer");
         impl.login(saarUserID, "saar", "fadida");
         impl.openStore(saarUserID, "alona", "shopping");
-        impl.appointStoreManager(saarUserID, "tom", 0, true, false);
-        impl.addProductToStore(saarUserID, 0, new ProductDTO("weddingDress", 10, 5, "pink", "clothes"));
+        impl.appointStoreManager(saarUserID, "tom", "0", true, false);
+        impl.addProductToStore(saarUserID, "0", new ProductDTO("weddingDress", 10, 5, "pink", "clothes"));
     }
 
     @Test
     public void successfulUpdateTest() {
-        assertTrue(impl.updateProductInStore(tomUserID,0, new ProductDTO("weddingDress", 11, 4,
+        assertTrue(impl.updateProductInStore(tomUserID,"0", new ProductDTO("weddingDress", 11, 4,
                                                             "pink", "clothes")).isSuccess());
     }
 
     @Test
     public void productNotExistTest() {
-        assertFalse(impl.updateProductInStore(tomUserID,0,new ProductDTO("heels", 1, 41,
+        assertFalse(impl.updateProductInStore(tomUserID,"0",new ProductDTO("heels", 1, 41,
                 "black", "shoes")).isSuccess());
     }
 
     @Test
     public void negQuantityTest() {
-        assertFalse(impl.updateProductInStore(tomUserID,0,new ProductDTO("weddingDress", 11, -4,
+        assertFalse(impl.updateProductInStore(tomUserID,"0",new ProductDTO("weddingDress", 11, -4,
                 "pink", "clothes")).isSuccess());
     }
 
     @Test
     public void noPermissionTest() {
-        impl.updateStoreManagerPermissions(saarUserID,"tom",0,false,false);
-        assertFalse(impl.updateProductInStore(tomUserID,0,new ProductDTO("heels", 14, 46,
+        impl.updateStoreManagerPermissions(saarUserID,"tom","0",false,false);
+        assertFalse(impl.updateProductInStore(tomUserID,"0",new ProductDTO("heels", 14, 46,
                 "black", "shoes")).isSuccess());
     }
 }

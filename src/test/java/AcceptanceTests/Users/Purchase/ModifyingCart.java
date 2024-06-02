@@ -20,46 +20,46 @@ public class ModifyingCart {
         impl = new ProxyToTest("Real");
         //Do what you need
         impl.enterMarketSystem();
-        impl.register(0, new UserDTO("user1", "12/12/00", "Israel", "Beer Sheva", "Mesada", "Toy"), "fSijsd281");
-        impl.login(0, "user1", "fSijsd281");
-        impl.openStore(0, "good store", "number 1");
-        impl.addProductToStore(0, 0, new ProductDTO("Milk", 10, 5, "Milk 5%", "food"));
-        impl.addProductToStore(0, 0, new ProductDTO("Cheese", 15, 8, "Cheese 22%", "food"));
-        impl.addProductToStore(0, 0, new ProductDTO("Yogurt", 4, 12, "Yogurt 20%", "food"));
-        impl.addProductToStore(0, 0, new ProductDTO("Shoes", 4, 12, "Nike Shoes", "clothing"));
+        impl.register("0", new UserDTO("user1", "12/12/00", "Israel", "Beer Sheva", "Mesada", "Toy"), "fSijsd281");
+        impl.login("0", "user1", "fSijsd281");
+        impl.openStore("0", "good store", "number 1");
+        impl.addProductToStore("0", "0", new ProductDTO("Milk", 10, 5, "Milk 5%", "food"));
+        impl.addProductToStore("0", "0", new ProductDTO("Cheese", 15, 8, "Cheese 22%", "food"));
+        impl.addProductToStore("0", "0", new ProductDTO("Yogurt", 4, 12, "Yogurt 20%", "food"));
+        impl.addProductToStore("0", "0", new ProductDTO("Shoes", 4, 12, "Nike Shoes", "clothing"));
 
-        impl.addProductToBasket("Milk", 2, 0, 0);
-        impl.addProductToBasket("Cheese", 4, 0, 0);
-        impl.addProductToBasket("Yogurt", 5, 0, 0);
+        impl.addProductToBasket("Milk", 2, "0", "0");
+        impl.addProductToBasket("Cheese", 4, "0", "0");
+        impl.addProductToBasket("Yogurt", 5, "0", "0");
     }
 
     @Test
     public void successfulUpdateTest() {
-        assertTrue(impl.modifyShoppingCart("Milk", 2,0, 0).isSuccess());
-        assertTrue(impl.modifyShoppingCart("Cheese", 3, 0, 0).isSuccess());
-        assertTrue(impl.modifyShoppingCart("Yogurt", 4, 0, 0).isSuccess());
+        assertTrue(impl.modifyShoppingCart("Milk", 2,"0", "0").isSuccess());
+        assertTrue(impl.modifyShoppingCart("Cheese", 3, "0", "0").isSuccess());
+        assertTrue(impl.modifyShoppingCart("Yogurt", 4, "0", "0").isSuccess());
     }
 
     @Test
     public void productNotExistTest() {
-        assertFalse(impl.modifyShoppingCart("Tomato", 2,0, 0).isSuccess());
-        assertFalse(impl.modifyShoppingCart("awsdhnjlk", 3, 0, 0).isSuccess());
-        assertFalse(impl.modifyShoppingCart("njknlk", 4, 0, 0).isSuccess());
+        assertFalse(impl.modifyShoppingCart("Tomato", 2,"0", "0").isSuccess());
+        assertFalse(impl.modifyShoppingCart("awsdhnjlk", 3, "0", "0").isSuccess());
+        assertFalse(impl.modifyShoppingCart("njknlk", 4, "0", "0").isSuccess());
     }
 
 
     @Test
     public void bigQuantityTest() {
-        assertFalse(impl.modifyShoppingCart("Milk", 100,0, 0).isSuccess());
-        assertFalse(impl.modifyShoppingCart("Cheese", 200, 0, 0).isSuccess());
-        assertFalse(impl.modifyShoppingCart("Yogurt", 300, 0, 0).isSuccess());
+        assertFalse(impl.modifyShoppingCart("Milk", 100,"0", "0").isSuccess());
+        assertFalse(impl.modifyShoppingCart("Cheese", 200, "0", "0").isSuccess());
+        assertFalse(impl.modifyShoppingCart("Yogurt", 300, "0", "0").isSuccess());
     }
 
     @Test
     public void negQuantityTest() { //
-        assertFalse(impl.modifyShoppingCart("Milk", -1,0, 0).isSuccess());
-        assertFalse(impl.modifyShoppingCart("Cheese", -2, 0, 0).isSuccess());
-        assertFalse(impl.modifyShoppingCart("Yogurt", -3, 0, 0).isSuccess());
+        assertFalse(impl.modifyShoppingCart("Milk", -1,"0", "0").isSuccess());
+        assertFalse(impl.modifyShoppingCart("Cheese", -2, "0", "0").isSuccess());
+        assertFalse(impl.modifyShoppingCart("Yogurt", -3, "0", "0").isSuccess());
     }
 
     @Test

@@ -59,7 +59,7 @@ public class PaymentServicesFacade {
         }
     }
 
-    public Map<Integer,Integer> pay(int price, PaymentDTO payment, int userId, Map<Integer, Map<String, Integer>> productList) throws Exception{
+    public Map<String,String> pay(int price, PaymentDTO payment, String userId, Map<String, Map<String, Integer>> productList) throws Exception{
        
         String acquisitionId  = getNewAcquisitionId();
         String receiptId = getNewReceiptId();

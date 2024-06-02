@@ -14,7 +14,7 @@ public  class ExternalPaymentService {
     private String url;
     private Map<String, Acquisition> idAndAcquisition = new HashMap<>();
     private HttpClient httpClient;
-    private final Object acquisitionLock;
+    private final Object acquisitionLock= new Object();
 
     public ExternalPaymentService(int licensedDealerNumber, String paymentServiceName, String url) {
         this.licensedDealerNumber = licensedDealerNumber;
@@ -26,14 +26,13 @@ public  class ExternalPaymentService {
     }
 
     // Abstract method for paying with a card
-    public Map<Integer, Integer> payWithCard(int price, PaymentDTO payment, int id, Map<Integer, Map<String, Integer>> productList,
-                                             int acquisitionIdCounter, int receiptIdCounter) throws Exception {
+    public Map<String, String> payWithCard(int price, PaymentDTO payment, String id, Map<String, Map<String, Integer>> productList,
+                                             String acquisitionIdCounter, String receiptIdCounter) throws Exception {
         // Mocking HTTP request to check if there is enough money in the card
         boolean response = httpClient.get(url + "?creditCard=" + payment.getCreditCardNumber() + "&amount=" + price);
         if(!response){
             throw new Exception("There is not enough money in the credit card");
         }
-        acquisitionLock = new Object();
       Acquisition acquisition = new Acquisition(acquisitionIdCounter, id, price, payment, productList, receiptIdCounter);
         synchronized (acquisitionLock) {
             idAndAcquisition.put(acquisitionIdCounter, acquisition);
