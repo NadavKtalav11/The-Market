@@ -9,7 +9,7 @@ import java.util.zip.CheckedOutputStream;
 
 public class Member extends State{
 
-    private int member_ID;
+    private String member_ID;
     private String name;
     private String username;
     private String password;
@@ -18,10 +18,10 @@ public class Member extends State{
     private String city;
     private String address;
     private int productIdCounter;
-    private Map<Integer, Integer> receiptIdsAndStoreId; //<receiptId, storeId>
+    private Map<String, String> receiptIdsAndStoreId; //<receiptId, storeId>
     //private boolean isLogin;
 
-    Member(int member_ID, String username, String password, String birthday,String country, String city, String address, String name)
+    Member(String member_ID, String username, String password, String birthday,String country, String city, String address, String name)
     {
         this.member_ID = member_ID;
         this.username = username;
@@ -87,9 +87,9 @@ public class Member extends State{
         return password;
     }
 
-    public Map<Integer, Integer> getReceiptIdsAndStoreId(){return receiptIdsAndStoreId;}
+    public Map<String, String> getReceiptIdsAndStoreId(){return receiptIdsAndStoreId;}
 
-    public int getMemberID()
+    public String getMemberID()
     {
         return this.member_ID;
     }
@@ -100,7 +100,7 @@ public class Member extends State{
     }
 
     @Override
-    public void addReceipt(Map<Integer, Integer> receiptIdAndStoreId) {
+    public void addReceipt(Map<String, String> receiptIdAndStoreId) {
         receiptIdsAndStoreId.putAll(receiptIdAndStoreId);
     }
 

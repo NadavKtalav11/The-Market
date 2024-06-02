@@ -3,8 +3,8 @@ package DomainLayer.PaymentServices;
 import java.util.*;
 
 public class Acquisition {
-    private int acquisitionId;
-    private int userId;
+    private String acquisitionId;
+    private String userId;
     private int totalPrice;
     private String holderId;
     private String creditCardNumber;
@@ -12,32 +12,36 @@ public class Acquisition {
     private int month;
     private int year;
     private Date date;
-    private Map<Integer, Receipt> storeIdAndReceipt= new HashMap<>(); //<storeId, Receipt>
+    private Map<String, Receipt> storeIdAndReceipt= new HashMap<>(); //<storeId, Receipt>
 
-    public Acquisition(int acquisitionId, int userId, int totalPrice, String holderId,
-                       String creditCardNumber, int cvv, int month, int year, Map<Integer, Map<String, Integer>> productList, int receiptIdCounter) {
+    private final Object storeReceiptLock;
+
+    public Acquisition(String acquisitionId, String userId, int totalPrice, String holderId,
+                       String creditCardNumber, int cvv, int month, int year, Map<String, Map<String, Integer>> productList, String receiptIdCounter) {
         this.acquisitionId = acquisitionId;
         this.userId = userId;
         this.totalPrice = totalPrice;
         this.holderId = holderId;
         this.creditCardNumber= creditCardNumber;
+        storeReceiptLock = new Object();
         this.cvv = cvv;
         this.month=month;
         this.year=year;
         this.date = new Date(); // Current date and time
-        for (Integer storeId : productList.keySet())
+
+        for (String storeId : productList.keySet())
         {
             storeIdAndReceipt.put(storeId, new Receipt(receiptIdCounter, storeId, userId, productList.get(storeId)));
-            receiptIdCounter++;
+
         }
     }
 
     // Getters and Setters
-    public int getUserId() {
+    public String getUserId() {
         return userId;
     }
 
-    public void setUserId(int userId) {
+    public void setUserId(String userId) {
         this.userId = userId;
     }
 
@@ -53,25 +57,34 @@ public class Acquisition {
         return date;
     }
 
-    public Map<Integer, Receipt> getStoreIdAndReceipt()
+    public Map<String, Receipt> getStoreIdAndReceipt()
     {
-        return storeIdAndReceipt;
+        synchronized (storeReceiptLock) {
+            return storeIdAndReceipt;
+        }
     }
 
-    public int getTotalPriceOfStoreInAcquisition(int storeId)
+    public int getTotalPriceOfStoreInAcquisition(String storeId)
     {
-        return storeIdAndReceipt.get(storeId).getTotalPriceOfStoreReceipt();
+        synchronized (storeReceiptLock) {
+            return storeIdAndReceipt.get(storeId).getTotalPriceOfStoreReceipt();
+        }
     }
 
-    public int getReceiptIdByStoreId(int storeId)
+    public String getReceiptIdByStoreId(String storeId)
     {
-        return storeIdAndReceipt.get(storeId).getReceiptId();
+        synchronized (storeReceiptLock) {
+            return storeIdAndReceipt.get(storeId).getReceiptId();
+        }
     }
 
-    public Map<Integer, Integer> getReceiptIdAndStoreIdMap() {
-        Map<Integer, Integer> receiptIdAndStoreIdMap = new HashMap<>();
-        for (Map.Entry<Integer, Receipt> entry : storeIdAndReceipt.entrySet()) {
-            receiptIdAndStoreIdMap.put(entry.getValue().getReceiptId(), entry.getKey());
+    public Map<String, String> getReceiptIdAndStoreIdMap() {
+
+        Map<String, String> receiptIdAndStoreIdMap = new HashMap<>();
+        synchronized (storeReceiptLock) {
+            for (Map.Entry<String, Receipt> entry : storeIdAndReceipt.entrySet()) {
+                receiptIdAndStoreIdMap.put(entry.getValue().getReceiptId(), entry.getKey());
+            }
         }
         return receiptIdAndStoreIdMap;
     }

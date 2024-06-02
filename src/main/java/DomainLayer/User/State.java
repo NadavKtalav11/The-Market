@@ -11,12 +11,12 @@ public abstract class State {
         cart = new Cart();
     }
 
-    public void addItemsToCart(String productName, int quantity, int storeId, int totalPrice)
+    public void addItemsToCart(String productName, int quantity, String storeId, int totalPrice)
     {
         cart.addItemsToCart(productName, quantity, storeId, totalPrice);
     }
 
-    public void modifyProductInCart(String productName, int quantity, int storeId, int totalPrice)
+    public void modifyProductInCart(String productName, int quantity, String storeId, int totalPrice)
     {
         cart.modifyProductInCart(productName, quantity, storeId, totalPrice);
     }
@@ -26,12 +26,12 @@ public abstract class State {
         this.cart.calcCartTotal();
     }
 
-    public boolean checkIfProductInUserCart(String productName, int storeId)
+    public boolean checkIfProductInUserCart(String productName, String storeId)
     {
         return cart.checkIfProductInCart(productName, storeId);
     }
 
-    public void removeItemFromUserCart(String productName, int storeId)
+    public void removeItemFromUserCart(String productName, String storeId)
     {
         cart.removeItemFromCart(productName, storeId);
     }
@@ -43,12 +43,12 @@ public abstract class State {
         return cart;
     }
 
-    public Map<String, List<Integer>> getCartProductsByStore(int storeId)
+    public Map<String, List<Integer>> getCartProductsByStore(String storeId)
     {
         return cart.getProductsDetailsByStore(storeId);
     }
 
-    public List<Integer> getCartStores()
+    public List<String> getCartStores()
     {
         return cart.getCartStores();
     }
@@ -71,6 +71,6 @@ public abstract class State {
     //void Register(User user, String username, String password, String birthday, String address) throws Exception;
     protected abstract void Login() throws Exception;
     protected abstract boolean isMember();
-    protected abstract void addReceipt(Map<Integer, Integer> receiptIdAndStoreId);
+    protected abstract void addReceipt(Map<String, String> receiptIdAndStoreId);
     public abstract String getUsername();
 }

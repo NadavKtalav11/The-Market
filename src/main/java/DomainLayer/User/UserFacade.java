@@ -1,30 +1,45 @@
 package DomainLayer.User;
 
 
+import Util.ExceptionsEnum;
+
 import java.util.HashMap;
+import java.util.UUID;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
 public class UserFacade {
     private static UserFacade userFacadeInstance;
-    Map<Integer, User> allUsers = new HashMap<Integer, User>(); //userID-User
-    Map<Integer, Member> members = new HashMap<>(); //memberID-Member
-    private int currentUserID;
-    private int currentMemberID;
-    Object allUserLock;
-    Object membersLock;
-    Object userIdLock;
-    Object memberIdLock;
+    UserRepository<User> userRepository;
+    MemberRepository members;
+    //private Object membersLock;
+    //Map<String, Member> members = new HashMap<>(); //memberID-Member
+    //private String memberIdPrefix;
+    //private String userIdPrefix;
+    //private int currentUserID;
+    //private int currentMemberID;
+    //Object allUserLock;
+
+    //private Object userIdLock;
+    //private Object memberIdLock;
+    //Map<Integer, User> allUsers = new HashMap<Integer, User>(); //userID-User
 
     private UserFacade()
     {
-        this.currentUserID = 0;
-        this.currentMemberID = 0;
-        allUserLock = new Object();
-        membersLock = new Object();
-        userIdLock = new Object();
-        memberIdLock = new Object();
+        //this.currentUserID = 0;
+        //this.currentMemberID = 0;
+        //allUserLock = new Object();
+
+        //membersLock = new Object();
+        userRepository = new UserMemoryRepository<>();
+        members = new MemberMemoryRepository();
+
+        //userIdLock = new Object();
+        //memberIdLock = new Object();
+
+        //memberIdPrefix = "member";
+        //memberIdPrefix = "user";
     }
 
     public synchronized static UserFacade getInstance() {
@@ -39,38 +54,45 @@ public class UserFacade {
         return userFacadeInstance;
     }
 
-    public int getCurrentUserID (){
-        return currentUserID;
+    public String getCurrentUserID (){
+        UUID uuid = UUID.randomUUID();
+        String uniqueId = "user-" + uuid;
+        return uniqueId;
     }
 
-    public User getUserByID(int userID){
-        synchronized (allUserLock) {
-            return allUsers.get(userID);
-        }
+    public String getCurrentMemberID (){
+        UUID uuid = UUID.randomUUID();
+        String uniqueId = "member-" + uuid;
+        return uniqueId;
     }
 
-    public boolean isUserLoggedIn(int userID){
 
-        return getUserByID(userID).isLoggedIn();
+    public User getUserByID(String userID){
+        return userRepository.get(userID);
     }
 
-    public int getUsernameByUserID(int userID)
+    public void isUserLoggedInError(String userID){
+        if(!isMember(userID))
+            throw new IllegalArgumentException(ExceptionsEnum.userIsNotMember.toString());
+    }
+
+    /*public String getUsernameByUserID(String userID)
     {
-        if(!allUsers.containsKey(userID)){
+        if(!userRepository.contain(userID)){
             return -1;
         }
         User user = getUserByID(userID);
         return ((Member)user.getState()).getMemberID();
-    }
+    }*/
 
-    public boolean isMember(int userId){
-        if(!allUsers.containsKey(userId)){
+    public boolean isMember(String userId){
+        if(!userRepository.contain(userId)){
             return false;
         }
         return getUserByID(userId).isMember();
     }
 
-    public int getMemberIdByUserId(int userID) throws Exception {
+    public String getMemberIdByUserId(String userID) throws Exception {
         if(isMember(userID)){
             String username = getUserByID(userID).getState().getUsername();
             return getMemberByUsername(username).getMemberID();
@@ -80,92 +102,74 @@ public class UserFacade {
         }
     }
 
-    public void exitMarketSystem(int userID){
-        synchronized (allUserLock) {
-            allUsers.get(userID).exitMarketSystem();
-            allUsers.remove(userID); //todo do i need to remove the user from the list of users ?
+    public void exitMarketSystem(String userID){
 
-        }
+        userRepository.get(userID).exitMarketSystem();
+        userRepository.remove(userID); //todo do i need to remove the user from the list of users ?
     }
 
 
-    public int addUser(){
-        int userId;
-        synchronized (userIdLock) {
-            userId = currentUserID;
-        }
-        synchronized (allUserLock) {
-            allUsers.put(currentUserID, new User(currentUserID));
-        }
-        synchronized (userIdLock) {
-            currentUserID++;
-        }
+    public String addUser(){
+        String userId;
+        userId = getCurrentUserID();
+        userRepository.add(userId, new User(userId));
+
+
         return userId;
     }
 
 
-    public void addItemsToBasket(String productName, int quantity, int storeId, int userId, int totalPrice)
+    public void addItemsToBasket(String productName, int quantity, String storeId, String userId, int totalPrice)
     {
         User user = getUserByID(userId);
         user.addToCart(productName, quantity, storeId, totalPrice);
         user.updateCartPrice();
     }
 
-    public void modifyBasketProduct(String productName, int quantity, int storeId, int userId, int totalPrice)
+    public void modifyBasketProduct(String productName, int quantity, String storeId, String userId, int totalPrice)
     {
         User user = getUserByID(userId);
         user.modifyProductInCart(productName, quantity, storeId, totalPrice);
         user.updateCartPrice();
     }
 
-    public boolean checkIfCanRemove(String productName, int storeId, int userId)
+    public boolean checkIfCanRemove(String productName, String storeId, String userId)
     {
         User user = getUserByID(userId);
         return user.checkIfProductInUserCart(productName, storeId); //Need to check policies, why?
     }
 
-    public void removeItemFromUserCart(String productName, int storeId, int userId)
+    public void removeItemFromUserCart(String productName, String storeId, String userId)
     {
         User user = getUserByID(userId);
         user.removeItemFromUserCart(productName, storeId);
     }
 
 
-    public int register(int userID, String username, String password, String birthday,String country, String city,String address, String name) throws Exception {
-        if(allUsers.containsKey(userID)&& getUserByID(userID).isMember()) {
+    public String register(String userID, String username, String password, String birthday,String country, String city,String address, String name) throws Exception {
+        if(userRepository.contain(userID)&& getUserByID(userID).isMember()) {
             throw new Exception("member cannot register");
         }
         else {
             validateRegistrationDetails(username,password,birthday,country,city,address,name);
-            int memberId;
-            synchronized (memberIdLock){
-                memberId = currentMemberID;
-            }
-            Member newMember = new Member(memberId, username,password,birthday,country,city,address,name);
-            synchronized (membersLock) {
-                members.put(memberId, newMember);
+            String memberId = getCurrentMemberID();
 
-            }
-            synchronized (memberIdLock) {
-                currentMemberID++;
-            }
+
+            Member newMember = new Member(memberId, username,password,birthday,country,city,address,name);
+            members.add(memberId, newMember);
             //todo pass the user to login page.
             return memberId;
         }
     }
 
-    public int registerSystemAdmin(String username, String password, String birthday,String country, String city,String address, String name) throws Exception {
+    public String registerSystemAdmin(String username, String password, String birthday,String country, String city,String address, String name) throws Exception {
 
         validateRegistrationDetails(username,password,birthday,country,city,address,name);
-        int memberId;
-        synchronized (memberIdLock){
-            memberId = currentMemberID;
-        }
+        String memberId = getCurrentMemberID();
+
         Member newMember = new Member(memberId, username,password,birthday,country,city,address,name);
-        synchronized (membersLock) {
-            members.put(memberId, newMember);
-            currentMemberID++;
-        }
+            members.add(memberId, newMember);
+
         return memberId;
         //todo pass the user to login page.
     }
@@ -182,19 +186,18 @@ public class UserFacade {
             throw new Exception("All fields are required.");
         }
         //checking if username is already exist
-        synchronized (members) {
-            for (Member member : members.values()) {
-                if (Objects.equals(member.getUsername(), username)) {
-                    throw new Exception("Username already exists. Please choose a different username.");
-                }
-            }
+
+        Member mem = members.getByUserName(username);
+        if (mem!=null) {
+            throw new Exception("Username already exists. Please choose a different username.");
+
         }
         //todo check validation of the password. - do encription passwords only.
         //todo check validation of the birthday. - do we need to check this, in the gui the user will choose date from the calender.
         //todo check validation of the address. - do we need to check this, in the gui the user will address date from the calender.
     }
 
-    public void Login(int userID, String username, String password) throws Exception {
+    public void Login(String userID, String username, String password) throws Exception {
         Member loginMember = getMemberByUsername(username);
         if (loginMember == null){
             throw new Exception("Username or password is incorrect");
@@ -208,15 +211,10 @@ public class UserFacade {
     }
 
     public Member getMemberByUsername(String userName) throws Exception {
-        for (Member member : members.values()) {
-            if (member.getUsername().equals(userName)) {
-                return member;
-            }
-        }
-        return null;
+        return getMemberByUsername(userName);
     }
 
-    public List<Integer> getCartStoresByUser(int user_ID)
+    public List<String> getCartStoresByUser(String user_ID)
     {
         User user = getUserByID(user_ID);
         if(user != null)
@@ -225,7 +223,7 @@ public class UserFacade {
             return null;
     }
 
-    public Map<String, List<Integer>> getCartProductsByStoreAndUser(int store_ID, int user_ID)
+    public Map<String, List<Integer>> getCartProductsByStoreAndUser(String store_ID, String user_ID)
     {
         User user = getUserByID(user_ID);
         if(user != null)
@@ -234,24 +232,25 @@ public class UserFacade {
             return null;
     }
 
-    public boolean isUserCartEmpty(int user_ID)
+    public void isUserCartEmpty(String user_ID) throws Exception
     {
-        return getUserByID(user_ID).isCartEmpty();
+        if(getUserByID(user_ID).isCartEmpty())
+            throw new Exception(ExceptionsEnum.userCartIsEmpty.toString());
     }
 
-    public String getUserAddress(int user_ID)
+    public String getUserAddress(String user_ID)
     {
         return getUserByID(user_ID).getAddress();
     }
 
-    public int getCartPriceByUser(int user_ID)
+    public int getCartPriceByUser(String user_ID)
     {
         /*this function returns the cart total price before discounts, of a specific user*/
         return getUserByID(user_ID).getCartTotalPriceBeforeDiscount();
     }
 
-    public void addReceiptToUser(Map<Integer, Integer> receiptIdAndStoreId, int userId)
+    public void addReceiptToUser(Map<String, String> receiptIdAndStoreId, String userId)
     {
-        allUsers.get(userId).addReceipt(receiptIdAndStoreId);
+        userRepository.get(userId).addReceipt(receiptIdAndStoreId);
     }
 }

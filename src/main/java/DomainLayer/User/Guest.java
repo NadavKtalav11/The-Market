@@ -32,7 +32,7 @@ public class Guest extends State{
     }
 
     @Override
-    public void addReceipt(Map<Integer, Integer> receiptIdAndStoreId) {
+    public void addReceipt(Map<String, String> receiptIdAndStoreId) {
         return;
     }
 

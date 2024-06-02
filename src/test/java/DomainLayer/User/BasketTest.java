@@ -11,7 +11,7 @@ import static org.junit.jupiter.api.Assertions.*;
 public class BasketTest {
 
     private Basket basket;
-    private final int storeId = 100;
+    private final String storeId = "100";
 
     @BeforeEach
     public void setUp() {
@@ -22,8 +22,8 @@ public class BasketTest {
     public void testBasketInitialization() {
         assertEquals(storeId, basket.getStoreId());
         assertEquals(0, basket.getBasketPrice());
-        assertNotNull(basket.products);
-        assertTrue(basket.products.isEmpty());
+        assertNotNull(basket.getProducts());
+        assertTrue(basket.getProducts().isEmpty());
     }
 
     @Test
@@ -52,7 +52,7 @@ public class BasketTest {
         basket.addProduct(productName, initialQuantity, initialTotalPrice);
         basket.modifyProduct(productName, newQuantity, newTotalPrice);
 
-        List<Integer> quantityAndPrice = basket.products.get(productName);
+        List<Integer> quantityAndPrice = basket.getProducts().get(productName);
         assertEquals(newQuantity, quantityAndPrice.get(0));
         assertEquals(newTotalPrice, quantityAndPrice.get(1));
     }
