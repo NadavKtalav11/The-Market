@@ -14,7 +14,7 @@ import static org.mockito.Mockito.*;
 public class StoreTest {
 
     private Store store;
-    private final String storeId = "1";
+    private final int storeId = 1;
     private Product mockProduct;
     private final String productName = "TestProduct";
     private final int price = 100;
@@ -66,7 +66,7 @@ public class StoreTest {
     @Test
     void testCalcPriceInStore() {
         store.addProduct("Milk", 10, 100, "Dairy product", "Dairy");
-        int price = store.calcPriceInStore("Milk", 5, "1");
+        int price = store.calcPriceInStore("Milk", 5, 1);
 
         assertEquals(50, price);
     }

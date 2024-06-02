@@ -53,19 +53,19 @@ public class PaymentServicesFacadeTest {
     }
 
     @Test
-    public void testPay() throws Exception {
+    public void testPay() {
         int price = 100;
         String creditCard = "123456789";
         int cvv = 123;
         int month = 12;
         int year = 2023;
         String holderID = "holderID";
-        String userId = "user1";
-        Map<String, Map<String, Integer>> productList = new HashMap<>();
-        productList.put("store1", new HashMap<>());
+        int userId = 1;
+        Map<Integer, Map<String, Integer>> productList = new HashMap<>();
+        productList.put(1, new HashMap<>());
 
         paymentServicesFacade.addExternalService(1, "TestService", "http://testservice.com");
-        Map<String,String> acquisitionAndExternalService = null;
+        Map<Integer,Integer> acquisitionAndExternalService = null;
 
         acquisitionAndExternalService= paymentServicesFacade.pay(price, creditCard, cvv, month, year, holderID, userId, productList);
         assertNotNull(acquisitionAndExternalService);

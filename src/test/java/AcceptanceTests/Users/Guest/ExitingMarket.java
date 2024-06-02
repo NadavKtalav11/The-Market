@@ -24,7 +24,7 @@ public class ExitingMarket {
     @Test
     public void successfulExitTest() {
         impl.enterMarketSystem();
-        assertTrue(impl.exitMarketSystem("0").isSuccess());
+        assertTrue(impl.exitMarketSystem(0).isSuccess());
 
 
     }

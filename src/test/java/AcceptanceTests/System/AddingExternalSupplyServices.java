@@ -25,7 +25,7 @@ public class AddingExternalSupplyServices {
     @Test
     public void testAddExternalSupplyServiceSuccess() {
         // Arrange
-        String systemManagerId = "user77";
+        int systemManagerId = 77;
         market.getSystemManagerIds().add(systemManagerId);
         int licensedDealerNumber = 12345;
         String supplyServiceName = "Hovalot";
@@ -42,8 +42,8 @@ public class AddingExternalSupplyServices {
     @Test
     public void testAddExternalSupplyServiceFailureNotSystemManager() {
         // Arrange
-        String systemManagerId = "user77";
-        String nonManagerId = "user2";
+        int systemManagerId = 77;
+        int nonManagerId = 2;
         market.getSystemManagerIds().add(systemManagerId);
         int licensedDealerNumber = 12345;
         market.getSystemManagerIds().add(systemManagerId);
@@ -63,9 +63,9 @@ public class AddingExternalSupplyServices {
     }
 
     @Test
-    public void testAddExternalSupplyServiceFailureInvalidDetails() {
+    public void testAddExternalSupplytServiceFailureInvalidDetails() {
         // Arrange
-        String systemManagerId = "user77";
+        int systemManagerId = 77;
         market.getSystemManagerIds().add(systemManagerId);
         int licensedDealerNumber = -1;
         market.getSystemManagerIds().add(systemManagerId);

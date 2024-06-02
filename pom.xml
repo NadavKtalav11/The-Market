@@ -20,7 +20,6 @@
             <artifactId>jjwt-api</artifactId>
             <version>0.12.2</version> <!-- Or the latest version -->
         </dependency>
-
         <dependency>
             <groupId>io.jsonwebtoken</groupId>
             <artifactId>jjwt-impl</artifactId>
@@ -31,7 +30,6 @@
             <artifactId>jjwt-jackson</artifactId>
             <version>0.12.2</version> <!-- Or the latest version -->
         </dependency>
-
         <!-- SLF4J API -->
         <dependency>
             <groupId>org.slf4j</groupId>

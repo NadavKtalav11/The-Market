@@ -4,39 +4,34 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class Receipt {
-    private String receiptId;
-    private String storeId;
-    private String userId;
+    private int receiptId;
+    private int storeId;
+    private int userId;
     private Map<String, Integer> productList = new HashMap<>(); //<productName, price>
 
-    private final Object productListLock;
-
-    public Receipt(String receiptId, String storeId, String userId, Map<String, Integer> productList)
+    public Receipt(int receiptId, int storeId, int userId, Map<String, Integer> productList)
     {
         this.receiptId = receiptId;
         this.storeId = storeId;
         this.userId = userId;
         this. productList = productList;
-        productListLock= new Object();
     }
 
     public int getTotalPriceOfStoreReceipt()
     {
-        synchronized (productListLock) {
-            int storePrice = 0;
-            for (String productName : productList.keySet()) {
-                storePrice += productList.get(productName);
-            }
-            return storePrice;
+        int storePrice = 0;
+        for (String productName : productList.keySet()) {
+            storePrice += productList.get(productName);
         }
+        return storePrice;
     }
 
-    public String getStoreId()
+    public int getStoreId()
     {
         return storeId;
     }
 
-    public String getReceiptId() {
+    public int getReceiptId() {
         return receiptId;
     }
 }

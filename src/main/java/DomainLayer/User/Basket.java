@@ -6,25 +6,22 @@ import java.util.List;
 import java.util.Map;
 
 public class Basket {
-    private final String storeId;
-    private Map<String, List<Integer>> products; //key = product name, value = [quantity, products total price]
+    private final int storeId;
+    Map<String, List<Integer>> products; //key = product name, value = [quantity, products total price]
     int basketPrice;
-    private final Object basketPriceLock;
+    Object basketPriceLock;
 
-
-    public Basket(String storeId) {
+    public Basket(int storeId) {
         this.storeId = storeId;
         this.basketPrice = 0;
         basketPriceLock = new Object();
         products = new HashMap<>();
     }
 
-    public String getStoreId()
+    public int getStoreId()
     {
         return this.storeId;
     }
-
-
 
     public int getBasketPrice()
     {
@@ -43,7 +40,7 @@ public class Basket {
 
     public synchronized Map<String, List<Integer>> getProducts()
     {
-            return products;
+        return products;
     }
 
     public synchronized void addProduct(String productName, int quantity, int totalPrice)
@@ -56,11 +53,12 @@ public class Basket {
 
     public synchronized void modifyProduct(String productName, int quantity, int totalPrice)
     {
-        if (!products.containsKey(productName)) {
+        if (!products.containsKey(productName))
+        {
             throw new IllegalArgumentException("The item you try to edit is not in your basket. Please add the item before attempting to modify it.");
         }
-        List<Integer> quantityAndPrice = products.get(productName);
 
+        List<Integer> quantityAndPrice = products.get(productName);
         quantityAndPrice.set(0, quantity);
         quantityAndPrice.set(1, totalPrice);
     }
