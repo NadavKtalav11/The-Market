@@ -2,6 +2,7 @@ package AcceptanceTests.Users.Guest;
 
 import AcceptanceTests.BridgeToTests;
 import AcceptanceTests.ProxyToTest;
+import Util.UserDTO;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -22,9 +23,9 @@ public class Login {
         impl.enterMarketSystem();
         impl.enterMarketSystem();
         impl.enterMarketSystem(); 
-        impl.register(0, "user1", "0VnDExW3T9", "12/12/00","Israel", "BeerSheva", "bialik","noa");
-        impl.register(1, "user2", "QtzxeceVM0", "12/12/00", "Israel", "BeerSheva", "bialik","noa");
-        impl.register(2, "user3", "KjUJqvJBls", "12/12/00", "Israel", "BeerSheva", "bialik","noa");
+        impl.register(0, new UserDTO("user1","12/12/00","Israel", "BeerSheva", "bialik","noa"), "0VnDExW3T9");
+        impl.register(1, new UserDTO("user2", "12/12/00", "Israel", "BeerSheva", "bialik","noa"), "QtzxeceVM0");
+        impl.register(2, new UserDTO("user3", "12/12/00", "Israel", "BeerSheva", "bialik","noa"), "KjUJqvJBls");
     }
 
     @AfterEach

@@ -8,6 +8,7 @@ import DomainLayer.PaymentServices.PaymentServicesFacade;
 import DomainLayer.Store.StoreFacade;
 import DomainLayer.User.User;
 import DomainLayer.User.UserFacade;
+import Util.UserDTO;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
@@ -72,7 +73,7 @@ public class Payment {
         int year = 2024;
         String holderID = "123456789";
         int userID = 77;
-        userFacade.register(userID,  "username",  "password",  "birthday", "country",  "city", "address",  "name");
+        userFacade.register(userID,  new UserDTO("username", "birthday", "country",  "city", "address",  "name"), "password");
 
         String systemMangerId = 77;
 

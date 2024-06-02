@@ -1,6 +1,7 @@
 package DomainLayer.User;
 
 
+import Util.UserDTO;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -69,7 +70,7 @@ public class UserFacadeTest {
     @Test
     public void testRegister() throws Exception {
         int userId = userFacade.addUser();
-        userFacade.register(userId, "testUser", "testPass", "01-01-2000", "Test Country", "Test City", "123 Test St", "Test Name");
+        userFacade.register(userId, new UserDTO("testUser", "01-01-2000", "Test Country", "Test City", "123 Test St", "Test Name"), "testPass");
 
         Member member = userFacade.getMemberByUsername("testUser");
         assertNotNull(member);

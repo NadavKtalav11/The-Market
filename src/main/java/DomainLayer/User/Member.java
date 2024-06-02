@@ -2,6 +2,7 @@ package DomainLayer.User;
 import DomainLayer.Store.Store;
 import DomainLayer.Store.StoreFacade;
 import DomainLayer.Role.RoleFacade;
+import Util.UserDTO;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -21,16 +22,16 @@ public class Member extends State{
     private Map<String, String> receiptIdsAndStoreId; //<receiptId, storeId>
     //private boolean isLogin;
 
-    Member(String member_ID, String username, String password, String birthday,String country, String city, String address, String name)
+    Member(String member_ID, UserDTO user, String password)
     {
         this.member_ID = member_ID;
-        this.username = username;
+        this.username = user.getUserName();
         this.password = password;
-        this.birthday = birthday;
-        this.country = country;
-        this.city =  city;
-        this.address = address;
-        this.name = name;
+        this.birthday = user.getBirthday();
+        this.country = user.getCountry();
+        this.city =  user.getCity();
+        this.address = user.getAddress();
+        this.name = user.getName();
         this.productIdCounter = 0;
         this.receiptIdsAndStoreId = new HashMap<>();
     }

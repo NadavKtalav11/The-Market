@@ -2,6 +2,7 @@ package DomainLayer.User;
 
 import DomainLayer.Store.Store;
 import DomainLayer.User.*;
+import Util.UserDTO;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -81,7 +82,7 @@ public class UserTest {
     @Test
     public void testIsLoggedIn() {
         assertFalse(user.isLoggedIn());
-        user.setState(new Member(1,"username1", "password" , "1.2.2020", "israel" , "bash", "bialik", "noa"));
+        user.setState(new Member(1,new UserDTO("username1", "1.2.2020", "israel" , "bash", "bialik", "noa"), "password"));
         assertTrue(user.isLoggedIn());
     }
 

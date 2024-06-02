@@ -3,6 +3,8 @@ package DomainLayer.PaymentServices;
 
 // this class is for external payment service itself
 
+import Util.PaymentDTO;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -24,15 +26,15 @@ public  class ExternalPaymentService {
     }
 
     // Abstract method for paying with a card
-    public Map<Integer, Integer> payWithCard(int price, String creditCard, int cvv, int month, int year, String holder, int id, Map<Integer, Map<String, Integer>> productList,
+    public Map<Integer, Integer> payWithCard(int price, PaymentDTO payment, int id, Map<Integer, Map<String, Integer>> productList,
                                              int acquisitionIdCounter, int receiptIdCounter) throws Exception {
         // Mocking HTTP request to check if there is enough money in the card
-        boolean response = httpClient.get(url + "?creditCard=" + creditCard + "&amount=" + price);
+        boolean response = httpClient.get(url + "?creditCard=" + payment.getCreditCardNumber() + "&amount=" + price);
         if(!response){
             throw new Exception("There is not enough money in the credit card");
         }
         acquisitionLock = new Object();
-      Acquisition acquisition = new Acquisition(acquisitionIdCounter, id, price, holder, creditCard, cvv, month, year, productList, receiptIdCounter);
+      Acquisition acquisition = new Acquisition(acquisitionIdCounter, id, price, payment, productList, receiptIdCounter);
         synchronized (acquisitionLock) {
             idAndAcquisition.put(acquisitionIdCounter, acquisition);
         }

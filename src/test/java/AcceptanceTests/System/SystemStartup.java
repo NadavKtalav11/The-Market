@@ -4,6 +4,8 @@ import AcceptanceTests.BridgeToTests;
 import AcceptanceTests.ProxyToTest;
 import DomainLayer.Market.Market;
 import static org.junit.jupiter.api.Assertions.*;
+
+import Util.UserDTO;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -43,7 +45,7 @@ public class SystemStartup {
         HashSet<String> cities = new HashSet<>(Arrays.asList("New York", "Los Angeles"));
 
         // Act
-        market.init(userName, password, birthday, country, city, address, name, licensedDealerNumber,
+        market.init(new UserDTO(userName, birthday, country, city, address, name), password, licensedDealerNumber,
                 paymentServiceName, url, licensedDealerNumber1, supplyServiceName, countries, cities);
 
         // Assuming there's a method isInitialized() that returns whether the system is initialized
@@ -73,7 +75,7 @@ public class SystemStartup {
 
         // Act and Assert
         Exception exception = assertThrows(Exception.class, () -> {
-            market.init(userName, password, birthday, country, city, address, name, licensedDealerNumber,
+            market.init(new UserDTO(userName, birthday, country, city, address, name), password, licensedDealerNumber,
                     paymentServiceName, url, licensedDealerNumber1, supplyServiceName, countries, cities);
         });
 
@@ -105,7 +107,7 @@ public class SystemStartup {
 
         // Act and Assert
         Exception exception = assertThrows(Exception.class, () -> {
-            market.init(userName, password, birthday, country, city, address, name, licensedDealerNumber,
+            market.init(new UserDTO(userName, birthday, country, city, address, name), password, licensedDealerNumber,
                     paymentServiceName, url, licensedDealerNumber1, supplyServiceName, countries, cities);
         });
 

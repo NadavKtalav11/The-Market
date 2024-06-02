@@ -2,6 +2,7 @@ package DomainLayer.User;
 
 
 import Util.ExceptionsEnum;
+import Util.UserDTO;
 
 import java.util.HashMap;
 import java.util.UUID;
@@ -146,28 +147,28 @@ public class UserFacade {
     }
 
 
-    public String register(String userID, String username, String password, String birthday,String country, String city,String address, String name) throws Exception {
+    public String register(String userID, UserDTO user, String password) throws Exception {
         if(userRepository.contain(userID)&& getUserByID(userID).isMember()) {
             throw new Exception("member cannot register");
         }
         else {
-            validateRegistrationDetails(username,password,birthday,country,city,address,name);
+            validateRegistrationDetails(user,password);
             String memberId = getCurrentMemberID();
 
 
-            Member newMember = new Member(memberId, username,password,birthday,country,city,address,name);
+            Member newMember = new Member(memberId, user, password);
             members.add(memberId, newMember);
             //todo pass the user to login page.
             return memberId;
         }
     }
 
-    public String registerSystemAdmin(String username, String password, String birthday,String country, String city,String address, String name) throws Exception {
+    public String registerSystemAdmin(UserDTO user, String password) throws Exception {
 
-        validateRegistrationDetails(username,password,birthday,country,city,address,name);
+        validateRegistrationDetails(user,password);
         String memberId = getCurrentMemberID();
 
-        Member newMember = new Member(memberId, username,password,birthday,country,city,address,name);
+        Member newMember = new Member(memberId, user,password);
             members.add(memberId, newMember);
 
         return memberId;
@@ -176,18 +177,18 @@ public class UserFacade {
 
 
 
-    private void validateRegistrationDetails(String username, String password , String birthDate, String country, String city, String address, String name) throws Exception {
-        if (username == null || password == null || birthDate == null || country ==null || city == null ||
-                address == null || name == null) {
+    private void validateRegistrationDetails(UserDTO user, String password) throws Exception {
+        if (user.getUserName() == null || password == null || user.getBirthday() == null || user.getCountry() ==null || user.getCity() == null ||
+                user.getAddress() == null || user.getName() == null) {
             throw new Exception("All fields are required.");
         }
-        else if (username.equals("") || password.equals("") || birthDate.equals("") || country.equals("") || city.equals("") ||
-                address.equals("") || name.equals("")) {
+        else if (user.getUserName().equals("") || password.equals("") || user.getBirthday().equals("") || user.getCountry().equals("") || user.getCity().equals("") ||
+                user.getAddress().equals("") || user.getName().equals("")) {
             throw new Exception("All fields are required.");
         }
         //checking if username is already exist
 
-        Member mem = members.getByUserName(username);
+        Member mem = members.getByUserName(user.getUserName());
         if (mem!=null) {
             throw new Exception("Username already exists. Please choose a different username.");
 

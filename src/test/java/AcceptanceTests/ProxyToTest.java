@@ -1,6 +1,7 @@
 package AcceptanceTests;
 
 import ServiceLayer.Response;
+import Util.ProductDTO;
 
 import java.util.HashSet;
 import java.util.List;
@@ -96,9 +97,9 @@ public class ProxyToTest implements BridgeToTests {
     }
 
     @Override
-    public Response<String> updateProductInStore(String userId, String storeID, String productName, int price, int quantity, String description, String categoryStr) {
+    public Response<String> updateProductInStore(String userId, String storeID, ProductDTO product) {
         if (realServiceAdaptor != null)
-            return realServiceAdaptor.updateProductInStore(userId, storeID, productName, price, quantity, description, categoryStr);
+            return realServiceAdaptor.updateProductInStore(userId, storeID, product);
         else
             return new Response<>(null, "Not Implemented yet");
     }

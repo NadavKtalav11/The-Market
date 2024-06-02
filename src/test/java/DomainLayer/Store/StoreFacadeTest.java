@@ -4,6 +4,7 @@ import DomainLayer.User.Member;
 import DomainLayer.User.User;
 import DomainLayer.User.UserFacade;
 import ServiceLayer.Response;
+import Util.ProductDTO;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -45,14 +46,14 @@ public class StoreFacadeTest {
 
     @Test
     void testAddProductToStore() throws Exception {
-        storeFacade.addProductToStore(storeId, "Product1", 100, 10, "Description1", "Category1");
-        verify(mockStore).addProduct("Product1", 100, 10, "Description1", "Category1");
+        storeFacade.addProductToStore(storeId, new ProductDTO("Product1", 100, 10, "Description1", "Category1"));
+        verify(mockStore).addProduct(new ProductDTO("Product1", 100, 10, "Description1", "Category1"));
 
-        storeFacade.addProductToStore(storeId, "Product2", 100, 10, "Description1", "Category1");
-        verify(mockStore).addProduct("Product2", 100, 10, "Description1", "Category1");
+        storeFacade.addProductToStore(storeId, new ProductDTO("Product2", 100, 10, "Description1", "Category1"));
+        verify(mockStore).addProduct(new ProductDTO("Product2", 100, 10, "Description1", "Category1"));
 
-        storeFacade.addProductToStore(storeId, "Product3", 100, 10, "Description1", "Category1");
-        verify(mockStore).addProduct("Product3", 100, 10, "Description1", "Category1");
+        storeFacade.addProductToStore(storeId, new ProductDTO("Product3", 100, 10, "Description1", "Category1"));
+        verify(mockStore).addProduct(new ProductDTO("Product3", 100, 10, "Description1", "Category1"));
     }
 
     @Test
@@ -113,8 +114,8 @@ public class StoreFacadeTest {
     @Test
     void testUpdateProductInStore() throws Exception {
         when(mockStore.checkProductExists(anyString())).thenReturn(true);
-        storeFacade.updateProductInStore(0, "Milk", 100, 10, "Fresh Milk", "Dairy");
-        verify(mockStore).updateProduct("Milk", 100, 10, "Fresh Milk", "Dairy");
+        storeFacade.updateProductInStore(0, new ProductDTO("Milk", 100, 10, "Fresh Milk", "Dairy"));
+        verify(mockStore).updateProduct(new ProductDTO("Milk", 100, 10, "Fresh Milk", "Dairy"));
     }
 
     @Test

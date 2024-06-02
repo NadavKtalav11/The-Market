@@ -1,5 +1,7 @@
 package DomainLayer.PaymentServices;
 
+import Util.PaymentDTO;
+
 import java.util.*;
 
 public class Acquisition {
@@ -16,17 +18,16 @@ public class Acquisition {
 
     private final Object storeReceiptLock;
 
-    public Acquisition(String acquisitionId, String userId, int totalPrice, String holderId,
-                       String creditCardNumber, int cvv, int month, int year, Map<String, Map<String, Integer>> productList, String receiptIdCounter) {
+    public Acquisition(String acquisitionId, String userId, int totalPrice, PaymentDTO payment, Map<String, Map<String, Integer>> productList, String receiptIdCounter) {
         this.acquisitionId = acquisitionId;
         this.userId = userId;
         this.totalPrice = totalPrice;
-        this.holderId = holderId;
-        this.creditCardNumber= creditCardNumber;
+        this.holderId = payment.getHolderId();
+        this.creditCardNumber= payment.getCreditCardNumber();
         storeReceiptLock = new Object();
-        this.cvv = cvv;
-        this.month=month;
-        this.year=year;
+        this.cvv = payment.getCvv();
+        this.month=payment.getMonth();
+        this.year= payment.getYear();
         this.date = new Date(); // Current date and time
 
         for (String storeId : productList.keySet())
