@@ -16,21 +16,21 @@ public class AppointOwner {
     public static void setUp() {
         impl = new ProxyToTest("Real");
         impl.enterMarketSystem();
-        impl.register(0, new UserDTO("saar", "10/04/84", "Israel", "Jerusalem", "Yehuda halevi 18", "saar"), "fadida");
-        impl.register(1, new UserDTO("tom", "27/11/85", "Israel", "Jerusalem", "Yehuda halevi 17", "tom"), "shlaifer");
-        impl.register(2, new UserDTO("jalal", "08/02/82", "Israel", "Jerusalem", "Yehuda halevi 13", "jalal"), "kasoom");
-        impl.login(0, "saar", "fadida");
-        impl.openStore(0, "alona", "shopping");
-        impl.appointStoreOwner(0, "tom", 0);
+        impl.register("0", new UserDTO("saar", "10/04/84", "Israel", "Jerusalem", "Yehuda halevi 18", "saar"), "fadida");
+        impl.register("1", new UserDTO("tom", "27/11/85", "Israel", "Jerusalem", "Yehuda halevi 17", "tom"), "shlaifer");
+        impl.register("2", new UserDTO("jalal", "08/02/82", "Israel", "Jerusalem", "Yehuda halevi 13", "jalal"), "kasoom");
+        impl.login("0", "saar", "fadida");
+        impl.openStore("0", "alona", "shopping");
+        impl.appointStoreOwner("0", "tom", "0");
     }
 
     @Test
     public void successfulAppointedTest() {
-        assertTrue(impl.appointStoreOwner(0, "jalal",0).isSuccess());
+        assertTrue(impl.appointStoreOwner("0", "jalal","0").isSuccess());
     }
 
     @Test
     public void alreadyStoreOwnerTest() {
-        assertFalse(impl.appointStoreOwner(0, "tom",0).isSuccess());
+        assertFalse(impl.appointStoreOwner("0", "tom","0").isSuccess());
     }
 }
