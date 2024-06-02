@@ -57,7 +57,8 @@ public class PaymentServicesFacade {
         }
     }
 
-    public Map<String,String> pay(int price,String creditCard, int cvv, int month, int year, String holderID, String userId, Map<String, Map<String, Integer>> productList){
+    public Map<Integer,Integer> pay(int price,String creditCard, int cvv, int month, int year, String holderID, int userId, Map<Integer, Map<String, Integer>> productList) throws Exception{
+       
         String acquisitionId  = getNewAcquisitionId();
         String receiptId = getNewReceiptId();
         ExternalPaymentService externalPaymentService;

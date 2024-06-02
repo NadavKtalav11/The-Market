@@ -11,24 +11,36 @@ public  class ExternalPaymentService {
     private String paymentServiceName;
     private String url;
     private Map<String, Acquisition> idAndAcquisition = new HashMap<>();
+    private HttpClient httpClient;
     private final Object acquisitionLock;
 
     public ExternalPaymentService(int licensedDealerNumber, String paymentServiceName, String url) {
         this.licensedDealerNumber = licensedDealerNumber;
         this.paymentServiceName = paymentServiceName;
         this.url = url;
-        acquisitionLock = new Object();
+
+        this.httpClient = httpClient;
+
     }
 
     // Abstract method for paying with a card
-    public Map<String, String> payWithCard(int price, String creditCard, int cvv, int month, int year, String holder, String id, Map<String, Map<String, Integer>> productList,
-                                             String acquisitionIdCounter, String receiptIdCounter) {
-        Acquisition acquisition = new Acquisition(acquisitionIdCounter, id, price, holder, creditCard, cvv, month, year, productList, receiptIdCounter);
+    public Map<Integer, Integer> payWithCard(int price, String creditCard, int cvv, int month, int year, String holder, int id, Map<Integer, Map<String, Integer>> productList,
+                                             int acquisitionIdCounter, int receiptIdCounter) throws Exception {
+        // Mocking HTTP request to check if there is enough money in the card
+        boolean response = httpClient.get(url + "?creditCard=" + creditCard + "&amount=" + price);
+        if(!response){
+            throw new Exception("There is not enough money in the credit card");
+        }
+        acquisitionLock = new Object();
+      Acquisition acquisition = new Acquisition(acquisitionIdCounter, id, price, holder, creditCard, cvv, month, year, productList, receiptIdCounter);
         synchronized (acquisitionLock) {
             idAndAcquisition.put(acquisitionIdCounter, acquisition);
         }
         return acquisition.getReceiptIdAndStoreIdMap();
+      
     }
+
+   
 
     // Abstract method for refunding to a card
     public boolean refundToCard() {
