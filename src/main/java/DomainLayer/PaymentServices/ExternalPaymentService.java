@@ -10,15 +10,15 @@ public  class ExternalPaymentService {
     private int licensedDealerNumber;
     private String paymentServiceName;
     private String url;
-    private Map<Integer, Acquisition> idAndAcquisition = new HashMap<>();
+    private Map<String, Acquisition> idAndAcquisition = new HashMap<>();
     private HttpClient httpClient;
-
-
+    private final Object acquisitionLock;
 
     public ExternalPaymentService(int licensedDealerNumber, String paymentServiceName, String url) {
         this.licensedDealerNumber = licensedDealerNumber;
         this.paymentServiceName = paymentServiceName;
         this.url = url;
+
         this.httpClient = httpClient;
 
     }
@@ -31,10 +31,16 @@ public  class ExternalPaymentService {
         if(!response){
             throw new Exception("There is not enough money in the credit card");
         }
-        Acquisition acquisition = new Acquisition(acquisitionIdCounter, id, price, holder, creditCard, cvv, month, year, productList, receiptIdCounter);
-        idAndAcquisition.put(acquisitionIdCounter, acquisition);
+        acquisitionLock = new Object();
+      Acquisition acquisition = new Acquisition(acquisitionIdCounter, id, price, holder, creditCard, cvv, month, year, productList, receiptIdCounter);
+        synchronized (acquisitionLock) {
+            idAndAcquisition.put(acquisitionIdCounter, acquisition);
+        }
         return acquisition.getReceiptIdAndStoreIdMap();
+      
     }
+
+   
 
     // Abstract method for refunding to a card
     public boolean refundToCard() {
@@ -46,7 +52,9 @@ public  class ExternalPaymentService {
         return true;
     }
 
-    public Map<Integer, Acquisition> getIdAndAcquisition() {
-        return idAndAcquisition;
+    public Map<String, Acquisition> getIdAndAcquisition() {
+        synchronized (acquisitionLock) {
+            return idAndAcquisition;
+        }
     }
 }

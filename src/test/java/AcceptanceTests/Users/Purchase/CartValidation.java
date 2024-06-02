@@ -2,6 +2,8 @@ package AcceptanceTests.Users.Purchase;
 
 import AcceptanceTests.BridgeToTests;
 import AcceptanceTests.ProxyToTest;
+import ServiceLayer.Response;
+import Util.ExceptionsEnum;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -50,10 +52,39 @@ public class CartValidation {
     }
 
     @Test
-    public void productNotExistTest() {
+    public void productQuantityUnavailableTest() {
         impl.addProductToBasket("Shoes", 13, 0, 1);
-        assertFalse(impl.checkingCartValidationBeforePurchase(0, "Israel", "Beer Sheva", "Mesada").isSuccess());
 
+        Exception exception = assertThrows(Exception.class, () -> {
+            Response<Integer> response = impl.checkingCartValidationBeforePurchase(0, "Israel", "Beer Sheva", "Mesada");
+            assertFalse(response.isSuccess());
+        });
+
+        assertEquals(ExceptionsEnum.productQuantityNotExist.toString(), exception.getMessage());
+    }
+
+    @Test
+    public void productNotExistTest() {
+        impl.addProductToBasket("pants", 5, 0, 1);
+
+        Exception exception = assertThrows(Exception.class, () -> {
+            Response<Integer> response =impl.checkingCartValidationBeforePurchase(0, "Israel", "Beer Sheva", "Mesada");
+            assertFalse(response.isSuccess());
+        });
+
+        assertEquals(ExceptionsEnum.productNotExistInStore.toString(), exception.getMessage());
+    }
+
+    @Test
+    public void productQuantityIsNegative() {
+        impl.addProductToBasket("shoes", -1, 0, 1);
+
+        Exception exception = assertThrows(Exception.class, () -> {
+            Response<Integer> response =impl.checkingCartValidationBeforePurchase(0, "Israel", "Beer Sheva", "Mesada");
+            assertFalse(response.isSuccess());
+        });
+
+        assertEquals(ExceptionsEnum.productQuantityIsNegative.toString(), exception.getMessage());
     }
 
     @Test
@@ -61,17 +92,36 @@ public class CartValidation {
         impl.removeProductFromBasket("Milk", 0, 1);
         impl.removeProductFromBasket("Cheese", 0, 1);
         impl.removeProductFromBasket("Yogurt", 0, 1);
-        assertFalse(impl.checkingCartValidationBeforePurchase(0, "Israel", "Beer Sheva", "Mesada").isSuccess());
+
+        Exception exception = assertThrows(Exception.class, () -> {
+            Response<Integer> response =impl.checkingCartValidationBeforePurchase(0, "Israel", "Beer Sheva", "Mesada");
+            assertFalse(response.isSuccess());
+        });
+
+        assertEquals(ExceptionsEnum.userCartIsEmpty.toString(), exception.getMessage());
     }
 
     @Test
     public void purchasePolicyInvalidTest() {
-        assertFalse(impl.checkingCartValidationBeforePurchase(0, "Israel", "Beer Sheva", "Mesada").isSuccess());
+        // TODO: 31/05/2024 change this test to use mock
+        // TODO: 31/05/2024 maybe need to add also test for discount policy
+
+        Exception exception = assertThrows(Exception.class, () -> {
+            Response<Integer> response =impl.checkingCartValidationBeforePurchase(0, "Israel", "Beer Sheva", "Mesada");
+            assertFalse(response.isSuccess());
+        });
+
+        assertEquals(ExceptionsEnum.purchasePolicyIsNotMet.toString(), exception.getMessage());
     }
 
     @Test
     public void shippingInvalidTest() {
-        assertFalse(impl.checkingCartValidationBeforePurchase(0, "Israel", "Tel Aviv", "Mesada").isSuccess());
+        Exception exception = assertThrows(Exception.class, () -> {
+            Response<Integer> response =impl.checkingCartValidationBeforePurchase(0, "Israel", "Tel Aviv", "Mesada");
+            assertFalse(response.isSuccess());
+        });
+
+        assertEquals(ExceptionsEnum.ExternalSupplyServiceIsNotAvailable.toString(), exception.getMessage());
     }
 
 }
