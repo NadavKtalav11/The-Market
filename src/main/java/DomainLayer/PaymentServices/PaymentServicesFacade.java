@@ -16,6 +16,7 @@ public class PaymentServicesFacade {
     public PaymentServicesFacade(){
         paymentServiceLock =new Object();
         acquisitionLock = new Object();
+
     }
 
 
@@ -57,7 +58,7 @@ public class PaymentServicesFacade {
         }
     }
 
-    public Map<Integer,Integer> pay(int price,String creditCard, int cvv, int month, int year, String holderID, int userId, Map<Integer, Map<String, Integer>> productList) throws Exception{
+    public Map<String,String> pay(int price,String creditCard, int cvv, int month, int year, String holderID, String userId, Map<String, Map<String, Integer>> productList) throws Exception{
        
         String acquisitionId  = getNewAcquisitionId();
         String receiptId = getNewReceiptId();

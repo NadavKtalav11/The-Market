@@ -11,27 +11,25 @@ public  class ExternalPaymentService {
     private String paymentServiceName;
     private String url;
     private Map<String, Acquisition> idAndAcquisition = new HashMap<>();
-    private HttpClient httpClient;
-    private final Object acquisitionLock;
+    private final Object acquisitionLock = new Object();
 
     public ExternalPaymentService(int licensedDealerNumber, String paymentServiceName, String url) {
         this.licensedDealerNumber = licensedDealerNumber;
         this.paymentServiceName = paymentServiceName;
         this.url = url;
 
-        this.httpClient = httpClient;
+
 
     }
 
     // Abstract method for paying with a card
-    public Map<Integer, Integer> payWithCard(int price, String creditCard, int cvv, int month, int year, String holder, int id, Map<Integer, Map<String, Integer>> productList,
-                                             int acquisitionIdCounter, int receiptIdCounter) throws Exception {
+    public Map<String, String> payWithCard(int price, String creditCard, int cvv, int month, int year, String holder, String id, Map<String, Map<String, Integer>> productList,
+                                             String acquisitionIdCounter, String receiptIdCounter) throws Exception {
         // Mocking HTTP request to check if there is enough money in the card
-        boolean response = httpClient.get(url + "?creditCard=" + creditCard + "&amount=" + price);
+        boolean response = mockHttpRequest(url, creditCard, price);
         if(!response){
             throw new Exception("There is not enough money in the credit card");
         }
-        acquisitionLock = new Object();
       Acquisition acquisition = new Acquisition(acquisitionIdCounter, id, price, holder, creditCard, cvv, month, year, productList, receiptIdCounter);
         synchronized (acquisitionLock) {
             idAndAcquisition.put(acquisitionIdCounter, acquisition);
@@ -39,7 +37,11 @@ public  class ExternalPaymentService {
         return acquisition.getReceiptIdAndStoreIdMap();
       
     }
+    // Method to mock the HTTP request
+    public static boolean mockHttpRequest(String url, String creditCard, int amount) {
 
+        return true;
+    }
    
 
     // Abstract method for refunding to a card

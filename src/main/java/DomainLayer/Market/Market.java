@@ -103,7 +103,7 @@ public class Market {
         }
     }
 
-    public void addExternalPaymentService(int licensedDealerNumber,String paymentServiceName, String url, int systemMangerId) throws Exception {
+    public void addExternalPaymentService(int licensedDealerNumber,String paymentServiceName, String url, String systemMangerId) throws Exception {
         try {
             synchronized (managersLock) {
                 if (!systemManagerIds.contains(systemMangerId)) {
@@ -120,7 +120,7 @@ public class Market {
         paymentServicesFacade.addExternalService(licensedDealerNumber, paymentServiceName, url);
     }
 
-    public void removeExternalPaymentService(int licensedDealerNumber, int systemMangerId) throws Exception {
+    public void removeExternalPaymentService(int licensedDealerNumber, String systemMangerId) throws Exception {
         try {
             synchronized (managersLock) {
                 if (!systemManagerIds.contains(systemMangerId)) {
@@ -139,7 +139,7 @@ public class Market {
 
     }
 
-    public void addExternalSupplyService(int licensedDealerNumber, String supplyServiceName, HashSet<String> countries, HashSet<String> cities, int systemManagerId) throws Exception {
+    public void addExternalSupplyService(int licensedDealerNumber, String supplyServiceName, HashSet<String> countries, HashSet<String> cities, String systemManagerId) throws Exception {
         try {
             synchronized (managersLock) {
                 if (!systemManagerIds.contains(systemManagerId)) {
@@ -156,7 +156,7 @@ public class Market {
 
     }
 
-    public void removeExternalSupplyService(int licensedDealerNumber, int systemManagerId) throws Exception {
+    public void removeExternalSupplyService(int licensedDealerNumber, String systemManagerId) throws Exception {
 
             try {
                 synchronized (managersLock) {
