@@ -18,8 +18,8 @@ public class StoreFacadeTest {
 
     private StoreFacade storeFacade;
     private Store mockStore;
-    private final int userId = 1;
-    private final int storeId = 0;
+    private final String userId = "1";
+    private final String storeId = "0";
     private final String productName = "Product1";
     private final int quantity = 2;
     private final int totalPrice = 100;
@@ -33,7 +33,7 @@ public class StoreFacadeTest {
 
     @Test
     void testOpenStore() {
-        int storeId = storeFacade.openStore("Grocery", "");
+        String storeId = storeFacade.openStore("Grocery", "");
         assertNotNull(storeFacade.getStoreByID(storeId));
     }
 
@@ -83,51 +83,51 @@ public class StoreFacadeTest {
     void testCheckQuantityAndPolicies() {
         when(mockStore.checkProductExists("Milk")).thenReturn(true);
         when(mockStore.checkProductQuantity("Milk", 5)).thenReturn(true);
-        when(mockStore.checkPurchasePolicy(1, "Milk")).thenReturn(true);
-        when(mockStore.checkDiscountPolicy(1, "Milk")).thenReturn(true);
+        when(mockStore.checkPurchasePolicy("1", "Milk")).thenReturn(true);
+        when(mockStore.checkDiscountPolicy("1", "Milk")).thenReturn(true);
 
 
         //if no exceptions thrown, this test passes
-        storeFacade.checkQuantityAndPolicies("Milk", 5, 0, 1);
+        storeFacade.checkQuantityAndPolicies("Milk", 5, "0", "1");
 
         verify(mockStore).checkProductExists("Milk");
         verify(mockStore).checkProductQuantity("Milk", 5);
-        verify(mockStore).checkPurchasePolicy(1, "Milk");
-        verify(mockStore).checkDiscountPolicy(1, "Milk");
+        verify(mockStore).checkPurchasePolicy("1", "Milk");
+        verify(mockStore).checkDiscountPolicy("1", "Milk");
 
         //fail case for the test
         when(mockStore.checkProductExists("Milk")).thenReturn(false);
-        assertThrows(Exception.class, () -> storeFacade.checkQuantityAndPolicies("Milk", 5, 0, 1));
+        assertThrows(Exception.class, () -> storeFacade.checkQuantityAndPolicies("Milk", 5, "0", "1"));
 
     }
 
     @Test
     void testCalcPrice() {
-        when(mockStore.calcPriceInStore("Milk", 5, 1)).thenReturn(100);
+        when(mockStore.calcPriceInStore("Milk", 5, "1")).thenReturn(100);
 
-        int price = storeFacade.calcPrice("Milk", 5, 0, 1);
+        int price = storeFacade.calcPrice("Milk", 5, "0", "1");
 
         assertEquals(100, price);
-        verify(mockStore).calcPriceInStore("Milk", 5, 1);
+        verify(mockStore).calcPriceInStore("Milk", 5, "1");
     }
 
     @Test
     void testUpdateProductInStore() throws Exception {
         when(mockStore.checkProductExists(anyString())).thenReturn(true);
-        storeFacade.updateProductInStore(0, new ProductDTO("Milk", 100, 10, "Fresh Milk", "Dairy"));
+        storeFacade.updateProductInStore("0", new ProductDTO("Milk", 100, 10, "Fresh Milk", "Dairy"));
         verify(mockStore).updateProduct(new ProductDTO("Milk", 100, 10, "Fresh Milk", "Dairy"));
     }
 
     @Test
     void testVerifyStoreExist() {
-        boolean exists = storeFacade.verifyStoreExist(0);
+        boolean exists = storeFacade.verifyStoreExist("0");
 
         assertTrue(exists);
     }
 
     @Test
     void testCloseStore() throws Exception {
-        storeFacade.closeStore(0);
+        storeFacade.closeStore("0");
 
         verify(mockStore).closeStore();
     }
@@ -136,18 +136,18 @@ public class StoreFacadeTest {
     void testGetInformationAboutOpenStores() {
         when(mockStore.getIsOpened()).thenReturn(true);
 
-        List<Integer> openStores = storeFacade.getInformationAboutOpenStores();
+        List<String> openStores = storeFacade.getInformationAboutOpenStores();
 
-        assertTrue(openStores.contains(0));
+        assertTrue(openStores.contains("0"));
     }
 
     @Test
     void testGetInformationAboutClosedStores() {
         when(mockStore.getIsOpened()).thenReturn(false);
 
-        List<Integer> closedStores = storeFacade.getInformationAboutClosedStores();
+        List<String> closedStores = storeFacade.getInformationAboutClosedStores();
 
-        assertTrue(closedStores.contains(0));
+        assertTrue(closedStores.contains("0"));
     }
 
     @Test
@@ -155,7 +155,7 @@ public class StoreFacadeTest {
         List<String> products = Arrays.asList("Milk", "Cheese");
         when(mockStore.getProducts()).thenReturn(products);
 
-        List<String> result = storeFacade.getStoreProducts(0);
+        List<String> result = storeFacade.getStoreProducts("0");
 
         assertEquals(products, result);
     }
@@ -165,7 +165,7 @@ public class StoreFacadeTest {
         List<String> expectedProducts = Arrays.asList("Milk", "Cheese");
         when(mockStore.filterProducts("Dairy", Arrays.asList("Fresh"), 10, 100, 4.5, Arrays.asList("Milk", "Cheese"), 4.0)).thenReturn(expectedProducts);
 
-        List<String> result = storeFacade.inStoreProductFilter("Dairy", Arrays.asList("Fresh"), 10, 100, 4.5, 0, Arrays.asList("Milk", "Cheese"), 4.0);
+        List<String> result = storeFacade.inStoreProductFilter("Dairy", Arrays.asList("Fresh"), 10, 100, 4.5, "0", Arrays.asList("Milk", "Cheese"), 4.0);
 
         assertEquals(expectedProducts, result);
         verify(mockStore).filterProducts("Dairy", Arrays.asList("Fresh"), 10, 100, 4.5, Arrays.asList("Milk", "Cheese"), 4.0);
@@ -179,21 +179,21 @@ public class StoreFacadeTest {
     @Test
     void testCheckProductExistInStore() {
         when(mockStore.checkProductExists("NonExistentProduct")).thenReturn(false);
-        assertFalse(storeFacade.checkProductExistInStore("NonExistentProduct", 0));
+        assertFalse(storeFacade.checkProductExistInStore("NonExistentProduct", "0"));
     }
 
     @Test
     void testGetStores() {
-        List<Integer> stores = storeFacade.getStores();
+        List<String> stores = storeFacade.getStores();
 
         assertTrue(stores.contains(0));
     }
 
     @Test
     void testAddReceiptToStore() {
-        storeFacade.addReceiptToStore(0, 1, 1);
+        storeFacade.addReceiptToStore("0", "1", "1");
 
-        verify(mockStore).addReceipt(1, 1);
+        verify(mockStore).addReceipt("1", "1");
     }
 
 }

@@ -147,12 +147,12 @@ public class UserFacade {
     }
 
 
-    public String register(String userID, UserDTO user, String password) throws Exception {
+    public String register(String userID, UserDTO user,String password) throws Exception {
         if(userRepository.contain(userID)&& getUserByID(userID).isMember()) {
             throw new Exception("member cannot register");
         }
         else {
-            validateRegistrationDetails(user,password);
+            validateRegistrationDetails(user, password);
             String memberId = getCurrentMemberID();
 
 
