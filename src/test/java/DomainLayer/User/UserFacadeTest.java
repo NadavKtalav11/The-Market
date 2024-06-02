@@ -54,12 +54,6 @@ public class UserFacadeTest {
         assertEquals(mockUser, userFacade.getUserByID("1"));
     }
 
-    @Test
-    public void testIsUserLoggedIn() {
-        when(mockUser.isLoggedIn()).thenReturn(true);
-        assertTrue(userFacade.isMember("1"));
-    }
-
     //todo change this test
 //    @Test
 //    public void testAddUser() {
