@@ -8,6 +8,7 @@ import DomainLayer.PaymentServices.PaymentServicesFacade;
 import DomainLayer.Store.StoreFacade;
 import DomainLayer.User.User;
 import DomainLayer.User.UserFacade;
+import Util.PaymentDTO;
 import Util.UserDTO;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -91,7 +92,7 @@ public class Payment {
         Map<Integer, Map<String, Integer>> productList = new HashMap<>();
 
         // Act and Assert
-        assertDoesNotThrow(() -> {market.payWithExternalPaymentService(price, cardNumber, cvv, month, year, holderID, systemMangerId, productList);
+        assertDoesNotThrow(() -> {market.payWithExternalPaymentService(price, new PaymentDTO(holderID, cardNumber, cvv, month, year), systemMangerId, productList);
         });
         int result1 = externalPaymentService.getIdAndAcquisition().size();
         assertEquals(1, result1);
@@ -125,7 +126,7 @@ public class Payment {
         // Mocking User and UserFacade
 //
         Exception exception = assertThrows(Exception.class, () -> {
-            market.payWithExternalPaymentService(price, cardNumber, cvv, month, year, holderID, userID, productList);
+            market.payWithExternalPaymentService(price, new PaymentDTO(holderID, cardNumber, cvv, month, year), userID, productList);
         });
         int result1 = externalPaymentService.getIdAndAcquisition().size();
         assertEquals(0, result1);
@@ -154,7 +155,7 @@ public class Payment {
 //
 
         Exception exception = assertThrows(Exception.class, () -> {
-            market.payWithExternalPaymentService(price, cardNumber, cvv, month, year, holderID, userID, productList);
+            market.payWithExternalPaymentService(price, new PaymentDTO(holderID, cardNumber, cvv, month, year), userID, productList);
         });
 
         assertEquals("There is no available external payment system.\n", exception.getMessage());

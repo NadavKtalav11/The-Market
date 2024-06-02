@@ -1,6 +1,7 @@
 package DomainLayer.PaymentServices;
 
 
+import Util.PaymentDTO;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -67,7 +68,7 @@ public class PaymentServicesFacadeTest {
         paymentServicesFacade.addExternalService(1, "TestService", "http://testservice.com");
         Map<Integer,Integer> acquisitionAndExternalService = null;
 
-        acquisitionAndExternalService= paymentServicesFacade.pay(price, creditCard, cvv, month, year, holderID, userId, productList);
+        acquisitionAndExternalService= paymentServicesFacade.pay(price, new PaymentDTO(holderID, creditCard, cvv, month, year), userId, productList);
         assertNotNull(acquisitionAndExternalService);
     }
 

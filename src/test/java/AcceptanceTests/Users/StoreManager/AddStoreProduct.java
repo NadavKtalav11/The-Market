@@ -3,6 +3,7 @@ package AcceptanceTests.Users.StoreManager;
 import AcceptanceTests.BridgeToTests;
 import AcceptanceTests.ProxyToTest;
 import Util.ProductDTO;
+import Util.UserDTO;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
@@ -18,9 +19,9 @@ public class AddStoreProduct {
     public static void setUp() {
         impl = new ProxyToTest("Real");
         saarUserID = impl.enterMarketSystem().getResult();
-        impl.register(saarUserID, "saar", "fadida", "10/04/84", "Israel", "Jerusalem", "Yehuda halevi 18", "saar");
+        impl.register(saarUserID, new UserDTO("saar",  "10/04/84", "Israel", "Jerusalem", "Yehuda halevi 18", "saar"), "fadida");
         tomUserID = impl.enterMarketSystem().getResult();
-        impl.register(tomUserID, "tom", "shlaifer", "27/11/85", "Israel", "Jerusalem", "Yehuda halevi 17", "tom");
+        impl.register(tomUserID, new UserDTO("tom",  "27/11/85", "Israel", "Jerusalem", "Yehuda halevi 17", "tom"), "shlaifer");
         impl.login(saarUserID, "saar", "fadida");
         impl.login(tomUserID, "tom", "shlaifer");
         impl.openStore(saarUserID, "alona", "shopping");
