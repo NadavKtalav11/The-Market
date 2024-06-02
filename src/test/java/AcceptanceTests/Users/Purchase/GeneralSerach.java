@@ -3,6 +3,8 @@ package AcceptanceTests.Users.Purchase;
 import AcceptanceTests.BridgeToTests;
 import AcceptanceTests.ProxyToTest;
 import ServiceLayer.Response;
+import Util.ProductDTO;
+import Util.UserDTO;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
@@ -26,14 +28,14 @@ public class GeneralSerach {
         impl = new ProxyToTest("Real");
         //Do what you need
         impl.enterMarketSystem();
-        impl.register(0, "user1", "fSijsd281", "12/12/00", "Israel", "Beer Sheva", "Mesada", "Toy");
+        impl.register(0, new UserDTO("user1", "12/12/00", "Israel", "Beer Sheva", "Mesada", "Toy"), "fSijsd281");
         impl.login(0, "user1", "fSijsd281");
         impl.openStore(0, "Zara", "clothing store");
         impl.openStore(0, "Bershka", "clothing store");
-        impl.addProductToStore(0, 0, "Milk", 10, 5, "Milk 5%", "food");
-        impl.addProductToStore(0, 0, "Cheese", 15, 8, "Cheese 22%", "food");
-        impl.addProductToStore(0, 1, "Yogurt", 4, 12, "Yogurt 20%", "food");
-        impl.addProductToStore(0, 1, "Shoes", 4, 12, "Nike Shoes", "clothing");
+        impl.addProductToStore(0, 0, new ProductDTO("Milk", 10, 5, "Milk 5%", "food"));
+        impl.addProductToStore(0, 0, new ProductDTO("Cheese", 15, 8, "Cheese 22%", "food"));
+        impl.addProductToStore(0, 1, new ProductDTO("Yogurt", 4, 12, "Yogurt 20%", "food"));
+        impl.addProductToStore(0, 1, new ProductDTO("Shoes", 4, 12, "Nike Shoes", "clothing"));
 
     }
 

@@ -3,6 +3,7 @@ package AcceptanceTests.Users.StoreOwner;
 import AcceptanceTests.BridgeToTests;
 import AcceptanceTests.ProxyToTest;
 import Util.ProductDTO;
+import Util.UserDTO;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
@@ -17,7 +18,7 @@ public class UpdateStoreProduct {
     public static void setUp() {
         impl = new ProxyToTest("Real");
         ssarUserID = impl.enterMarketSystem().getResult();
-        impl.register(ssarUserID, "saar", "fadida", "10/04/84", "Israel", "Jerusalem", "Yehuda halevi 18", "saar");
+        impl.register(ssarUserID, new UserDTO("saar", "10/04/84", "Israel", "Jerusalem", "Yehuda halevi 18", "saar"), "fadida");
         impl.login(ssarUserID, "saar", "fadida");
         impl.openStore(ssarUserID, "alona", "shopping");
         impl.addProductToStore(ssarUserID, 0, new ProductDTO("weddingDress", 10, 5, "pink", "clothes"));
