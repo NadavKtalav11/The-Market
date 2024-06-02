@@ -24,6 +24,8 @@ public class Basket {
         return this.storeId;
     }
 
+
+
     public int getBasketPrice()
     {
         synchronized (basketPriceLock) {

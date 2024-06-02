@@ -19,7 +19,7 @@ public class RemoveExternalSupplyServices {
     public void setUp() {
         impl = new ProxyToTest("Real");
         this.market = Market.getInstance();
-        market.getSystemManagerIds().add(77);
+        market.getSystemManagerIds().add("77");
 
     }
 
@@ -29,12 +29,12 @@ public class RemoveExternalSupplyServices {
         HashSet<String> cities = new HashSet<>();
         countries.add("Israel");
         cities.add("Bash");
-        market.addExternalSupplyService(12345, "Hovalot", countries,cities, 77);
-        market.addExternalSupplyService(67890, "Hovalot1", countries,cities,77);
+        market.addExternalSupplyService(12345, "Hovalot", countries,cities, "77");
+        market.addExternalSupplyService(67890, "Hovalot1", countries,cities,"77");
 
         // Act and Assert
         assertDoesNotThrow(() -> {
-            market.removeExternalSupplyService(12345, 77);
+            market.removeExternalSupplyService(12345, "77");
         });
     }
 
@@ -45,11 +45,11 @@ public class RemoveExternalSupplyServices {
         HashSet<String> cities = new HashSet<>();
         countries.add("Israel");
         cities.add("Bash");
-        market.addExternalSupplyService(12345, "Hovalat", countries,cities,77);
+        market.addExternalSupplyService(12345, "Hovalat", countries,cities,"77");
 
         // Act and Assert
         Exception exception = assertThrows(Exception.class, () -> {
-            market.removeExternalSupplyService(12345, 2); // 2 is not a system manager ID
+            market.removeExternalSupplyService(12345, "2"); // 2 is not a system manager ID
         });
 
         // Optionally check the exception message
@@ -63,11 +63,11 @@ public class RemoveExternalSupplyServices {
         HashSet<String> cities = new HashSet<>();
         countries.add("Israel");
         cities.add("Bash");
-        market.addExternalSupplyService(12345, "Hovalot", countries,cities,77);
+        market.addExternalSupplyService(12345, "Hovalot", countries,cities,"77");
 
         // Act and Assert
         Exception exception = assertThrows(Exception.class, () -> {
-            market.removeExternalSupplyService(12345, 77);
+            market.removeExternalSupplyService(12345, "77");
         });
 
         // Optionally check the exception message

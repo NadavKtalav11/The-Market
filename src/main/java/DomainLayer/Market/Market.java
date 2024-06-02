@@ -7,6 +7,7 @@ import DomainLayer.Store.Product;
 import DomainLayer.Store.StoreFacade;
 import DomainLayer.User.UserFacade;
 import DomainLayer.SupplyServices.SupplyServicesFacade;
+import Util.CartDTO;
 import Util.ExceptionsEnum;
 import Util.PaymentDTO;
 import Util.ProductDTO;
@@ -107,7 +108,7 @@ public class Market {
         }
     }
 
-    public void addExternalPaymentService(int licensedDealerNumber,String paymentServiceName, String url, int systemMangerId) throws Exception {
+    public void addExternalPaymentService(int licensedDealerNumber,String paymentServiceName, String url, String systemMangerId) throws Exception {
         try {
             synchronized (managersLock) {
                 if (!systemManagerIds.contains(systemMangerId)) {
@@ -124,7 +125,7 @@ public class Market {
         paymentServicesFacade.addExternalService(licensedDealerNumber, paymentServiceName, url);
     }
 
-    public void removeExternalPaymentService(int licensedDealerNumber, int systemMangerId) throws Exception {
+    public void removeExternalPaymentService(int licensedDealerNumber, String systemMangerId) throws Exception {
         try {
             synchronized (managersLock) {
                 if (!systemManagerIds.contains(systemMangerId)) {
@@ -143,7 +144,7 @@ public class Market {
 
     }
 
-    public void addExternalSupplyService(int licensedDealerNumber, String supplyServiceName, HashSet<String> countries, HashSet<String> cities, int systemManagerId) throws Exception {
+    public void addExternalSupplyService(int licensedDealerNumber, String supplyServiceName, HashSet<String> countries, HashSet<String> cities, String systemManagerId) throws Exception {
         try {
             synchronized (managersLock) {
                 if (!systemManagerIds.contains(systemManagerId)) {
@@ -160,7 +161,7 @@ public class Market {
 
     }
 
-    public void removeExternalSupplyService(int licensedDealerNumber, int systemManagerId) throws Exception {
+    public void removeExternalSupplyService(int licensedDealerNumber, String systemManagerId) throws Exception {
 
             try {
                 synchronized (managersLock) {
@@ -181,6 +182,21 @@ public class Market {
         synchronized (managersLock) {
             return systemManagerIds;
         }
+    }
+
+    public void purchase(int userID, CardDTO cardDTO, UserDTO userDTO) throws Exception {
+        CartDTO cartDTO = null;
+        try{
+            cartDTO = checkingCartValidationBeforePurchase(userID, userDTO);
+            payWithExternalPaymentService(cartDTO.getCartPrice(), cardDTO, cartDTO.getStoreToProducts());
+        }
+        catch (Exception e){
+            if (cartDTO != null) {
+                returnCartToStock(cartDTO.getStoreToProducts());
+            }
+            throw new Exception (e);
+        }
+
     }
 
 
@@ -205,11 +221,12 @@ public class Market {
         }
     }
 
-    public void paymentFailed(String user_ID) throws Exception {
-        returnStock(getPurchaseList(user_ID));
+    public void paymentFailed(CartDTO cartDTO) throws Exception {
+        returnCartToStock(cartDTO.getStoreToProducts());
     }
 
-    public void returnStock(Map<String, Map<String, Integer>> products){
+    //Map<StoreID, Map<ProductName, quantity>>
+    public void returnCartToStock(Map<String, Map<String, Integer>> products){
         for (String storeId: products.keySet()){
             storeFacade.returnProductToStore(products.get(storeId), storeId);
         }
@@ -674,7 +691,7 @@ public class Market {
         return storeReceiptsAndTotalAmount;
     }
 
-    public int checkingCartValidationBeforePurchase(String user_ID, String country, String city, String address) throws Exception {
+    public CartDTO checkingCartValidationBeforePurchase(String user_ID, String country, String city, String address) throws Exception {
         if (userFacade.isMember(user_ID)) {
             String memberId = userFacade.getMemberIdByUserId(user_ID);
             boolean succeeded = authenticationAndSecurityFacade.validateToken(authenticationAndSecurityFacade.getToken(memberId));if (!succeeded) {
@@ -696,14 +713,14 @@ public class Market {
                 int availableExternalSupplyService = this.checkAvailableExternalSupplyService(country, city);
                 this.createShiftingDetails(country, city, availableExternalSupplyService, address, user_ID);
             }
-            //remove items from stock
-            removeUserCartFromStock(user_ID);
+
             int storeTotalPriceBeforeDiscount = this.userFacade.getCartPriceByUser(user_ID);
             int storeTotalPrice = this.storeFacade.calculateTotalCartPriceAfterDiscount(store_ID, products, storeTotalPriceBeforeDiscount);
             totalPrice += storeTotalPrice;
         }
-
-        return totalPrice;
+        //remove items from stock
+        removeUserCartFromStock(user_ID);
+        return new CartDTO(user_ID,totalPrice,getPurchaseList(user_ID));
     }
 
     public int checkAvailableExternalSupplyService(String country, String city) throws Exception {
