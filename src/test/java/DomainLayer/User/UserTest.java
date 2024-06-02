@@ -24,7 +24,7 @@ public class UserTest {
 
     @BeforeEach
     public void setUp() {
-        user = new User(1);
+        user = new User("1");
         member = mock(Member.class);
 
         // Create the mocks
@@ -57,19 +57,19 @@ public class UserTest {
 
     @Test
     public void testAddToCart() {
-        User user2 = new User(2);
-        user2.addToCart("Product1", 2, 1, 100);
+        User user2 = new User("2");
+        user2.addToCart("Product1", 2, "1", 100);
         assertFalse(user2.getCart().isCartEmpty());
-        assertTrue(user2.checkIfProductInUserCart("Product1", 1));
+        assertTrue(user2.checkIfProductInUserCart("Product1", "1"));
     }
 
     @Test
     public void testModifyProductInCart() {
-        User user2 = new User(2);
-        user2.addToCart("Product1", 2, 1, 100);
-        user2.modifyProductInCart("Product1", 3, 1, 150);
-        assertEquals(1, user2.getCartProductsByStore(1).size());
-        assertEquals(3, user2.getCartProductsByStore(1).get("Product1").get(0));
+        User user2 = new User("2");
+        user2.addToCart("Product1", 2, "1", 100);
+        user2.modifyProductInCart("Product1", 3, "1", 150);
+        assertEquals(1, user2.getCartProductsByStore("1").size());
+        assertEquals(3, user2.getCartProductsByStore("1").get("Product1").get(0));
     }
 
     @Test
@@ -82,14 +82,14 @@ public class UserTest {
     @Test
     public void testIsLoggedIn() {
         assertFalse(user.isLoggedIn());
-        user.setState(new Member(1,new UserDTO("username1", "1.2.2020", "israel" , "bash", "bialik", "noa"), "password"));
+        user.setState(new Member("1",new UserDTO("username1", "1.2.2020", "israel" , "bash", "bialik", "noa"), "password"));
         assertTrue(user.isLoggedIn());
     }
 
     @Test
     public void testRemoveItemFromUserCart() {
         String productName = "Product1";
-        int storeId = 100;
+        String storeId = "100";
 
         // Set up the mock behavior for the store
         when(storeMock.getStoreID()).thenReturn(storeId);
@@ -108,27 +108,27 @@ public class UserTest {
 
     @Test
     public void testGetCartProductsByStore() {
-        User user2 = new User(2);
-        user2.addToCart("Product1", 2, 1, 100);
-        user2.addToCart("Product2", 1, 1, 50);
-        assertEquals(2, user2.getCartProductsByStore(1).size());
+        User user2 = new User("2");
+        user2.addToCart("Product1", 2, "1", 100);
+        user2.addToCart("Product2", 1, "1", 50);
+        assertEquals(2, user2.getCartProductsByStore("1").size());
     }
 
     @Test
     //todo check this after Tomer
     public void testGetCartTotalPriceBeforeDiscount() {
-        User user2 = new User(2);
-        user2.addToCart("Product1", 2, 1, 100);
-        user2.addToCart("Product2", 1, 1, 50);
+        User user2 = new User("2");
+        user2.addToCart("Product1", 2, "1", 100);
+        user2.addToCart("Product2", 1, "1", 50);
 
         assertEquals(150, user2.getCartTotalPriceBeforeDiscount());
     }
 
     @Test
     public void testIsCartEmpty() {
-        User user2 = new User(2);
+        User user2 = new User("2");
         assertTrue(user2.isCartEmpty());
-        user2.addToCart("Product1", 2, 1, 100);
+        user2.addToCart("Product1", 2, "1", 100);
         assertFalse(user2.isCartEmpty());
     }
 }

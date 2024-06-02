@@ -127,13 +127,13 @@ public class Payment {
         ExternalPaymentService externalPaymentService = paymentServicesFacade.getAllPaymentServices().get(licensedDealerNumber);
         int result = externalPaymentService.getIdAndAcquisition().size();
         assertEquals(0, result);
-        Map<Integer, Map<String, Integer>> productList = new HashMap<>();
+        Map<String, Map<String, Integer>> productList = new HashMap<>();
 //
         //  when(userFacade.isUserLoggedIn(userID)).thenReturn(true);
         // Mocking User and UserFacade
 //
         Exception exception = assertThrows(Exception.class, () -> {
-            market.payWithExternalPaymentService(price, new PaymentDTO(holderID, cardNumber, cvv, month, year), userID, productList);
+            market.payWithExternalPaymentService(new CartDTO(userID,price,productList), new PaymentDTO(holderID, cardNumber, cvv, month, year), userID);
         });
         int result1 = externalPaymentService.getIdAndAcquisition().size();
         assertEquals(0, result1);
@@ -150,19 +150,19 @@ public class Payment {
         int month = 12;
         int year = 20244;
         String holderID = "123456789";
-        int userID = 77;
+        String userID = "77";
 
-        int systemManagerId = 77;
+        String systemManagerId = "77";
         market.getSystemManagerIds().add(systemManagerId);
         int licensedDealerNumber = 12345;
         String paymentServiceName = "PayPal";
         String url = "http://paypal.com";
         assertEquals(0, paymentServicesFacade.getAllPaymentServices().size()); // assert there is no AvailableExternalPaymentServiceTest
-        Map<Integer, Map<String, Integer>> productList = new HashMap<>();
+        Map<String, Map<String, Integer>> productList = new HashMap<>();
 //
 
         Exception exception = assertThrows(Exception.class, () -> {
-            market.payWithExternalPaymentService(price, new PaymentDTO(holderID, cardNumber, cvv, month, year), userID, productList);
+            market.payWithExternalPaymentService(new CartDTO(userID,price,productList), new PaymentDTO(holderID, cardNumber, cvv, month, year), userID);
         });
 
         assertEquals("There is no available external payment system.\n", exception.getMessage());
