@@ -184,11 +184,11 @@ public class Market {
         }
     }
 
-    public void purchase(int userID, CardDTO cardDTO, UserDTO userDTO) throws Exception {
+    public void purchase(String userID, PaymentDTO paymentDTO, UserDTO userDTO) throws Exception {
         CartDTO cartDTO = null;
         try{
             cartDTO = checkingCartValidationBeforePurchase(userID, userDTO);
-            payWithExternalPaymentService(cartDTO.getCartPrice(), cardDTO, cartDTO.getStoreToProducts());
+            payWithExternalPaymentService(cartDTO, paymentDTO, userID);
         }
         catch (Exception e){
             if (cartDTO != null) {
@@ -196,18 +196,17 @@ public class Market {
             }
             throw new Exception (e);
         }
-
     }
 
 
-    public void payWithExternalPaymentService(int price, PaymentDTO payment, String userId, Map<String, Map<String, Integer>> productList) throws Exception{
-        if(price<= 0 || payment.getMonth()> 12 || payment.getMonth()<1 || payment.getYear() < 2020 ||payment.getHolderId()==null ||productList==null) {
+    public void payWithExternalPaymentService(CartDTO cartDTO,PaymentDTO payment, String userId) throws Exception{
+        if(cartDTO.getCartPrice()<= 0 || payment.getMonth()> 12 || payment.getMonth()<1 || payment.getYear() < 2020 ||payment.getHolderId()==null ||cartDTO.getStoreToProducts()==null) {
             throw new Exception("There is a problem with the provided payment measure or details of the order.\n");
         }
         if(paymentServicesFacade.getAllPaymentServices().size()<1){
             throw new Exception("There is no available external payment system.\n");
         }
-        Map<String,String> receiptIdStoreId = paymentServicesFacade.pay(price, payment, userId, productList); //<receiptId, storeId>
+        Map<String,String> receiptIdStoreId = paymentServicesFacade.pay(cartDTO.getCartPrice(), payment, userId, cartDTO.getStoreToProducts()); //<receiptId, storeId>
         //print when implement notifications (purchase successes)
 
         //Add the receiptId and storeId to the user receipts map
@@ -691,7 +690,7 @@ public class Market {
         return storeReceiptsAndTotalAmount;
     }
 
-    public CartDTO checkingCartValidationBeforePurchase(String user_ID, String country, String city, String address) throws Exception {
+    public CartDTO checkingCartValidationBeforePurchase(String user_ID,UserDTO userDTO) throws Exception {
         if (userFacade.isMember(user_ID)) {
             String memberId = userFacade.getMemberIdByUserId(user_ID);
             boolean succeeded = authenticationAndSecurityFacade.validateToken(authenticationAndSecurityFacade.getToken(memberId));if (!succeeded) {
@@ -710,8 +709,8 @@ public class Market {
             for(String productName: products.keySet()) {
                 quantity = products.get(productName).get(0);
                 this.storeFacade.checkQuantityAndPolicies(productName, quantity, store_ID, user_ID);
-                int availableExternalSupplyService = this.checkAvailableExternalSupplyService(country, city);
-                this.createShiftingDetails(country, city, availableExternalSupplyService, address, user_ID);
+                int availableExternalSupplyService = this.checkAvailableExternalSupplyService(userDTO.getCountry(), userDTO.getCity());
+                this.createShiftingDetails(userDTO.getCountry(), userDTO.getCity(), availableExternalSupplyService, userDTO.getAddress(), user_ID);
             }
 
             int storeTotalPriceBeforeDiscount = this.userFacade.getCartPriceByUser(user_ID);
