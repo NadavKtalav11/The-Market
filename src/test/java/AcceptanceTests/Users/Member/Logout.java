@@ -17,14 +17,14 @@ public class Logout {
         impl = new ProxyToTest("Real");
         //Do what you need
         impl.enterMarketSystem();
-        impl.register("0", "user1", "0VnDExW3T9", "12/12/00","Israel", "BeerSheva", "bialik","noa");
+        impl.register(0, "user1", "0VnDExW3T9", "12/12/00","Israel", "BeerSheva", "bialik","noa");
         impl.enterMarketSystem();
 
-        impl.register("1", "user2", "QtzxeceVM0", "12/12/00", "Israel", "BeerSheva", "bialik","noa");
+        impl.register(1, "user2", "QtzxeceVM0", "12/12/00", "Israel", "BeerSheva", "bialik","noa");
         impl.enterMarketSystem();
-        impl.register("2", "user3", "KjUJqvJBls", "12/12/00", "Israel", "BeerSheva", "bialik","noa");
+        impl.register(2, "user3", "KjUJqvJBls", "12/12/00", "Israel", "BeerSheva", "bialik","noa");
 
-        impl.login("0", "user1", "0VnDExW3T9");
+        impl.login(0, "user1", "0VnDExW3T9");
 
 
     }
@@ -33,7 +33,7 @@ public class Logout {
 
     @Test
     public void successfulLogoutTest() {
-        assertTrue(impl.logout("0").isSuccess());
+        assertTrue(impl.logout(0).isSuccess());
 
 
     }
@@ -41,7 +41,7 @@ public class Logout {
     @Test
     public void alreadyLoggedOutTest() {
 
-        assertFalse(impl.logout("1").isSuccess());
+        assertFalse(impl.logout(1).isSuccess());
     }
 
 }

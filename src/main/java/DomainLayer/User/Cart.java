@@ -3,17 +3,14 @@ package DomainLayer.User;
 import java.util.*;
 
 public class Cart {
-    Map<String, Basket> baskets ; //key = storeID
+    Map<Integer, Basket> baskets ; //key = storeID
     private int cartPrice;
-
-    private final Object basketsLock;
-    private final Object priceLock;
+    private Object basketsLock;
 
     public Cart() {
         this.cartPrice = 0;
         basketsLock = new Object();
         baskets = new HashMap<>();
-        priceLock = new Object();
     }
 
     public int getCartPrice()
@@ -24,12 +21,10 @@ public class Cart {
 
     private void setCartPrice(int price)
     {
-        synchronized (priceLock) {
-            this.cartPrice = price;
-        }
+        this.cartPrice = price;
     }
 
-    public void addItemsToCart(String productName, int quantity, String storeId, int totalPrice)
+    public void addItemsToCart(String productName, int quantity, int storeId, int totalPrice)
     {
         Basket basket;
         synchronized (basketsLock) {
@@ -44,7 +39,7 @@ public class Cart {
 
     }
 
-    public void modifyProductInCart(String productName, int quantity, String storeId, int totalPrice)
+    public void modifyProductInCart(String productName, int quantity, int storeId, int totalPrice)
     {
         synchronized (basketsLock) {
             if (!baskets.containsKey(storeId)) {
@@ -62,7 +57,7 @@ public class Cart {
     {
         int totalCartPrice = 0;
         synchronized (basketsLock) {
-            for (String storeId : baskets.keySet()) {
+            for (Integer storeId : baskets.keySet()) {
                 Basket basket = baskets.get(storeId);
                 totalCartPrice = totalCartPrice + basket.getBasketPrice();
             }
@@ -71,7 +66,7 @@ public class Cart {
 
     }
 
-    public boolean checkIfProductInCart(String productName, String storeId)
+    public boolean checkIfProductInCart(String productName, int storeId)
     {
         synchronized (basketsLock) {
             if (baskets.containsKey(storeId)) {
@@ -82,7 +77,7 @@ public class Cart {
         throw new IllegalArgumentException("The store id" + storeId + "you entered is invalid");
     }
 
-    public void removeItemFromCart(String productName, String storeId)
+    public void removeItemFromCart(String productName, int storeId)
     {
         synchronized (basketsLock) {
             if (baskets.containsKey(storeId)) {
@@ -97,7 +92,7 @@ public class Cart {
     public boolean isCartEmpty()
     {
         synchronized (basketsLock) {
-            for (String storeId : baskets.keySet()) {
+            for (Integer storeId : baskets.keySet()) {
                 Basket basket = baskets.get(storeId);
                 if (!basket.isBasketEmpty())
                     return false;
@@ -107,14 +102,14 @@ public class Cart {
 
     }
 
-    public Map<String, List<Integer>> getProductsDetailsByStore(String store_ID)
+    public Map<String, List<Integer>> getProductsDetailsByStore(int store_ID)
     {
         synchronized (basketsLock) {
             return baskets.get(store_ID).getProducts();
         }
     }
 
-    public Map<String, Integer> getProductsQuantityByStore(String store_ID)
+    public Map<String, Integer> getProductsQuantityByStore(int store_ID)
     {
         Map<String, List<Integer>> products = this.getProductsDetailsByStore(store_ID);
         //create new map, contains only the quantity of each product
@@ -134,11 +129,9 @@ public class Cart {
     }
 
 
-    public List<String> getCartStores()
+    public List<Integer> getCartStores()
     {
         /*this function returns the stores from which the user added his products*/
-        synchronized (basketsLock) {
-            return new ArrayList<>(baskets.keySet());
-        }
+        return new ArrayList<>(baskets.keySet());
     }
 }

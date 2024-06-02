@@ -41,7 +41,7 @@ public class Service_layer {
         }
     }
 
-    public Response<String> addExternalPaymentService(int licensedDealerNumber,String paymentServiceName, String url, String systemMangerId) throws Exception {
+    public Response<String> addExternalPaymentService(int licensedDealerNumber,String paymentServiceName, String url, int systemMangerId) throws Exception {
         logger.info("Trying to add a new external payment service");
         try {
             market.addExternalPaymentService(licensedDealerNumber, paymentServiceName, url, systemMangerId);
@@ -54,7 +54,7 @@ public class Service_layer {
         }
     }
 
-    public Response<String> removeExternalPaymentService(int  licensedDealerNumber, String systemMangerId){
+    public Response<String> removeExternalPaymentService(int  licensedDealerNumber, int systemMangerId){
         logger.info("Trying to remove the payment service number: {}",licensedDealerNumber );
         try {
             market.removeExternalPaymentService(licensedDealerNumber,systemMangerId);
@@ -68,7 +68,7 @@ public class Service_layer {
 
     }
 
-    public Response<String> addExternalSupplyService(int licensedDealerNumber, String supplyServiceName, HashSet<String> countries, HashSet<String> cities, String systemManagerId) throws Exception {
+    public Response<String> addExternalSupplyService(int licensedDealerNumber, String supplyServiceName, HashSet<String> countries, HashSet<String> cities, int systemManagerId) throws Exception {
         logger.info("Trying to add a new external supply service");
         try {
             market.addExternalSupplyService(licensedDealerNumber, supplyServiceName, countries, cities, systemManagerId);
@@ -80,7 +80,7 @@ public class Service_layer {
         }
     }
 
-    public Response<String> removeExternalSupplyService(int licensedDealerNumber, String systemManagerId) {
+    public Response<String> removeExternalSupplyService(int licensedDealerNumber, int systemManagerId) {
         logger.info("Trying to remove the supply service number: {}", licensedDealerNumber);
         try {
             market.removeExternalSupplyService(licensedDealerNumber, systemManagerId);
@@ -94,7 +94,7 @@ public class Service_layer {
 
 
 
-    public Response<String> payWithExternalPaymentService(int price,String cardNumber, int cvv, int month, int year, String holderID, String userID) {
+    public Response<String> payWithExternalPaymentService(int price,String cardNumber, int cvv, int month, int year, String holderID, int userID) {
         logger.info("Reaching for the payment service in order to complete the purchase.");
         try {
             market.payWithExternalPaymentService( price, cardNumber, cvv,  month,  year,  holderID,  userID, market.getPurchaseList(userID) );
@@ -114,7 +114,7 @@ public class Service_layer {
     }
 
 
-    public Response<String> exitMarketSystem(String userID) {
+    public Response<String> exitMarketSystem(int userID) {
         logger.info("Exiting market system");
         try {
             market.exitMarketSystem(userID);
@@ -139,7 +139,7 @@ public class Service_layer {
         }
     }
 
-    public Response<String> register(String userID, String username, String password, String birthday,String country, String city, String address, String name) {
+    public Response<String> register(int userID, String username, String password, String birthday,String country, String city, String address, String name) {
         logger.info("Registration");
         try {
             market.register(userID, username, password, birthday, country, city, address, name);
@@ -150,7 +150,7 @@ public class Service_layer {
         }
     }
 
-    public Response<String> login(String userID, String username, String password) {
+    public Response<String> login(int userID, String username, String password) {
         logger.info("Log in");
 
         try {
@@ -162,7 +162,7 @@ public class Service_layer {
         }
     }
 
-    public Response<String> logout(String userID) {
+    public Response<String> logout(int userID) {
         logger.info("Log out");
         try {
             market.logout(userID);
@@ -173,7 +173,7 @@ public class Service_layer {
         }
     }
 
-    public Response<String> addProductToStore(String userId, String storeID, String productName, int price, int quantity,
+    public Response<String> addProductToStore(int userId, int storeID, String productName, int price, int quantity,
                                   String description, String categoryStr) {
         logger.info("Adding product to store");
 
@@ -187,7 +187,7 @@ public class Service_layer {
     }
 
 
-    public Response<String> removeProductFromStore(String userId, String storeID, String productName) {
+    public Response<String> removeProductFromStore(int userId, int storeID, String productName) {
         logger.info("Removing product from store");
 
         try {
@@ -200,7 +200,7 @@ public class Service_layer {
         }
     }
 
-    public Response<String> updateProductInStore(String userId, String storeID, String productName, int price, int quantity,
+    public Response<String> updateProductInStore(int userId, int storeID, String productName, int price, int quantity,
                                      String description, String categoryStr) {
 
         logger.info("Updating product in store");
@@ -214,8 +214,8 @@ public class Service_layer {
         }
     }
 
-    public Response<String> appointStoreOwner(String nominatorUserId, String nominatedUsername, String storeID) {
-        logger.info("AppoString store owner");
+    public Response<String> appointStoreOwner(int nominatorUserId, String nominatedUsername, int storeID) {
+        logger.info("Appoint store owner");
 
         try {
             market.appointStoreOwner(nominatorUserId, nominatedUsername, storeID);
@@ -223,15 +223,15 @@ public class Service_layer {
         } catch (Exception e) {
 
             logger.error("Error occurred during appointing store owner", e.getMessage(), e);
-            return new Response<>(null, "Failed to appoString store owner: " + e.getMessage());
+            return new Response<>(null, "Failed to appoint store owner: " + e.getMessage());
 
         }
     }
 
-    public Response<String> appointStoreManager(String nominatorUserId ,String nominatedUsername, String storeID,
+    public Response<String> appointStoreManager(int nominatorUserId ,String nominatedUsername, int storeID,
                                     boolean inventoryPermissions, boolean purchasePermissions) {
 
-        logger.info("AppoString store manager");
+        logger.info("Appoint store manager");
 
         try {
             market.appointStoreManager(nominatorUserId, nominatedUsername, storeID,
@@ -240,11 +240,11 @@ public class Service_layer {
         } catch (Exception e) {
 
             logger.error("Error occurred during appointing store manager", e.getMessage(), e);
-            return new Response<>(null, "Failed to appoString store manager: " + e.getMessage());
+            return new Response<>(null, "Failed to appoint store manager: " + e.getMessage());
         }
     }
 
-    public Response<String> updateStoreManagerPermissions(String nominatorUserId ,String nominatedUsername, String storeID,
+    public Response<String> updateStoreManagerPermissions(int nominatorUserId ,String nominatedUsername, int storeID,
                                               boolean inventoryPermissions, boolean purchasePermissions) {
 
         logger.info("Updating store manager permissions");
@@ -261,7 +261,7 @@ public class Service_layer {
         }
     }
 
-    public Response<List<String>> generalProductFilter(String userId, String categoryStr, List<String> keywords, Integer minPrice, Integer maxPrice, Double productMinRating, List<String> productsFromSearch, Double storeMinRating)
+    public Response<List<String>> generalProductFilter(int userId, String categoryStr, List<String> keywords, Integer minPrice, Integer maxPrice, Double productMinRating, List<String> productsFromSearch, Double storeMinRating)
     {
         logger.info("Starting general product search filter in the system.");
 
@@ -274,7 +274,7 @@ public class Service_layer {
         }
     }
 
-    public Response<List<String>> generalProductSearch(String userId, String productName, String categoryStr, List<String> keywords)
+    public Response<List<String>> generalProductSearch(int userId, String productName, String categoryStr, List<String> keywords)
     {
         logger.info("Starting general product search in the system.");
 
@@ -287,7 +287,7 @@ public class Service_layer {
         }
     }
 
-    public Response<Integer> checkingCartValidationBeforePurchase(String user_ID, String country, String city, String address)
+    public Response<Integer> checkingCartValidationBeforePurchase(int user_ID, String country, String city, String address)
     {
         logger.info("Starting care validation and price calculation before purchase.");
 
@@ -301,12 +301,12 @@ public class Service_layer {
     }
 
 
-    public Response<List<String>> getInformationAboutStores(String user_ID)
+    public Response<List<Integer>> getInformationAboutStores(int user_ID)
     {
         logger.info("Starting reviewing information about stores in the market.");
 
         try {
-            List<String> allAvailableStores = market.getInformationAboutStores(user_ID);
+            List<Integer> allAvailableStores = market.getInformationAboutStores(user_ID);
             return new Response<>(allAvailableStores, "Information about stores retrieved successfully.");
         } catch (Exception e) {
             logger.error("Error occurred during reviewing information about stores in the market: {}", e.getMessage(), e);
@@ -315,12 +315,12 @@ public class Service_layer {
 
     }
 
-    public Response<Map<String, String>> getInformationAboutRolesInStore(String user_ID, String store_ID)
+    public Response<Map<Integer, String>> getInformationAboutRolesInStore(int user_ID, int store_ID)
     {
         logger.info("Store owner started  reviewing information about employees in.");
 
         try {
-            Map<String, String> information = market.getInformationAboutRolesInStore(user_ID, store_ID);
+            Map<Integer, String> information = market.getInformationAboutRolesInStore(user_ID, store_ID);
             return new Response<>(information, "Information about roles in store retrieved successfully.");
         } catch (Exception e) {
             logger.error("Error occurred during reviewing information about products in store: {}", e.getMessage(), e);
@@ -328,12 +328,12 @@ public class Service_layer {
         }
     }
 
-    public Response<Map<String, List<Integer>>> getAuthorizationsOfManagersInStore(String user_ID, String store_ID)
+    public Response<Map<Integer, List<Integer>>> getAuthorizationsOfManagersInStore(int user_ID, int store_ID)
     {
         logger.info("Store owner started  reviewing authorizations of managers in store.");
 
         try {
-            Map<String, List<Integer>> managersAuthorizations = market.getAuthorizationsOfManagersInStore(user_ID, store_ID);
+            Map<Integer, List<Integer>> managersAuthorizations = market.getAuthorizationsOfManagersInStore(user_ID, store_ID);
             return new Response<>(managersAuthorizations, "Authorizations of managers in store retrieved successfully.");
         } catch (Exception e) {
             logger.error("Error occurred during store owner reviewing authorizations of managers in store: {}", e.getMessage(), e);
@@ -341,7 +341,7 @@ public class Service_layer {
         }
     }
 
-    public Response<String> closeStore(String user_ID, String store_ID)
+    public Response<String> closeStore(int user_ID, int store_ID)
     {
         logger.info("Store owner started  store closing.");
 
@@ -354,7 +354,7 @@ public class Service_layer {
         }
     }
 
-    public Response<String> openStore(String user_ID, String name, String description)
+    public Response<String> openStore(int user_ID, String name, String description)
     {
         logger.info("Store owner stared store opening.");
 
@@ -367,7 +367,7 @@ public class Service_layer {
         }
     }
 
-    public Response<String> addProductToBasket(String productName, int quantity, String storeId, String userId)
+    public Response<String> addProductToBasket(String productName, int quantity, int storeId, int userId)
     {
         logger.info("User try to add a new product to his basket");
 
@@ -380,7 +380,7 @@ public class Service_layer {
         }
     }
 
-    public Response<String> removeProductFromBasket(String productName, String storeId, String userId)
+    public Response<String> removeProductFromBasket(String productName, int storeId, int userId)
     {
         logger.info("User try to remove a product from his basket");
 
@@ -393,7 +393,7 @@ public class Service_layer {
         }
     }
 
-    public Response<String> modifyShoppingCart(String productName, int quantity, String storeId, String userId)
+    public Response<String> modifyShoppingCart(String productName, int quantity, int storeId, int userId)
     {
         logger.info("User try to modify his shopping cart");
 
@@ -406,12 +406,12 @@ public class Service_layer {
         }
     }
 
-    public Response<Map<String, Integer>> marketManagerAskInfo(String user_ID)
+    public Response<Map<Integer, Integer>> marketManagerAskInfo(int user_ID)
     {
         logger.info("Market manager tries to get info about purchases in the market");
 
         try {
-            Map<String, Integer> marketPurchases = market.marketManagerAskInfo(user_ID);
+            Map<Integer, Integer> marketPurchases = market.marketManagerAskInfo(user_ID);
             return new Response<>(marketPurchases, "Information about purchases in the market retrieved successfully.");
         } catch (Exception e) {
             logger.error("Error occurred during the request of the market manager getting the purchase information: {}", e.getMessage(), e);
@@ -419,12 +419,12 @@ public class Service_layer {
         }
     }
 
-    public Response<Map<String, Integer>> storeOwnerGetInfoAboutStore(String user_ID, String store_ID) //return receiptId and total amount in the receipt for the specific store
+    public Response<Map<Integer, Integer>> storeOwnerGetInfoAboutStore(int user_ID, int store_ID) //return receiptId and total amount in the receipt for the specific store
     {
         logger.info("Store owner tries to get info about purchases in the store");
 
         try {
-            Map<String, Integer> storePurchases = market.storeOwnerGetInfoAboutStore(user_ID, store_ID);
+            Map<Integer, Integer> storePurchases = market.storeOwnerGetInfoAboutStore(user_ID, store_ID);
             return new Response<>(storePurchases, "Information about purchases in the store retrieved successfully.");
         } catch (Exception e) {
             logger.error("Error occurred during the request of the store owner getting the purchase information: {}", e.getMessage(), e);
@@ -432,7 +432,7 @@ public class Service_layer {
         }
     }
 
-    public Response<List<String>> inStoreProductFilter(String userId ,String categoryStr, List<String> keywords, Integer minPrice, Integer maxPrice, Double productMinRating, String storeId, List<String> productsFromSearch, Double storeMinRating)
+    public Response<List<String>> inStoreProductFilter(int userId ,String categoryStr, List<String> keywords, Integer minPrice, Integer maxPrice, Double productMinRating, int storeId, List<String> productsFromSearch, Double storeMinRating)
     {
         logger.info("Starting in-store product search filter in the system.");
 
@@ -445,7 +445,7 @@ public class Service_layer {
         }
     }
 
-    public Response<List<String>> inStoreProductSearch(String userId, String productName, String categoryStr, List<String> keywords, String storeId)
+    public Response<List<String>> inStoreProductSearch(int userId, String productName, String categoryStr, List<String> keywords, int storeId)
     {
         logger.info("Starting in-store product search in the system.");
 

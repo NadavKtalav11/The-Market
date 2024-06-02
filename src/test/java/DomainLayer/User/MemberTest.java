@@ -10,7 +10,7 @@ import static org.junit.jupiter.api.Assertions.*;
 public class MemberTest {
 
     private Member member;
-    private final String memberId = "1";
+    private final int memberId = 1;
     private final String username = "testUser";
     private final String password = "testPass";
     private final String birthday = "01-01-2000";
@@ -52,8 +52,8 @@ public class MemberTest {
     @Test
     public void testAddReceipt() {
         // Prepare test data
-        String receiptId = "123";
-        String storeId = "456";
+        int receiptId = 123;
+        int storeId = 456;
         member.addReceipt(Map.of(receiptId, storeId));
 
         // Assert that the receipt was added correctly

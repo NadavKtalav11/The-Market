@@ -6,7 +6,7 @@ import java.util.Map;
 
 public class User {
 
-    private String userID;
+    private int userID;
     private State state;
     private String birthday;
     private String country;
@@ -15,7 +15,7 @@ public class User {
     private String name;
     //private Cart cart;
 
-    public User(String userID){
+    public User(int userID){
         this.userID = userID;
         this.birthday = null;
         this.country = null;
@@ -25,7 +25,7 @@ public class User {
         //this.cart = new Cart();
     }
 
-    public String getUserID(){
+    public int getUserID(){
         return userID;
     }
 
@@ -52,12 +52,12 @@ public class User {
         //state.exitMarketSystem(this);
     }
 
-    public void addToCart(String productName, int quantity, String storeId, int totalPrice)
+    public void addToCart(String productName, int quantity, int storeId, int totalPrice)
     {
         state.addItemsToCart(productName, quantity, storeId, totalPrice);
     }
 
-    public void modifyProductInCart(String productName, int quantity, String storeId, int totalPrice)
+    public void modifyProductInCart(String productName, int quantity, int storeId, int totalPrice)
     {
         state.modifyProductInCart(productName, quantity, storeId, totalPrice);
     }
@@ -83,12 +83,12 @@ public class User {
         return state;
     }
 
-    public boolean checkIfProductInUserCart(String productName, String storeId)
+    public boolean checkIfProductInUserCart(String productName, int storeId)
     {
         return state.checkIfProductInUserCart(productName, storeId);
     }
 
-    public void removeItemFromUserCart(String productName, String storeId)
+    public void removeItemFromUserCart(String productName, int storeId)
     {
         state.removeItemFromUserCart(productName, storeId);
     }
@@ -102,12 +102,12 @@ public class User {
 
 
 
-    public Map<String, List<Integer>> getCartProductsByStore(String storeId)
+    public Map<String, List<Integer>> getCartProductsByStore(int storeId)
     {
         return state.getCartProductsByStore(storeId);
     }
 
-    public List<String> getCartStores()
+    public List<Integer> getCartStores()
     {
         return state.getCartStores();
     }
@@ -126,7 +126,7 @@ public class User {
         return state.getCartTotalPriceBeforeDiscount();
     }
 
-    public void addReceipt(Map<String, String> receiptIdAndStoreId)
+    public void addReceipt(Map<Integer, Integer> receiptIdAndStoreId)
     {
         state.addReceipt(receiptIdAndStoreId);
     }

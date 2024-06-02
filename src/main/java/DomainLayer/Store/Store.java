@@ -5,23 +5,22 @@ import java.util.ArrayList;
 import java.util.stream.Collectors;
 
 public class Store {
-    private String store_ID;
+    private int store_ID;
     private Map<String, Product> storeProducts = new HashMap<String, Product>();
     private boolean isOpened;
     private DiscountPolicy discountPolicy;
     private PurchasePolicy purchasePolicy;
     private double rating;
     private int numOfRatings;
-    private Map<String, String> receiptsIdsUserIds; //<receiptId, userId>
+    private Map<Integer, Integer> receiptsIdsUserIds; //<receiptId, userId>
     private String storeName;
     private String description;
 
-    private final Object storeProductLock;
-    private final Object storeIdLock;
-    private final Object isOpenedLock;
-    private final Object receiptsLock;
+    private Object storeProductLock;
+    private Object storeIdLock;
+    private Object isOpenedLock;
 
-    Store(String store_ID, String storeName, String description)
+    Store(int store_ID, String storeName, String description)
     {
         this.store_ID = store_ID;
         this.isOpened = true;
@@ -35,19 +34,16 @@ public class Store {
         this.numOfRatings = 0;
         this.storeName = storeName;
         this.description = description;
-        receiptsLock = new Object();
     }
 
 
     public void returnProductToStore(Map<String, Integer> products){
-        synchronized (storeProductLock) {
-            for (String product : products.keySet()) {
-                storeProducts.get(product).addToStock(products.get(product));
-            }
+        for (String product : products.keySet()){
+            storeProducts.get(product).addToStock(products.get(product));
         }
     }
 
-    public String getStoreID()
+    public int getStoreID()
     {
         synchronized (storeIdLock) {
             return store_ID;
@@ -81,7 +77,7 @@ public class Store {
         return productToCheck.getQuantity() >= quantity; //true if the quantity in the store is bigger than the quantity a user want to add
     }
 
-    public int calcPriceInStore(String productName, int quantity, String userId)
+    public int calcPriceInStore(String productName, int quantity, int userId)
     {
         Product productToCalc = getProductByName(productName);
         return productToCalc.getPrice() * quantity;
@@ -130,12 +126,12 @@ public class Store {
         }
     }
 
-    public boolean checkDiscountPolicy(String userId, String productName)
+    public boolean checkDiscountPolicy(int userId, String productName)
     {
         return this.discountPolicy.checkDiscountPolicy(userId, productName);
     }
 
-    public boolean checkPurchasePolicy(String userId, String productName)
+    public boolean checkPurchasePolicy(int userId, String productName)
     {
         return this.purchasePolicy.checkPurchasePolicy(userId, productName);
     }
@@ -174,10 +170,8 @@ public class Store {
 
     }
 
-    public void addReceipt(String receiptId, String userId)
+    public void addReceipt(int receiptId, int userId)
     {
-        synchronized (receiptId) {
-            receiptsIdsUserIds.put(receiptId, userId);
-        }
+        receiptsIdsUserIds.put(receiptId, userId);
     }
 }

@@ -2,6 +2,6 @@ package DomainLayer.Role;
 
 interface Role {
 
-    public String getStore_ID();
-    public String getMember_ID();
+    public int getStore_ID();
+    public int getMember_ID();
 }
