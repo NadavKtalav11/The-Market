@@ -3,10 +3,14 @@ package DomainLayer.Market;
 import DomainLayer.AuthenticationAndSecurity.AuthenticationAndSecurityFacade;
 import DomainLayer.PaymentServices.PaymentServicesFacade;
 import DomainLayer.Role.RoleFacade;
+import DomainLayer.Store.Product;
 import DomainLayer.Store.StoreFacade;
 import DomainLayer.User.UserFacade;
 import DomainLayer.SupplyServices.SupplyServicesFacade;
 import Util.ExceptionsEnum;
+import Util.PaymentDTO;
+import Util.ProductDTO;
+import Util.UserDTO;
 
 import java.util.*;
 
@@ -64,7 +68,7 @@ public class Market {
 
 
 
-    public void init(String userName, String password,String birthday, String country, String city, String address, String name, int licensedDealerNumber,
+    public void init(UserDTO user, String password, int licensedDealerNumber,
                      String paymentServiceName, String url,
                      int licensedDealerNumber1, String supplyServiceName, HashSet<String> countries, HashSet<String> cities) throws Exception {
         synchronized (initializedLock) {
@@ -91,7 +95,7 @@ public class Market {
         }
         String encrypted = authenticationAndSecurityFacade.encodePassword(password);
         String firstUserID = enterMarketSystem();
-        String systemMangerId = userFacade.register(firstUserID,userName, encrypted, birthday,country,city,address,name);
+        String systemMangerId = userFacade.register(firstUserID, user, encrypted);
         //int systemMangerId = userFacade.registerSystemAdmin(userName, encrypted, birthday,country,city,address,name);
         synchronized (managersLock) {
             systemManagerIds.add(systemMangerId);
@@ -180,14 +184,14 @@ public class Market {
     }
 
 
-    public void payWithExternalPaymentService(int price,String creditCard, int cvv, int month, int year, String holderID, String userId, Map<String, Map<String, Integer>> productList) throws Exception{
-        if(price<= 0 || month> 12 || month<1 ||year < 2020 ||holderID==null ||productList==null) {
+    public void payWithExternalPaymentService(int price, PaymentDTO payment, String userId, Map<String, Map<String, Integer>> productList) throws Exception{
+        if(price<= 0 || payment.getMonth()> 12 || payment.getMonth()<1 || payment.getYear() < 2020 ||payment.getHolderId()==null ||productList==null) {
             throw new Exception("There is a problem with the provided payment measure or details of the order.\n");
         }
         if(paymentServicesFacade.getAllPaymentServices().size()<1){
             throw new Exception("There is no available external payment system.\n");
         }
-        Map<String,String> receiptIdStoreId = paymentServicesFacade.pay(price, creditCard, cvv, month, year, holderID, userId, productList); //<receiptId, storeId>
+        Map<String,String> receiptIdStoreId = paymentServicesFacade.pay(price, payment, userId, productList); //<receiptId, storeId>
         //print when implement notifications (purchase successes)
 
         //Add the receiptId and storeId to the user receipts map
@@ -227,13 +231,13 @@ public class Market {
         return userFacade.addUser();
     }
 
-    public void register( String userId,String username, String password, String birthday,String country, String city, String address, String name) throws Exception {
+    public void register( String userId, UserDTO user, String password) throws Exception {
         //check password validation
         if (password == null || password.equals("")){
             throw new Exception("All fields are required.");
         }
         String encryptedPassword = authenticationAndSecurityFacade.encodePassword(password);
-        userFacade.register(userId, username,encryptedPassword,birthday,country,city,address,name);
+        userFacade.register(userId, user, encryptedPassword);
         authenticationAndSecurityFacade.generateToken(userId);
     }
 
@@ -299,8 +303,7 @@ public class Market {
         this.roleFacade.createStoreOwner(member_ID, store_ID, true, "no nominator");
     }
 
-    public void addProductToStore(String userId, String storeId, String productName, int price, int quantity,
-                                                        String description, String categoryStr) throws Exception {
+    public void addProductToStore(String userId, String storeId, ProductDTO product) throws Exception {
         if (userFacade.getUserByID(userId) != null){
             if (userFacade.isMember(userId)) {
                 boolean succeeded = authenticationAndSecurityFacade.validateToken(authenticationAndSecurityFacade.getToken(userId));
@@ -313,7 +316,7 @@ public class Market {
                     if (roleFacade.verifyStoreOwner(storeId, memberId) ||
                             (roleFacade.verifyStoreManager(storeId, memberId) &&
                                     roleFacade.managerHasInventoryPermissions(memberId, storeId))) {
-                        storeFacade.addProductToStore(storeId, productName, price, quantity, description, categoryStr);
+                        storeFacade.addProductToStore(storeId, product);
                     } else {
                         throw new Exception("User has no inventory permissions");
                     }
@@ -356,8 +359,7 @@ public class Market {
         }
     }
 
-    public void updateProductInStore(String userId, String storeId, String productName, int price, int quantity,
-                                                        String description, String categoryStr) throws Exception {
+    public void updateProductInStore(String userId, String storeId, ProductDTO product) throws Exception {
         if (userFacade.getUserByID(userId) != null) {
             if (userFacade.isMember(userId)) {
                 boolean succeeded = authenticationAndSecurityFacade.validateToken(authenticationAndSecurityFacade.getToken(userId));
@@ -370,7 +372,7 @@ public class Market {
                     if (roleFacade.verifyStoreOwner(storeId, memberId) ||
                             (roleFacade.verifyStoreManager(storeId, memberId) &&
                                     roleFacade.managerHasInventoryPermissions(memberId, storeId))) {
-                        storeFacade.updateProductInStore(storeId, productName, price, quantity, description, categoryStr);
+                        storeFacade.updateProductInStore(storeId, product);
                     } else {
                         throw new Exception("User has no inventory permissions");
                     }

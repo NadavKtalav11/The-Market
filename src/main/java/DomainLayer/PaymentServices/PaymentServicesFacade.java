@@ -1,6 +1,9 @@
 package DomainLayer.PaymentServices;
 
 
+import Util.PayementDTO;
+import Util.PaymentDTO;
+
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -57,7 +60,7 @@ public class PaymentServicesFacade {
         }
     }
 
-    public Map<Integer,Integer> pay(int price,String creditCard, int cvv, int month, int year, String holderID, int userId, Map<Integer, Map<String, Integer>> productList) throws Exception{
+    public Map<Integer,Integer> pay(int price, PaymentDTO payment, int userId, Map<Integer, Map<String, Integer>> productList) throws Exception{
        
         String acquisitionId  = getNewAcquisitionId();
         String receiptId = getNewReceiptId();
@@ -65,11 +68,11 @@ public class PaymentServicesFacade {
         synchronized (paymentServiceLock) {
             externalPaymentService = allPaymentServices.values().iterator().next();
         }
-        Map<String,String> paymentSucceeded = externalPaymentService.payWithCard(price, creditCard, cvv, month, year, holderID, userId, productList, acquisitionId, receiptId);
+        Map<String,String> paymentSucceeded = externalPaymentService.payWithCard(price, payment, userId, productList, acquisitionId, receiptId);
         if (paymentSucceeded!=null)
         {
             //String acquisitionId1  = getNewAcquisitionId();
-            Acquisition acquisition = new Acquisition(acquisitionId, userId, price, holderID, creditCard, cvv, month, year, productList, getNewReceiptId());
+            Acquisition acquisition = new Acquisition(acquisitionId, userId, price, payment, productList, getNewReceiptId());
             synchronized (acquisitionLock) {
                 IdAndAcquisition.put(acquisitionId, acquisition);
             }

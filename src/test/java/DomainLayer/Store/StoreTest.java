@@ -1,5 +1,6 @@
 package DomainLayer.Store;
 
+import Util.ProductDTO;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -29,7 +30,7 @@ public class StoreTest {
 
     @Test
     void testGetProductByName() {
-        store.addProduct("Milk", 10, 100, "Dairy product", "Dairy");
+        store.addProduct(new ProductDTO("Milk", 10, 100, "Dairy product", "Dairy"));
         Product product = store.getProductByName("Milk");
 
         assertNotNull(product);
@@ -38,7 +39,7 @@ public class StoreTest {
 
     @Test
     void testAddProduct() {
-        store.addProduct("Milk", 10, 100, "Dairy product", "Dairy");
+        store.addProduct(new ProductDTO("Milk", 10, 100, "Dairy product", "Dairy"));
         Product product = store.getProductByName("Milk");
 
         assertNotNull(product);
@@ -51,21 +52,21 @@ public class StoreTest {
 
     @Test
     void testCheckProductExists() {
-        store.addProduct("Milk", 10, 100, "Dairy product", "Dairy");
+        store.addProduct(new ProductDTO("Milk", 10, 100, "Dairy product", "Dairy"));
         assertTrue(store.checkProductExists("Milk"));
         assertFalse(store.checkProductExists("Cheese"));
     }
 
     @Test
     void testCheckProductQuantity() {
-        store.addProduct("Milk", 10, 100, "Dairy product", "Dairy");
+        store.addProduct(new ProductDTO("Milk", 10, 100, "Dairy product", "Dairy"));
         assertTrue(store.checkProductQuantity("Milk", 50));
         assertFalse(store.checkProductQuantity("Milk", 150));
     }
 
     @Test
     void testCalcPriceInStore() {
-        store.addProduct("Milk", 10, 100, "Dairy product", "Dairy");
+        store.addProduct(new ProductDTO("Milk", 10, 100, "Dairy product", "Dairy"));
         int price = store.calcPriceInStore("Milk", 5, 1);
 
         assertEquals(50, price);
@@ -73,7 +74,7 @@ public class StoreTest {
 
     @Test
     void testRemoveProduct() {
-        store.addProduct("Milk", 10, 100, "Dairy product", "Dairy");
+        store.addProduct(new ProductDTO("Milk", 10, 100, "Dairy product", "Dairy"));
         store.removeProduct("Milk");
 
         assertFalse(store.checkProductExists("Milk"));
@@ -81,8 +82,8 @@ public class StoreTest {
 
     @Test
     void testUpdateProduct() {
-        store.addProduct("Milk", 10, 100, "Dairy product", "Dairy");
-        store.updateProduct("Milk", 15, 200, "Updated description", "food");
+        store.addProduct(new ProductDTO("Milk", 10, 100, "Dairy product", "Dairy"));
+        store.updateProduct(new ProductDTO("Milk", 15, 200, "Updated description", "food"));
 
         Product product = store.getProductByName("Milk");
         assertEquals(15, product.getPrice());
@@ -104,8 +105,8 @@ public class StoreTest {
 
     @Test
     void testGetProducts() {
-        store.addProduct("Milk", 10, 100, "Dairy product", "Dairy");
-        store.addProduct("Cheese", 20, 50, "Dairy product", "Dairy");
+        store.addProduct(new ProductDTO("Milk", 10, 100, "Dairy product", "Dairy"));
+        store.addProduct(new ProductDTO("Cheese", 20, 50, "Dairy product", "Dairy"));
 
         List<String> products = store.getProducts();
 
@@ -116,8 +117,8 @@ public class StoreTest {
 
     @Test
     void testMatchProducts() {
-        store.addProduct("Milk", 10, 100, "Dairy product", "Dairy");
-        store.addProduct("Cheese", 20, 50, "Dairy product", "Dairy");
+        store.addProduct(new ProductDTO("Milk", 10, 100, "Dairy product", "Dairy"));
+        store.addProduct(new ProductDTO("Cheese", 20, 50, "Dairy product", "Dairy"));
 
         List<String> matchedProducts1 = store.matchProducts("Milk", null, null);
 
@@ -133,8 +134,8 @@ public class StoreTest {
 
     @Test
     void testFilterProducts() {
-        store.addProduct("Milk", 10, 100, "Dairy product", "Dairy");
-        store.addProduct("Cheese", 20, 50, "Dairy product", "Dairy");
+        store.addProduct(new ProductDTO("Milk", 10, 100, "Dairy product", "Dairy"));
+        store.addProduct(new ProductDTO("Cheese", 20, 50, "Dairy product", "Dairy"));
 
         List<String> productsFromSearch = Arrays.asList("Milk", "Cheese");
         List<String> filteredProducts = store.filterProducts("Dairy", null, 5, 15, null, productsFromSearch, null);
@@ -145,7 +146,7 @@ public class StoreTest {
 
     @Test
     void testReturnProductToStore() {
-        store.addProduct("Milk", 10, 100, "Dairy product", "Dairy");
+        store.addProduct(new ProductDTO("Milk", 10, 100, "Dairy product", "Dairy"));
         Map<String, Integer> productsToReturn = new HashMap<>();
         productsToReturn.put("Milk", 10);
 

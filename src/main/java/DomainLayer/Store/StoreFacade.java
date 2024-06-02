@@ -1,6 +1,7 @@
 package DomainLayer.Store;
 
 import Util.ExceptionsEnum;
+import Util.ProductDTO;
 
 import java.util.*;
 
@@ -129,12 +130,11 @@ public class StoreFacade {
     }
 
 
-    public void addProductToStore(String storeId, String productName, int price, int quantity,
-                                                                String description, String categoryStr) throws Exception {
+    public void addProductToStore(String storeId, ProductDTO product) throws Exception {
 
-        if (!checkProductExistInStore(productName, storeId)) {
-            if (quantity >= 0) {
-                allStores.get(storeId).addProduct(productName, price, quantity, description, categoryStr);
+        if (!checkProductExistInStore(product.getName(), storeId)) {
+            if (product.getQuantity() >= 0) {
+                allStores.get(storeId).addProduct(product);
             } else {
                 throw new Exception("Quantity must be non-negative");
             }
@@ -152,12 +152,11 @@ public class StoreFacade {
 
     }
 
-    public void updateProductInStore(String storeId, String productName, int price, int quantity,
-                                                                String description, String categoryStr) throws Exception {
+    public void updateProductInStore(String storeId, ProductDTO product) throws Exception {
 
-        if (checkProductExistInStore(productName, storeId)) {
-            if (quantity >= 0) {
-                allStores.get(storeId).updateProduct(productName, price, quantity, description, categoryStr);
+        if (checkProductExistInStore(product.getName(), storeId)) {
+            if (product.getQuantity() >= 0) {
+                allStores.get(storeId).updateProduct(product);
             } else {
                 throw new Exception("Quantity must be non-negative");
             }

@@ -4,6 +4,7 @@ import AcceptanceTests.BridgeToTests;
 import AcceptanceTests.ProxyToTest;
 import ServiceLayer.Response;
 import Util.ExceptionsEnum;
+import Util.UserDTO;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
@@ -20,7 +21,7 @@ public class OpenStore {
         //Do what you need
 
         impl.enterMarketSystem();
-        impl.register(0, "user1", "fSijsd281", "12/12/00", "Israel", "Beer Sheva", "Mesada", "Toy");
+        impl.register(0, new UserDTO("user1",  "12/12/00", "Israel", "Beer Sheva", "Mesada", "Toy"), "fSijsd281");
         impl.login(0, "user1", "fSijsd281");
 
     }
