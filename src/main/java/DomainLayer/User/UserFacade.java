@@ -211,8 +211,8 @@ public class UserFacade {
 
     }
 
-    public Member getMemberByUsername(String userName) throws Exception {
-        return getMemberByUsername(userName);
+    public Member getMemberByUsername(String userName) {
+        return members.getByUserName(userName);
     }
 
     public List<String> getCartStoresByUser(String user_ID)

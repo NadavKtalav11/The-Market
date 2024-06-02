@@ -20,7 +20,7 @@ public class UserTest {
     private Cart mockCart;
     private State mockState;
     private Store storeMock;
-    private int userID = 1;
+    private String userID = "1";
 
     @BeforeEach
     public void setUp() {
@@ -38,7 +38,7 @@ public class UserTest {
     @Test
     public void testUserInitialization() {
         assertEquals(userID, user.getUserID());
-        assertTrue(user.getState() instanceof Guest);
+        assertFalse(user.getState().isMember());
         assertNotNull(user.getCart());
     }
 
@@ -75,15 +75,8 @@ public class UserTest {
     @Test
     void testLogin() throws Exception {
         user.Login(member);
-        assertTrue(user.isLoggedIn());
-        assertEquals(member, user.getState());
-    }
-
-    @Test
-    public void testIsLoggedIn() {
-        assertFalse(user.isLoggedIn());
-        user.setState(new Member("1",new UserDTO("username1", "1.2.2020", "israel" , "bash", "bialik", "noa"), "password"));
-        assertTrue(user.isLoggedIn());
+        when(member.isMember()).thenReturn(true);
+        assertTrue(user.getState().isMember());
     }
 
     @Test
@@ -102,11 +95,6 @@ public class UserTest {
     }
 
     @Test
-    public void testAddReceipt() {
-        //already tests in member and guest
-    }
-
-    @Test
     public void testGetCartProductsByStore() {
         User user2 = new User("2");
         user2.addToCart("Product1", 2, "1", 100);
@@ -115,7 +103,6 @@ public class UserTest {
     }
 
     @Test
-    //todo check this after Tomer
     public void testGetCartTotalPriceBeforeDiscount() {
         User user2 = new User("2");
         user2.addToCart("Product1", 2, "1", 100);

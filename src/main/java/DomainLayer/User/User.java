@@ -71,12 +71,6 @@ public class User {
         state.Login();
         setState(loginMember);
     }
-    
-
-    public boolean isLoggedIn()
-    {
-        return state instanceof Member;
-    }
 
     public State getState()
     {

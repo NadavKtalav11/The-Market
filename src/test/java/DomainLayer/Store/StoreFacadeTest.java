@@ -18,6 +18,7 @@ public class StoreFacadeTest {
 
     private StoreFacade storeFacade;
     private Store mockStore;
+    private ProductDTO mockProduct;
     private final String userId = "1";
     private final String storeId = "0";
     private final String productName = "Product1";
@@ -27,6 +28,7 @@ public class StoreFacadeTest {
     @BeforeEach
     public void setUp() {
         storeFacade = StoreFacade.getInstance();
+        mockProduct = mock(ProductDTO.class);
         mockStore = mock(Store.class);
         storeFacade.openStore("Grocery", "");
     }
@@ -38,10 +40,14 @@ public class StoreFacadeTest {
     }
 
     @Test
-    void testGetStoreByID() {
-        Store store = storeFacade.getStoreByID(storeId);
-        assertNotNull(store);
-        assertEquals(storeId, store.getStoreID());
+    void testAddProductToStoreSuccessfully() throws Exception {
+        when(mockProduct.getName()).thenReturn("product1");
+        when(mockProduct.getQuantity()).thenReturn(10);
+        when(storeFacade.checkProductExistInStore("product1", "store1")).thenReturn(false);
+
+        storeFacade.addProductToStore("store1", mockProduct);
+
+        verify(mockStore).addProduct(mockProduct);
     }
 
     @Test
