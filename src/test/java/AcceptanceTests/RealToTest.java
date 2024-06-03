@@ -19,12 +19,10 @@ public class RealToTest implements BridgeToTests {
 
     }
 
-    public Response<String> init(String username, String birthdate, String country, String city, String address, String name, String password, int licensedDealerNumber,
-                                 String paymentServiceName, String url, int licensedDealerNumber1, String supplyServiceName, HashSet<String> countries, HashSet<String> cities)
-    {
-
-        return service.init(username, birthdate, country, city, address, name, password, licensedDealerNumber, paymentServiceName, url, licensedDealerNumber1, supplyServiceName, countries, cities);
-
+    @Override
+    public Response<String> init(String userName, String birthday, String country, String city, String address, String name, String password, int licensedDealerNumber,
+                                 String paymentServiceName, String url, int licensedDealerNumber1, String supplyServiceName, HashSet<String> countries, HashSet<String> cities) {
+        return service.init(userName, birthday, country, city, address, name, password, licensedDealerNumber, paymentServiceName, url, licensedDealerNumber1, supplyServiceName, countries, cities);
 
     }
 
@@ -34,6 +32,8 @@ public class RealToTest implements BridgeToTests {
 //       // return service.payWithExternalPaymentService(price, cardNumber, cvv, month, year, holderID, userID);
 //        // TODO
 //    }
+
+
 
     public Response<String> exitMarketSystem(String userID)
     {

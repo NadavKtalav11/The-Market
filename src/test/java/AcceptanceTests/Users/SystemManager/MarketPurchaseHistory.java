@@ -28,7 +28,7 @@ public class MarketPurchaseHistory {
 
         countries.add("Israel");
         cities.add("Bash");
-        impl.init(new UserDTO("manager1" ,"12/12/12", "Israel", "Bash", "Metsada", "Mike"), "imTHeManager", 0,"paypal","saddsa.com",2,"DHL", countries, cities);
+        impl.init("manager1" ,"12/12/12", "Israel", "Bash", "Metsada", "Mike", "imTHeManager", 0,"paypal","saddsa.com",2,"DHL", countries, cities);
         impl.enterMarketSystem();
         impl.register("1","user1", "12/12/00", "Israel", "Beer Sheva", "Mesada", "Toy", "fSijsd281");
         impl.login("1", "user1", "fSijsd281");
