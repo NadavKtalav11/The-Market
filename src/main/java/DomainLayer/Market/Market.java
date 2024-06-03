@@ -250,7 +250,7 @@ public class Market {
     public void register( String userId, UserDTO user, String password) throws Exception {
         //check password validation
         if (password == null || password.equals("")){
-            throw new Exception("All fields are required.");
+            throw new Exception(ExceptionsEnum.emptyField.toString());
         }
         String encryptedPassword = authenticationAndSecurityFacade.encodePassword(password);
         userFacade.register(userId, user, encryptedPassword);
@@ -313,182 +313,110 @@ public class Market {
     }
 
     public void addProductToStore(String userId, String storeId, ProductDTO product) throws Exception {
-        if (userFacade.getUserByID(userId) != null){
-            if (userFacade.isMember(userId)) {
-                boolean succeeded = authenticationAndSecurityFacade.validateToken(authenticationAndSecurityFacade.getToken(userId));
-                if (!succeeded) {
-                    logout(userId);
-                    throw new Exception(ExceptionsEnum.sessionOver.toString());
-                }
-                String memberId = userFacade.getMemberIdByUserId(userId);
-                if (storeFacade.getStoreByID(storeId) != null){
-                    if (roleFacade.verifyStoreOwner(storeId, memberId) ||
-                            (roleFacade.verifyStoreManager(storeId, memberId) &&
-                                    roleFacade.managerHasInventoryPermissions(memberId, storeId))) {
-                        storeFacade.addProductToStore(storeId, product);
-                    } else {
-                        throw new Exception(ExceptionsEnum.noInventoryPermissions.toString());
-                    }
-                } else {
-                    throw new Exception(ExceptionsEnum.storeNotExist.toString());
-                }
-            } else {
-                throw new Exception(ExceptionsEnum.noInventoryPermissions.toString());
-            }
+        userFacade.errorIfUserNotExist(userId);
+        userFacade.errorIfUserNotMember(userId);
+        boolean succeeded = authenticationAndSecurityFacade.validateToken(authenticationAndSecurityFacade.getToken(userId));
+        if (!succeeded) {
+            logout(userId);
+            throw new Exception(ExceptionsEnum.sessionOver.toString());
+        }
+        String memberId = userFacade.getMemberIdByUserId(userId);
+        storeFacade.errorIfStoreNotExist(storeId);
+        if (roleFacade.verifyStoreOwner(storeId, memberId) ||
+                (roleFacade.verifyStoreManager(storeId, memberId) &&
+                        roleFacade.managerHasInventoryPermissions(memberId, storeId))) {
+            storeFacade.addProductToStore(storeId, product);
         } else {
-            throw new Exception(ExceptionsEnum.userNotExist.toString());
+            throw new Exception(ExceptionsEnum.noInventoryPermissions.toString());
         }
     }
 
     public void removeProductFromStore(String userId, String storeId, String productName) throws Exception {
-        if (userFacade.getUserByID(userId) != null){
-            if (userFacade.isMember(userId)) {
-                boolean succeeded = authenticationAndSecurityFacade.validateToken(authenticationAndSecurityFacade.getToken(userId));
-                if (!succeeded) {
-                    logout(userId);
-                    throw new Exception(ExceptionsEnum.sessionOver.toString());
-                }
-                String memberId = userFacade.getMemberIdByUserId(userId);
-                if (storeFacade.getStoreByID(storeId) != null) {
-                    if (roleFacade.verifyStoreOwner(storeId, memberId) ||
-                            (roleFacade.verifyStoreManager(storeId, memberId) &&
-                                    roleFacade.managerHasInventoryPermissions(memberId, storeId))) {
-                        storeFacade.removeProductFromStore(storeId, productName);
-                    } else {
-                        throw new Exception(ExceptionsEnum.noInventoryPermissions.toString());
-                    }
-                } else {
-                    throw new Exception(ExceptionsEnum.storeNotExist.toString());
-                }
-            } else {
-                throw new Exception(ExceptionsEnum.noInventoryPermissions.toString());
-            }
+        userFacade.errorIfUserNotExist(userId);
+        userFacade.errorIfUserNotMember(userId);
+        boolean succeeded = authenticationAndSecurityFacade.validateToken(authenticationAndSecurityFacade.getToken(userId));
+        if (!succeeded) {
+            logout(userId);
+            throw new Exception(ExceptionsEnum.sessionOver.toString());
+        }
+        String memberId = userFacade.getMemberIdByUserId(userId);
+        storeFacade.errorIfStoreNotExist(storeId);
+        if (roleFacade.verifyStoreOwner(storeId, memberId) ||
+                (roleFacade.verifyStoreManager(storeId, memberId) &&
+                        roleFacade.managerHasInventoryPermissions(memberId, storeId))) {
+            storeFacade.removeProductFromStore(storeId, productName);
         } else {
-            throw new Exception(ExceptionsEnum.userNotExist.toString());
+            throw new Exception(ExceptionsEnum.noInventoryPermissions.toString());
         }
     }
 
     public void updateProductInStore(String userId, String storeId, ProductDTO product) throws Exception {
-        if (userFacade.getUserByID(userId) != null) {
-            if (userFacade.isMember(userId)) {
-                boolean succeeded = authenticationAndSecurityFacade.validateToken(authenticationAndSecurityFacade.getToken(userId));
-                if (!succeeded) {
-                    logout(userId);
-                    throw new Exception(ExceptionsEnum.sessionOver.toString());
-                }
-                String memberId = userFacade.getMemberIdByUserId(userId);
-                if (storeFacade.getStoreByID(storeId) != null) {
-                    if (roleFacade.verifyStoreOwner(storeId, memberId) ||
-                            (roleFacade.verifyStoreManager(storeId, memberId) &&
-                                    roleFacade.managerHasInventoryPermissions(memberId, storeId))) {
-                        storeFacade.updateProductInStore(storeId, product);
-                    } else {
-                        throw new Exception(ExceptionsEnum.noInventoryPermissions.toString());
-                    }
-                } else {
-                    throw new Exception(ExceptionsEnum.storeNotExist.toString());
-                }
-            } else {
-                throw new Exception(ExceptionsEnum.noInventoryPermissions.toString());
-            }
+        userFacade.errorIfUserNotExist(userId);
+        userFacade.errorIfUserNotMember(userId);
+        boolean succeeded = authenticationAndSecurityFacade.validateToken(authenticationAndSecurityFacade.getToken(userId));
+        if (!succeeded) {
+            logout(userId);
+            throw new Exception(ExceptionsEnum.sessionOver.toString());
+        }
+        String memberId = userFacade.getMemberIdByUserId(userId);
+        storeFacade.errorIfStoreNotExist(storeId);
+        if (roleFacade.verifyStoreOwner(storeId, memberId) ||
+                (roleFacade.verifyStoreManager(storeId, memberId) &&
+                        roleFacade.managerHasInventoryPermissions(memberId, storeId))) {
+            storeFacade.updateProductInStore(storeId, product);
         } else {
-            throw new Exception(ExceptionsEnum.userNotExist.toString());
+            throw new Exception(ExceptionsEnum.noInventoryPermissions.toString());
         }
     }
 
     public void appointStoreOwner(String nominatorUserId, String nominatedUsername, String storeId) throws Exception {
-        if (userFacade.getUserByID(nominatorUserId) != null) {
-            if (userFacade.isMember(nominatorUserId)) {
-                boolean succeeded = authenticationAndSecurityFacade.validateToken(authenticationAndSecurityFacade.getToken(nominatorUserId));
-                if (!succeeded) {
-                    logout(nominatorUserId);
-                    throw new Exception(ExceptionsEnum.sessionOver.toString());
-                }
-                String nominatorMemberID = userFacade.getMemberIdByUserId(nominatorUserId);
-                if (storeFacade.getStoreByID(storeId) != null) {
-                    if (roleFacade.verifyStoreOwner(storeId, nominatorMemberID)) {
-                        if (userFacade.getMemberByUsername(nominatedUsername) != null) {
-                            String nominatedMemberID = userFacade.getMemberByUsername(nominatedUsername).getMemberID();
-                            roleFacade.createStoreOwner(nominatedMemberID, storeId, false, nominatorMemberID);
-                        } else {
-                            throw new Exception(ExceptionsEnum.usernameNotFound.toString());
-                        }
-                    } else {
-                        throw new Exception(ExceptionsEnum.userIsNotStoreOwner.toString());
-                    }
-                } else {
-                    throw new Exception(ExceptionsEnum.storeNotExist.toString());
-                }
-            } else {
-                throw new Exception(ExceptionsEnum.userIsNotStoreOwner.toString());
-            }
-        } else {
-            throw new Exception(ExceptionsEnum.userNotExist.toString());
+        userFacade.errorIfUserNotExist(nominatorUserId);
+        userFacade.errorIfUserNotMember(nominatorUserId);
+        boolean succeeded = authenticationAndSecurityFacade.validateToken(authenticationAndSecurityFacade.getToken(nominatorUserId));
+        if (!succeeded) {
+            logout(nominatorUserId);
+            throw new Exception(ExceptionsEnum.sessionOver.toString());
         }
+        String nominatorMemberID = userFacade.getMemberIdByUserId(nominatorUserId);
+        storeFacade.errorIfStoreNotExist(storeId);
+        roleFacade.verifyStoreOwnerError(storeId, nominatorMemberID);
+        userFacade.errorIfUsernameNotFound(nominatedUsername);
+        String nominatedMemberID = userFacade.getMemberByUsername(nominatedUsername).getMemberID();
+        roleFacade.createStoreOwner(nominatedMemberID, storeId, false, nominatorMemberID);
     }
 
     public void appointStoreManager(String nominatorUserId, String nominatedUsername, String storeId,
                                     boolean inventoryPermissions, boolean purchasePermissions) throws Exception {
-        if (userFacade.getUserByID(nominatorUserId) != null) {
-            if (userFacade.isMember(nominatorUserId)) {
-                boolean succeeded = authenticationAndSecurityFacade.validateToken(authenticationAndSecurityFacade.getToken(nominatorUserId));
-                if (!succeeded) {
-                    logout(nominatorUserId);
-                    throw new Exception(ExceptionsEnum.sessionOver.toString());
-                }
-                String nominatorMemberID = userFacade.getMemberIdByUserId(nominatorUserId);
-                if (storeFacade.getStoreByID(storeId) != null) {
-                    if (roleFacade.verifyStoreOwner(storeId, nominatorMemberID)) {
-                        if (userFacade.getMemberByUsername(nominatedUsername) != null) {
-                            String nominatedMemberID = userFacade.getMemberByUsername(nominatedUsername).getMemberID();
-                            roleFacade.createStoreManager(nominatedMemberID, storeId, inventoryPermissions, purchasePermissions, nominatorMemberID);
-                        } else {
-                            throw new Exception(ExceptionsEnum.usernameNotFound.toString());
-                        }
-                    } else {
-                        throw new Exception(ExceptionsEnum.userIsNotStoreOwner.toString());
-                    }
-                } else {
-                    throw new Exception(ExceptionsEnum.storeNotExist.toString());
-                }
-            } else {
-                throw new Exception(ExceptionsEnum.userIsNotStoreOwner.toString());
-            }
-        } else {
-            throw new Exception(ExceptionsEnum.userNotExist.toString());
+        userFacade.errorIfUserNotExist(nominatorUserId);
+        userFacade.errorIfUserNotMember(nominatorUserId);
+        boolean succeeded = authenticationAndSecurityFacade.validateToken(authenticationAndSecurityFacade.getToken(nominatorUserId));
+        if (!succeeded) {
+            logout(nominatorUserId);
+            throw new Exception(ExceptionsEnum.sessionOver.toString());
         }
+        String nominatorMemberID = userFacade.getMemberIdByUserId(nominatorUserId);
+        storeFacade.errorIfStoreNotExist(storeId);
+        roleFacade.verifyStoreOwnerError(storeId, nominatorMemberID);
+        userFacade.errorIfUsernameNotFound(nominatedUsername);
+        String nominatedMemberID = userFacade.getMemberByUsername(nominatedUsername).getMemberID();
+        roleFacade.createStoreManager(nominatedMemberID, storeId, inventoryPermissions, purchasePermissions, nominatorMemberID);
     }
 
     public void updateStoreManagerPermissions(String nominatorUserId, String nominatedUsername, String storeId,
                                     boolean inventoryPermissions, boolean purchasePermissions) throws Exception {
-        if (userFacade.getUserByID(nominatorUserId) != null) {
-            if (userFacade.isMember(nominatorUserId)) {
-                boolean succeeded = authenticationAndSecurityFacade.validateToken(authenticationAndSecurityFacade.getToken(nominatorUserId));
-                if (!succeeded) {
-                    logout(nominatorUserId);
-                    throw new Exception(ExceptionsEnum.sessionOver.toString());
-                }
-                String nominatorMemberID = userFacade.getMemberIdByUserId(nominatorUserId);
-                if (storeFacade.getStoreByID(storeId) != null) {
-                    if (roleFacade.verifyStoreOwner(storeId, nominatorMemberID)) {
-                        if (userFacade.getMemberByUsername(nominatedUsername) != null) {
-                            String nominatedMemberID = userFacade.getMemberByUsername(nominatedUsername).getMemberID();
-                            roleFacade.updateStoreManagerPermissions(nominatedMemberID, storeId, inventoryPermissions, purchasePermissions, nominatorMemberID);
-                        } else {
-                            throw new Exception(ExceptionsEnum.usernameNotFound.toString());
-                        }
-                    } else {
-                        throw new Exception(ExceptionsEnum.userIsNotStoreOwner.toString());
-                    }
-                } else {
-                    throw new Exception(ExceptionsEnum.storeNotExist.toString());
-                }
-            } else {
-                throw new Exception(ExceptionsEnum.userIsNotStoreOwner.toString());
-            }
-        } else {
-            throw new Exception(ExceptionsEnum.userNotExist.toString());
+        userFacade.errorIfUserNotExist(nominatorUserId);
+        userFacade.errorIfUserNotMember(nominatorUserId);
+        boolean succeeded = authenticationAndSecurityFacade.validateToken(authenticationAndSecurityFacade.getToken(nominatorUserId));
+        if (!succeeded) {
+            logout(nominatorUserId);
+            throw new Exception(ExceptionsEnum.sessionOver.toString());
         }
+        String nominatorMemberID = userFacade.getMemberIdByUserId(nominatorUserId);
+        storeFacade.errorIfStoreNotExist(storeId);
+        roleFacade.verifyStoreOwnerError(storeId, nominatorMemberID);
+        userFacade.errorIfUsernameNotFound(nominatedUsername);
+        String nominatedMemberID = userFacade.getMemberByUsername(nominatedUsername).getMemberID();
+        roleFacade.updateStoreManagerPermissions(nominatedMemberID, storeId, inventoryPermissions, purchasePermissions, nominatorMemberID);
     }
 
     public void closeStore(String user_ID, String store_ID) throws Exception

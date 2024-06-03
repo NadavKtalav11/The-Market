@@ -2,28 +2,38 @@ package AcceptanceTests.Users.StoreOwner;
 
 import AcceptanceTests.BridgeToTests;
 import AcceptanceTests.ProxyToTest;
+import ServiceLayer.Response;
+import Util.ExceptionsEnum;
 import Util.UserDTO;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class UpdateManagerPermissions {
     private static BridgeToTests impl;
+    static String saarUserID;
+    static String tomUserID;
+    static String jalalUserID;
+    static String ovadUserID;
+    static String raniUserID;
 
     @BeforeAll
     public static void setUp() {
         impl = new ProxyToTest("Real");
-        impl.enterMarketSystem();
-        impl.register("0","saar", "10/04/84", "Israel", "Jerusalem", "Yehuda halevi 18", "saar", "fadida");
-        impl.register("1","tom", "27/11/85", "Israel", "Jerusalem", "Yehuda halevi 17", "tom", "shlaifer");
-        impl.register("2","jalal", "08/02/82", "Israel", "Jerusalem", "Yehuda halevi 13", "jalal", "kasoom");
-        impl.register("3","ovad", "08/02/82", "Israel", "Jerusalem", "Yehuda halevi 11", "ovad", "havia");
-        impl.register("4","rani", "08/02/82", "Israel", "Jerusalem", "Yehuda halevi 12", "rani", "zelig");
-        impl.login("0", "saar", "fadida");
-        impl.openStore("0", "alona", "shopping");
-        impl.appointStoreManager("0", "tom", "0", true, false);
+        saarUserID = impl.enterMarketSystem().getResult();
+        impl.register(saarUserID,"saar", "10/04/84", "Israel", "Jerusalem", "Yehuda halevi 18", "saar", "fadida");
+        tomUserID = impl.enterMarketSystem().getResult();
+        impl.register(tomUserID,"tom", "27/11/85", "Israel", "Jerusalem", "Yehuda halevi 17", "tom", "shlaifer");
+        jalalUserID = impl.enterMarketSystem().getResult();
+        impl.register(jalalUserID,"jalal", "08/02/82", "Israel", "Jerusalem", "Yehuda halevi 13", "jalal", "kasoom");
+        ovadUserID = impl.enterMarketSystem().getResult();
+        impl.register(ovadUserID,"ovad", "08/02/82", "Israel", "Jerusalem", "Yehuda halevi 11", "ovad", "havia");
+        raniUserID = impl.enterMarketSystem().getResult();
+        impl.register(raniUserID,"rani", "08/02/82", "Israel", "Jerusalem", "Yehuda halevi 12", "rani", "zelig");
+        impl.login(saarUserID, "saar", "fadida");
+        impl.openStore(saarUserID, "alona", "shopping");
+        impl.appointStoreManager(saarUserID, "tom", "0", true, false);
         impl.login("2", "jalal", "kasoom");
         impl.openStore("2", "alona2", "shopping2");
         impl.appointStoreManager("2", "ovad", "1", true, true);
@@ -31,23 +41,31 @@ public class UpdateManagerPermissions {
 
     @Test
     public void successfulUpdateTest() {
-        assertTrue(impl.updateStoreManagerPermissions("0", "tom","0",
+        assertTrue(impl.updateStoreManagerPermissions(saarUserID, "tom","0",
                 true, true).isSuccess());
-        assertTrue(impl.updateStoreManagerPermissions("2", "ovad","1",
+        assertTrue(impl.updateStoreManagerPermissions(jalalUserID, "ovad","1",
                 true, false).isSuccess());
     }
 
     @Test
     public void notManagerTest() {
-        assertFalse(impl.updateStoreManagerPermissions("0", "rani","0",
-                true, false).isSuccess());
+        Response<String> response1 = impl.updateStoreManagerPermissions(saarUserID, "rani","0",
+                true, false);
+        assertFalse(response1.isSuccess());
+        assertEquals(ExceptionsEnum.notManager.toString(), response1.getDescription());
     }
 
     @Test
     public void notNominatorTest() {
-        assertFalse(impl.updateStoreManagerPermissions("0", "ovad","0",
-                true, false).isSuccess());
-        assertFalse(impl.updateStoreManagerPermissions("2" ,"tom","1",
-                true, true).isSuccess());
+        Response<String> response1 = impl.updateStoreManagerPermissions(saarUserID, "ovad","0",
+                true, false);
+        assertFalse(response1.isSuccess());
+        assertEquals(ExceptionsEnum.notNominatorOfThisManager.toString(), response1.getDescription());
+
+        Response<String> response2 = impl.updateStoreManagerPermissions(jalalUserID ,"tom","1",
+                true, true);
+        assertFalse(response2.isSuccess());
+        assertEquals(ExceptionsEnum.notNominatorOfThisManager.toString(), response2.getDescription());
+
     }
 }

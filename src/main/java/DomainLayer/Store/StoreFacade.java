@@ -49,6 +49,12 @@ public class StoreFacade {
         return allStores.get(storeID);
     }
 
+    public void errorIfStoreNotExist(String storeID) throws Exception {
+        if(getStoreByID(storeID) == null){
+            throw new Exception(ExceptionsEnum.storeNotExist.toString());
+        }
+    }
+
     public String getNewStoreId(){
         UUID uuid = UUID.randomUUID();
         String storeId = "store" + uuid.toString();

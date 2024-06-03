@@ -123,7 +123,10 @@ package Util;
         },
         notSystemManager{
             public String toString(){ return "The user is not a system manager"; }
-        }
+        },
+        emptyField{
+            public String toString(){ return "Fields cannot be empty"; }
+        },
     }
 
 
