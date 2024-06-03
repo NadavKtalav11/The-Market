@@ -99,6 +99,7 @@ public class UserFacade {
         return getUserByID(userId).isMember();
     }
 
+
     public void errorIfUserNotMember(String userId) throws Exception {
         if(!isMember(userId)){
             throw new Exception(ExceptionsEnum.userIsNotMember.toString());
