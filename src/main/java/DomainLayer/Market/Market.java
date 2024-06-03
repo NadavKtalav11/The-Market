@@ -288,15 +288,8 @@ public class Market {
                 throw new Exception(ExceptionsEnum.sessionOver.toString());
             }
         }
-        boolean canRemoveFromBasket = userFacade.checkIfCanRemove(productName, storeId, userId);
-        if (canRemoveFromBasket)
-        {
-            userFacade.removeItemFromUserCart(productName, storeId, userId);
-        }
-        else
-        {
-            throw new IllegalArgumentException("The product you try to remove is not in the basket");
-        }
+        userFacade.checkIfCanRemove(productName, storeId, userId);
+        userFacade.removeItemFromUserCart(productName, storeId, userId);
     }
 
 
@@ -650,15 +643,8 @@ public class Market {
             }
         }
         userFacade.isUserLoggedInError(user_ID);
-        if (this.roleFacade.verifyMemberIsSystemManager(user_ID))
-        {
-            return paymentServicesFacade.getStorePurchaseInfo(); //returns StoreId and amount of purchases in the store
-        }
-        else
-        {
-            throw new IllegalArgumentException("You are not the system manager, so you can do this action.");
-        }
-
+        roleFacade.verifyMemberIsSystemManagerError(user_ID);
+        return paymentServicesFacade.getStorePurchaseInfo();
     }
 
 
@@ -672,19 +658,13 @@ public class Market {
                 throw new Exception(ExceptionsEnum.sessionOver.toString());
             }
         }
-        Map<String, Integer> storeReceiptsAndTotalAmount = new HashMap<>();
-
+        Map<String, Integer> storeReceiptsAndTotalAmount;
         userFacade.isUserLoggedInError(user_ID);
         String member_ID = this.userFacade.getMemberIdByUserId(user_ID);
-        if (roleFacade.verifyStoreOwner(store_ID, member_ID)) {
-            if (storeFacade.verifyStoreExist(store_ID)) {
-                storeReceiptsAndTotalAmount = paymentServicesFacade.getStoreReceiptsAndTotalAmount(store_ID);
-            }else {
-                throw new Exception(ExceptionsEnum.storeNotExist.toString());
-            }
-        } else {
-            throw new IllegalArgumentException("Only store owner can get information of his purchases");
-        }
+        roleFacade.verifyStoreOwnerError(store_ID, member_ID);
+        storeFacade.verifyStoreExistError(store_ID);
+        storeReceiptsAndTotalAmount = paymentServicesFacade.getStoreReceiptsAndTotalAmount(store_ID);
+
         if (storeReceiptsAndTotalAmount.isEmpty())
             throw new IllegalArgumentException("There are no purchases in the store");
         return storeReceiptsAndTotalAmount;

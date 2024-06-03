@@ -263,6 +263,11 @@ public class RoleFacade {
         return false;
     }
 
+    public void verifyMemberIsSystemManagerError(String member_ID) throws Exception {
+        if (!verifyMemberIsSystemManager(member_ID))
+            throw new Exception(ExceptionsEnum.notSystemManager.toString());
+    }
+
     public static void resetInstanceForTests() {
         roleFacadeInstance = null;
     }
