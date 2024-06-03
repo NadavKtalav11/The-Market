@@ -2,13 +2,15 @@ package AcceptanceTests.Users.StoreManager;
 
 import AcceptanceTests.BridgeToTests;
 import AcceptanceTests.ProxyToTest;
+import ServiceLayer.Response;
+import Util.ExceptionsEnum;
 import Util.ProductDTO;
 import Util.UserDTO;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class RemoveStoreProduct {
     private static BridgeToTests impl;
@@ -40,6 +42,10 @@ public class RemoveStoreProduct {
     @Test
     public void noPermissionTest() {
         impl.updateStoreManagerPermissions("0","tom","0",false,false);
-        assertFalse(impl.removeProductFromStore("1","0","weddingDress").isSuccess());
+        Exception exception = assertThrows(Exception.class, () -> {
+            Response<String> response = impl.removeProductFromStore("1","0","weddingDress");
+            assertFalse(response.isSuccess());
+        });
+        assertEquals(ExceptionsEnum.noInventoryPermissions.toString(), exception.getMessage());
     }
 }

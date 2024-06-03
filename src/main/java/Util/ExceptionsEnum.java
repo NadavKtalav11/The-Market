@@ -23,9 +23,17 @@ package Util;
                 return "User does not exist";
             }
         },
+        usernameNotFound{
+            public String toString(){ return "Username was not found"; }
+        },
         productNotExistInStore{
             public String toString() {
                 return "product does not exist in store";
+            }
+        },
+        productAlreadyExistInStore{
+            public String toString() {
+                return "Product already exist in this store";
             }
         },
         productQuantityNotExist{
@@ -75,6 +83,21 @@ package Util;
         memberIsAlreadyStoreOwner{
             public String toString() {
                 return "Member is already owner of this store";
+            }
+        },
+        memberAlreadyHasRoleInThisStore{
+            public String toString() {
+                return "Member already has a role in this store";
+            }
+        },
+        notNominatorOfThisManager{
+            public String toString() {
+                return "User is not a manager of this store";
+            }
+        },
+        notManager{
+            public String toString() {
+                return "Store owner is not the store manager's nominator";
             }
         },
         usernameOrPasswordIncorrect{
