@@ -26,6 +26,9 @@ package Util;
         usernameNotFound{
             public String toString(){ return "Username was not found"; }
         },
+        usernameAlreadyExist{
+            public String toString(){ return  "Username already exists."; }
+        },
         productNotExistInStore{
             public String toString() {
                 return "product does not exist in store";
