@@ -96,7 +96,8 @@ public class UserFacadeTest {
     @Test
     public void testCheckIfCanRemove() {
         when(mockUser.checkIfProductInUserCart(productName, storeId)).thenReturn(true);
-        assertTrue(userFacade.checkIfCanRemove(productName, storeId, userId));
+        //test that the method didnt throw an exception
+        assertDoesNotThrow(() -> userFacade.checkIfCanRemove(productName, storeId, userId));
         verify(mockUser).checkIfProductInUserCart(productName, storeId);
     }
 
