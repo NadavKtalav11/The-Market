@@ -16,9 +16,6 @@ public class EnteringMarket {
     @BeforeAll
     public static void setUp() {
         impl = new ProxyToTest("Real");
-        //Do what you need
-
-
     }
 
     @Test
