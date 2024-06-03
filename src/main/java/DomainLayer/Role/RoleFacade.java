@@ -99,12 +99,7 @@ public class RoleFacade {
         return storeOwner != null && storeOwner.verifyStoreOwnerIsFounder();
     }
 
-
-   
-
-
-
-     public void createStoreOwner(String memberId, String storeId, boolean founder, String nominatorMemberId) throws Exception {
+    public void createStoreOwner(String memberId, String storeId, boolean founder, String nominatorMemberId) throws Exception {
         if(verifyStoreOwner(storeId, memberId))
             throw new Exception(ExceptionsEnum.memberIsAlreadyStoreOwner.toString());
 
@@ -118,7 +113,7 @@ public class RoleFacade {
             StoreManager newStoreManager = new StoreManager(memberId, storeId, inventoryPermissions, purchasePermissions, nominatorMemberId);
             addNewStoreManagerToTheMarket(newStoreManager);
         } else {
-            throw new Exception("Member already has a role in this store");
+            throw new Exception(ExceptionsEnum.memberAlreadyHasRoleInThisStore.toString());
         }
     }
 
@@ -128,10 +123,10 @@ public class RoleFacade {
             if (getStoreManager(storeId, memberId).getNominatorMemberId().equals(nominatorMemberID)) {
                 getStoreManager(storeId, memberId).setPermissions(inventoryPermissions, purchasePermissions);
             } else {
-                throw new Exception("Store owner is not the store manager's nominator");
+                throw new Exception(ExceptionsEnum.notNominatorOfThisManager.toString());
             }
         } else {
-            throw new Exception("User is not a manager of this store");
+            throw new Exception(ExceptionsEnum.notManager.toString());
         }
     }
 

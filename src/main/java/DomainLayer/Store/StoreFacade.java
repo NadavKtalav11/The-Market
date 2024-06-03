@@ -136,10 +136,10 @@ public class StoreFacade {
             if (product.getQuantity() >= 0) {
                 allStores.get(storeId).addProduct(product);
             } else {
-                throw new Exception("Quantity must be non-negative");
+                throw new Exception(ExceptionsEnum.productQuantityIsNegative.toString());
             }
         } else {
-            throw new Exception("Product already exist in this store");
+            throw new Exception(ExceptionsEnum.productAlreadyExistInStore.toString());
         }
     }
 
@@ -147,7 +147,7 @@ public class StoreFacade {
         if (checkProductExistInStore(productName, storeId)) {
             allStores.get(storeId).removeProduct(productName);
         } else {
-            throw new Exception("Product does not exist in this store");
+            throw new Exception(ExceptionsEnum.productNotExistInStore.toString());
         }
 
     }
@@ -158,10 +158,10 @@ public class StoreFacade {
             if (product.getQuantity() >= 0) {
                 allStores.get(storeId).updateProduct(product);
             } else {
-                throw new Exception("Quantity must be non-negative");
+                throw new Exception(ExceptionsEnum.productQuantityIsNegative.toString());
             }
         } else {
-            throw new Exception("Product does not exist in this store");
+            throw new Exception(ExceptionsEnum.productNotExistInStore.toString());
         }
     }
 

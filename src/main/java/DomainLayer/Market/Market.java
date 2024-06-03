@@ -355,13 +355,13 @@ public class Market {
                                     roleFacade.managerHasInventoryPermissions(memberId, storeId))) {
                         storeFacade.removeProductFromStore(storeId, productName);
                     } else {
-                        throw new Exception("User has no inventory permissions");
+                        throw new Exception(ExceptionsEnum.noInventoryPermissions.toString());
                     }
                 } else {
                     throw new Exception(ExceptionsEnum.storeNotExist.toString());
                 }
             } else {
-                throw new Exception("User has no inventory permissions");
+                throw new Exception(ExceptionsEnum.noInventoryPermissions.toString());
             }
         } else {
             throw new Exception(ExceptionsEnum.userNotExist.toString());
@@ -383,13 +383,13 @@ public class Market {
                                     roleFacade.managerHasInventoryPermissions(memberId, storeId))) {
                         storeFacade.updateProductInStore(storeId, product);
                     } else {
-                        throw new Exception("User has no inventory permissions");
+                        throw new Exception(ExceptionsEnum.noInventoryPermissions.toString());
                     }
                 } else {
                     throw new Exception(ExceptionsEnum.storeNotExist.toString());
                 }
             } else {
-                throw new Exception("User has no inventory permissions");
+                throw new Exception(ExceptionsEnum.noInventoryPermissions.toString());
             }
         } else {
             throw new Exception(ExceptionsEnum.userNotExist.toString());
@@ -411,16 +411,16 @@ public class Market {
                             String nominatedMemberID = userFacade.getMemberByUsername(nominatedUsername).getMemberID();
                             roleFacade.createStoreOwner(nominatedMemberID, storeId, false, nominatorMemberID);
                         } else {
-                            throw new Exception("Username was not found");
+                            throw new Exception(ExceptionsEnum.usernameNotFound.toString());
                         }
                     } else {
-                        throw new Exception("User has no permission to appoString store owner");
+                        throw new Exception(ExceptionsEnum.userIsNotStoreOwner.toString());
                     }
                 } else {
                     throw new Exception(ExceptionsEnum.storeNotExist.toString());
                 }
             } else {
-                throw new Exception("User has no permission to appoString store owner");
+                throw new Exception(ExceptionsEnum.userIsNotStoreOwner.toString());
             }
         } else {
             throw new Exception(ExceptionsEnum.userNotExist.toString());
@@ -443,16 +443,16 @@ public class Market {
                             String nominatedMemberID = userFacade.getMemberByUsername(nominatedUsername).getMemberID();
                             roleFacade.createStoreManager(nominatedMemberID, storeId, inventoryPermissions, purchasePermissions, nominatorMemberID);
                         } else {
-                            throw new Exception("Username was not found");
+                            throw new Exception(ExceptionsEnum.usernameNotFound.toString());
                         }
                     } else {
-                        throw new Exception("User has no permission to appoString store manager");
+                        throw new Exception(ExceptionsEnum.userIsNotStoreOwner.toString());
                     }
                 } else {
                     throw new Exception(ExceptionsEnum.storeNotExist.toString());
                 }
             } else {
-                throw new Exception("User has no permission to appoString store manager");
+                throw new Exception(ExceptionsEnum.userIsNotStoreOwner.toString());
             }
         } else {
             throw new Exception(ExceptionsEnum.userNotExist.toString());
@@ -475,16 +475,16 @@ public class Market {
                             String nominatedMemberID = userFacade.getMemberByUsername(nominatedUsername).getMemberID();
                             roleFacade.updateStoreManagerPermissions(nominatedMemberID, storeId, inventoryPermissions, purchasePermissions, nominatorMemberID);
                         } else {
-                            throw new Exception("Username was not found");
+                            throw new Exception(ExceptionsEnum.usernameNotFound.toString());
                         }
                     } else {
-                        throw new Exception("User has no permission to update store manager permissions");
+                        throw new Exception(ExceptionsEnum.userIsNotStoreOwner.toString());
                     }
                 } else {
                     throw new Exception(ExceptionsEnum.storeNotExist.toString());
                 }
             } else {
-                throw new Exception("User has no permission to update store manager permissions");
+                throw new Exception(ExceptionsEnum.userIsNotStoreOwner.toString());
             }
         } else {
             throw new Exception(ExceptionsEnum.userNotExist.toString());
