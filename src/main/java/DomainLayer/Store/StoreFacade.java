@@ -232,9 +232,15 @@ public class StoreFacade {
         return filteredProducts;
     }
 
-    public boolean checkCategory(String categoryStr)
+    public void checkCategory(String categoryStr)
     {
-        return !(Category.fromString(categoryStr) == null);
+        if (categoryStr != null)
+        {
+            if (!(Category.fromString(categoryStr) == null));
+            {
+                throw new IllegalArgumentException(ExceptionsEnum.categoryNotExist.toString());
+            }
+        }
     }
 
     public boolean checkProductExistInStore(String productName, String storeId)

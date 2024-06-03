@@ -767,18 +767,9 @@ public class Market {
                 throw new Exception(ExceptionsEnum.sessionOver.toString());
             }
         }
-        if (categoryStr != null && !storeFacade.checkCategory(categoryStr))
-            throw new IllegalArgumentException("The category you entered in invalid");
-
-        if (storeFacade.verifyStoreExist(storeId))
-        {
-                if (productName == null || storeFacade.checkProductExistInStore(productName, storeId))
-                    return storeFacade.inStoreProductSearch(productName, categoryStr, keywords, storeId);
-                else
-                    throw new IllegalArgumentException("The product doesn't exist in the store");
-        }
-        else
-            throw new IllegalArgumentException("The store you try to search in doesnt exist.");
+        storeFacade.checkCategory(categoryStr);
+        storeFacade.verifyStoreExistError(storeId);
+        return storeFacade.inStoreProductSearch(productName, categoryStr, keywords, storeId);
     }
 
     public List<String> generalProductSearch(String userId, String productName, String categoryStr, List<String> keywords) throws Exception {
@@ -818,23 +809,12 @@ public class Market {
                 throw new Exception(ExceptionsEnum.sessionOver.toString());
             }
         }
-        List<String> filteredProductNames = null;
-        if ((minPrice == null || maxPrice == null) || (minPrice != null && maxPrice != null && minPrice <= maxPrice))
-        {
-            if(storeMinRating <= 5 && storeMinRating >= 0) {
-                if (productMinRating <= 5 && productMinRating >= 0) {
-                    if (categoryStr != null && storeFacade.checkCategory(categoryStr))
-                        throw new IllegalArgumentException("The category you entered is invalid.");
-                    if (storeFacade.verifyStoreExist(storeId)) {
-                        filteredProductNames = storeFacade.inStoreProductFilter(categoryStr, keywords, minPrice, maxPrice, productMinRating, storeId, productsFromSearch, storeMinRating);
-                    } else
-                        throw new IllegalArgumentException("The store you try to search in doesnt exist.");
-                } else
-                    throw new IllegalArgumentException("The rating you entered is invalid");
-            }
-        }
-        else
-            throw new IllegalArgumentException("The price range you entered is invalid");
+        checkPrice(minPrice, maxPrice);
+        checkProductRating(productMinRating);
+        checkStoreRating(storeMinRating);
+        storeFacade.checkCategory(categoryStr);
+        storeFacade.verifyStoreExistError(storeId);
+        List<String> filteredProductNames = storeFacade.inStoreProductFilter(categoryStr, keywords, minPrice, maxPrice, productMinRating, storeId, productsFromSearch, storeMinRating);
 
         return filteredProductNames;
     }
@@ -873,5 +853,24 @@ public class Market {
                 throw new IllegalArgumentException(ExceptionsEnum.sessionOver.toString());
             }
         }
+    }
+
+    public void checkPrice(Integer minPrice, Integer maxPrice)
+    {
+        if (!(minPrice == null || maxPrice == null) && !(minPrice != null && maxPrice != null && minPrice <= maxPrice))
+            throw new IllegalArgumentException(ExceptionsEnum.priceRangeInvalid.toString());
+    }
+
+    public void checkProductRating(Double productMinRating)
+    {
+
+        if (productMinRating != null && (productMinRating < 0 || productMinRating > 5))
+            throw new IllegalArgumentException(ExceptionsEnum.productRateInvalid.toString());
+    }
+
+    public void checkStoreRating(Double storeMinRating)
+    {
+        if (storeMinRating != null && (storeMinRating < 0 || storeMinRating > 5))
+            throw new IllegalArgumentException(ExceptionsEnum.storeRateInvalid.toString());
     }
 }
