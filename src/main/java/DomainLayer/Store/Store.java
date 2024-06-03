@@ -148,7 +148,7 @@ public class Store {
             List<Product> products = storeProducts.values().stream().toList();
             return products.stream()
                     .filter(product -> productName == null || product.getProductName().toLowerCase().contains(productName.toLowerCase()))
-                    .filter(product -> categoryStr == null || product.getCategoryName().equals(categoryStr.toUpperCase()))
+                    .filter(product -> categoryStr == null || product.getCategoryName().equalsIgnoreCase(categoryStr))
                     .filter(product -> keywords == null || keywords.stream().anyMatch(keyword -> product.getDescription().toLowerCase().contains(keyword.toLowerCase())))
                     .map(Product::getProductName)
                     .collect(Collectors.toList());

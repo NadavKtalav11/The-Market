@@ -156,8 +156,8 @@ public class Service_layer {
     public Response<String> register(String userID, String userName, String birthday, String country, String city, String address, String name, String password) {
         logger.info("Registration");
         try {
-            market.register(userID, new UserDTO(userName, birthday, country, city, address, name), password);
-            return new Response<>("Registration successful", "User registered successfully.");
+            String memberID = market.register(userID, new UserDTO(userName, birthday, country, city, address, name), password);
+            return new Response<>("Registration successful", "User registered successfully.", memberID);
         } catch (Exception e) {
             logger.error("Error occurred during registration {}", e.getMessage());
             return new Response<>(null, e.getMessage());
@@ -371,8 +371,8 @@ public class Service_layer {
         logger.info("Store owner stared store opening.");
 
         try {
-            market.openStore(user_ID, name, description);
-            return new Response<>("Store opened successfully", "Store opened successfully.");
+            String storeId = market.openStore(user_ID, name, description);
+            return new Response<>("Store opened successfully", "Store opened successfully.", storeId);
         } catch (Exception e) {
             logger.error("Error occurred during store owner was trying to open a store: {}", e.getMessage(), e);
             return new Response<>(null, e.getMessage());

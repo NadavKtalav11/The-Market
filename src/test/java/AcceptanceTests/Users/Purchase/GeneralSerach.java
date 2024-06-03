@@ -18,6 +18,10 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 
 public class GeneralSerach {
     private static BridgeToTests impl;
+    static String userId0;
+    static String storeId0;
+    static String storeId1;
+    
 
 
     @BeforeAll
@@ -27,15 +31,15 @@ public class GeneralSerach {
 
         impl = new ProxyToTest("Real");
         //Do what you need
-        impl.enterMarketSystem();
-        impl.register("0","user1", "12/12/00", "Israel", "Beer Sheva", "Mesada", "Toy", "fSijsd281");
-        impl.login("0", "user1", "fSijsd281");
-        impl.openStore("0", "Zara", "clothing store");
-        impl.openStore("0", "Bershka", "clothing store");
-        impl.addProductToStore("0", "0","Milk", 10, 5, "Milk 5%", "food");
-        impl.addProductToStore("0", "0","Cheese", 15, 8, "Cheese 22%", "food");
-        impl.addProductToStore("0", "1","Yogurt", 4, 12, "Yogurt 20%", "food");
-        impl.addProductToStore("0", "1","Shoes", 4, 12, "Nike Shoes", "clothing");
+        userId0= impl.enterMarketSystem().getData();
+        impl.register(userId0,"user1", "12/12/00", "Israel", "Beer Sheva", "Mesada", "Toy", "fSijsd281");
+        impl.login(userId0, "user1", "fSijsd281");
+        storeId0= impl.openStore(userId0, "Zara", "clothing store").getData();
+        storeId1 = impl.openStore(userId0, "Bershka", "clothing store").getData();
+        impl.addProductToStore(userId0, storeId0,"Milk", 10, 5, "Milk 5%", "food");
+        impl.addProductToStore(userId0, storeId0,"Cheese", 15, 8, "Cheese 22%", "food");
+        impl.addProductToStore(userId0, storeId1,"Yogurt", 4, 12, "Yogurt 20%", "food");
+        impl.addProductToStore(userId0, storeId1,"Shoes", 4, 12, "Nike Shoes", "clothing");
 
     }
 
@@ -47,7 +51,7 @@ public class GeneralSerach {
         productNames.add("Yogurt");
         productNames.add("Shoes");
         Set<String> productsSet = new HashSet<String>(productNames);
-        Response<List<String>> res = impl.generalProductSearch("0", null, null, null);
+        Response<List<String>> res = impl.generalProductSearch(userId0, null, null, null);
         assertTrue(res.isSuccess());
         List<String> unFilteredProducts = res.getResult();
         Set<String> filteredProductsSet = new HashSet<String>(unFilteredProducts);
@@ -63,27 +67,27 @@ public class GeneralSerach {
 
         Set<String> dairySet = new HashSet<String>(diaryProducts);
 
-        assertTrue(impl.generalProductSearch("0", null, "FOOD", null).isSuccess());
-        List<String> filteredProducts = impl.generalProductSearch("0", null, "FOOD", null).getResult();
+        assertTrue(impl.generalProductSearch(userId0, null, "FOOD", null).isSuccess());
+        List<String> filteredProducts = impl.generalProductSearch(storeId0, null, "FOOD", null).getResult();
         Set<String> filteredProductsSet = new HashSet<String>(filteredProducts);
         assertIterableEquals(filteredProductsSet, dairySet);
 
         List<String> shoes = new ArrayList<>();
         shoes.add("Shoes");
-        assertTrue(impl.generalProductSearch("0", "Shoes", null, null).isSuccess());
-        assertIterableEquals(impl.generalProductSearch("0", "Shoes", null, null).getResult(), shoes);
+        assertTrue(impl.generalProductSearch(userId0, "Shoes", null, null).isSuccess());
+        assertIterableEquals(impl.generalProductSearch(userId0, "Shoes", null, null).getResult(), shoes);
     }
 
     @Test
     public void productNotExistTest() {
-        assertFalse(impl.generalProductSearch("0", "Tomato", null, null).isSuccess());
-        assertFalse(impl.generalProductSearch("0", "Shirt", null, null).isSuccess());
+        assertFalse(impl.generalProductSearch(userId0, "Tomato", null, null).isSuccess());
+        assertFalse(impl.generalProductSearch(userId0, "Shirt", null, null).isSuccess());
     }
 
     @Test
     public void categoryNotExistTest() {
-        assertFalse(impl.generalProductSearch("0", null, "asdsjd", null).isSuccess());
-        assertFalse(impl.generalProductSearch("0", null, "asdsjdasdkdf", null).isSuccess());
+        assertFalse(impl.generalProductSearch(userId0, null, "asdsjd", null).isSuccess());
+        assertFalse(impl.generalProductSearch(userId0, null, "asdsjdasdkdf", null).isSuccess());
     }
 
     @Test
@@ -92,7 +96,7 @@ public class GeneralSerach {
         diaryProducts.add("Milk");
         diaryProducts.add("Cheese");
         diaryProducts.add("Yogurt");
-        assertFalse(impl.generalProductFilter("0", null, null, 10, 0, null, diaryProducts, null).isSuccess());
+        assertFalse(impl.generalProductFilter(userId0, null, null, 10, 0, null, diaryProducts, null).isSuccess());
     }
 
     @Test
@@ -101,7 +105,7 @@ public class GeneralSerach {
         diaryProducts.add("Milk");
         diaryProducts.add("Cheese");
         diaryProducts.add("Yogurt");
-        assertFalse(impl.generalProductFilter("0", null, null, null, null, 7.0, diaryProducts, null).isSuccess());
+        assertFalse(impl.generalProductFilter(userId0, null, null, null, null, 7.0, diaryProducts, null).isSuccess());
     }
 
     @Test
@@ -110,6 +114,6 @@ public class GeneralSerach {
         diaryProducts.add("Milk");
         diaryProducts.add("Cheese");
         diaryProducts.add("Yogurt");
-        assertFalse(impl.generalProductFilter("0", null, null, null, null, null, diaryProducts, 7.0).isSuccess());
+        assertFalse(impl.generalProductFilter(userId0, null, null, null, null, null, diaryProducts, 7.0).isSuccess());
     }
 }

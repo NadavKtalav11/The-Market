@@ -14,25 +14,26 @@ import static org.junit.jupiter.api.Assertions.*;
 public class RemoveStoreProduct {
     private static BridgeToTests impl;
     static String saarUserID;
+    static String storeID;
 
     @BeforeAll
     public static void setUp() {
         impl = new ProxyToTest("Real");
-        saarUserID = impl.enterMarketSystem().getResult();
+        saarUserID = impl.enterMarketSystem().getData();
         impl.register(saarUserID,"saar", "10/04/84", "Israel", "Jerusalem", "Yehuda halevi 18", "saar", "fadida");
         impl.login(saarUserID, "saar", "fadida");
-        impl.openStore(saarUserID, "alona", "shopping");
-        impl.addProductToStore(saarUserID, "0","weddingDress", 10, 5, "pink", "clothes");
+        storeID= impl.openStore(saarUserID, "alona", "shopping").getData();
+        impl.addProductToStore(saarUserID, storeID,"weddingDress", 10, 5, "pink", "clothes");
     }
 
     @Test
     public void successfulRemoveTest() {
-        assertTrue(impl.removeProductFromStore(saarUserID, "0","weddingDress").isSuccess());
+        assertTrue(impl.removeProductFromStore(saarUserID, storeID,"weddingDress").isSuccess());
     }
 
     @Test
     public void productNotExistTest() {
-        Response<String> response = impl.removeProductFromStore(saarUserID, "0","skirt");
+        Response<String> response = impl.removeProductFromStore(saarUserID, storeID,"skirt");
         assertFalse(response.isSuccess());
         assertEquals(ExceptionsEnum.productNotExistInStore.toString(), response.getDescription());
     }
