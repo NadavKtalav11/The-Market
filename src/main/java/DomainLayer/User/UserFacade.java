@@ -132,10 +132,11 @@ public class UserFacade {
         user.updateCartPrice();
     }
 
-    public boolean checkIfCanRemove(String productName, String storeId, String userId)
+    public void checkIfCanRemove(String productName, String storeId, String userId)
     {
         User user = getUserByID(userId);
-        return user.checkIfProductInUserCart(productName, storeId); //Need to check policies, why?
+        if(!user.checkIfProductInUserCart(productName, storeId))
+            throw new IllegalArgumentException(ExceptionsEnum.productNotExistInCart.toString());
     }
 
     public void removeItemFromUserCart(String productName, String storeId, String userId)

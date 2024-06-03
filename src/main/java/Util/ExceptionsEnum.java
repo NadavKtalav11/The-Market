@@ -34,6 +34,11 @@ package Util;
         productQuantityIsNegative{
             public String toString() {return "The quantity you entered is negative";}
         },
+        productNotExistInCart{
+            public String toString() {
+                return "product does not exist in cart";
+            }
+        },
         purchasePolicyIsNotMet{
             public String toString() {return "The product doesn't meet the store purchase policy";}
         },
@@ -93,6 +98,9 @@ package Util;
         noInventoryPermissions{
             public String toString(){ return "User has no inventory permissions"; }
         },
+        notSystemManager{
+            public String toString(){ return "The user is not a system manager"; }
+        }
     }
 
 
