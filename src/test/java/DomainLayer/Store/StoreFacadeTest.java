@@ -4,6 +4,7 @@ import DomainLayer.User.Member;
 import DomainLayer.User.User;
 import DomainLayer.User.UserFacade;
 import ServiceLayer.Response;
+import Util.ExceptionsEnum;
 import Util.ProductDTO;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -179,7 +180,11 @@ public class StoreFacadeTest {
 
     @Test
     void testCheckCategory() {
-        assertFalse(storeFacade.checkCategory("NonExistentCategory"));
+        Exception exception = assertThrows(IllegalArgumentException.class, () -> {
+            storeFacade.checkCategory("invalidCategory");
+        });
+
+        assertEquals(ExceptionsEnum.categoryNotExist.toString(), exception.getMessage());
     }
 
     @Test

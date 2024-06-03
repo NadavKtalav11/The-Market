@@ -77,7 +77,19 @@ package Util;
         },
         userAlreadyLoggedIn{
             public String toString(){ return "user is already logged in"; }
-        }
+        },
+        priceRangeInvalid{
+            public String toString(){ return "The price range you entered is invalid"; }
+        },
+        productRateInvalid{
+            public String toString(){ return "The product rate you entered is invalid"; }
+        },
+        storeRateInvalid{
+            public String toString(){ return "The store rate you entered is invalid"; }
+        },
+        categoryNotExist{
+            public String toString(){ return "The product category you entered is invalid"; }
+        },
     }
 
 
