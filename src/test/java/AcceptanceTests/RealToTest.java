@@ -19,11 +19,11 @@ public class RealToTest implements BridgeToTests {
 
     }
 
-    public Response<String> init(UserDTO user, String password, int licensedDealerNumber,
+    public Response<String> init(String username, String birthdate, String country, String city, String address, String name, String password, int licensedDealerNumber,
                                  String paymentServiceName, String url, int licensedDealerNumber1, String supplyServiceName, HashSet<String> countries, HashSet<String> cities)
     {
 
-        return service.init(user, password, licensedDealerNumber, paymentServiceName, url, licensedDealerNumber1, supplyServiceName, countries, cities);
+        return service.init(username, birthdate, country, city, address, name, password, licensedDealerNumber, paymentServiceName, url, licensedDealerNumber1, supplyServiceName, countries, cities);
 
 
     }
@@ -45,9 +45,9 @@ public class RealToTest implements BridgeToTests {
         return service.enterMarketSystem();
     }
 
-    public Response<String> register(String userID, UserDTO user, String password)
+    public Response<String> register(String userID, String userName, String birthdate, String country, String city, String address, String name, String password)
     {
-        return service.register(userID, user, password);
+        return service.register(userID, userName, birthdate, country, city, address, name, password);
     }
 
     public Response<String> login(String userID, String username, String password)
@@ -60,10 +60,9 @@ public class RealToTest implements BridgeToTests {
         return service.logout(userId);
     }
 
-    @Override
-    public Response<String> addProductToStore(String userId, String storeID, ProductDTO product)
+    public Response<String> addProductToStore(String userId, String storeID, String productName, int price, int quantity, String description, String categoryStr)
     {
-        return service.addProductToStore(userId, storeID, product);
+        return service.addProductToStore(userId, storeID, productName, price, quantity, description, categoryStr);
     }
 
     public Response<String> removeProductFromStore(String userId, String storeID, String productName)
@@ -71,9 +70,9 @@ public class RealToTest implements BridgeToTests {
         return service.removeProductFromStore(userId, storeID, productName);
     }
 
-    public Response<String> updateProductInStore(String userId, String storeID, ProductDTO product)
+    public Response<String> updateProductInStore(String userId, String storeID, String productName, int price, int quantity, String description, String categoryStr)
     {
-        return service.updateProductInStore(userId, storeID, product);
+        return service.updateProductInStore(userId, storeID, productName, price, quantity, description, categoryStr);
     }
 
     public Response<String> appointStoreOwner(String nominatorUserId, String nominatorUsername, String storeID)
