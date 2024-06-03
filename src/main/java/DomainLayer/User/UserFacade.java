@@ -114,8 +114,6 @@ public class UserFacade {
         String userId;
         userId = getCurrentUserID();
         userRepository.add(userId, new User(userId));
-
-
         return userId;
     }
 
@@ -208,7 +206,6 @@ public class UserFacade {
         }*/
         loginMember.validatePassword(password);
         getUserByID(userID).Login(loginMember);
-
     }
 
     public Member getMemberByUsername(String userName) {
