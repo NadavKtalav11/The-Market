@@ -76,14 +76,17 @@ public class TokensService {
         return claims.getSubject();
     }
 
-    public String generateToken(String  userID) {
-
-        return Jwts.builder()
+    public void generateToken(String  userID) {
+        String token = Jwts.builder()
                 .subject(userID)
                 .issuedAt(new Date(System.currentTimeMillis()))
                 .expiration(new Date(System.currentTimeMillis() + TOKEN_VALIDITY_DURATION))
                 .signWith(getSignInKey())
                 .compact();
+        synchronized (tokensLock){
+            tokensByMemberId.put(userID, token);
+        }
+        //return
     }
 
 
