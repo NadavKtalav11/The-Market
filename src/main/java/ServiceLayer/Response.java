@@ -3,16 +3,23 @@ package ServiceLayer;
 public class Response<T> {
     private T result;
     private String description;
+    private String data; // New field for user ID
     private boolean success;
 
-    public Response(T result, String description) {
+    public Response(T result, String description, String data) {
         this.result = result;
         this.description = description;
+        this.data = data;
         this.success = result != null;
     }
 
+    public Response(T result, String description) {
+        this(result, description, "");
+    }
+
+
     public Response(T result) {
-        this(result, "");
+        this(result, "", "");
     }
 
     public T getResult() {
@@ -34,6 +41,14 @@ public class Response<T> {
 
     public boolean isSuccess() {
         return success;
+    }
+
+    public String getData() {
+        return data;
+    }
+
+    public void setData(String data) {
+        this.data = data;
     }
 
 }
