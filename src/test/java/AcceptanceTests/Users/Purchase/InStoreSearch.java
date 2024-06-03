@@ -3,6 +3,7 @@ package AcceptanceTests.Users.Purchase;
 import AcceptanceTests.BridgeToTests;
 import AcceptanceTests.ProxyToTest;
 import ServiceLayer.Response;
+import Util.ExceptionsEnum;
 import Util.ProductDTO;
 import Util.UserDTO;
 import org.junit.jupiter.api.BeforeAll;
@@ -72,14 +73,28 @@ public class InStoreSearch {
 
     @Test
     public void productNotExistTest() {
-        assertFalse(impl.inStoreProductSearch("0", "Tomato", null, null, "0").isSuccess());
-        assertFalse(impl.inStoreProductSearch("0", "Shirt", null, null, "0").isSuccess());
+
+        Response<List<String>> response1 = impl.inStoreProductSearch("0", "Tomato", null, null, "0");
+        assertFalse(response1.isSuccess());
+        assertEquals(ExceptionsEnum.productNotExistInCart.toString(), response1.getDescription());
+
+        Response<List<String>> response2 = impl.inStoreProductSearch("0", "Shirt", null, null, "0");
+        assertFalse(response2.isSuccess());
+        assertEquals(ExceptionsEnum.productNotExistInCart.toString(), response2.getDescription());
+
     }
 
     @Test
     public void categoryNotExistTest() {
-        assertFalse(impl.inStoreProductSearch("0", null, "asdsjd", null, "0").isSuccess());
-        assertFalse(impl.inStoreProductSearch("0", null, "asdsjdasdkdf", null, "0").isSuccess());
+
+        Response<List<String>> response1 = impl.inStoreProductSearch("0", null, "asdsjd", null, "0");
+        assertFalse(response1.isSuccess());
+        assertEquals(ExceptionsEnum.categoryNotExist.toString(), response1.getDescription());
+
+        Response<List<String>> response2 = impl.inStoreProductSearch("0", null, "asdsjdasdkdf", null, "0");
+        assertFalse(response2.isSuccess());
+        assertEquals(ExceptionsEnum.categoryNotExist.toString(), response2.getDescription());
+
     }
 
     @Test
@@ -88,7 +103,10 @@ public class InStoreSearch {
         diaryProducts.add("Milk");
         diaryProducts.add("Cheese");
         diaryProducts.add("Yogurt");
-        assertFalse(impl.inStoreProductFilter("0", null, null, 10, 0, null, "0", diaryProducts, null).isSuccess());
+
+        Response<List<String>> response1 = impl.inStoreProductFilter("0", null, null, 10, 0, null, "0", diaryProducts, null);
+        assertFalse(response1.isSuccess());
+        assertEquals(ExceptionsEnum.priceRangeInvalid.toString(), response1.getDescription());
     }
 
     @Test
@@ -97,7 +115,10 @@ public class InStoreSearch {
         diaryProducts.add("Milk");
         diaryProducts.add("Cheese");
         diaryProducts.add("Yogurt");
-        assertFalse(impl.inStoreProductFilter("0", null, null, null, null, 7.0, "0", diaryProducts, null).isSuccess());
+
+        Response<List<String>> response1 = impl.inStoreProductFilter("0", null, null, null, null, 7.0, "0", diaryProducts, null);
+        assertFalse(response1.isSuccess());
+        assertEquals(ExceptionsEnum.productRateInvalid.toString(), response1.getDescription());
     }
 
 }

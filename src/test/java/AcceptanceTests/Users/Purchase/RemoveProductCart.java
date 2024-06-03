@@ -2,11 +2,15 @@ package AcceptanceTests.Users.Purchase;
 
 import AcceptanceTests.BridgeToTests;
 import AcceptanceTests.ProxyToTest;
+import ServiceLayer.Response;
+import Util.ExceptionsEnum;
 import Util.ProductDTO;
 import Util.UserDTO;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+
+import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -43,9 +47,19 @@ public class RemoveProductCart {
 
     @Test
     public void productNotExistTest() {
-        assertFalse(impl.removeProductFromBasket("Shoes", "0", "0").isSuccess());
-        assertFalse(impl.removeProductFromBasket("Book", "0", "0").isSuccess());
-        assertFalse(impl.removeProductFromBasket("Juice", "0", "0").isSuccess());
+
+        Response<String> response1 = impl.removeProductFromBasket("Shoes", "0", "0");
+        assertFalse(response1.isSuccess());
+        assertEquals(ExceptionsEnum.productNotExistInCart.toString(), response1.getDescription());
+
+        Response<String> response2 = impl.removeProductFromBasket("Book", "0", "0");
+        assertFalse(response2.isSuccess());
+        assertEquals(ExceptionsEnum.productNotExistInCart.toString(), response2.getDescription());
+
+        Response<String> response3 = impl.removeProductFromBasket("Juice", "0", "0");
+        assertFalse(response3.isSuccess());
+        assertEquals(ExceptionsEnum.productNotExistInCart.toString(), response3.getDescription());
+
     }
 
     @Test
