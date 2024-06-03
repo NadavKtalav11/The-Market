@@ -2,6 +2,8 @@ package AcceptanceTests.Users.SystemManager;
 
 import AcceptanceTests.BridgeToTests;
 import AcceptanceTests.ProxyToTest;
+import ServiceLayer.Response;
+import Util.ExceptionsEnum;
 import Util.ProductDTO;
 import Util.UserDTO;
 import org.junit.jupiter.api.BeforeAll;
@@ -49,6 +51,8 @@ public class MarketPurchaseHistory {
 
     @Test
     public void noPermissionsTest() {
-        assertFalse(impl.marketManagerAskInfo("0").isSuccess());
+        Response<Map<String, Integer>> response1 = impl.marketManagerAskInfo("0");
+        assertFalse(response1.isSuccess());
+        assertEquals(ExceptionsEnum.notSystemManager.toString(), response1.getDescription());
     }
 }

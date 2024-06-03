@@ -40,7 +40,7 @@ public class Service_layer {
 
         } catch (Exception e) {
             logger.error("Error occurred during the initialization: {}", e.getMessage(), e);
-            return new Response<>(null, "Initialization failed: " + e.getMessage());
+            return new Response<>(null, e.getMessage());
         }
     }
 
@@ -53,7 +53,7 @@ public class Service_layer {
 
         } catch (Exception e) {
             logger.error("Error occurred during the adding: {}", e.getMessage(), e);
-            return new Response<>(null, "Adding failed: " + e.getMessage());
+            return new Response<>(null, e.getMessage());
         }
     }
 
@@ -66,7 +66,7 @@ public class Service_layer {
         }
         catch (Exception e) {
             logger.error("Error occurred during the removing: {}", e.getMessage(), e);
-            return new Response<>(null, "Eemoving failed: " + e.getMessage());
+            return new Response<>(null, e.getMessage());
         }
 
     }
@@ -79,7 +79,7 @@ public class Service_layer {
             return new Response<>("Successful adding", "Adding new external supply service has been done successfully.");
         } catch (Exception e) {
             logger.error("Error occurred during the adding: {}", e.getMessage(), e);
-            return new Response<>(null, "Adding failed: " + e.getMessage());
+            return new Response<>(null, e.getMessage());
         }
     }
 
@@ -91,7 +91,7 @@ public class Service_layer {
             return new Response<>("Successful removal", "Removing external supply service has been done successfully.");
         } catch (Exception e) {
             logger.error("Error occurred during the removing: {}", e.getMessage(), e);
-            return new Response<>(null, "Removing failed: " + e.getMessage());
+            return new Response<>(null, e.getMessage());
         }
     }
 
@@ -104,7 +104,7 @@ public class Service_layer {
             return new Response<>("Purchase successful", "");
         } catch (Exception e) {
             logger.error("Purchase failed for user: {} with error: {}", user_ID, e.getMessage(), e);
-            return new Response<>(null, "Purchase failed: " + e.getMessage());
+            return new Response<>(null, e.getMessage());
         }
     }
 
@@ -136,7 +136,7 @@ public class Service_layer {
             return new Response<>("Exit successful", "User exited the market system successfully.");
         } catch (Exception e) {
             logger.error("Error occurred during exiting market system {}", e.getMessage());
-            return new Response<>(null, "Exit failed: " + e.getMessage());
+            return new Response<>(null, e.getMessage());
         }
     }
 
@@ -149,7 +149,7 @@ public class Service_layer {
             return new Response<>("Enter successful", "Entered the market system successfully.", userID);
         } catch (Exception e) {
             logger.error("Error occurred during entering market system {}", e.getMessage());
-            return new Response<>(null, "Enter failed: " + e.getMessage() , "");
+            return new Response<>(null, e.getMessage() , "");
 
         }
     }
@@ -161,7 +161,7 @@ public class Service_layer {
             return new Response<>("Registration successful", "User registered successfully.");
         } catch (Exception e) {
             logger.error("Error occurred during registration {}", e.getMessage());
-            return new Response<>(null, "Registration failed: " + e.getMessage());
+            return new Response<>(null, e.getMessage());
         }
     }
 
@@ -173,7 +173,7 @@ public class Service_layer {
             return new Response<>("Login successful", "User logged in successfully.");
         } catch (Exception e) {
             logger.error("Error occurred during log in - {}", e.getMessage());
-            return new Response<>(null, "Login failed: " + e.getMessage(), e.getMessage());
+            return new Response<>(null, e.getMessage(), e.getMessage());
         }
     }
 
@@ -184,7 +184,7 @@ public class Service_layer {
             return new Response<>("Logout successful", "User logged out successfully.");
         } catch (Exception e) {
             logger.error("Error occurred during log out", e.getMessage(), e);
-            return new Response<>(null, "Logout failed: " + e.getMessage());
+            return new Response<>(null, e.getMessage());
         }
     }
 
@@ -196,7 +196,7 @@ public class Service_layer {
             return new Response<>("Product added successfully", "Product added to store successfully.");
         } catch (Exception e) {
             logger.error("Error occurred during adding product to store", e.getMessage(), e);
-            return new Response<>(null, "Failed to add product: " + e.getMessage());
+            return new Response<>(null, e.getMessage());
         }
     }
 
@@ -210,7 +210,7 @@ public class Service_layer {
         } catch (Exception e) {
 
             logger.error("Error occurred during removing product from store", e.getMessage(), e);
-            return new Response<>(null, "Failed to remove product: " + e.getMessage());
+            return new Response<>(null, e.getMessage());
         }
     }
 
@@ -223,7 +223,7 @@ public class Service_layer {
         } catch (Exception e) {
 
             logger.error("Error occurred during updating product in store", e.getMessage(), e);;
-            return new Response<>(null, "Failed to update product: " + e.getMessage());
+            return new Response<>(null, e.getMessage());
         }
     }
 
@@ -236,7 +236,7 @@ public class Service_layer {
         } catch (Exception e) {
 
             logger.error("Error occurred during appointing store owner", e.getMessage(), e);
-            return new Response<>(null, "Failed to appoString store owner: " + e.getMessage());
+            return new Response<>(null, e.getMessage());
 
         }
     }
@@ -253,7 +253,7 @@ public class Service_layer {
         } catch (Exception e) {
 
             logger.error("Error occurred during appointing store manager", e.getMessage(), e);
-            return new Response<>(null, "Failed to appoString store manager: " + e.getMessage());
+            return new Response<>(null, e.getMessage());
         }
     }
 
@@ -269,7 +269,7 @@ public class Service_layer {
         } catch (Exception e) {
 
             logger.error("Error occurred during updating store manager permissions", e.getMessage(), e);
-            return new Response<>(null, "Failed to update permissions: " + e.getMessage());
+            return new Response<>(null, e.getMessage());
 
         }
     }
@@ -283,7 +283,7 @@ public class Service_layer {
             return new Response<>(filteredProductNames, "Product filter applied successfully.");
         } catch (Exception e) {
             logger.error("Error occurred during the general product search filter: {}", e.getMessage(), e);
-            return new Response<>(null, "Product filter failed: " + e.getMessage());
+            return new Response<>(null, e.getMessage());
         }
     }
 
@@ -296,7 +296,7 @@ public class Service_layer {
             return new Response<>(filteredProductNames, "Product search completed successfully.");
         } catch (Exception e) {
             logger.error("Error occurred during the general product search: {}", e.getMessage(), e);
-            return new Response<>(null, "Product search failed: " + e.getMessage());
+            return new Response<>(null, e.getMessage());
         }
     }
 
@@ -323,7 +323,7 @@ public class Service_layer {
             return new Response<>(allAvailableStores, "Information about stores retrieved successfully.");
         } catch (Exception e) {
             logger.error("Error occurred during reviewing information about stores in the market: {}", e.getMessage(), e);
-            return new Response<>(null, "Failed to retrieve information about stores: " + e.getMessage());
+            return new Response<>(null, e.getMessage());
         }
 
     }
@@ -337,7 +337,7 @@ public class Service_layer {
             return new Response<>(information, "Information about roles in store retrieved successfully.");
         } catch (Exception e) {
             logger.error("Error occurred during reviewing information about products in store: {}", e.getMessage(), e);
-            return new Response<>(null, "Failed to retrieve information about roles in store: " + e.getMessage());
+            return new Response<>(null, e.getMessage());
         }
     }
 
@@ -350,7 +350,7 @@ public class Service_layer {
             return new Response<>(managersAuthorizations, "Authorizations of managers in store retrieved successfully.");
         } catch (Exception e) {
             logger.error("Error occurred during store owner reviewing authorizations of managers in store: {}", e.getMessage(), e);
-            return new Response<>(null, "Failed to retrieve authorizations of managers in store: " + e.getMessage());
+            return new Response<>(null, e.getMessage());
         }
     }
 
@@ -363,7 +363,7 @@ public class Service_layer {
             return new Response<>("Store closed successfully", "Store closed successfully.");
         } catch (Exception e) {
             logger.error("Error occurred during store owner was trying to close a store: {}", e.getMessage(), e);
-            return new Response<>(null, "Failed to close store: " + e.getMessage());
+            return new Response<>(null, e.getMessage());
         }
     }
 
@@ -376,7 +376,7 @@ public class Service_layer {
             return new Response<>("Store opened successfully", "Store opened successfully.");
         } catch (Exception e) {
             logger.error("Error occurred during store owner was trying to open a store: {}", e.getMessage(), e);
-            return new Response<>(null, "Failed to open store: " + e.getMessage());
+            return new Response<>(null, e.getMessage());
         }
     }
 
@@ -389,7 +389,7 @@ public class Service_layer {
             return new Response<>("Product added to basket successfully", "Product added to basket successfully.");
         } catch (Exception e) {
             logger.error("Error occurred during adding new product to the basket: {}", e.getMessage(), e);
-            return new Response<>(null, "Failed to add product to basket: " + e.getMessage());
+            return new Response<>(null, e.getMessage());
         }
     }
 
@@ -402,7 +402,7 @@ public class Service_layer {
             return new Response<>("Product removed from basket successfully", "Product removed from basket successfully.");
         } catch (Exception e) {
             logger.error("Error occurred during removing a product from the basket: {}", e.getMessage(), e);
-            return new Response<>(null, "Failed to remove product from basket: " + e.getMessage());
+            return new Response<>(null, e.getMessage());
         }
     }
 
@@ -415,7 +415,7 @@ public class Service_layer {
             return new Response<>("Shopping cart modified successfully", "Shopping cart modified successfully.");
         } catch (Exception e) {
             logger.error("Error occurred during modifying shopping cart: {}", e.getMessage(), e);
-            return new Response<>(null, "Failed to modify shopping cart: " + e.getMessage());
+            return new Response<>(null, e.getMessage());
         }
     }
 
@@ -428,7 +428,7 @@ public class Service_layer {
             return new Response<>(marketPurchases, "Information about purchases in the market retrieved successfully.");
         } catch (Exception e) {
             logger.error("Error occurred during the request of the market manager getting the purchase information: {}", e.getMessage(), e);
-            return new Response<>(null, "Failed to retrieve purchase information: " + e.getMessage());
+            return new Response<>(null, e.getMessage());
         }
     }
 
@@ -441,7 +441,7 @@ public class Service_layer {
             return new Response<>(storePurchases, "Information about purchases in the store retrieved successfully.");
         } catch (Exception e) {
             logger.error("Error occurred during the request of the store owner getting the purchase information: {}", e.getMessage(), e);
-            return new Response<>(null, "Failed to retrieve purchase information: " + e.getMessage());
+            return new Response<>(null, e.getMessage());
         }
     }
 
@@ -454,7 +454,7 @@ public class Service_layer {
             return new Response<>(filteredProductNames, "In-store product search filter applied successfully.");
         } catch (Exception e) {
             logger.error("Error occurred during the in-store product search filter: {}", e.getMessage(), e);
-            return new Response<>(null, "Failed to apply in-store product search filter: " + e.getMessage());
+            return new Response<>(null, e.getMessage());
         }
     }
 
@@ -467,7 +467,7 @@ public class Service_layer {
             return new Response<>(filteredProductNames, "In-store product search completed successfully.");
         } catch (Exception e) {
             logger.error("Error occurred during the in-store product search: {}", e.getMessage(), e);
-            return new Response<>(null, "Failed to perform in-store product search: " + e.getMessage());
+            return new Response<>(null, e.getMessage());
         }
     }
 

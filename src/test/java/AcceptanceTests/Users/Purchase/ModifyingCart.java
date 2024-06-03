@@ -2,6 +2,8 @@ package AcceptanceTests.Users.Purchase;
 
 import AcceptanceTests.BridgeToTests;
 import AcceptanceTests.ProxyToTest;
+import ServiceLayer.Response;
+import Util.ExceptionsEnum;
 import Util.ProductDTO;
 import Util.UserDTO;
 import org.junit.jupiter.api.BeforeAll;
@@ -42,24 +44,53 @@ public class ModifyingCart {
 
     @Test
     public void productNotExistTest() {
-        assertFalse(impl.modifyShoppingCart("Tomato", 2,"0", "0").isSuccess());
-        assertFalse(impl.modifyShoppingCart("awsdhnjlk", 3, "0", "0").isSuccess());
-        assertFalse(impl.modifyShoppingCart("njknlk", 4, "0", "0").isSuccess());
+
+        Response<String> response1 = impl.modifyShoppingCart("Tomato", 2,"0", "0");
+        assertFalse(response1.isSuccess());
+        assertEquals(ExceptionsEnum.productNotExistInCart.toString(), response1.getDescription());
+
+        Response<String> response2 = impl.modifyShoppingCart("awsdhnjlk", 3, "0", "0");
+        assertFalse(response2.isSuccess());
+        assertEquals(ExceptionsEnum.productNotExistInCart.toString(), response2.getDescription());
+
+        Response<String> response3 = impl.modifyShoppingCart("njknlk", 4, "0", "0");
+        assertFalse(response3.isSuccess());
+        assertEquals(ExceptionsEnum.productNotExistInCart.toString(), response3.getDescription());
     }
 
 
     @Test
     public void bigQuantityTest() {
-        assertFalse(impl.modifyShoppingCart("Milk", 100,"0", "0").isSuccess());
-        assertFalse(impl.modifyShoppingCart("Cheese", 200, "0", "0").isSuccess());
-        assertFalse(impl.modifyShoppingCart("Yogurt", 300, "0", "0").isSuccess());
+
+        Response<String> response1 = impl.modifyShoppingCart("Milk", 100,"0", "0");
+        assertFalse(response1.isSuccess());
+        assertEquals(ExceptionsEnum.productQuantityNotExist.toString(), response1.getDescription());
+
+        Response<String> response2 = impl.modifyShoppingCart("Cheese", 200, "0", "0");
+        assertFalse(response2.isSuccess());
+        assertEquals(ExceptionsEnum.productQuantityNotExist.toString(), response2.getDescription());
+
+        Response<String> response3 = impl.modifyShoppingCart("Yogurt", 300, "0", "0");
+        assertFalse(response3.isSuccess());
+        assertEquals(ExceptionsEnum.productQuantityNotExist.toString(), response3.getDescription());
+
     }
 
     @Test
-    public void negQuantityTest() { //
-        assertFalse(impl.modifyShoppingCart("Milk", -1,"0", "0").isSuccess());
-        assertFalse(impl.modifyShoppingCart("Cheese", -2, "0", "0").isSuccess());
-        assertFalse(impl.modifyShoppingCart("Yogurt", -3, "0", "0").isSuccess());
+    public void negQuantityTest() {
+
+        Response<String> response1 = impl.modifyShoppingCart("Milk", -1,"0", "0");
+        assertFalse(response1.isSuccess());
+        assertEquals(ExceptionsEnum.productQuantityIsNegative.toString(), response1.getDescription());
+
+        Response<String> response2 = impl.modifyShoppingCart("Cheese", -2, "0", "0");
+        assertFalse(response2.isSuccess());
+        assertEquals(ExceptionsEnum.productQuantityIsNegative.toString(), response2.getDescription());
+
+        Response<String> response3 = impl.modifyShoppingCart("Yogurt", -3, "0", "0");
+        assertFalse(response3.isSuccess());
+        assertEquals(ExceptionsEnum.productQuantityIsNegative.toString(), response3.getDescription());
+
     }
 
     @Test

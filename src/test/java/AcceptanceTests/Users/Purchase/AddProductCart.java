@@ -2,6 +2,8 @@ package AcceptanceTests.Users.Purchase;
 
 import AcceptanceTests.BridgeToTests;
 import AcceptanceTests.ProxyToTest;
+import ServiceLayer.Response;
+import Util.ExceptionsEnum;
 import Util.ProductDTO;
 import Util.UserDTO;
 import org.junit.jupiter.api.AfterEach;
@@ -43,9 +45,20 @@ public class AddProductCart {
     @Test
     public void invalidProductNameTest()
     {
-        assertFalse(impl.addProductToBasket("Computer", 2, "0", "0").isSuccess());
-        assertFalse(impl.addProductToBasket("Shirt", 4, "0", "0").isSuccess());
-        assertFalse(impl.addProductToBasket("TV", 5, "0", "0").isSuccess());
+
+        Response<String> response1 = impl.addProductToBasket("Computer", 2, "0", "0");
+        assertFalse(response1.isSuccess());
+        assertEquals(ExceptionsEnum.productNotExistInStore.toString(), response1.getDescription());
+
+
+        Response<String> response2 = impl.addProductToBasket("Shirt", 4, "0", "0");
+        assertFalse(response2.isSuccess());
+        assertEquals(ExceptionsEnum.productNotExistInStore.toString(), response2.getDescription());
+
+
+        Response<String> response3 = impl.addProductToBasket("TV", 5, "0", "0");
+        assertFalse(response3.isSuccess());
+        assertEquals(ExceptionsEnum.productNotExistInStore.toString(), response3.getDescription());
     }
 
     @Test
@@ -53,24 +66,54 @@ public class AddProductCart {
     {
         impl.addProductToStore("0", "0", "Mouse", 10, 0, "HP Mouse", "electronics");
         impl.addProductToStore("0", "0", "Laptop", 15, 0, "HP Laptop ", "electronics");
-        assertFalse(impl.addProductToBasket("Mouse", 1, "0", "0").isSuccess());
-        assertFalse(impl.addProductToBasket("Laptop", 2, "0", "0").isSuccess());
+
+
+        Response<String> response1 = impl.addProductToBasket("Mouse", 1, "0", "0");
+        assertFalse(response1.isSuccess());
+        assertEquals(ExceptionsEnum.productQuantityNotExist.toString(), response1.getDescription());
+
+
+        Response<String> response2 = impl.addProductToBasket("Laptop", 2, "0", "0");
+        assertFalse(response2.isSuccess());
+        assertEquals(ExceptionsEnum.productQuantityNotExist.toString(), response2.getDescription());
     }
 
     @Test
     public void bigQuantityTest()
     {
-        assertFalse(impl.addProductToBasket("Milk", 10, "0", "0").isSuccess());
-        assertFalse(impl.addProductToBasket("Cheese", 100, "0", "0").isSuccess());
-        assertFalse(impl.addProductToBasket("Yogurt", 90, "0", "0").isSuccess());
+
+        Response<String> response1 = impl.addProductToBasket("Milk", 10, "0", "0");
+        assertFalse(response1.isSuccess());
+        assertEquals(ExceptionsEnum.productQuantityNotExist.toString(), response1.getDescription());
+
+
+        Response<String> response2 = impl.addProductToBasket("Cheese", 9, "0", "0");
+        assertFalse(response2.isSuccess());
+        assertEquals(ExceptionsEnum.productQuantityNotExist.toString(), response2.getDescription());
+
+
+        Response<String> response3 = impl.addProductToBasket("Yogurt", 13, "0", "0");
+        assertFalse(response3.isSuccess());
+        assertEquals(ExceptionsEnum.productQuantityNotExist.toString(), response3.getDescription());
     }
 
     @Test
     public void negQuantityTest()
     {
-        assertFalse(impl.addProductToBasket("Milk", -4, "0", "0").isSuccess());
-        assertFalse(impl.addProductToBasket("Cheese", -1, "0", "0").isSuccess());
-        assertFalse(impl.addProductToBasket("Yogurt", -8, "0", "0").isSuccess());
+
+        Response<String> response1 = impl.addProductToBasket("Milk", -4, "0", "0");
+        assertFalse(response1.isSuccess());
+        assertEquals(ExceptionsEnum.productQuantityIsNegative.toString(), response1.getDescription());
+
+
+        Response<String> response2 = impl.addProductToBasket("Cheese", -1, "0", "0");
+        assertFalse(response2.isSuccess());
+        assertEquals(ExceptionsEnum.productQuantityIsNegative.toString(), response2.getDescription());
+
+
+        Response<String> response3 = impl.addProductToBasket("Yogurt", -8, "0", "0");
+        assertFalse(response3.isSuccess());
+        assertEquals(ExceptionsEnum.productQuantityIsNegative.toString(), response3.getDescription());
     }
 
     @Test
