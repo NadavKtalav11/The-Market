@@ -57,10 +57,9 @@ public class ProxyToTest implements BridgeToTests {
             return new Response<>(null, "Not Implemented yet");
     }
 
-    @Override
-    public Response<String> register(String userID, UserDTO user, String password) {
+    public Response<String> register(String userID, String userName, String birthdate, String country, String city, String address, String name, String password) {
         if (realServiceAdaptor != null)
-            return realServiceAdaptor.register(userID, user, password);
+            return realServiceAdaptor.register(userID, userName, birthdate, country, city, address, name, password);
         else
             return new Response<>(null, "Not Implemented yet");
     }
@@ -82,9 +81,9 @@ public class ProxyToTest implements BridgeToTests {
     }
 
     @Override
-    public Response<String> addProductToStore(String userId, String storeID, ProductDTO product) {
+    public Response<String> addProductToStore(String userId, String storeID, String productName, int price, int quantity, String description, String categoryStr) {
         if (realServiceAdaptor != null)
-            return realServiceAdaptor.addProductToStore(userId, storeID, product);
+            return realServiceAdaptor.addProductToStore(userId, storeID, productName, price, quantity, description, categoryStr);
         else
             return new Response<>(null, "Not Implemented yet");
     }
@@ -98,9 +97,9 @@ public class ProxyToTest implements BridgeToTests {
     }
 
     @Override
-    public Response<String> updateProductInStore(String userId, String storeID, ProductDTO product) {
+    public Response<String> updateProductInStore(String userId, String storeID, String productName, int price, int quantity, String description, String categoryStr) {
         if (realServiceAdaptor != null)
-            return realServiceAdaptor.updateProductInStore(userId, storeID, product);
+            return realServiceAdaptor.updateProductInStore(userId, storeID, productName, price, quantity, description, categoryStr);
         else
             return new Response<>(null, "Not Implemented yet");
     }

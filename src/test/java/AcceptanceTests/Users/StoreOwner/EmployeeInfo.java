@@ -18,14 +18,14 @@ public class EmployeeInfo {
 
 
     @BeforeAll
-    public void setUp() {
+    public static void setUp() {
         impl = new ProxyToTest("Real");
         //Do what you need
         impl.enterMarketSystem();
-        impl.register("0", new UserDTO("saar", "10/04/84", "Israel", "Jerusalem", "Yehuda halevi 18", "saar"), "fadida");
-        impl.register("1", new UserDTO("tom", "27/11/85", "Israel", "Jerusalem", "Yehuda halevi 17", "tom"), "shlaifer");
-        impl.register("2", new UserDTO("jalal", "08/02/82", "Israel", "Jerusalem", "Yehuda halevi 13", "jalal"), "kasoom");
-        impl.register("3", new UserDTO("ovad", "08/02/82", "Israel", "Jerusalem", "Yehuda halevi 11", "ovad"), "havia");
+        impl.register("0","saar", "10/04/84", "Israel", "Jerusalem", "Yehuda halevi 18", "saar", "fadida");
+        impl.register("1","tom", "27/11/85", "Israel", "Jerusalem", "Yehuda halevi 17", "tom", "shlaifer");
+        impl.register("2","jalal", "08/02/82", "Israel", "Jerusalem", "Yehuda halevi 13", "jalal", "kasoom");
+        impl.register("3","ovad", "08/02/82", "Israel", "Jerusalem", "Yehuda halevi 11", "ovad", "havia");
         impl.login("0", "saar", "fadida");
 
     }

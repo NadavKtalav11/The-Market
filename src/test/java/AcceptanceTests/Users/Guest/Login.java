@@ -28,9 +28,9 @@ public class Login {
         userID1 = impl.enterMarketSystem().getData();
         userID2 = impl.enterMarketSystem().getData();
         userID3 = impl.enterMarketSystem().getData();
-        impl.register(userID1, new UserDTO("user1","12/12/00","Israel", "BeerSheva", "bialik","noa"), "0VnDExW3T9");
-        impl.register(userID2, new UserDTO("user2", "12/12/00", "Israel", "BeerSheva", "bialik","noa"), "QtzxeceVM0");
-        impl.register(userID3, new UserDTO("user3", "12/12/00", "Israel", "BeerSheva", "bialik","noa"), "KjUJqvJBls");
+        impl.register(userID1, "user1","12/12/00","Israel", "BeerSheva", "bialik","noa", "0VnDExW3T9");
+        impl.register(userID2, "user2", "12/12/00", "Israel", "BeerSheva", "bialik","noa", "QtzxeceVM0");
+        impl.register(userID3, "user3", "12/12/00", "Israel", "BeerSheva", "bialik","noa", "KjUJqvJBls");
     }
 
     @AfterEach

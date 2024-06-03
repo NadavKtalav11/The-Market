@@ -20,17 +20,17 @@ public interface BridgeToTests {
 
     Response<String> enterMarketSystem();
 
-    Response<String> register(String userID, UserDTO user, String password);
+    Response<String> register(String userID, String userName, String birthdate, String country, String city, String address, String name, String password);
 
     Response<String> login(String userID, String username, String password);
 
     Response<String> logout(String userId);
 
-    Response<String> addProductToStore(String userId, String storeID, ProductDTO product);
+    Response<String> addProductToStore(String userId, String storeID, String productName, int price, int quantity, String description, String categoryStr);
 
     Response<String> removeProductFromStore(String userId, String storeID, String productName);
 
-    Response<String> updateProductInStore(String userId, String storeID, ProductDTO product);
+    Response<String> updateProductInStore(String userId, String storeID, String productName, int price, int quantity, String description, String categoryStr);
 
     Response<String> appointStoreOwner(String nominatorUserId, String nominatedUsername, String storeID);
 

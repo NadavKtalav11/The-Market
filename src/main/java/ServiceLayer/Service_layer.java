@@ -29,11 +29,11 @@ public class Service_layer {
 
 
 
-    public Response<String> init(UserDTO user, String password, int licensedDealerNumber,
+    public Response<String> init(String userName, String birthday, String country, String city, String address, String name, String password, int licensedDealerNumber,
                                  String paymentServiceName, String url, int licensedDealerNumber1, String supplyServiceName, HashSet<String> countries, HashSet<String> cities){
         logger.info("Starting the initialization of the system.");
         try {
-            market.init(user, password, licensedDealerNumber, paymentServiceName,
+            market.init(new UserDTO(userName, birthday, country, city, address, name), password, licensedDealerNumber, paymentServiceName,
                     url, licensedDealerNumber1, supplyServiceName, countries, cities);
             logger.info("System initialized successfully.");
             return new Response<>("Initialization successful", "System initialized successfully.");
@@ -109,10 +109,10 @@ public class Service_layer {
     }
 
 
-//    public Response<String> payWithExternalPaymentService(int price, PaymentDTO payment, String userID) {
+//    public Response<String> payWithExternalPaymentService(int price, String holderId, String creditCardNumber, int cvv, int month, int year, String userID) {
 //        logger.info("Reaching for the payment service in order to complete the purchase.");
 //        try {
-//            market.payWithExternalPaymentService( price, payment,  userID, market.getPurchaseList(userID) );
+//            market.payWithExternalPaymentService(price, new PaymentDTO(holderId, creditCardNumber, cvv, month, year),  userID, market.getPurchaseList(userID) );
 //            return new Response<>("Successful payment", "payment went successfully.");
 //
 //        } catch (Exception e) {
@@ -154,10 +154,10 @@ public class Service_layer {
         }
     }
 
-    public Response<String> register(String userID, UserDTO user, String password) {
+    public Response<String> register(String userID, String userName, String birthday, String country, String city, String address, String name, String password) {
         logger.info("Registration");
         try {
-            market.register(userID, user, password);
+            market.register(userID, new UserDTO(userName, birthday, country, city, address, name), password);
             return new Response<>("Registration successful", "User registered successfully.");
         } catch (Exception e) {
             logger.error("Error occurred during registration {}", e.getMessage());
@@ -188,11 +188,11 @@ public class Service_layer {
         }
     }
 
-    public Response<String> addProductToStore(String userId, String storeID, ProductDTO product) {
+    public Response<String> addProductToStore(String userId, String storeID, String productName, int price, int quantity, String description, String categoryStr) {
         logger.info("Adding product to store");
 
         try {
-            market.addProductToStore(userId, storeID, product);
+            market.addProductToStore(userId, storeID, new ProductDTO(productName, price, quantity, description, categoryStr));
             return new Response<>("Product added successfully", "Product added to store successfully.");
         } catch (Exception e) {
             logger.error("Error occurred during adding product to store", e.getMessage(), e);
@@ -214,11 +214,11 @@ public class Service_layer {
         }
     }
 
-    public Response<String> updateProductInStore(String userId, String storeID, ProductDTO product) {
+    public Response<String> updateProductInStore(String userId, String storeID, String productName, int price, int quantity, String description, String categoryStr) {
 
         logger.info("Updating product in store");
         try {
-            market.updateProductInStore(userId, storeID, product);
+            market.updateProductInStore(userId, storeID, new ProductDTO(productName, price, quantity, description, categoryStr));
             return new Response<>("Product updated successfully", "Product updated in store successfully.");
         } catch (Exception e) {
 
