@@ -95,6 +95,9 @@ package Util;
         categoryNotExist{
             public String toString(){ return "The product category you entered is invalid"; }
         },
+        noInventoryPermissions{
+            public String toString(){ return "User has no inventory permissions"; }
+        },
         notSystemManager{
             public String toString(){ return "The user is not a system manager"; }
         }

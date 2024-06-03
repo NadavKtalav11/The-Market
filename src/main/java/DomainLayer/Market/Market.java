@@ -327,13 +327,13 @@ public class Market {
                                     roleFacade.managerHasInventoryPermissions(memberId, storeId))) {
                         storeFacade.addProductToStore(storeId, product);
                     } else {
-                        throw new Exception("User has no inventory permissions");
+                        throw new Exception(ExceptionsEnum.noInventoryPermissions.toString());
                     }
                 } else {
                     throw new Exception(ExceptionsEnum.storeNotExist.toString());
                 }
             } else {
-                throw new Exception("User has no inventory permissions");
+                throw new Exception(ExceptionsEnum.noInventoryPermissions.toString());
             }
         } else {
             throw new Exception(ExceptionsEnum.userNotExist.toString());
