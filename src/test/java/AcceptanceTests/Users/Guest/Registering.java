@@ -22,9 +22,9 @@ public class Registering {
     @BeforeAll
     public static void setUp() {
         impl = new ProxyToTest("Real");
-        userID1 = impl.enterMarketSystem().getResult();
-        userID2 = impl.enterMarketSystem().getResult();
-        userID3 = impl.enterMarketSystem().getResult();
+        userID1 = impl.enterMarketSystem().getData();
+        userID2 = impl.enterMarketSystem().getData();
+        userID3 = impl.enterMarketSystem().getData();
     }
 
     @Test
@@ -39,7 +39,7 @@ public class Registering {
         impl.register(userID1, "existingUser", "12/12/00", "Israel", "BeerSheva", "bialik", "noa", "password123");
         Response<String> response0 = impl.register(userID2, "existingUser", "12/12/00", "Israel", "BeerSheva", "bialik", "noa", "differentPassword");
         assertFalse(response0.isSuccess());
-        assertEquals(ExceptionsEnum.userAlreadyLoggedIn.toString(), response0.getDescription());
+        assertEquals(ExceptionsEnum.usernameAlreadyExist.toString(), response0.getDescription());
     }
 
     @Test

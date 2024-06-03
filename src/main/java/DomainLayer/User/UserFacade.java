@@ -191,17 +191,17 @@ public class UserFacade {
     private void validateRegistrationDetails(UserDTO user, String password) throws Exception {
         if (user.getUserName() == null || password == null || user.getBirthday() == null || user.getCountry() ==null || user.getCity() == null ||
                 user.getAddress() == null || user.getName() == null) {
-            throw new Exception("All fields are required.");
+            throw new Exception(ExceptionsEnum.emptyField.toString());
         }
         else if (user.getUserName().equals("") || password.equals("") || user.getBirthday().equals("") || user.getCountry().equals("") || user.getCity().equals("") ||
                 user.getAddress().equals("") || user.getName().equals("")) {
-            throw new Exception("All fields are required.");
+            throw new Exception(ExceptionsEnum.emptyField.toString());
         }
         //checking if username is already exist
 
         Member mem = members.getByUserName(user.getUserName());
         if (mem!=null) {
-            throw new Exception("Username already exists. Please choose a different username.");
+            throw new Exception(ExceptionsEnum.usernameAlreadyExist.toString());
 
         }
         //todo check validation of the password. - do encription passwords only.
