@@ -71,6 +71,12 @@ package Util;
             public String toString() {
                 return "Member is already owner of this store";
             }
+        },
+        usernameOrPasswordIncorrect{
+            public String toString(){ return "username or password is incorrect"; }
+        },
+        userAlreadyLoggedIn{
+            public String toString(){ return "user is already logged in"; }
         }
     }
 

@@ -21,25 +21,25 @@ public class ProxyToTest implements BridgeToTests {
 
 
     @Override
-    public Response<String> init(String userName, String password,String birthday, String country, String city, String address, String name, int licensedDealerNumber,
+    public Response<String> init(UserDTO user, String password, int licensedDealerNumber,
                                  String paymentServiceName, String url, int licensedDealerNumber1, String supplyServiceName, HashSet<String> countries, HashSet<String> cities)
     {
         if (realServiceAdaptor != null)
-            return realServiceAdaptor.init(userName, password, birthday, country, city, address, name,licensedDealerNumber, paymentServiceName, url, licensedDealerNumber1, supplyServiceName, countries, cities);
+            return realServiceAdaptor.init(user, password,licensedDealerNumber, paymentServiceName, url, licensedDealerNumber1, supplyServiceName, countries, cities);
 
         else
             return new Response<>(null, "Not Implemented yet");
     }
 
-    @Override
-    public Response<String> payWithExternalPaymentService(int price,String cardNumber, int cvv, int month, int year, String holderID, String userID)
-    {
-        if (realServiceAdaptor != null)
-            return realServiceAdaptor.payWithExternalPaymentService(price, cardNumber, cvv, month, year, holderID, userID);
-
-        else
-            return new Response<>(null, "Not Implemented yet");
-    }
+//    @Override
+//    public Response<String> payWithExternalPaymentService(int price,String cardNumber, int cvv, int month, int year, String holderID, String userID)
+//    {
+//        if (realServiceAdaptor != null)
+//            return realServiceAdaptor.payWithExternalPaymentService(price, cardNumber, cvv, month, year, holderID, userID);
+//
+//        else
+//            return new Response<>(null, "Not Implemented yet");
+//    }
 
     @Override
     public Response<String> exitMarketSystem(String userID) {
@@ -144,13 +144,13 @@ public class ProxyToTest implements BridgeToTests {
             return new Response<>(null, "Not Implemented yet");
     }
 
-    @Override
-    public Response<Integer> checkingCartValidationBeforePurchase(String user_ID, String country, String city, String address) {
-        if (realServiceAdaptor != null)
-            return realServiceAdaptor.checkingCartValidationBeforePurchase(user_ID, country,city,address);
-        else
-            return new Response<>(null, "Not Implemented yet");
-    }
+//    @Override
+//    public Response<Integer> checkingCartValidationBeforePurchase(String user_ID, String country, String city, String address) {
+//        if (realServiceAdaptor != null)
+//            return realServiceAdaptor.checkingCartValidationBeforePurchase(user_ID, country,city,address);
+//        else
+//            return new Response<>(null, "Not Implemented yet");
+//    }
 
     @Override
     public Response<List<String>> getInformationAboutStores(String user_ID) {

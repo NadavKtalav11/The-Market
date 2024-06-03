@@ -26,7 +26,7 @@ public class MarketPurchaseHistory {
 
         countries.add("Israel");
         cities.add("Bash");
-        impl.init("manager1", "imTHeManager", "12/12/12", "Israel", "Bash", "Metsada", "Mike", 0,"paypal","saddsa.com",2,"DHL", countries, cities);
+        impl.init(new UserDTO("manager1" ,"12/12/12", "Israel", "Bash", "Metsada", "Mike"), "imTHeManager", 0,"paypal","saddsa.com",2,"DHL", countries, cities);
         impl.enterMarketSystem();
         impl.register("1","user1", "12/12/00", "Israel", "Beer Sheva", "Mesada", "Toy", "fSijsd281");
         impl.login("1", "user1", "fSijsd281");
@@ -36,7 +36,8 @@ public class MarketPurchaseHistory {
         impl.addProductToStore("0", "0","Yogurt", 4, 12, "Yogurt 20%", "food");
         impl.addProductToStore("0", "0","Shoes", 4, 12, "Nike Shoes", "clothing");
         impl.addProductToBasket("Milk", 2, "0", "0");
-        impl.payWithExternalPaymentService(100, "12345", 123, 12, 2000, "389082132", "1");
+        //todo think if we need
+        //impl.payWithExternalPaymentService(100, "12345", 123, 12, 2000, "389082132", "1");
     }
 
     @Test

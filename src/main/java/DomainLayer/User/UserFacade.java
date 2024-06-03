@@ -114,8 +114,6 @@ public class UserFacade {
         String userId;
         userId = getCurrentUserID();
         userRepository.add(userId, new User(userId));
-
-
         return userId;
     }
 
@@ -147,12 +145,12 @@ public class UserFacade {
     }
 
 
-    public String register(String userID, UserDTO user, String password) throws Exception {
+    public String register(String userID, UserDTO user,String password) throws Exception {
         if(userRepository.contain(userID)&& getUserByID(userID).isMember()) {
             throw new Exception("member cannot register");
         }
         else {
-            validateRegistrationDetails(user,password);
+            validateRegistrationDetails(user, password);
             String memberId = getCurrentMemberID();
 
 
@@ -201,18 +199,17 @@ public class UserFacade {
     public void Login(String userID, String username, String password) throws Exception {
         Member loginMember = getMemberByUsername(username);
         if (loginMember == null){
-            throw new Exception("Username or password is incorrect");
+            throw new Exception(ExceptionsEnum.usernameOrPasswordIncorrect.toString());
         }
         /*else if (!loginMember.getPassword().equals(password)){
             throw new Exception("Username or password is incorrect");
         }*/
         loginMember.validatePassword(password);
         getUserByID(userID).Login(loginMember);
-
     }
 
-    public Member getMemberByUsername(String userName) throws Exception {
-        return getMemberByUsername(userName);
+    public Member getMemberByUsername(String userName) {
+        return members.getByUserName(userName);
     }
 
     public List<String> getCartStoresByUser(String user_ID)

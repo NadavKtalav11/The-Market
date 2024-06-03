@@ -2,6 +2,7 @@ package DomainLayer.User;
 import DomainLayer.Store.Store;
 import DomainLayer.Store.StoreFacade;
 import DomainLayer.Role.RoleFacade;
+import Util.ExceptionsEnum;
 import Util.UserDTO;
 
 import java.util.HashMap;
@@ -50,15 +51,15 @@ public class Member extends State{
 
     @Override
     public void Login() throws Exception {
-        throw new Exception("The user is already logged in");
+        throw new Exception(ExceptionsEnum.userAlreadyLoggedIn.toString());
     }
 
     public void validatePassword(String password){
         if (!password.equals(this.password)){
-            throw new IllegalArgumentException("Incorrect password or username please try again.");
+            throw new IllegalArgumentException(ExceptionsEnum.usernameOrPasswordIncorrect.toString());
         }
-
     }
+
     @Override
     public String getUsername(){
         return username;

@@ -10,10 +10,10 @@ import java.util.Map;
 
 public interface BridgeToTests {
 
-    Response<String> init(String userName, String password,String birthday, String country, String city, String address, String name, int licensedDealerNumber,
+    Response<String> init(UserDTO user, String password, int licensedDealerNumber,
                           String paymentServiceName, String url, int licensedDealerNumber1, String supplyServiceName, HashSet<String> countries, HashSet<String> cities);
 
-    Response<String> payWithExternalPaymentService(int price,String cardNumber, int cvv, int month, int year, String holderID, String userID);
+//    Response<String> payWithExternalPaymentService(int price,String cardNumber, int cvv, int month, int year, String holderID, String userID);
 
 
     Response<String> exitMarketSystem(String userID);
@@ -44,7 +44,7 @@ public interface BridgeToTests {
 
     Response<List<String>> generalProductSearch(String userId, String productName, String categoryStr, List<String> keywords);
 
-    Response<Integer> checkingCartValidationBeforePurchase(String user_ID, String country, String city, String address);
+//    Response<Integer> checkingCartValidationBeforePurchase(String user_ID, String country, String city, String address);
 
     Response<List<String>> getInformationAboutStores(String user_ID);
 

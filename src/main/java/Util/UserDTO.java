@@ -17,6 +17,15 @@ public class UserDTO {
         this.name = name;
     }
 
+    public UserDTO(String userName){
+        this.userName = userName;
+        this.birthday = null;
+        this.country = null;
+        this.city = null;
+        this.address = null;
+        this.name = null;
+    }
+
     public String getUserName() {
         return userName;
     }
