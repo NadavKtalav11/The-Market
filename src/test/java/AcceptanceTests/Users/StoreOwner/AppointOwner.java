@@ -2,12 +2,13 @@ package AcceptanceTests.Users.StoreOwner;
 
 import AcceptanceTests.BridgeToTests;
 import AcceptanceTests.ProxyToTest;
+import ServiceLayer.Response;
+import Util.ExceptionsEnum;
 import Util.UserDTO;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class AppointOwner {
     private static BridgeToTests impl;
@@ -31,6 +32,8 @@ public class AppointOwner {
 
     @Test
     public void alreadyStoreOwnerTest() {
-        assertFalse(impl.appointStoreOwner("0", "tom","0").isSuccess());
+        Response<String> response = impl.appointStoreOwner("0", "tom","0");
+        assertFalse(response.isSuccess());
+        assertEquals(ExceptionsEnum.memberIsAlreadyStoreOwner.toString(), response.getDescription());
     }
 }

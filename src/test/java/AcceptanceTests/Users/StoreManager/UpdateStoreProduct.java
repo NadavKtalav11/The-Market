@@ -38,24 +38,26 @@ public class UpdateStoreProduct {
 
     @Test
     public void productNotExistTest() {
-        assertFalse(impl.updateProductInStore(tomUserID,"0","heels", 1, 41,
-                "black", "shoes").isSuccess());
+        Response<String> response = impl.updateProductInStore(tomUserID,"0","heels", 1, 41,
+                "black", "shoes");
+        assertFalse(response.isSuccess());
+        assertEquals(ExceptionsEnum.productNotExistInStore.toString(), response.getDescription());
     }
 
     @Test
     public void negQuantityTest() {
-        assertFalse(impl.updateProductInStore(tomUserID,"0","weddingDress", 11, -4,
-                "pink", "clothes").isSuccess());
+        Response<String> response = impl.updateProductInStore(tomUserID,"0","weddingDress", 11, -4,
+                "pink", "clothes");
+        assertFalse(response.isSuccess());
+        assertEquals(ExceptionsEnum.productQuantityIsNegative.toString(), response.getDescription());
     }
 
     @Test
     public void noPermissionTest() {
         impl.updateStoreManagerPermissions("0","tom","0",false,false);
-        Exception exception = assertThrows(Exception.class, () -> {
-            Response<String> response = impl.updateProductInStore(tomUserID,"0","heels", 14, 46,
-                    "black", "shoes");
-            assertFalse(response.isSuccess());
-        });
-        assertEquals(ExceptionsEnum.noInventoryPermissions.toString(), exception.getMessage());
+        Response<String> response = impl.updateProductInStore(tomUserID,"0","heels", 14, 46,
+                "black", "shoes");
+        assertFalse(response.isSuccess());
+        assertEquals(ExceptionsEnum.noInventoryPermissions.toString(), response.getDescription());
     }
 }

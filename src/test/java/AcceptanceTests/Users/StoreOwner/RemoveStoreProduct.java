@@ -2,13 +2,14 @@ package AcceptanceTests.Users.StoreOwner;
 
 import AcceptanceTests.BridgeToTests;
 import AcceptanceTests.ProxyToTest;
+import ServiceLayer.Response;
+import Util.ExceptionsEnum;
 import Util.ProductDTO;
 import Util.UserDTO;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class RemoveStoreProduct {
     private static BridgeToTests impl;
@@ -30,6 +31,8 @@ public class RemoveStoreProduct {
 
     @Test
     public void productNotExistTest() {
-        assertFalse(impl.removeProductFromStore("0", "0","skirt").isSuccess());
+        Response<String> response = impl.removeProductFromStore("0", "0","skirt");
+        assertFalse(response.isSuccess());
+        assertEquals(ExceptionsEnum.productNotExistInStore.toString(), response.getDescription());
     }
 }

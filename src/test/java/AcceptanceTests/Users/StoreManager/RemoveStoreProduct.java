@@ -36,16 +36,16 @@ public class RemoveStoreProduct {
 
     @Test
     public void productNotExistTest() {
-        assertFalse(impl.removeProductFromStore("1","0","skirt").isSuccess());
+        Response<String> response = impl.removeProductFromStore("1","0","skirt");
+        assertFalse(response.isSuccess());
+        assertEquals(ExceptionsEnum.productNotExistInStore.toString(), response.getDescription());
     }
 
     @Test
     public void noPermissionTest() {
         impl.updateStoreManagerPermissions("0","tom","0",false,false);
-        Exception exception = assertThrows(Exception.class, () -> {
-            Response<String> response = impl.removeProductFromStore("1","0","weddingDress");
-            assertFalse(response.isSuccess());
-        });
-        assertEquals(ExceptionsEnum.noInventoryPermissions.toString(), exception.getMessage());
+        Response<String> response = impl.removeProductFromStore("1","0","weddingDress");
+        assertFalse(response.isSuccess());
+        assertEquals(ExceptionsEnum.noInventoryPermissions.toString(), response.getDescription());
     }
 }

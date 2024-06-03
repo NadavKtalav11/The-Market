@@ -2,13 +2,14 @@ package AcceptanceTests.Users.StoreOwner;
 
 import AcceptanceTests.BridgeToTests;
 import AcceptanceTests.ProxyToTest;
+import ServiceLayer.Response;
+import Util.ExceptionsEnum;
 import Util.ProductDTO;
 import Util.UserDTO;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class UpdateStoreProduct {
     private static BridgeToTests impl;
@@ -32,13 +33,17 @@ public class UpdateStoreProduct {
 
     @Test
     public void productNotExistTest() {
-        assertFalse(impl.updateProductInStore(ssarUserID,"0","heels", 1, 41,
-                "black", "shoes").isSuccess());
+        Response<String> response = impl.updateProductInStore(ssarUserID,"0","heels", 1, 41,
+                "black", "shoes");
+        assertFalse(response.isSuccess());
+        assertEquals(ExceptionsEnum.productNotExistInStore.toString(), response.getDescription());
     }
 
     @Test
     public void negQuantityTest() {
-        assertFalse(impl.updateProductInStore(ssarUserID,"0","weddingDress", 11, -4,
-                "pink", "clothes").isSuccess());
+        Response<String> response = impl.updateProductInStore(ssarUserID,"0","weddingDress", 11, -4,
+                "pink", "clothes");
+        assertFalse(response.isSuccess());
+        assertEquals(ExceptionsEnum.productQuantityIsNegative.toString(), response.getDescription());
     }
 }
