@@ -105,6 +105,7 @@ public class UserFacade {
         }
     }
 
+
     public String getMemberIdByUserId(String userID) throws Exception {
         if(isMember(userID)){
             String username = getUserByID(userID).getState().getUsername();
