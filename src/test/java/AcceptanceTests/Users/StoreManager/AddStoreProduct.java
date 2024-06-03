@@ -19,9 +19,9 @@ public class AddStoreProduct {
     @BeforeAll
     public static void setUp() {
         impl = new ProxyToTest("Real");
-        saarUserID = impl.enterMarketSystem().getResult();
+        saarUserID = impl.enterMarketSystem().getData();
         impl.register(saarUserID,"saar",  "10/04/84", "Israel", "Jerusalem", "Yehuda halevi 18", "saar", "fadida");
-        tomUserID = impl.enterMarketSystem().getResult();
+        tomUserID = impl.enterMarketSystem().getData();
         impl.register(tomUserID,"tom",  "27/11/85", "Israel", "Jerusalem", "Yehuda halevi 17", "tom", "shlaifer");
         impl.login(saarUserID, "saar", "fadida");
         impl.login(tomUserID, "tom", "shlaifer");

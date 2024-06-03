@@ -93,17 +93,19 @@ public class UserFacade {
     }*/
 
     public boolean isMember(String userId){
-        if(!userRepository.contain(userId)){
+        if(getUserByID(userId) == null){
             return false;
         }
         return getUserByID(userId).isMember();
     }
+
 
     public void errorIfUserNotMember(String userId) throws Exception {
         if(!isMember(userId)){
             throw new Exception(ExceptionsEnum.userIsNotMember.toString());
         }
     }
+
 
     public String getMemberIdByUserId(String userID) throws Exception {
         if(isMember(userID)){
