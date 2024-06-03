@@ -199,7 +199,7 @@ public class UserFacade {
     public void Login(String userID, String username, String password) throws Exception {
         Member loginMember = getMemberByUsername(username);
         if (loginMember == null){
-            throw new Exception("Username or password is incorrect");
+            throw new Exception(ExceptionsEnum.usernameOrPasswordIncorrect.toString());
         }
         /*else if (!loginMember.getPassword().equals(password)){
             throw new Exception("Username or password is incorrect");

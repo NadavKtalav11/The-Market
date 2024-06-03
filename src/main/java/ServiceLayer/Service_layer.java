@@ -135,7 +135,7 @@ public class Service_layer {
             market.exitMarketSystem(userID);
             return new Response<>("Exit successful", "User exited the market system successfully.");
         } catch (Exception e) {
-            logger.error("Error occurred during exiting market system", e.getMessage(), e);
+            logger.error("Error occurred during exiting market system {}", e.getMessage());
             return new Response<>(null, "Exit failed: " + e.getMessage());
         }
     }
@@ -145,11 +145,11 @@ public class Service_layer {
         logger.info("Entering market system");
 
         try {
-            market.enterMarketSystem();
-            return new Response<>("Enter successful", "Entered the market system successfully.");
+            String userID = market.enterMarketSystem();
+            return new Response<>("Enter successful", "Entered the market system successfully.", userID);
         } catch (Exception e) {
-            logger.error("Error occurred during entering market system", e.getMessage(), e);
-            return new Response<>(null, "Enter failed: " + e.getMessage());
+            logger.error("Error occurred during entering market system {}", e.getMessage());
+            return new Response<>(null, "Enter failed: " + e.getMessage() , "");
 
         }
     }
@@ -160,7 +160,7 @@ public class Service_layer {
             market.register(userID, user, password);
             return new Response<>("Registration successful", "User registered successfully.");
         } catch (Exception e) {
-            logger.error("Error occurred during registration", e.getMessage(), e);
+            logger.error("Error occurred during registration {}", e.getMessage());
             return new Response<>(null, "Registration failed: " + e.getMessage());
         }
     }
@@ -172,8 +172,8 @@ public class Service_layer {
             market.Login(userID, username, password);
             return new Response<>("Login successful", "User logged in successfully.");
         } catch (Exception e) {
-            logger.error("Error occurred during log in", e.getMessage(), e);
-            return new Response<>(null, "Login failed: " + e.getMessage());
+            logger.error("Error occurred during log in - {}", e.getMessage());
+            return new Response<>(null, "Login failed: " + e.getMessage(), e.getMessage());
         }
     }
 
