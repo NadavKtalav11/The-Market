@@ -72,6 +72,12 @@ public class UserFacade {
         return userRepository.get(userID);
     }
 
+    public void errorIfUserNotExist(String userID) throws Exception {
+        if (getUserByID(userID) == null){
+            throw new Exception(ExceptionsEnum.userNotExist.toString());
+        }
+    }
+
     public void isUserLoggedInError(String userID){
         if(!isMember(userID))
             throw new IllegalArgumentException(ExceptionsEnum.userIsNotMember.toString());
@@ -91,6 +97,12 @@ public class UserFacade {
             return false;
         }
         return getUserByID(userId).isMember();
+    }
+
+    public void errorIfUserNotMember(String userId) throws Exception {
+        if(!isMember(userId)){
+            throw new Exception(ExceptionsEnum.userIsNotMember.toString());
+        }
     }
 
     public String getMemberIdByUserId(String userID) throws Exception {
@@ -211,6 +223,12 @@ public class UserFacade {
 
     public Member getMemberByUsername(String userName) {
         return members.getByUserName(userName);
+    }
+
+    public void errorIfUsernameNotFound(String userName) throws Exception {
+        if(getMemberByUsername(userName) == null){
+            throw new Exception(ExceptionsEnum.usernameNotFound.toString());
+        }
     }
 
     public List<String> getCartStoresByUser(String user_ID)

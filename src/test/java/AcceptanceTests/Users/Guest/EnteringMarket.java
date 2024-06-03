@@ -12,7 +12,6 @@ public class EnteringMarket {
 
     private static BridgeToTests impl;
 
-
     @BeforeAll
     public static void setUp() {
         impl = new ProxyToTest("Real");
@@ -24,6 +23,5 @@ public class EnteringMarket {
         assertTrue(impl.enterMarketSystem().isSuccess());
         assertTrue(impl.enterMarketSystem().isSuccess());
         assertTrue(impl.enterMarketSystem().isSuccess());
-
     }
 }

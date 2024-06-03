@@ -11,7 +11,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 public class ExitingMarket {
     private static BridgeToTests impl;
 
-
     @BeforeAll
     public static void setUp() {
         impl = new ProxyToTest("Real");
