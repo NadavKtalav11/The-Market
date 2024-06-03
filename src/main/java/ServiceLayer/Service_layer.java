@@ -28,7 +28,6 @@ public class Service_layer {
     }
 
 
-
     public Response<String> init(String userName, String birthday, String country, String city, String address, String name, String password, int licensedDealerNumber,
                                  String paymentServiceName, String url, int licensedDealerNumber1, String supplyServiceName, HashSet<String> countries, HashSet<String> cities){
         logger.info("Starting the initialization of the system.");
