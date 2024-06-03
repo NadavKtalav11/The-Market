@@ -14,11 +14,11 @@ import static org.mockito.Mockito.*;
 public class UserFacadeTest {
     @Mock
     private User mockUser;
-    @Mock
     private Member mockMember;
+    private UserRepository mockUserRepository;  // Mocking the UserRepository
     @InjectMocks
     private UserFacade userFacade;  // Ensure this is injected with mocks
-
+    private MemberRepository mockMemberRepository;  // Mocking the MemberRepository
     private final String userId = "1";
     private final String storeId = "1";
     private final String productName = "Product1";
@@ -35,6 +35,9 @@ public class UserFacadeTest {
 
         // Reset the UserFacade singleton for each test
         userFacade = UserFacade.getInstance();
+        mockMemberRepository = mock(MemberRepository.class);
+        mockUserRepository = mock(UserRepository.class);
+        mockMember = mock(Member.class);
         userFacade.userRepository.clear();
         userFacade.members.clear();
 
@@ -54,13 +57,11 @@ public class UserFacadeTest {
         assertEquals(mockUser, userFacade.getUserByID("1"));
     }
 
-    //todo change this test
-//    @Test
-//    public void testAddUser() {
-//        String userId = userFacade.addUser();
-//        assertNotNull(userFacade.getUserByID(userId));
-//        assertEquals(userId, userFacade.getCurrentUserID() - "1");
-//    }
+    @Test
+    public void testAddUser() {
+        String userId = userFacade.addUser();
+        assertNotNull(userFacade.getUserByID(userId));
+    }
 
     @Test
     public void testRegister() throws Exception {
@@ -71,22 +72,6 @@ public class UserFacadeTest {
         assertNotNull(member);
         assertEquals("testUser", member.getUsername());
     }
-
-    @Test
-    public void testLogin() {
-        //already checked in userTest
-    }
-
-//todo change this test
-
-//    @Test
-//    public void testGetUsernameByUserID() {
-//        when(mockUser.getState()).thenReturn(mockMember);
-//        when(mockMember.getMemberID()).thenReturn(userId);
-//
-//        assertEquals(userId, userFacade.getUsernameByUserID(userId));
-//        verify(mockMember).getMemberID();
-//    }
 
     @Test
     public void testAddItemsToBasket() {
@@ -122,37 +107,4 @@ public class UserFacadeTest {
         userFacade.removeItemFromUserCart(productName, storeId, userId);
         verify(mockUser).removeItemFromUserCart(productName, storeId);
     }
-
-//    @Test
-//    public void testRegister() throws Exception {
-//        String username = "testUser";
-//        String password = "testPass";
-//        String birthday = "01-01-2000";
-//        String address = "123 Test St";
-//        String country = "testCountry";
-//        String city = "testCity";
-//        String name = "testName";
-//
-//        //doNothing().when(mockUser).register(anyString(), anyString(), anyString(), anyString());
-//
-//        userFacade.register(userId, username, password, birthday,country,city ,address, name);
-//        //verify(mockUser).register(username, password, birthday, address);
-//    }
-
-//    @Test
-//    public void testLogin() throws Exception {
-//        String username = "testUser";
-//        String password = "testPass";
-//
-//        Member member = new Member(userId, username, password, "1990-01-01", "Country", "City", "Address", "Name");
-//        doNothing().when(mockUser).Login(anyString(), anyString(), eq(member));
-//
-//        // Assuming a method to add a member for testing
-//        userFacade.allUsers.put(userId, mockUser);
-//        userFacade.allUsers.put(2, new User(2)); // Adding another user for proper username verification
-//        ((User) userFacade.allUsers.get(2)).setState(member);
-//
-//        userFacade.Login(userId, username, password);
-//        verify(mockUser).Login(username, password, member);
-//    }
 }

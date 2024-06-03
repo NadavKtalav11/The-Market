@@ -15,18 +15,12 @@ public class ExitingMarket {
     @BeforeAll
     public static void setUp() {
         impl = new ProxyToTest("Real");
-
-
-        //Do what you need
-
     }
 
     @Test
     public void successfulExitTest() {
         impl.enterMarketSystem();
         assertTrue(impl.exitMarketSystem("0").isSuccess());
-
-
     }
 
 }
