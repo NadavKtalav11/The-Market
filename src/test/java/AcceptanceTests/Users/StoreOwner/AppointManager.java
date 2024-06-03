@@ -2,13 +2,13 @@ package AcceptanceTests.Users.StoreOwner;
 
 import AcceptanceTests.BridgeToTests;
 import AcceptanceTests.ProxyToTest;
+import ServiceLayer.Response;
+import Util.ExceptionsEnum;
 import Util.UserDTO;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertArrayEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class AppointManager {
     private static BridgeToTests impl;
@@ -34,14 +34,16 @@ public class AppointManager {
     }
 
     @Test
-    public void alreadyStoreOwnerTest() {
-        assertFalse(impl.appointStoreManager("0", "tom",
-                "0", true, false).isSuccess());
-    }
+    public void alreadyHasRoleInThisStore() {
+        Response<String> response1 = impl.appointStoreManager("0", "tom",
+                "0", true, false);
+        assertFalse(response1.isSuccess());
+        assertEquals(ExceptionsEnum.memberAlreadyHasRoleInThisStore.toString(), response1.getDescription());
 
-    @Test
-    public void alreadyStoreManagerTest() {
-        assertFalse(impl.appointStoreManager("0", "jalal",
-                "0", true, false).isSuccess());
+        Response<String> response2 = impl.appointStoreManager("0", "jalal",
+                "0", true, false);
+        assertFalse(response2.isSuccess());
+        assertEquals(ExceptionsEnum.memberAlreadyHasRoleInThisStore.toString(), response2.getDescription());
+
     }
 }
