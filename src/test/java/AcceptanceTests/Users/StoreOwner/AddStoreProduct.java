@@ -19,8 +19,8 @@ public class AddStoreProduct {
     public static void setUp() {
         impl = new ProxyToTest("Real");
         saarUserID = impl.enterMarketSystem().getResult();
-        impl.register(saarUserID,"saar", "10/04/84", "Israel", "Jerusalem", "Yehuda halevi 18", "saar", "fadida");
-        impl.login(saarUserID, "saar", "fadida");
+        impl.register(saarUserID,"saar", "10/04/84", "Israel", "Jerusalem", "Yehuda halevi 18", "saar", "Fadidaa1");
+        impl.login(saarUserID, "saar", "Fadidaa1");
         impl.openStore(saarUserID, "alona", "shopping");
         impl.addProductToStore(saarUserID, "0","weddingDress", 10, 5, "pink", "clothes");
     }

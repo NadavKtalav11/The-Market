@@ -14,6 +14,7 @@ import Util.ProductDTO;
 import Util.UserDTO;
 
 import java.util.*;
+import java.util.regex.Pattern;
 
 
 public class Market {
@@ -97,7 +98,6 @@ public class Market {
         String encrypted = authenticationAndSecurityFacade.encodePassword(password);
         String firstUserID = enterMarketSystem();
         String systemMangerId = userFacade.register(firstUserID, user, encrypted);
-        //int systemMangerId = userFacade.registerSystemAdmin(userName, encrypted, birthday,country,city,address,name);
         synchronized (managersLock) {
             systemManagerIds.add(systemMangerId);
         }
@@ -252,10 +252,23 @@ public class Market {
         if (password == null || password.equals("")){
             throw new Exception(ExceptionsEnum.emptyField.toString());
         }
+        if (!checkPasswordValidation(password)){
+            throw new Exception("password must contains at least one digit, lowercase letter and uppercase letter.\n password must contains at least 8 characters");
+        }
         String encryptedPassword = authenticationAndSecurityFacade.encodePassword(password);
         String memberId = userFacade.register(userId, user, encryptedPassword);
         authenticationAndSecurityFacade.generateToken(memberId);
         return memberId;
+    }
+
+    public boolean checkPasswordValidation(String password){
+        String PASSWORD_PATTERN =
+                "^(?=.*[0-9])" +           // at least one digit
+                "(?=.*[a-z])" +            // at least one lowercase letter
+                "(?=.*[A-Z])" +            // at least one uppercase letter
+                ".{8,}$";
+        return Pattern.compile(PASSWORD_PATTERN).matcher(password).matches();
+
     }
 
     public void Login(String userId,String username, String password) throws Exception {

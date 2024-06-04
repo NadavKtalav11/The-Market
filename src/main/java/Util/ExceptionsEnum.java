@@ -130,6 +130,9 @@ package Util;
         emptyField{
             public String toString(){ return "Fields cannot be empty"; }
         },
+        passwordInvalid{
+            public String toString(){ return "password must contains at least one digit, lowercase letter and uppercase letter.\n password must contains at least 8 characters"; }
+        },
     }
 
 
