@@ -31,7 +31,7 @@ public class SystemStartup {
 
         String userName = "manager";
         String password = "password123";
-        String birthday = "1990-01-01";
+        String birthday = "01/01/1990";
         String country = "USA";
         String city = "New York";
         String address = "123 Main St";

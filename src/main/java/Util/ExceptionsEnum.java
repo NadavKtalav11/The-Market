@@ -133,6 +133,21 @@ package Util;
         passwordInvalid{
             public String toString(){ return "password must contains at least one digit, lowercase letter and uppercase letter.\n password must contains at least 8 characters"; }
         },
+        memberCannotRegister{
+            public String toString(){ return "member cannot register"; }
+        },
+        invalidFormatDate{
+            public String toString(){ return "Invalid date format."; }
+        },
+        futureDate{
+            public String toString(){ return "Birthday cannot be in the future."; }
+        },
+        invalidCountry{
+            public String toString(){ return "Country is not exist"; }
+        },
+        invalidCity{
+            public String toString(){ return "City is not exist"; }
+        },
     }
 
 
