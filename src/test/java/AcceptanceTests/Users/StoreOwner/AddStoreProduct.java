@@ -14,33 +14,34 @@ import static org.junit.jupiter.api.Assertions.*;
 public class AddStoreProduct {
     private static BridgeToTests impl;
     static String saarUserID;
+    static String storeId;
 
     @BeforeAll
     public static void setUp() {
         impl = new ProxyToTest("Real");
-        saarUserID = impl.enterMarketSystem().getResult();
+        saarUserID = impl.enterMarketSystem().getData();
         impl.register(saarUserID,"saar", "10/04/84", "Israel", "Jerusalem", "Yehuda halevi 18", "saar", "fadida");
         impl.login(saarUserID, "saar", "fadida");
-        impl.openStore(saarUserID, "alona", "shopping");
-        impl.addProductToStore(saarUserID, "0","weddingDress", 10, 5, "pink", "clothes");
+        storeId = impl.openStore(saarUserID, "alona", "shopping").getData();
+        impl.addProductToStore(saarUserID, storeId,"weddingDress", 10, 5, "pink", "clothes");
     }
 
     @Test
     public void successfulAdditionTest() {
-        assertTrue(impl.addProductToStore(saarUserID,"0","heels", 4, 2, "black", "shoes").isSuccess());
-        assertTrue(impl.addProductToStore(saarUserID,"0","skirt", 3, 6, "purple", "clothes").isSuccess());
+        assertTrue(impl.addProductToStore(saarUserID,storeId,"heels", 4, 2, "black", "shoes").isSuccess());
+        assertTrue(impl.addProductToStore(saarUserID,storeId,"skirt", 3, 6, "purple", "clothes").isSuccess());
     }
 
     @Test
     public void alreadyExistTest() {
-        Response<String> response = impl.addProductToStore(saarUserID,"0","weddingDress", 3, 6, "pink", "clothes");
+        Response<String> response = impl.addProductToStore(saarUserID,storeId,"weddingDress", 3, 6, "pink", "clothes");
         assertFalse(response.isSuccess());
         assertEquals(ExceptionsEnum.productAlreadyExistInStore.toString(), response.getDescription());
     }
 
     @Test
     public void negQuantityTest() {
-        Response<String> response = impl.addProductToStore(saarUserID,"0","shirt", 5, -4, "green", "clothes");
+        Response<String> response = impl.addProductToStore(saarUserID,storeId,"shirt", 5, -4, "green", "clothes");
         assertFalse(response.isSuccess());
         assertEquals(ExceptionsEnum.productQuantityIsNegative.toString(), response.getDescription());
     }
