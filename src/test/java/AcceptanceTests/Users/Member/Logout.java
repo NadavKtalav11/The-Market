@@ -11,21 +11,24 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class Logout {
     private static BridgeToTests impl;
+    static String  userId0;
+    static String  userId1;
+    static String  userId2;
 
 
     @BeforeAll
     public static void setUp() {
         impl = new ProxyToTest("Real");
         //Do what you need
-        impl.enterMarketSystem();
-        impl.register("0", "user1", "12/12/00","Israel", "BeerSheva", "bialik","noa", "0VnDExW3T9");
-        impl.enterMarketSystem();
+        userId0 = impl.enterMarketSystem().getData();
+        impl.register(userId0, "user1", "12/12/00","Israel", "BeerSheva", "bialik","noa", "0VnDExW3T9");
+        userId1 = impl.enterMarketSystem().getData();
 
-        impl.register("1", "user2", "12/12/00", "Israel", "BeerSheva", "bialik","noa", "QtzxeceVM0");
-        impl.enterMarketSystem();
-        impl.register("2", "user3",  "12/12/00", "Israel", "BeerSheva", "bialik","noa", "KjUJqvJBls");
+        impl.register(userId1, "user2", "12/12/00", "Israel", "BeerSheva", "bialik","noa", "QtzxeceVM0");
+        userId2 = impl.enterMarketSystem().getData();
+        impl.register(userId2, "user3",  "12/12/00", "Israel", "BeerSheva", "bialik","noa", "KjUJqvJBls");
 
-        impl.login("0", "user1", "0VnDExW3T9");
+        impl.login(userId0, "user1", "0VnDExW3T9");
 
 
     }
@@ -34,7 +37,7 @@ public class Logout {
 
     @Test
     public void successfulLogoutTest() {
-        assertTrue(impl.logout("0").isSuccess());
+        assertTrue(impl.logout(userId0).isSuccess());
 
 
     }
@@ -42,7 +45,7 @@ public class Logout {
     @Test
     public void alreadyLoggedOutTest() {
 
-        assertFalse(impl.logout("1").isSuccess());
+        assertFalse(impl.logout(userId1).isSuccess());
     }
 
 }

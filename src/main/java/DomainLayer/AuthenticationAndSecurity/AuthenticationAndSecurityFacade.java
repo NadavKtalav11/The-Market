@@ -23,8 +23,8 @@ public class AuthenticationAndSecurityFacade {
         return instance;
     }
 
-    public String generateToken(String userId){
-        return tokensService.generateToken(userId);
+    public void generateToken(String userId){
+        tokensService.generateToken(userId);
     }
 
     public String getToken(String userId){

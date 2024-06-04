@@ -247,14 +247,15 @@ public class Market {
         return userFacade.addUser();
     }
 
-    public void register( String userId, UserDTO user, String password) throws Exception {
+    public String register( String userId, UserDTO user, String password) throws Exception {
         //check password validation
         if (password == null || password.equals("")){
             throw new Exception(ExceptionsEnum.emptyField.toString());
         }
         String encryptedPassword = authenticationAndSecurityFacade.encodePassword(password);
-        userFacade.register(userId, user, encryptedPassword);
-        authenticationAndSecurityFacade.generateToken(userId);
+        String memberId = userFacade.register(userId, user, encryptedPassword);
+        authenticationAndSecurityFacade.generateToken(memberId);
+        return memberId;
     }
 
     public void Login(String userId,String username, String password) throws Exception {
@@ -293,7 +294,7 @@ public class Market {
     }
 
 
-    public void openStore(String user_ID, String name, String description)throws Exception {
+    public String openStore(String user_ID, String name, String description)throws Exception {
         if (userFacade.isMember(user_ID)) {
             String memberId = userFacade.getMemberIdByUserId(user_ID);
             boolean succeeded = authenticationAndSecurityFacade.validateToken(authenticationAndSecurityFacade.getToken(memberId));
@@ -310,6 +311,7 @@ public class Market {
         String store_ID = this.storeFacade.openStore(name, description);
         String member_ID = this.userFacade.getMemberIdByUserId(user_ID);
         this.roleFacade.createStoreOwner(member_ID, store_ID, true, "no nominator");
+        return store_ID;
     }
 
     public void addProductToStore(String userId, String storeId, ProductDTO product) throws Exception {
