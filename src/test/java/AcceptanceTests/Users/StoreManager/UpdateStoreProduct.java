@@ -18,7 +18,6 @@ public class UpdateStoreProduct {
     static String tomUserID;
     static String storeId;
 
-
     @BeforeAll
     public static void setUp() {
         impl = new ProxyToTest("Real");
@@ -57,7 +56,7 @@ public class UpdateStoreProduct {
 
     @Test
     public void noPermissionTest() {
-        impl.updateStoreManagerPermissions(tomUserID,"tom",storeId,false,false);
+        impl.updateStoreManagerPermissions(saarUserID,"tom",storeId,false,false);
         Response<String> response = impl.updateProductInStore(tomUserID,storeId,"heels", 14, 46,
                 "black", "shoes");
         assertFalse(response.isSuccess());

@@ -95,12 +95,12 @@ package Util;
         },
         notNominatorOfThisManager{
             public String toString() {
-                return "User is not a manager of this store";
+                return "Store owner is not the store manager's nominator";
             }
         },
         notManager{
             public String toString() {
-                return "Store owner is not the store manager's nominator";
+                return "User is not a manager of this store";
             }
         },
         usernameOrPasswordIncorrect{

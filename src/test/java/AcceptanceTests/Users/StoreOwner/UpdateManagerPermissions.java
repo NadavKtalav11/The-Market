@@ -17,39 +17,42 @@ public class UpdateManagerPermissions {
     static String jalalUserID;
     static String ovadUserID;
     static String raniUserID;
+    static String storeIDsaar;
+    static String storeIDjalal;
 
     @BeforeAll
     public static void setUp() {
         impl = new ProxyToTest("Real");
-        saarUserID = impl.enterMarketSystem().getResult();
+        saarUserID = impl.enterMarketSystem().getData();
         impl.register(saarUserID,"saar", "10/04/84", "Israel", "Jerusalem", "Yehuda halevi 18", "saar", "fadida");
-        tomUserID = impl.enterMarketSystem().getResult();
+        tomUserID = impl.enterMarketSystem().getData();
         impl.register(tomUserID,"tom", "27/11/85", "Israel", "Jerusalem", "Yehuda halevi 17", "tom", "shlaifer");
-        jalalUserID = impl.enterMarketSystem().getResult();
+        jalalUserID = impl.enterMarketSystem().getData();
         impl.register(jalalUserID,"jalal", "08/02/82", "Israel", "Jerusalem", "Yehuda halevi 13", "jalal", "kasoom");
-        ovadUserID = impl.enterMarketSystem().getResult();
+        ovadUserID = impl.enterMarketSystem().getData();
         impl.register(ovadUserID,"ovad", "08/02/82", "Israel", "Jerusalem", "Yehuda halevi 11", "ovad", "havia");
-        raniUserID = impl.enterMarketSystem().getResult();
+        raniUserID = impl.enterMarketSystem().getData();
         impl.register(raniUserID,"rani", "08/02/82", "Israel", "Jerusalem", "Yehuda halevi 12", "rani", "zelig");
+
         impl.login(saarUserID, "saar", "fadida");
-        impl.openStore(saarUserID, "alona", "shopping");
-        impl.appointStoreManager(saarUserID, "tom", "0", true, false);
-        impl.login("2", "jalal", "kasoom");
-        impl.openStore("2", "alona2", "shopping2");
-        impl.appointStoreManager("2", "ovad", "1", true, true);
+        storeIDsaar = impl.openStore(saarUserID, "alona", "shopping").getData();
+        impl.appointStoreManager(saarUserID, "tom", storeIDsaar, true, false);
+        impl.login(jalalUserID, "jalal", "kasoom");
+        storeIDjalal = impl.openStore(jalalUserID, "alona2", "shopping2").getData();
+        impl.appointStoreManager(jalalUserID, "ovad", storeIDjalal, true, true);
     }
 
     @Test
     public void successfulUpdateTest() {
-        assertTrue(impl.updateStoreManagerPermissions(saarUserID, "tom","0",
+        assertTrue(impl.updateStoreManagerPermissions(saarUserID, "tom",storeIDsaar,
                 true, true).isSuccess());
-        assertTrue(impl.updateStoreManagerPermissions(jalalUserID, "ovad","1",
+        assertTrue(impl.updateStoreManagerPermissions(jalalUserID, "ovad",storeIDjalal,
                 true, false).isSuccess());
     }
 
     @Test
     public void notManagerTest() {
-        Response<String> response1 = impl.updateStoreManagerPermissions(saarUserID, "rani","0",
+        Response<String> response1 = impl.updateStoreManagerPermissions(saarUserID, "rani",storeIDsaar,
                 true, false);
         assertFalse(response1.isSuccess());
         assertEquals(ExceptionsEnum.notManager.toString(), response1.getDescription());
@@ -57,12 +60,14 @@ public class UpdateManagerPermissions {
 
     @Test
     public void notNominatorTest() {
-        Response<String> response1 = impl.updateStoreManagerPermissions(saarUserID, "ovad","0",
+        impl.appointStoreOwner(jalalUserID, "saar",storeIDjalal);
+        Response<String> response1 = impl.updateStoreManagerPermissions(saarUserID, "ovad",storeIDjalal,
                 true, false);
         assertFalse(response1.isSuccess());
         assertEquals(ExceptionsEnum.notNominatorOfThisManager.toString(), response1.getDescription());
 
-        Response<String> response2 = impl.updateStoreManagerPermissions(jalalUserID ,"tom","1",
+        impl.appointStoreOwner(saarUserID, "jalal", storeIDsaar);
+        Response<String> response2 = impl.updateStoreManagerPermissions(jalalUserID ,"tom",storeIDsaar,
                 true, true);
         assertFalse(response2.isSuccess());
         assertEquals(ExceptionsEnum.notNominatorOfThisManager.toString(), response2.getDescription());
