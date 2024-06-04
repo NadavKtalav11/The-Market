@@ -24,20 +24,20 @@ public class UpdateManagerPermissions {
     public static void setUp() {
         impl = new ProxyToTest("Real");
         saarUserID = impl.enterMarketSystem().getData();
-        impl.register(saarUserID,"saar", "10/04/84", "Israel", "Jerusalem", "Yehuda halevi 18", "saar", "fadida");
+        impl.register(saarUserID,"saar", "10/04/84", "Israel", "Jerusalem", "Yehuda halevi 18", "saar", "Fadidaa1");
         tomUserID = impl.enterMarketSystem().getData();
-        impl.register(tomUserID,"tom", "27/11/85", "Israel", "Jerusalem", "Yehuda halevi 17", "tom", "shlaifer");
+        impl.register(tomUserID,"tom", "27/11/85", "Israel", "Jerusalem", "Yehuda halevi 17", "tom", "Shlaifer2");
         jalalUserID = impl.enterMarketSystem().getData();
-        impl.register(jalalUserID,"jalal", "08/02/82", "Israel", "Jerusalem", "Yehuda halevi 13", "jalal", "kasoom");
+        impl.register(jalalUserID,"jalal", "08/02/82", "Israel", "Jerusalem", "Yehuda halevi 13", "jalal", "Kasoomm3");
         ovadUserID = impl.enterMarketSystem().getData();
-        impl.register(ovadUserID,"ovad", "08/02/82", "Israel", "Jerusalem", "Yehuda halevi 11", "ovad", "havia");
+        impl.register(ovadUserID,"ovad", "08/02/82", "Israel", "Jerusalem", "Yehuda halevi 11", "ovad", "Haviaaa4");
         raniUserID = impl.enterMarketSystem().getData();
-        impl.register(raniUserID,"rani", "08/02/82", "Israel", "Jerusalem", "Yehuda halevi 12", "rani", "zelig");
+        impl.register(raniUserID,"rani", "08/02/82", "Israel", "Jerusalem", "Yehuda halevi 12", "rani", "Zeliggg5");
 
-        impl.login(saarUserID, "saar", "fadida");
+        impl.login(saarUserID, "saar", "Fadidaa1");
         storeIDsaar = impl.openStore(saarUserID, "alona", "shopping").getData();
         impl.appointStoreManager(saarUserID, "tom", storeIDsaar, true, false);
-        impl.login(jalalUserID, "jalal", "kasoom");
+        impl.login(jalalUserID, "jalal", "Kasoomm3");
         storeIDjalal = impl.openStore(jalalUserID, "alona2", "shopping2").getData();
         impl.appointStoreManager(jalalUserID, "ovad", storeIDjalal, true, true);
     }
