@@ -29,22 +29,22 @@ public class Registering {
 
     @Test
     public void successfulRegistrationTest() {
-        assertTrue(impl.register(userID1, "newUser1", "12/12/00", "Israel", "BeerSheva", "bialik", "noa", "password123").isSuccess());
-        assertTrue(impl.login(userID1, "newUser1", "password123").isSuccess());
+        assertTrue(impl.register(userID1, "newUser1", "12/12/00", "Israel", "BeerSheva", "bialik", "noa", "Password123").isSuccess());
+        assertTrue(impl.login(userID1, "newUser1", "Password123").isSuccess());
         impl.logout(userID1);
     }
 
     @Test
     public void registrationWithExistingUsernameTest() {
-        impl.register(userID1, "existingUser", "12/12/00", "Israel", "BeerSheva", "bialik", "noa", "password123");
-        Response<String> response0 = impl.register(userID2, "existingUser", "12/12/00", "Israel", "BeerSheva", "bialik", "noa", "differentPassword");
+        impl.register(userID1, "existingUser", "12/12/00", "Israel", "BeerSheva", "bialik", "noa", "Password123");
+        Response<String> response0 = impl.register(userID2, "existingUser", "12/12/00", "Israel", "BeerSheva", "bialik", "noa", "DifferentPassword1");
         assertFalse(response0.isSuccess());
         assertEquals(ExceptionsEnum.usernameAlreadyExist.toString(), response0.getDescription());
     }
 
     @Test
     public void registrationWithInvalidDetailsTest() {
-        Response<String> response0 = impl.register(userID1, "", "12/12/00", "Israel", "BeerSheva", "bialik", "noa", "password123");
+        Response<String> response0 = impl.register(userID1, "", "12/12/00", "Israel", "BeerSheva", "bialik", "noa", "Password123");
         assertFalse(response0.isSuccess());
         assertEquals(ExceptionsEnum.emptyField.toString(), response0.getDescription());
 
@@ -52,7 +52,7 @@ public class Registering {
         assertFalse(response1.isSuccess());
         assertEquals(ExceptionsEnum.emptyField.toString(), response1.getDescription());
 
-        Response<String> response2 = impl.register(userID3, "newUser3", "", "Israel", "BeerSheva", "bialik", "noa", "password123");
+        Response<String> response2 = impl.register(userID3, "newUser3", "", "Israel", "BeerSheva", "bialik", "noa", "Password123");
         assertFalse(response2.isSuccess());
         assertEquals(ExceptionsEnum.emptyField.toString(), response2.getDescription());
     }

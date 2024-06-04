@@ -27,7 +27,7 @@ public class Login {
         userID3 = impl.enterMarketSystem().getData();
         impl.register(userID1, "user1","12/12/00","Israel", "BeerSheva", "bialik","noa", "0VnDExW3T9");
         impl.register(userID2, "user2", "12/12/00", "Israel", "BeerSheva", "bialik","noa", "QtzxeceVM0");
-        impl.register(userID3, "user3", "12/12/00", "Israel", "BeerSheva", "bialik","noa", "KjUJqvJBls");
+        impl.register(userID3, "user3", "12/12/00", "Israel", "BeerSheva", "bialik","noa", "KjUJqvJBls1");
     }
 
     @AfterEach
@@ -47,7 +47,7 @@ public class Login {
         assertTrue(response2.isSuccess());
         assertEquals("Login successful", response2.getResult());
 
-        Response<String> response3 = impl.login(userID3, "user3", "KjUJqvJBls");
+        Response<String> response3 = impl.login(userID3, "user3", "KjUJqvJBls1");
         assertTrue(response3.isSuccess());
         assertEquals("Login successful", response1.getResult());
     }
@@ -63,7 +63,7 @@ public class Login {
         assertFalse(response1.isSuccess());
         assertEquals(ExceptionsEnum.usernameOrPasswordIncorrect.toString(), response1.getDescription());
 
-        Response<String> response2 = impl.login(userID3, "wrongUser0", "KjUJqvJBls");
+        Response<String> response2 = impl.login(userID3, "wrongUser0", "KjUJqvJBls1");
         assertFalse(response2.isSuccess());
         assertEquals(ExceptionsEnum.usernameOrPasswordIncorrect.toString(), response2.getDescription());
     }
@@ -88,7 +88,7 @@ public class Login {
     public void alreadyLoggedInTest() {
         impl.login(userID1, "user1", "0VnDExW3T9");
         impl.login(userID2, "user2", "QtzxeceVM0");
-        impl.login(userID3, "user3", "KjUJqvJBls");
+        impl.login(userID3, "user3", "KjUJqvJBls1");
 
         Response<String> response1 = impl.login(userID1, "user1", "0VnDExW3T9");
         assertFalse(response1.isSuccess());
@@ -98,7 +98,7 @@ public class Login {
         assertFalse(response2.isSuccess());
         assertEquals(ExceptionsEnum.userAlreadyLoggedIn.toString(), response2.getDescription());
 
-        Response<String> response3 = impl.login(userID3, "user3", "KjUJqvJBls");
+        Response<String> response3 = impl.login(userID3, "user3", "KjUJqvJBls1");
         assertFalse(response3.isSuccess());
         assertEquals(ExceptionsEnum.userAlreadyLoggedIn.toString(), response3.getDescription());
     }

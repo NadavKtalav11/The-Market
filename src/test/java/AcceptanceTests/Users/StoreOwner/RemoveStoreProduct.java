@@ -20,8 +20,8 @@ public class RemoveStoreProduct {
     public static void setUp() {
         impl = new ProxyToTest("Real");
         saarUserID = impl.enterMarketSystem().getData();
-        impl.register(saarUserID,"saar", "10/04/84", "Israel", "Jerusalem", "Yehuda halevi 18", "saar", "fadida");
-        impl.login(saarUserID, "saar", "fadida");
+        impl.register(saarUserID,"saar", "10/04/84", "Israel", "Jerusalem", "Yehuda halevi 18", "saar", "Fadidaa1");
+        impl.login(saarUserID, "saar", "Fadidaa1");
         storeID= impl.openStore(saarUserID, "alona", "shopping").getData();
         impl.addProductToStore(saarUserID, storeID,"weddingDress", 10, 5, "pink", "clothes");
     }
