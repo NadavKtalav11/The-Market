@@ -22,14 +22,14 @@ public class AppointManager {
     public static void setUp() {
         impl = new ProxyToTest("Real");
         saarUserID = impl.enterMarketSystem().getData();
-        impl.register(saarUserID,"saar",  "10/04/84", "Israel", "Jerusalem", "Yehuda halevi 18", "saar", "fadida");
+        impl.register(saarUserID,"saar",  "10/04/84", "Israel", "Jerusalem", "Yehuda halevi 18", "saar", "Fadidaa1");
         tomUserID = impl.enterMarketSystem().getData();
-        impl.register(tomUserID,"tom",  "27/11/85", "Israel", "Jerusalem", "Yehuda halevi 17", "tom", "shlaifer");
+        impl.register(tomUserID,"tom",  "27/11/85", "Israel", "Jerusalem", "Yehuda halevi 17", "tom", "Shlaifer2");
         jalalUserID = impl.enterMarketSystem().getData();
-        impl.register(jalalUserID,"jalal", "08/02/82", "Israel", "Jerusalem", "Yehuda halevi 13", "jalal", "kasoom");
+        impl.register(jalalUserID,"jalal", "08/02/82", "Israel", "Jerusalem", "Yehuda halevi 13", "jalal", "Kasoomm3");
         ovadUserID = impl.enterMarketSystem().getData();
-        impl.register(ovadUserID,"ovad", "08/02/82", "Israel", "Jerusalem", "Yehuda halevi 11", "ovad", "havia");
-        impl.login(saarUserID, "saar", "fadida");
+        impl.register(ovadUserID,"ovad", "08/02/82", "Israel", "Jerusalem", "Yehuda halevi 11", "ovad", "Haviaaa4");
+        impl.login(saarUserID, "saar", "Fadidaa1");
         storeId = impl.openStore(saarUserID, "alona", "shopping").getData();
         impl.appointStoreOwner(saarUserID, "tom", storeId);
         impl.appointStoreManager(saarUserID, "jalal", storeId, true, false);
