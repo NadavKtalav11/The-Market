@@ -4,11 +4,12 @@ package DomainLayer.User;
 import Util.ExceptionsEnum;
 import Util.UserDTO;
 
-import java.util.HashMap;
-import java.util.UUID;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.*;
+import java.util.stream.Collectors;
+
+
 
 public class UserFacade {
     private static UserFacade userFacadeInstance;
@@ -162,7 +163,7 @@ public class UserFacade {
 
     public String register(String userID, UserDTO user,String password) throws Exception {
         if(userRepository.contain(userID)&& getUserByID(userID).isMember()) {
-            throw new Exception("member cannot register");
+            throw new Exception(ExceptionsEnum.memberCannotRegister.toString());
         }
         else {
             validateRegistrationDetails(user, password);
@@ -195,21 +196,68 @@ public class UserFacade {
                 user.getAddress() == null || user.getName() == null) {
             throw new Exception(ExceptionsEnum.emptyField.toString());
         }
+        //checking empty fields
         else if (user.getUserName().equals("") || password.equals("") || user.getBirthday().equals("") || user.getCountry().equals("") || user.getCity().equals("") ||
                 user.getAddress().equals("") || user.getName().equals("")) {
             throw new Exception(ExceptionsEnum.emptyField.toString());
         }
         //checking if username is already exist
-
         Member mem = members.getByUserName(user.getUserName());
         if (mem!=null) {
             throw new Exception(ExceptionsEnum.usernameAlreadyExist.toString());
 
         }
-        //todo check validation of the password. - do encription passwords only.
-        //todo check validation of the birthday. - do we need to check this, in the gui the user will choose date from the calender.
-        //todo check validation of the address. - do we need to check this, in the gui the user will address date from the calender.
+        // Check validation of the birthday
+        if (!isValidDate(user.getBirthday())) {
+            throw new Exception(ExceptionsEnum.invalidFormatDate.toString());
+        }
+        if (isFutureDate(user.getBirthday())) {
+            throw new Exception(ExceptionsEnum.futureDate.toString());
+        }
+//        // Check validation of the country and city
+//        if (!isValidCountry(user.getCountry())) {
+//            throw new Exception(ExceptionsEnum.invalidCountry.toString());
+//        }
+//        if (!isValidCity(user.getCity(), user.getCountry())) {
+//            throw new Exception(ExceptionsEnum.invalidCity.toString());
+//        }
     }
+
+    private boolean isValidDate(String date) {
+        List<SimpleDateFormat> dateFormats = new ArrayList<>();
+        dateFormats.add(new SimpleDateFormat("dd/MM/yyyy"));
+        dateFormats.add(new SimpleDateFormat("dd/MM/yy"));
+
+        for (SimpleDateFormat sdf : dateFormats) {
+            sdf.setLenient(false);
+            try {
+                sdf.parse(date);
+                return true;
+            } catch (ParseException e) {
+                // Ignore and try the next format
+            }
+        }
+        return false;
+    }
+
+    private boolean isFutureDate(String date) throws ParseException {
+        List<SimpleDateFormat> dateFormats = new ArrayList<>();
+        dateFormats.add(new SimpleDateFormat("dd/MM/yyyy"));
+        dateFormats.add(new SimpleDateFormat("dd/MM/yy"));
+
+        for (SimpleDateFormat sdf : dateFormats) {
+            try {
+                Date birthday = sdf.parse(date);
+                Date today = new Date();
+                return birthday.after(today);
+            } catch (ParseException e) {
+                // Ignore and try the next format
+            }
+        }
+
+        throw new ParseException("Invalid date format", 0);
+    }
+
 
     public void Login(String userID, String username, String password) throws Exception {
         Member loginMember = getMemberByUsername(username);
