@@ -1,6 +1,7 @@
 package AcceptanceTests;
 
 import ServiceLayer.Response;
+import Util.PaymentDTO;
 import Util.ProductDTO;
 import Util.UserDTO;
 
@@ -69,4 +70,6 @@ public interface BridgeToTests {
     Response<List<String>> inStoreProductFilter(String userId, String categoryStr, List<String> keywords, Integer minPrice, Integer maxPrice, Double productMinRating, String storeId, List<String> productsFromSearch, Double storeMinRating);
 
     Response<List<String>> inStoreProductSearch(String userId, String productName, String categoryStr, List<String> keywords, String storeId);
+
+    Response<String> purchase(String user_ID, String country, String city, String address, String cardNumber, int cvv, int month, int year, String holderID);
 }
