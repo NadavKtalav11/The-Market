@@ -2,6 +2,10 @@ package AcceptanceTests.Users.Purchase;
 
 import AcceptanceTests.BridgeToTests;
 import AcceptanceTests.ProxyToTest;
+import ServiceLayer.Response;
+import Util.ExceptionsEnum;
+import Util.ProductDTO;
+import Util.UserDTO;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -12,63 +16,106 @@ import static org.junit.jupiter.api.Assertions.*;
 public class AddProductCart {
 
     private static BridgeToTests impl;
+    static String userId0;
+    static String storeId0;
 
 
     @BeforeEach
     public void setUp() {
         impl = new ProxyToTest("Real");
         //Do what you need
-        impl.enterMarketSystem();
-        impl.register(0, "user1", "fSijsd281", "12/12/00", "Israel", "Beer Sheva", "Mesada", "Toy");
-        impl.login(0, "user1", "fSijsd281");
+        userId0 = impl.enterMarketSystem().getData();
+        impl.register(userId0, "user1", "12/12/00", "Israel", "Beer Sheva", "Mesada", "Toy", "fSijsd281");
+        impl.login(userId0, "user1", "fSijsd281");
 
-        impl.openStore(0, "Zara", "clothing store");
-        impl.addProductToStore(0, 0, "Milk", 10, 5, "Milk 5%", "food");
-        impl.addProductToStore(0, 0, "Cheese", 15, 8, "Cheese 22%", "food");
-        impl.addProductToStore(0, 0, "Yogurt", 4, 12, "Yogurt 20%", "food");
-        impl.addProductToStore(0, 0, "Shoes", 4, 12, "Nike Shoes", "clothing");
+        storeId0 = impl.openStore(userId0, "Zara", "clothing store").getData();
+        impl.addProductToStore(userId0, storeId0, "Milk", 10, 5, "Milk 5%", "food");
+        impl.addProductToStore(userId0, storeId0, "Cheese", 15, 8, "Cheese 22%", "food");
+        impl.addProductToStore(userId0, storeId0, "Yogurt", 4, 12, "Yogurt 20%", "food");
+        impl.addProductToStore(userId0, storeId0, "Shoes", 4, 12, "Nike Shoes", "clothing");
     }
 
 
     @Test
     public void successfulAdditionTest()
     {
-        assertTrue(impl.addProductToBasket("Milk", 2, 0, 0).isSuccess());
-        assertTrue(impl.addProductToBasket("Cheese", 4, 0, 0).isSuccess());
-        assertTrue(impl.addProductToBasket("Yogurt", 5, 0, 0).isSuccess());
+        assertTrue(impl.addProductToBasket("Milk", 2, storeId0, userId0).isSuccess());
+        assertTrue(impl.addProductToBasket("Cheese", 4, storeId0, userId0).isSuccess());
+        assertTrue(impl.addProductToBasket("Yogurt", 5, storeId0, userId0).isSuccess());
     }
 
     @Test
     public void invalidProductNameTest()
     {
-        assertFalse(impl.addProductToBasket("Computer", 2, 0, 0).isSuccess());
-        assertFalse(impl.addProductToBasket("Shirt", 4, 0, 0).isSuccess());
-        assertFalse(impl.addProductToBasket("TV", 5, 0, 0).isSuccess());
+
+        Response<String> response1 = impl.addProductToBasket("Computer", 2, storeId0, userId0);
+        assertFalse(response1.isSuccess());
+        assertEquals(ExceptionsEnum.productNotExistInStore.toString(), response1.getDescription());
+
+
+        Response<String> response2 = impl.addProductToBasket("Shirt", 4, storeId0, userId0);
+        assertFalse(response2.isSuccess());
+        assertEquals(ExceptionsEnum.productNotExistInStore.toString(), response2.getDescription());
+
+
+        Response<String> response3 = impl.addProductToBasket("TV", 5, storeId0, userId0);
+        assertFalse(response3.isSuccess());
+        assertEquals(ExceptionsEnum.productNotExistInStore.toString(), response3.getDescription());
     }
 
     @Test
     public void outOfStockProductTest()
     {
-        impl.addProductToStore(0, 0, "Mouse", 10, 0, "HP Mouse", "electronics");
-        impl.addProductToStore(0, 0, "Laptop", 15, 0, "HP Laptop ", "electronics");
-        assertFalse(impl.addProductToBasket("Mouse", 1, 0, 0).isSuccess());
-        assertFalse(impl.addProductToBasket("Laptop", 2, 0, 0).isSuccess());
+        impl.addProductToStore(userId0, storeId0, "Mouse", 10, 0, "HP Mouse", "electronics");
+        impl.addProductToStore(userId0, storeId0, "Laptop", 15, 0, "HP Laptop ", "electronics");
+
+
+        Response<String> response1 = impl.addProductToBasket("Mouse", 1, storeId0, userId0);
+        assertFalse(response1.isSuccess());
+        assertEquals(ExceptionsEnum.productQuantityNotExist.toString(), response1.getDescription());
+
+
+        Response<String> response2 = impl.addProductToBasket("Laptop", 2, storeId0, userId0);
+        assertFalse(response2.isSuccess());
+        assertEquals(ExceptionsEnum.productQuantityNotExist.toString(), response2.getDescription());
     }
 
     @Test
     public void bigQuantityTest()
     {
-        assertFalse(impl.addProductToBasket("Milk", 10, 0, 0).isSuccess());
-        assertFalse(impl.addProductToBasket("Cheese", 100, 0, 0).isSuccess());
-        assertFalse(impl.addProductToBasket("Yogurt", 90, 0, 0).isSuccess());
+
+        Response<String> response1 = impl.addProductToBasket("Milk", 10, storeId0, userId0);
+        assertFalse(response1.isSuccess());
+        assertEquals(ExceptionsEnum.productQuantityNotExist.toString(), response1.getDescription());
+
+
+        Response<String> response2 = impl.addProductToBasket("Cheese", 9, storeId0, userId0);
+        assertFalse(response2.isSuccess());
+        assertEquals(ExceptionsEnum.productQuantityNotExist.toString(), response2.getDescription());
+
+
+        Response<String> response3 = impl.addProductToBasket("Yogurt", 13, storeId0, userId0);
+        assertFalse(response3.isSuccess());
+        assertEquals(ExceptionsEnum.productQuantityNotExist.toString(), response3.getDescription());
     }
 
     @Test
     public void negQuantityTest()
     {
-        assertFalse(impl.addProductToBasket("Milk", -4, 0, 0).isSuccess());
-        assertFalse(impl.addProductToBasket("Cheese", -1, 0, 0).isSuccess());
-        assertFalse(impl.addProductToBasket("Yogurt", -8, 0, 0).isSuccess());
+
+        Response<String> response1 = impl.addProductToBasket("Milk", -4, storeId0, userId0);
+        assertFalse(response1.isSuccess());
+        assertEquals(ExceptionsEnum.productQuantityIsNegative.toString(), response1.getDescription());
+
+
+        Response<String> response2 = impl.addProductToBasket("Cheese", -1, storeId0, userId0);
+        assertFalse(response2.isSuccess());
+        assertEquals(ExceptionsEnum.productQuantityIsNegative.toString(), response2.getDescription());
+
+
+        Response<String> response3 = impl.addProductToBasket("Yogurt", -8, storeId0, userId0);
+        assertFalse(response3.isSuccess());
+        assertEquals(ExceptionsEnum.productQuantityIsNegative.toString(), response3.getDescription());
     }
 
     @Test
