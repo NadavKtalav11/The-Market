@@ -3,6 +3,7 @@ package AcceptanceTests.Users.Purchase;
 import AcceptanceTests.BridgeToTests;
 import AcceptanceTests.ProxyToTest;
 import ServiceLayer.Response;
+import Util.ExceptionsEnum;
 import Util.ProductDTO;
 import Util.UserDTO;
 import org.junit.jupiter.api.BeforeAll;
@@ -79,15 +80,21 @@ public class GeneralSerach {
     }
 
     @Test
-    public void productNotExistTest() {
-        assertFalse(impl.generalProductSearch(userId0, "Tomato", null, null).isSuccess());
-        assertFalse(impl.generalProductSearch(userId0, "Shirt", null, null).isSuccess());
+    public void categoryNotExistSearchTest() {
+        Response<List<String>> response = impl.generalProductSearch(userId0, null, "asdsjd", null);
+        assertFalse(response.isSuccess());
+        assertEquals(ExceptionsEnum.categoryNotExist.toString(), response.getDescription());
     }
 
     @Test
-    public void categoryNotExistTest() {
-        assertFalse(impl.generalProductSearch(userId0, null, "asdsjd", null).isSuccess());
-        assertFalse(impl.generalProductSearch(userId0, null, "asdsjdasdkdf", null).isSuccess());
+    public void categoryNotExistFilterSearchResultTest() {
+        List<String> diaryProducts = new ArrayList<>();
+        diaryProducts.add("Milk");
+        diaryProducts.add("Cheese");
+        diaryProducts.add("Yogurt");
+        Response<List<String>> response = impl.generalProductFilter(userId0, "acjdsfd", null, null, null, null, diaryProducts, null);
+        assertFalse(response.isSuccess());
+        assertEquals(ExceptionsEnum.categoryNotExist.toString(), response.getDescription());
     }
 
     @Test
@@ -96,7 +103,8 @@ public class GeneralSerach {
         diaryProducts.add("Milk");
         diaryProducts.add("Cheese");
         diaryProducts.add("Yogurt");
-        assertFalse(impl.generalProductFilter(userId0, null, null, 10, 0, null, diaryProducts, null).isSuccess());
+        Response<List<String>> response = impl.generalProductFilter(userId0, null, null, 10, 0, null, diaryProducts, null);
+        assertFalse(response.isSuccess());
     }
 
     @Test
@@ -105,7 +113,8 @@ public class GeneralSerach {
         diaryProducts.add("Milk");
         diaryProducts.add("Cheese");
         diaryProducts.add("Yogurt");
-        assertFalse(impl.generalProductFilter(userId0, null, null, null, null, 7.0, diaryProducts, null).isSuccess());
+        Response<List<String>> response = impl.generalProductFilter(userId0, null, null, null, null, 7.0, diaryProducts, null);
+        assertFalse(response.isSuccess());
     }
 
     @Test
@@ -114,6 +123,7 @@ public class GeneralSerach {
         diaryProducts.add("Milk");
         diaryProducts.add("Cheese");
         diaryProducts.add("Yogurt");
-        assertFalse(impl.generalProductFilter(userId0, null, null, null, null, null, diaryProducts, 7.0).isSuccess());
+        Response<List<String>> response = impl.generalProductFilter(userId0, null, null, null, null, null, diaryProducts, 7.0);
+        assertFalse(response.isSuccess());
     }
 }
