@@ -2,6 +2,8 @@ package DomainLayer.User;
 import DomainLayer.Store.Store;
 import DomainLayer.Store.StoreFacade;
 import DomainLayer.Role.RoleFacade;
+import Util.ExceptionsEnum;
+import Util.UserDTO;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -9,7 +11,7 @@ import java.util.zip.CheckedOutputStream;
 
 public class Member extends State{
 
-    private int member_ID;
+    private String member_ID;
     private String name;
     private String username;
     private String password;
@@ -18,19 +20,19 @@ public class Member extends State{
     private String city;
     private String address;
     private int productIdCounter;
-    private Map<Integer, Integer> receiptIdsAndStoreId; //<receiptId, storeId>
+    private Map<String, String> receiptIdsAndStoreId; //<receiptId, storeId>
     //private boolean isLogin;
 
-    Member(int member_ID, String username, String password, String birthday,String country, String city, String address, String name)
+    Member(String member_ID, UserDTO user, String password)
     {
         this.member_ID = member_ID;
-        this.username = username;
+        this.username = user.getUserName();
         this.password = password;
-        this.birthday = birthday;
-        this.country = country;
-        this.city =  city;
-        this.address = address;
-        this.name = name;
+        this.birthday = user.getBirthday();
+        this.country = user.getCountry();
+        this.city =  user.getCity();
+        this.address = user.getAddress();
+        this.name = user.getName();
         this.productIdCounter = 0;
         this.receiptIdsAndStoreId = new HashMap<>();
     }
@@ -49,15 +51,15 @@ public class Member extends State{
 
     @Override
     public void Login() throws Exception {
-        throw new Exception("The user is already logged in");
+        throw new Exception(ExceptionsEnum.userAlreadyLoggedIn.toString());
     }
 
     public void validatePassword(String password){
         if (!password.equals(this.password)){
-            throw new IllegalArgumentException("Incorrect password or username please try again.");
+            throw new IllegalArgumentException(ExceptionsEnum.usernameOrPasswordIncorrect.toString());
         }
-
     }
+
     @Override
     public String getUsername(){
         return username;
@@ -87,9 +89,9 @@ public class Member extends State{
         return password;
     }
 
-    public Map<Integer, Integer> getReceiptIdsAndStoreId(){return receiptIdsAndStoreId;}
+    public Map<String, String> getReceiptIdsAndStoreId(){return receiptIdsAndStoreId;}
 
-    public int getMemberID()
+    public String getMemberID()
     {
         return this.member_ID;
     }
@@ -100,7 +102,7 @@ public class Member extends State{
     }
 
     @Override
-    public void addReceipt(Map<Integer, Integer> receiptIdAndStoreId) {
+    public void addReceipt(Map<String, String> receiptIdAndStoreId) {
         receiptIdsAndStoreId.putAll(receiptIdAndStoreId);
     }
 

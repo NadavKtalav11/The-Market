@@ -2,34 +2,44 @@ package AcceptanceTests.Users.StoreOwner;
 
 import AcceptanceTests.BridgeToTests;
 import AcceptanceTests.ProxyToTest;
+import ServiceLayer.Response;
+import Util.ExceptionsEnum;
+import Util.UserDTO;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class AppointOwner {
     private static BridgeToTests impl;
+    static String saarUserID;
+    static String tomUserID;
+    static String jalalUserID;
+    static String storeID;
 
     @BeforeAll
     public static void setUp() {
         impl = new ProxyToTest("Real");
-        impl.enterMarketSystem();
-        impl.register(0, "saar", "fadida", "10/04/84", "Israel", "Jerusalem", "Yehuda halevi 18", "saar");
-        impl.register(1, "tom", "shlaifer", "27/11/85", "Israel", "Jerusalem", "Yehuda halevi 17", "tom");
-        impl.register(2, "jalal", "kasoom", "08/02/82", "Israel", "Jerusalem", "Yehuda halevi 13", "jalal");
-        impl.login(0, "saar", "fadida");
-        impl.openStore(0, "alona", "shopping");
-        impl.appointStoreOwner(0, "tom", 0);
+        saarUserID = impl.enterMarketSystem().getData();
+        impl.register(saarUserID,"saar", "10/04/84", "Israel", "Jerusalem", "Yehuda halevi 18", "saar", "Fadidaa1");
+        tomUserID = impl.enterMarketSystem().getData();
+        impl.register(tomUserID,"tom", "27/11/85", "Israel", "Jerusalem", "Yehuda halevi 17", "tom", "Shlaifer2");
+        jalalUserID = impl.enterMarketSystem().getData();
+        impl.register(jalalUserID,"jalal", "08/02/82", "Israel", "Jerusalem", "Yehuda halevi 13", "jalal", "Kasoomm3");
+        impl.login(saarUserID, "saar", "Fadidaa1");
+        storeID = impl.openStore(saarUserID, "alona", "shopping").getData();
+        impl.appointStoreOwner(saarUserID, "tom", storeID);
     }
 
     @Test
     public void successfulAppointedTest() {
-        assertTrue(impl.appointStoreOwner(0, "jalal",0).isSuccess());
+        assertTrue(impl.appointStoreOwner(saarUserID, "jalal",storeID).isSuccess());
     }
 
     @Test
     public void alreadyStoreOwnerTest() {
-        assertFalse(impl.appointStoreOwner(0, "tom",0).isSuccess());
+        Response<String> response = impl.appointStoreOwner(saarUserID, "tom",storeID);
+        assertFalse(response.isSuccess());
+        assertEquals(ExceptionsEnum.memberIsAlreadyStoreOwner.toString(), response.getDescription());
     }
 }

@@ -20,6 +20,7 @@
             <artifactId>jjwt-api</artifactId>
             <version>0.12.2</version> <!-- Or the latest version -->
         </dependency>
+
         <dependency>
             <groupId>io.jsonwebtoken</groupId>
             <artifactId>jjwt-impl</artifactId>
@@ -30,6 +31,7 @@
             <artifactId>jjwt-jackson</artifactId>
             <version>0.12.2</version> <!-- Or the latest version -->
         </dependency>
+
         <!-- SLF4J API -->
         <dependency>
             <groupId>org.slf4j</groupId>
@@ -54,6 +56,12 @@
             <artifactId>mockito-core</artifactId>
             <version>3.12.4</version>
             <scope>test</scope>
+        </dependency>
+        <!-- nv-i18n dependency -->
+        <dependency>
+            <groupId>com.ibm.icu</groupId>
+            <artifactId>icu4j</artifactId>
+            <version>72.1</version>
         </dependency>
     </dependencies>
 
