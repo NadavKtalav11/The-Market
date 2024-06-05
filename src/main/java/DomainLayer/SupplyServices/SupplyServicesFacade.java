@@ -11,7 +11,7 @@ public class SupplyServicesFacade {
     private static SupplyServicesFacade supplyServicesFacade;
     private Map<Integer, ExternalSupplyService>  externalSupplyService;
    // private Map<Integer, Receipt> IdAndReceipt = new HashMap<>();
-    private Object externalSupplyServiceLock;
+    private final Object externalSupplyServiceLock;
 
     private SupplyServicesFacade(){
         externalSupplyServiceLock = new Object();
@@ -36,11 +36,13 @@ public class SupplyServicesFacade {
     }
 
     public void removeExternalService(int licensedDealerNumber){
-        externalSupplyService.remove(licensedDealerNumber);
+        synchronized (externalSupplyServiceLock) {
+            externalSupplyService.remove(licensedDealerNumber);
+        }
     }
 
     public boolean addExternalService(int licensedDealerNumber, String supplyServiceName, HashSet<String> countries, HashSet<String> cities){
-        synchronized (externalSupplyService) {
+        synchronized (externalSupplyServiceLock) {
             int size_before = externalSupplyService.size();
             ExternalSupplyService externalPaymentService = new ExternalSupplyService(licensedDealerNumber, supplyServiceName, countries, cities);
             externalSupplyService.put(licensedDealerNumber, externalPaymentService);
@@ -50,7 +52,7 @@ public class SupplyServicesFacade {
 
     public int checkAvailableExternalSupplyService(String country, String city) {
         //   (private Map<Integer, ExternalSupplyService>  ExternalSupplyService)
-        synchronized (externalSupplyService) {
+        synchronized (externalSupplyServiceLock) {
             for (Map.Entry<Integer, ExternalSupplyService> entry : externalSupplyService.entrySet()) {
                 ExternalSupplyService externalSupplyService1 = entry.getValue();
                 if (externalSupplyService1.checkAreaAvailability(country, city)) {
@@ -62,10 +64,14 @@ public class SupplyServicesFacade {
     }
 
     public ExternalSupplyService getExternalSupplyServiceById(int externalSupplyServiceId){
-        return externalSupplyService.get(externalSupplyServiceId);
+        synchronized (externalSupplyServiceLock) {
+            return externalSupplyService.get(externalSupplyServiceId);
+        }
     }
     public void reset() {
-        externalSupplyService.clear();
+        synchronized (externalSupplyServiceLock) {
+            externalSupplyService.clear();
+        }
     }
 
 

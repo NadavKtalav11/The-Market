@@ -2,14 +2,14 @@ package DomainLayer.Role;
 
 public class SystemManager {
 
-    private int member_ID;
+    private String member_ID;
 
-    SystemManager(int member_ID)
+    SystemManager(String member_ID)
     {
         this.member_ID = member_ID;
     }
 
-    public int getMember_ID() {
+    public String getMember_ID() {
         return this.member_ID;
     }
 

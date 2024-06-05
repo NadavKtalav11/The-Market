@@ -11,7 +11,6 @@ public class Guest extends State{
     }
     @Override
     public void Logout() {
-        //todo throw exception
         throw new IllegalArgumentException("only member can log out");
     }
 
@@ -32,7 +31,7 @@ public class Guest extends State{
     }
 
     @Override
-    public void addReceipt(Map<Integer, Integer> receiptIdAndStoreId) {
+    public void addReceipt(Map<String, String> receiptIdAndStoreId) {
         return;
     }
 

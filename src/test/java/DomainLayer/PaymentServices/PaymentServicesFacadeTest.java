@@ -1,6 +1,7 @@
 package DomainLayer.PaymentServices;
 
 
+import Util.PaymentDTO;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -53,21 +54,21 @@ public class PaymentServicesFacadeTest {
     }
 
     @Test
-    public void testPay() {
+    public void testPay() throws Exception {
         int price = 100;
         String creditCard = "123456789";
         int cvv = 123;
         int month = 12;
         int year = 2023;
         String holderID = "holderID";
-        int userId = 1;
-        Map<Integer, Map<String, Integer>> productList = new HashMap<>();
-        productList.put(1, new HashMap<>());
+        String userId = "user1";
+        Map<String, Map<String, Integer>> productList = new HashMap<>();
+        productList.put("store1", new HashMap<>());
 
         paymentServicesFacade.addExternalService(1, "TestService", "http://testservice.com");
-        Map<Integer,Integer> acquisitionAndExternalService = null;
+        Map<String,String> acquisitionAndExternalService = null;
 
-        acquisitionAndExternalService= paymentServicesFacade.pay(price, creditCard, cvv, month, year, holderID, userId, productList);
+        acquisitionAndExternalService= paymentServicesFacade.pay(price, new PaymentDTO(holderID, creditCard, cvv, month, year), userId, productList);
         assertNotNull(acquisitionAndExternalService);
     }
 
