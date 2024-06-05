@@ -38,12 +38,9 @@ public class CloseStore {
     public void alreadyClosedTest() {
         impl.closeStore("0", "0");
 
-        Exception exception = assertThrows(Exception.class, () -> {
-            Response<String> response = impl.closeStore("0", "0");;
-            assertFalse(response.isSuccess());
-        });
-
-        assertEquals(ExceptionsEnum.storeNotExist.toString(), exception.getMessage());
+        Response<String> response = impl.closeStore("0", "0");;
+        assertFalse(response.isSuccess());
+        assertEquals(ExceptionsEnum.storeNotExist.toString(), response.getDescription());
     }
 
 }
