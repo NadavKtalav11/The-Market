@@ -24,7 +24,7 @@ public class AddingExternalPaymentServices {
     @Test
     public void testAddExternalPaymentServiceSuccess() {
         // Arrange
-        int systemManagerId = 77;
+        String systemManagerId = "user77";
         market.getSystemManagerIds().add(systemManagerId);
         int licensedDealerNumber = 12345;
         String paymentServiceName = "PayPal";
@@ -40,8 +40,8 @@ public class AddingExternalPaymentServices {
     @Test
     public void testAddExternalPaymentServiceFailureNotSystemManager() {
         // Arrange
-        int systemManagerId = 1;
-        int nonManagerId = 2;
+        String systemManagerId = "USER1";
+        String nonManagerId = "user2";
         market.getSystemManagerIds().add(systemManagerId);
         int licensedDealerNumber = 12345;
         String paymentServiceName = "PayPal";
@@ -59,7 +59,7 @@ public class AddingExternalPaymentServices {
     @Test
     public void testAddExternalPaymentServiceFailureInvalidDetails() {
         // Arrange
-        int systemManagerId = 1;
+        String systemManagerId = "user1";
         market.getSystemManagerIds().add(systemManagerId);
         int licensedDealerNumber = -1; // Invalid dealer number
         String paymentServiceName = null; // Invalid payment service name

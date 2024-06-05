@@ -3,6 +3,7 @@ package AcceptanceTests.Users.Purchase;
 import AcceptanceTests.BridgeToTests;
 import AcceptanceTests.ProxyToTest;
 import ServiceLayer.Response;
+import Util.UserDTO;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
@@ -22,23 +23,23 @@ public class ReviewingStoresInfo {
         //Do what you need
 
         impl.enterMarketSystem();
-        impl.register(0, "user1", "fSijsd281", "12/12/00", "Israel", "Beer Sheva", "Mesada", "Toy");
-        impl.login(0, "user1", "fSijsd281");
-        impl.openStore(0, "Bershka", "clothing store");
-        impl.openStore(0, "Zara", "clothing store");
-        impl.openStore(0, "PullAndBear", "clothing store");
+        impl.register("0","user1",  "12/12/00", "Israel", "Beer Sheva", "Mesada", "Toy", "fSijsd281");
+        impl.login("0", "user1", "fSijsd281");
+        impl.openStore("0", "Bershka", "clothing store");
+        impl.openStore("0", "Zara", "clothing store");
+        impl.openStore("0", "PullAndBear", "clothing store");
     }
 
     @Test
     public void successfulViewTest() {
-        impl.closeStore(0, 3);
+        impl.closeStore("0", "3");
 
         List<Integer> allAvailableStores = new ArrayList<>();
         allAvailableStores.add(0);
         allAvailableStores.add(1);
         allAvailableStores.add(2);
 
-        Response<List<Integer>> res = impl.getInformationAboutStores(0);
+        Response<List<String>> res = impl.getInformationAboutStores("0");
         assertTrue(res.isSuccess());
         assertIterableEquals(res.getResult(), allAvailableStores);
     }

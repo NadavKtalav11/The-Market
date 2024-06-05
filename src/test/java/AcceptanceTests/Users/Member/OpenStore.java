@@ -2,14 +2,18 @@ package AcceptanceTests.Users.Member;
 
 import AcceptanceTests.BridgeToTests;
 import AcceptanceTests.ProxyToTest;
+import ServiceLayer.Response;
+import Util.ExceptionsEnum;
+import Util.UserDTO;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class OpenStore {
     private static BridgeToTests impl;
+    static  String userId0;
 
 
     @BeforeAll
@@ -17,23 +21,29 @@ public class OpenStore {
         impl = new ProxyToTest("Real");
         //Do what you need
 
-        impl.enterMarketSystem();
-        impl.register(0, "user1", "fSijsd281", "12/12/00", "Israel", "Beer Sheva", "Mesada", "Toy");
-        impl.login(0, "user1", "fSijsd281");
+        userId0 = impl.enterMarketSystem().getData();
+        impl.register(userId0, "user1",  "12/12/00", "Israel", "Beer Sheva", "Mesada", "Toy", "fSijsd281");
+        impl.login(userId0, "user1", "fSijsd281");
 
     }
 
     @Test
     public void successfulOpenStoreTest() {
-        assertTrue(impl.openStore(0, "Bershka", "clothing store").isSuccess());
-        assertTrue(impl.openStore(0, "Zara", "clothing store").isSuccess());
-        assertTrue(impl.openStore(0, "shufersal", "Food store").isSuccess());
+        assertTrue(impl.openStore(userId0, "Bershka", "clothing store").isSuccess());
+        assertTrue(impl.openStore(userId0, "Zara", "clothing store").isSuccess());
+        assertTrue(impl.openStore(userId0, "shufersal", "Food store").isSuccess());
     }
 
     @Test
-    public void missingDetailsTest() {
-        assertFalse(impl.openStore(0, null, "clothing store").isSuccess());
-        assertFalse(impl.openStore(0, null, "Food store").isSuccess());
-        assertFalse(impl.openStore(0, "", "Electronics store").isSuccess());
+    public void missingStoreNameTest() {
+        Response<String> response = impl.openStore(userId0, null, "clothing store");
+        assertFalse(response.isSuccess());
+
+        assertEquals(ExceptionsEnum.illegalStoreName.toString(), response.getDescription());
+
+        Response<String> response2 = impl.openStore(userId0, "", "Electronics store");
+        assertFalse(response.isSuccess());
+
+        assertEquals(ExceptionsEnum.illegalStoreName.toString(), response2.getDescription());
     }
 }

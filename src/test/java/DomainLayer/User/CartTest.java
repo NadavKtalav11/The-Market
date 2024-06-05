@@ -31,7 +31,7 @@ public class CartTest {
     public void testAddItemsToCart() {
         String productName = "Product1";
         int quantity = 2;
-        int storeId = 1;
+        String storeId = "1";
         int totalPrice = 100;
 
         cart.addItemsToCart(productName, quantity, storeId, totalPrice);
@@ -48,7 +48,7 @@ public class CartTest {
         String productName = "Product1";
         int initialQuantity = 2;
         int modifiedQuantity = 3;
-        int storeId = 1;
+        String storeId = "1";
         int initialTotalPrice = 100;
         int modifiedTotalPrice = 150;
 
@@ -66,7 +66,7 @@ public class CartTest {
     public void testModifyProductInNonExistentCart() {
         String productName = "Product1";
         int quantity = 2;
-        int storeId = 100;
+        String storeId = "100";
         int totalPrice = 100;
 
         assertThrows(IllegalArgumentException.class, () -> {
@@ -80,8 +80,8 @@ public class CartTest {
         String productName2 = "Product2";
         int quantity1 = 2;
         int quantity2 = 3;
-        int storeId1 = 1;
-        int storeId2 = 2;
+        String storeId1 = "1";
+        String storeId2 = "2";
         int totalPrice1 = 100;
         int totalPrice2 = 200;
 
@@ -97,7 +97,7 @@ public class CartTest {
     @Test
     public void testCheckIfProductInCart() {
         String productName = "Product1";
-        int storeId = 100;
+        String storeId = "100";
 
         when(mockBasket.checkIfProductInBasket(productName)).thenReturn(true);
         cart.baskets.put(storeId, mockBasket);
@@ -109,7 +109,7 @@ public class CartTest {
     @Test
     public void testCheckIfProductInNonExistentCart() {
         String productName = "Product1";
-        int storeId = 100;
+        String storeId = "100";
 
         assertThrows(IllegalArgumentException.class, () -> {
             cart.checkIfProductInCart(productName, storeId);
@@ -120,7 +120,7 @@ public class CartTest {
     public void testRemoveItemFromCart() {
         String productName = "Product1";
         int quantity = 2;
-        int storeId = 1;
+        String storeId = "1";
         int totalPrice = 100;
 
         cart.addItemsToCart(productName, quantity, storeId, totalPrice);
@@ -129,13 +129,13 @@ public class CartTest {
         // Check if product was removed correctly
         Map<String, List<Integer>> products = cart.getProductsDetailsByStore(storeId);
         assertFalse(products.containsKey(productName));
-        assertThrows(IllegalArgumentException.class, () -> cart.removeItemFromCart(productName, 999));
+        assertThrows(IllegalArgumentException.class, () -> cart.removeItemFromCart(productName, "999"));
     }
 
     @Test
     public void testRemoveItemFromNonExistentCart() {
         String productName = "Product1";
-        int storeId = 100;
+        String storeId = "100";
 
         assertThrows(IllegalArgumentException.class, () -> {
             cart.removeItemFromCart(productName, storeId);
