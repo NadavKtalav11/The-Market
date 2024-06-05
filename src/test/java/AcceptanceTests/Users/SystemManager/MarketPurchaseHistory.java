@@ -2,6 +2,10 @@ package AcceptanceTests.Users.SystemManager;
 
 import AcceptanceTests.BridgeToTests;
 import AcceptanceTests.ProxyToTest;
+import ServiceLayer.Response;
+import Util.ExceptionsEnum;
+import Util.ProductDTO;
+import Util.UserDTO;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
@@ -24,28 +28,31 @@ public class MarketPurchaseHistory {
 
         countries.add("Israel");
         cities.add("Bash");
-        impl.init("manager1", "imTHeManager", "12/12/12", "Israel", "Bash", "Metsada", "Mike", 0,"paypal","saddsa.com",2,"DHL", countries, cities);
+        impl.init("manager1" ,"12/12/12", "Israel", "Bash", "Metsada", "Mike", "imTHeManager1", 0,"paypal","saddsa.com",2,"DHL", countries, cities);
         impl.enterMarketSystem();
-        impl.register(1, "user1", "fSijsd281", "12/12/00", "Israel", "Beer Sheva", "Mesada", "Toy");
-        impl.login(1, "user1", "fSijsd281");
-        impl.openStore(0, "store", "good");
-        impl.addProductToStore(0, 0, "Milk", 10, 5, "Milk 5%", "food");
-        impl.addProductToStore(0, 0, "Cheese", 15, 8, "Cheese 22%", "food");
-        impl.addProductToStore(0, 0, "Yogurt", 4, 12, "Yogurt 20%", "food");
-        impl.addProductToStore(0, 0, "Shoes", 4, 12, "Nike Shoes", "clothing");
-        impl.addProductToBasket("Milk", 2, 0, 0);
-        impl.payWithExternalPaymentService(100, "12345", 123, 12, 2000, "389082132", 1);
+        impl.register("1","user1", "12/12/00", "Israel", "Beer Sheva", "Mesada", "Toy", "fSijsd281");
+        impl.login("1", "user1", "fSijsd281");
+        impl.openStore("0", "store", "good");
+        impl.addProductToStore("0", "0","Milk", 10, 5, "Milk 5%", "food");
+        impl.addProductToStore("0", "0","Cheese", 15, 8, "Cheese 22%", "food");
+        impl.addProductToStore("0", "0","Yogurt", 4, 12, "Yogurt 20%", "food");
+        impl.addProductToStore("0", "0","Shoes", 4, 12, "Nike Shoes", "clothing");
+        impl.addProductToBasket("Milk", 2, "0", "0");
+        //todo think if we need
+        //impl.payWithExternalPaymentService(100, "12345", 123, 12, 2000, "389082132", "1");
     }
 
     @Test
     public void successfulRequestTest() {
         Map<Integer, Integer> storeIdAndNumOfAcquistion = new HashMap<>();
         storeIdAndNumOfAcquistion.put(0, 1);
-        assertEquals(impl.marketManagerAskInfo(0).getResult(), storeIdAndNumOfAcquistion);
+        assertEquals(impl.marketManagerAskInfo("0").getResult(), storeIdAndNumOfAcquistion);
     }
 
     @Test
     public void noPermissionsTest() {
-        assertFalse(impl.marketManagerAskInfo(0).isSuccess());
+        Response<Map<String, Integer>> response1 = impl.marketManagerAskInfo("0");
+        assertFalse(response1.isSuccess());
+        assertEquals(ExceptionsEnum.notSystemManager.toString(), response1.getDescription());
     }
 }

@@ -6,14 +6,14 @@ import java.util.Map;
 
 public class StoreManager implements Role {
 
-    private int member_ID;
-    private int store_ID;
+    private String member_ID;
+    private String store_ID;
     private List<Integer> authorizations;
     private boolean inventoryPermissions;
     private boolean purchasePermissions;
-    private int nominatorMemberId;
+    private String nominatorMemberId;
 
-    StoreManager(int member_ID, int store_ID, boolean inventoryPermissions, boolean purchasePermissions, int nominatorMemberId)
+    StoreManager(String member_ID, String store_ID, boolean inventoryPermissions, boolean purchasePermissions, String nominatorMemberId)
     {
         this.member_ID = member_ID;
         this.store_ID = store_ID;
@@ -27,17 +27,17 @@ public class StoreManager implements Role {
         this.purchasePermissions = purchasePermissions;
     }
 
-    public int getNominatorMemberId()
+    public String getNominatorMemberId()
     {
         return this.nominatorMemberId;
     }
 
-    public int getStore_ID()
+    public String getStore_ID()
     {
         return this.store_ID;
     }
 
-    public int getMember_ID()
+    public String getMember_ID()
     {
         return this.member_ID;
     }

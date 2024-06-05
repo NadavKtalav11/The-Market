@@ -7,26 +7,26 @@ import java.util.Map;
 
 public class StoreMemoryRepository implements StoreRepository{
 
-    Map<Integer, Store> allStores ;
-    Object storesLock;
+    private Map<String, Store> allStores ;
+    private final Object storesLock;
 
 
     public StoreMemoryRepository(){
-        allStores = new HashMap<Integer, Store>();
+        allStores = new HashMap<String, Store>();
         storesLock = new Object();
 
     }
 
 
     @Override
-    public Store get(int storeID) {
+    public Store get(String storeID) {
         synchronized (storesLock) {
             return allStores.get(storeID);
         }
     }
 
     @Override
-    public void add(int storeId, Store to_add) {
+    public void add(String storeId, Store to_add) {
         synchronized (storesLock){
             allStores.put(storeId, to_add);
         }
@@ -34,7 +34,7 @@ public class StoreMemoryRepository implements StoreRepository{
 
 
     @Override
-    public void remove(int storeId) {
+    public void remove(String storeId) {
         synchronized (storesLock) {
             allStores.remove(storeId);
         }
@@ -49,12 +49,16 @@ public class StoreMemoryRepository implements StoreRepository{
     }
 
     @Override
-    public boolean contain(int storeId) {
-        return allStores.containsKey(storeId);
+    public boolean contain(String storeId) {
+        synchronized (storesLock) {
+            return allStores.containsKey(storeId);
+        }
     }
 
     @Override
-    public List<Integer> getAllIds() {
-        return new ArrayList<>(allStores.keySet());
+    public List<String> getAllIds() {
+        synchronized (storesLock) {
+            return new ArrayList<>(allStores.keySet());
+        }
     }
 }
