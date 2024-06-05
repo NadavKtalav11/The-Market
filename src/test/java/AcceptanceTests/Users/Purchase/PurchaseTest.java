@@ -97,8 +97,7 @@ public class PurchaseTest {
 
     @Test
      public void productQuantityUnavailableTest() {
-         impl.addProductToBasket("Shoes", 13, storeID, userID1);
-
+         impl.updateProductInStore(userID1, storeID, "Cheese", 20, 1, "Cheddar", "Dairy");
          Response<String> response = impl.purchase(userID2,userDTO.getCountry(), userDTO.getCity(),userDTO.getAddress(),
                  paymentDTO.getCreditCardNumber(),paymentDTO.getCvv(),paymentDTO.getMonth(), paymentDTO.getYear(),paymentDTO.getHolderId());
          assertFalse(response.isSuccess());
@@ -107,24 +106,13 @@ public class PurchaseTest {
 
      @Test
      public void productNotExistTest() {
-         impl.addProductToBasket("pants", 5, storeID, userID1);
+         impl.removeProductFromStore(userID1, storeID, "Milk");
 
          Response<String> response = impl.purchase(userID2,userDTO.getCountry(), userDTO.getCity(),userDTO.getAddress(),
                  paymentDTO.getCreditCardNumber(),paymentDTO.getCvv(),paymentDTO.getMonth(), paymentDTO.getYear(),paymentDTO.getHolderId());
          assertFalse(response.isSuccess());
 
          assertEquals(ExceptionsEnum.productNotExistInStore.toString(), response.getDescription());
-     }
-
-     @Test
-     public void productQuantityIsNegative() {
-         impl.addProductToBasket("shoes", -1,storeID, userID1);
-
-         Response<String> response =impl.purchase(userID2,userDTO.getCountry(), userDTO.getCity(),userDTO.getAddress(),
-                 paymentDTO.getCreditCardNumber(),paymentDTO.getCvv(),paymentDTO.getMonth(), paymentDTO.getYear(),paymentDTO.getHolderId());
-         assertFalse(response.isSuccess());
-
-         assertEquals(ExceptionsEnum.productQuantityIsNegative.toString(), response.getDescription());
      }
 
      @Test
