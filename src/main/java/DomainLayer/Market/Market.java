@@ -15,6 +15,8 @@ import Util.UserDTO;
 
 import java.util.*;
 import java.util.regex.Pattern;
+import java.util.concurrent.*;
+
 
 
 public class Market {
@@ -186,15 +188,40 @@ public class Market {
 
     public void purchase(String userID, PaymentDTO paymentDTO, UserDTO userDTO) throws Exception {
         CartDTO cartDTO = null;
-        try{
+        ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
+        ScheduledFuture<?> timeoutHandle = null;
+
+        try {
             cartDTO = checkingCartValidationBeforePurchase(userID, userDTO);
+
+            // Create a CompletableFuture for user input
+//            CompletableFuture<Void> userInputFuture = new CompletableFuture<>();
+//
+//            // Schedule a task to complete the future with an exception if the user does not respond in time
+//            timeoutHandle = scheduler.schedule(() -> {
+//                userInputFuture.completeExceptionally(new TimeoutException("User input time expired"));
+//            }, 5, TimeUnit.SECONDS);
+//
+//            // Here you should integrate your actual user input mechanism
+//            // For this example, we simulate user input with a manual completion
+//            // In a real application, replace this line with actual user input handling
+//            // userInputFuture.complete(null);  // Uncomment this to simulate user input completion
+//
+//            // Wait for user input or timeout
+//            userInputFuture.get();
+
+            // Proceed with payment if user input is received
             payWithExternalPaymentService(cartDTO, paymentDTO, userID);
-        }
-        catch (Exception e){
+        } catch (Exception e) {
             if (cartDTO != null) {
                 returnCartToStock(cartDTO.getStoreToProducts());
             }
-            throw new Exception (e);
+            throw e;
+        } finally {
+            if (timeoutHandle != null && !timeoutHandle.isDone()) {
+                timeoutHandle.cancel(true);
+            }
+            scheduler.shutdown();
         }
     }
 
@@ -669,13 +696,11 @@ public class Market {
         }
         List<String> storeIds = userFacade.getUserByID(userId).getCart().getCartStores();
         for (String storeId : storeIds) {
-            Map<String, Integer> products = userFacade.getUserByID(userId).getCart().getProductsQuantityByStore(storeId);
+            Map<String, Integer> products = userFacade.getUserByID(userId).getCart().getProductsQuantityByStore(storeId); //Map<productName, quantity> products
             for (Map.Entry<String, Integer> entry : products.entrySet()) {
                 String productName = entry.getKey();
                 int quantity = entry.getValue();
-                for (int i = 0; i < quantity; i++) {
-                    storeFacade.removeProductFromStore(storeId, productName);
-                }
+                storeFacade.getStoreByID(storeId).removeProductQuantity(productName,quantity);
             }
         }
     }

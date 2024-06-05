@@ -169,4 +169,10 @@ public class RealToTest implements BridgeToTests {
     {
         return service.inStoreProductSearch(userId, productName, categoryStr, keywords, storeId);
     }
+
+    public Response<String> purchase(String user_ID, String country, String city, String address, String cardNumber, int cvv, int month, int year, String holderID){
+        return service.purchase(user_ID, country, city, address, cardNumber, cvv, month, year, holderID);
+
+    }
+
 }

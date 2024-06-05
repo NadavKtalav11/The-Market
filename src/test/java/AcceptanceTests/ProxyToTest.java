@@ -247,4 +247,11 @@ public class ProxyToTest implements BridgeToTests {
         else
             return new Response<>(null, "Not Implemented yet");
     }
+
+    public Response<String> purchase(String user_ID, String country, String city, String address, String cardNumber, int cvv, int month, int year, String holderID){
+        if (realServiceAdaptor != null)
+            return realServiceAdaptor.purchase(user_ID, country, city, address, cardNumber ,cvv,month,year,holderID);
+        else
+            return new Response<>(null, "Not Implemented yet");
+    }
 }

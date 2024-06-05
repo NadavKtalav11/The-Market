@@ -107,6 +107,15 @@ public class Store {
         }
     }
 
+    public void removeProductQuantity(String productName,int quantity){
+        synchronized (storeProductLock) {
+            Product product = storeProducts.get(productName);
+            if (product.getQuantity() > quantity){
+                product.setQuantity(product.getQuantity()-quantity);
+            }
+        }
+    }
+
     public void closeStore()
     {
         synchronized (isOpenedLock) {
