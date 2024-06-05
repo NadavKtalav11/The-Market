@@ -58,12 +58,10 @@ public class EmployeeInfo {
 
     @Test
     public void storeNotExistTest() {
-        Exception exception = assertThrows(Exception.class, () -> {
-            Response<Map<String,String>> response = impl.getInformationAboutRolesInStore(userID1, storeID);
-            assertFalse(response.isSuccess());
-        });
+        Response<Map<String,String>> response = impl.getInformationAboutRolesInStore(userID1, storeID);
+        assertFalse(response.isSuccess());
 
-        assertEquals(ExceptionsEnum.storeNotExist.toString(), exception.getMessage());
+        assertEquals(ExceptionsEnum.storeNotExist.toString(), response.getDescription());
     }
 
 }
