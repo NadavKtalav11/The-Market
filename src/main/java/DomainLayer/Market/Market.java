@@ -99,6 +99,7 @@ public class Market {
         }
         String encrypted = authenticationAndSecurityFacade.encodePassword(password);
         String firstUserID = enterMarketSystem();
+        user.setUserId(firstUserID);
         String systemMangerId = userFacade.register(firstUserID, user, encrypted);
         synchronized (managersLock) {
             systemManagerIds.add(systemMangerId);

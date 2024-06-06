@@ -52,7 +52,7 @@ public class PurchaseTest {
 
         // Initialize paymentDTO and userDTO
         paymentDTO = new PaymentDTO("holderName", "1111222233334444", 1, 12, 2025);
-        userDTO = new UserDTO("newUser1", "12/12/2000", "Israel", "BeerSheva", "bialik", "noa");
+        userDTO = new UserDTO(userID1, "newUser1", "12/12/2000", "Israel", "BeerSheva", "bialik", "noa");
     }
 
     @Test
