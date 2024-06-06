@@ -1,5 +1,7 @@
 package Util;
 
+import DomainLayer.User.User;
+
 public class UserDTO {
     private String userName;
     private String birthday;
@@ -7,14 +9,26 @@ public class UserDTO {
     private String city;
     private String address;
     private String name;
+    private String userId;
 
-    public UserDTO(String userName, String birthday, String country, String city, String address, String name){
+    public UserDTO(String userId, String userName, String birthday, String country, String city, String address, String name){
         this.userName = userName;
         this.birthday = birthday;
         this.country = country;
         this.city = city;
         this.address = address;
         this.name = name;
+        this.userId = userId;
+    }
+
+    public UserDTO (User user){
+        //this.userName = user.getuserName();
+        this.birthday = user.getBirthday();
+        this.country = user.getCountry();
+        this.city = user.getCity();
+        this.address = user.getAddress();
+        this.name = user.getName();
+        this.userId = user.getUserID();
     }
 
     public UserDTO(String userName){
@@ -72,5 +86,9 @@ public class UserDTO {
 
     public void setAddress(String address) {
         this.address = address;
+    }
+
+    public String getUserId(){
+        return userId;
     }
 }
