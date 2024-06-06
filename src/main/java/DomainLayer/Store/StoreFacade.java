@@ -185,7 +185,7 @@ public class StoreFacade {
     {
         Store storeToClose = this.getStoreByID(store_ID);
         if (!storeToClose.getIsOpened()){
-            throw new Exception("store is already closed");
+            throw new Exception(ExceptionsEnum.storeNotExist.toString());
         }
         storeToClose.closeStore();
     }
