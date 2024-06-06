@@ -21,6 +21,9 @@ public class EmployeeInfo {
     private static String userID3;
     private static String userID4;
     private static String storeID;
+    private static String memberID1;
+    private static String memberID2;
+    private static String memberID3;
 
 
     @BeforeAll
@@ -31,37 +34,46 @@ public class EmployeeInfo {
         userID2 = impl.enterMarketSystem().getData();
         userID3 = impl.enterMarketSystem().getData();
         userID4 = impl.enterMarketSystem().getData();
-        impl.register(userID1,"saar", "10/04/84", "Israel", "Jerusalem", "Yehuda halevi 18", "saar", "Fadidaa1");
-        impl.register(userID2,"tom", "27/11/85", "Israel", "Jerusalem", "Yehuda halevi 17", "tom", "Shlaifer2");
-        impl.register(userID3,"jalal", "08/02/82", "Israel", "Jerusalem", "Yehuda halevi 13", "jalal", "Kasoomm3");
-        impl.register(userID4,"ovad", "08/02/82", "Israel", "Jerusalem", "Yehuda halevi 11", "ovad", "Haviaaa4");
+        memberID1 = impl.register(userID1,"saar", "10/04/84", "Israel", "Jerusalem", "Yehuda halevi 18", "saar", "Fadidaa1").getData();
+        memberID2 = impl.register(userID2,"tom", "27/11/85", "Israel", "Jerusalem", "Yehuda halevi 17", "tom", "Shlaifer2").getData();
+        memberID3 = impl.register(userID3,"jalal", "08/02/82", "Israel", "Jerusalem", "Yehuda halevi 13", "jalal", "Kasoomm3").getData();
         impl.login(userID1, "saar", "Fadidaa1");
         impl.login(userID2, "tom", "Shlaifer2");
         impl.login(userID3, "jalal", "Kasoomm3");
         impl.login(userID4, "ovad", "Haviaaa4");
 
         storeID = impl.openStore(userID1, "Zara", "clothing store").getData();
+        impl.appointStoreOwner(userID1, "tom", storeID);
+        impl.appointStoreManager(userID1, "jalal", storeID, true, false);
+
     }
 
     @Test
     public void successfulRequestTest() {
-        impl.appointStoreOwner(userID1, "tom", storeID);
-        impl.appointStoreManager(userID1, "jalal", storeID, true, false);
 
         assertTrue(impl.getInformationAboutRolesInStore(userID1, storeID).isSuccess());
         Map<String, String > employees = new HashMap<>();
-        employees.put(userID1, "owner");
-        employees.put(userID2, "manager");
+        employees.put(memberID1, "owner");
+        employees.put(memberID2, "owner");
+        employees.put(memberID3, "manager");
         assertEquals(impl.getInformationAboutRolesInStore(userID1, storeID).getResult(), employees);
 
     }
 
     @Test
     public void storeNotExistTest() {
-        Response<Map<String,String>> response = impl.getInformationAboutRolesInStore(userID1, storeID);
+        Response<Map<String,String>> response = impl.getInformationAboutRolesInStore(userID3, "not existing store id");
         assertFalse(response.isSuccess());
 
         assertEquals(ExceptionsEnum.storeNotExist.toString(), response.getDescription());
+    }
+
+    @Test
+    public void userIsNotStoreOwnerTest() {
+        Response<Map<String,String>> response = impl.getInformationAboutRolesInStore(userID3, storeID);
+        assertFalse(response.isSuccess());
+
+        assertEquals(ExceptionsEnum.userIsNotStoreOwner.toString(), response.getDescription());
     }
 
 }
