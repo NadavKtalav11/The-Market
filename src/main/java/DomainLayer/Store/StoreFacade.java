@@ -242,7 +242,7 @@ public class StoreFacade {
     {
         if (categoryStr != null)
         {
-            if (!(Category.fromString(categoryStr) == null));
+            if (Category.fromString(categoryStr) == null)
             {
                 throw new IllegalArgumentException(ExceptionsEnum.categoryNotExist.toString());
             }
