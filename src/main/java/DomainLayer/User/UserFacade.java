@@ -170,7 +170,7 @@ public class UserFacade {
             String memberId = getCurrentMemberID();
 
 
-            Member newMember = new Member(memberId, user, password);
+            Member newMember = new Member(memberId,user.getUserName(), user.getAddress(), user.getName(), password, user.getBirthday(), user.getCountry(), user.getCity());
             members.add(memberId, newMember);
             //todo pass the user to login page.
             return memberId;
@@ -182,7 +182,7 @@ public class UserFacade {
         validateRegistrationDetails(user,password);
         String memberId = getCurrentMemberID();
 
-        Member newMember = new Member(memberId, user,password);
+        Member newMember = new Member(memberId,user.getUserName(), user.getAddress(), user.getName(), password, user.getBirthday(), user.getCountry(), user.getCity());
             members.add(memberId, newMember);
 
         return memberId;
