@@ -43,11 +43,9 @@ public class EmployeePermissionsInfo {
 
     @Test
     public void storeNotExistTest() {
-        Exception exception = assertThrows(Exception.class, () -> {
-            Response<Map<String, List<Integer>>> response = impl.getAuthorizationsOfManagersInStore("0", "0");
-            assertFalse(response.isSuccess());
-        });
+        Response<Map<String, List<Integer>>> response = impl.getAuthorizationsOfManagersInStore("0", "0");
+        assertFalse(response.isSuccess());
 
-        assertEquals(ExceptionsEnum.storeNotExist.toString(), exception.getMessage());
+        assertEquals(ExceptionsEnum.storeNotExist.toString(), response.getDescription());
     }
 }

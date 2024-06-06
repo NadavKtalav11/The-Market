@@ -97,76 +97,40 @@ public class PurchaseTest {
 
     @Test
      public void productQuantityUnavailableTest() {
-         impl.addProductToBasket("Shoes", 13, storeID, userID1);
-
-         Exception exception = assertThrows(Exception.class, () -> {
-             Response<String> response = impl.purchase(userID2,userDTO.getCountry(), userDTO.getCity(),userDTO.getAddress(),
-                     paymentDTO.getCreditCardNumber(),paymentDTO.getCvv(),paymentDTO.getMonth(), paymentDTO.getYear(),paymentDTO.getHolderId());
-             assertFalse(response.isSuccess());
-         });
-         assertEquals(ExceptionsEnum.productQuantityNotExist.toString(), exception.getMessage());
+         impl.updateProductInStore(userID1, storeID, "Cheese", 20, 1, "Cheddar", "Dairy");
+         Response<String> response = impl.purchase(userID2,userDTO.getCountry(), userDTO.getCity(),userDTO.getAddress(),
+                 paymentDTO.getCreditCardNumber(),paymentDTO.getCvv(),paymentDTO.getMonth(), paymentDTO.getYear(),paymentDTO.getHolderId());
+         assertFalse(response.isSuccess());
+         assertEquals(ExceptionsEnum.productQuantityNotExist.toString(), response.getDescription());
      }
 
      @Test
      public void productNotExistTest() {
-         impl.addProductToBasket("pants", 5, storeID, userID1);
+         impl.removeProductFromStore(userID1, storeID, "Milk");
 
-         Exception exception = assertThrows(Exception.class, () -> {
-             Response<String> response = impl.purchase(userID2,userDTO.getCountry(), userDTO.getCity(),userDTO.getAddress(),
-                     paymentDTO.getCreditCardNumber(),paymentDTO.getCvv(),paymentDTO.getMonth(), paymentDTO.getYear(),paymentDTO.getHolderId());
-             assertFalse(response.isSuccess());
-         });
+         Response<String> response = impl.purchase(userID2,userDTO.getCountry(), userDTO.getCity(),userDTO.getAddress(),
+                 paymentDTO.getCreditCardNumber(),paymentDTO.getCvv(),paymentDTO.getMonth(), paymentDTO.getYear(),paymentDTO.getHolderId());
+         assertFalse(response.isSuccess());
 
-         assertEquals(ExceptionsEnum.productNotExistInStore.toString(), exception.getMessage());
+         assertEquals(ExceptionsEnum.productNotExistInStore.toString(), response.getDescription());
      }
 
      @Test
-     public void productQuantityIsNegative() {
-         impl.addProductToBasket("shoes", -1,storeID, userID1);
+     public void purchasePolicyInvalidTest() {
+         // TODO: 31/05/2024 change this test to use mock
+         // TODO: 31/05/2024 maybe need to add also test for discount policy
 
-         Exception exception = assertThrows(Exception.class, () -> {
-             Response<String> response =impl.purchase(userID2,userDTO.getCountry(), userDTO.getCity(),userDTO.getAddress(),
-                     paymentDTO.getCreditCardNumber(),paymentDTO.getCvv(),paymentDTO.getMonth(), paymentDTO.getYear(),paymentDTO.getHolderId());
-             assertFalse(response.isSuccess());
-         });
+         Response<String> response =impl.purchase(userID2, userDTO.getCountry(), userDTO.getCity(), userDTO.getAddress(), paymentDTO.getCreditCardNumber(),paymentDTO.getCvv(),paymentDTO.getMonth(), paymentDTO.getYear(),paymentDTO.getHolderId());
+         assertFalse(response.isSuccess());
 
-         assertEquals(ExceptionsEnum.productQuantityIsNegative.toString(), exception.getMessage());
+         assertEquals(ExceptionsEnum.purchasePolicyIsNotMet.toString(), response.getDescription());
      }
 
-//     @Test
-//     public void emptyCartTest() {
-//         impl.removeProductFromBasket("Milk", "0", "1");
-//         impl.removeProductFromBasket("Cheese", "0", "1");
-//         impl.removeProductFromBasket("Yogurt", "0", "1");
+     @Test
+     public void shippingInvalidTest() {
+         Response<String> response =impl.purchase(userID2, "Israel", "Tel Aviv", "Rothschild", paymentDTO.getCreditCardNumber(),paymentDTO.getCvv(),paymentDTO.getMonth(), paymentDTO.getYear(),paymentDTO.getHolderId());
+         assertFalse(response.isSuccess());
 
-//         Exception exception = assertThrows(Exception.class, () -> {
-//             Response<Integer> response =impl.checkingCartValidationBeforePurchase("0", "Israel", "Beer Sheva", "Mesada");
-//             assertFalse(response.isSuccess());
-//         });
-
-//         assertEquals(ExceptionsEnum.userCartIsEmpty.toString(), exception.getMessage());
-//     }
-
-//     @Test
-//     public void purchasePolicyInvalidTest() {
-//         // TODO: 31/05/2024 change this test to use mock
-//         // TODO: 31/05/2024 maybe need to add also test for discount policy
-
-//         Exception exception = assertThrows(Exception.class, () -> {
-//             Response<Integer> response =impl.checkingCartValidationBeforePurchase("0", "Israel", "Beer Sheva", "Mesada");
-//             assertFalse(response.isSuccess());
-//         });
-
-//         assertEquals(ExceptionsEnum.purchasePolicyIsNotMet.toString(), exception.getMessage());
-//     }
-
-//     @Test
-//     public void shippingInvalidTest() {
-//         Exception exception = assertThrows(Exception.class, () -> {
-//             Response<Integer> response =impl.checkingCartValidationBeforePurchase("0", "Israel", "Tel Aviv", "Mesada");
-//             assertFalse(response.isSuccess());
-//         });
-
-//         assertEquals(ExceptionsEnum.ExternalSupplyServiceIsNotAvailable.toString(), exception.getMessage());
-//     }
+         assertEquals(ExceptionsEnum.ExternalSupplyServiceIsNotAvailable.toString(), response.getDescription());
+     }
 }

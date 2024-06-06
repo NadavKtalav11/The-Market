@@ -36,17 +36,13 @@ public class OpenStore {
 
     @Test
     public void missingStoreNameTest() {
-        //Exception exception1 = assertThrows(Exception.class, () -> {
         Response<String> response = impl.openStore(userId0, null, "clothing store");
         assertFalse(response.isSuccess());
-        //});
 
         assertEquals(ExceptionsEnum.illegalStoreName.toString(), response.getDescription());
 
-        //Exception exception2 = assertThrows(Exception.class, () -> {
         Response<String> response2 = impl.openStore(userId0, "", "Electronics store");
         assertFalse(response.isSuccess());
-        //});
 
         assertEquals(ExceptionsEnum.illegalStoreName.toString(), response2.getDescription());
     }
