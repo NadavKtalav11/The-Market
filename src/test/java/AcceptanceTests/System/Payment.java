@@ -80,7 +80,7 @@ public class Payment {
         int year = 2024;
         String holderID = "123456789";
         String userID = "77";
-        userFacade.register(userID,  new UserDTO("username", "birthday", "country",  "city", "address",  "name"), "password");
+        userFacade.register(userID,  new UserDTO(userID, "username", "birthday", "country",  "city", "address",  "name"), "password");
 
         String systemMangerId = "77";
 

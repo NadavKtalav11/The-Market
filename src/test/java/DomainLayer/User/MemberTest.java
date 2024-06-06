@@ -22,7 +22,8 @@ public class MemberTest {
 
     @BeforeEach
     public void setUp() {
-        member = new Member(memberId, new UserDTO(username,birthday,country,city,address, name), password);
+        //member = new Member(memberId, new UserDTO(username,birthday,country,city,address, name), password);
+        member = new Member(memberId , username,address, name, password, birthday, country, city );
     }
 
 

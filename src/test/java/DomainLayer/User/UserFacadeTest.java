@@ -66,7 +66,7 @@ public class UserFacadeTest {
     @Test
     public void testRegister() throws Exception {
         String userId = userFacade.addUser();
-        userFacade.register(userId, new UserDTO("testUser", "01-01-2000", "Test Country", "Test City", "123 Test St", "Test Name"), "testPass");
+        userFacade.register(userId, new UserDTO(userId, "testUser", "01-01-2000", "Test Country", "Test City", "123 Test St", "Test Name"), "testPass");
 
         Member member = userFacade.getMemberByUsername("testUser");
         assertNotNull(member);

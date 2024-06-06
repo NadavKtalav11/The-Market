@@ -105,6 +105,7 @@ public class GeneralSerach {
         diaryProducts.add("Yogurt");
         Response<List<String>> response = impl.generalProductFilter(userId0, null, null, 10, 0, null, diaryProducts, null);
         assertFalse(response.isSuccess());
+        assertEquals(ExceptionsEnum.priceRangeInvalid.toString(), response.getDescription());
     }
 
     @Test
@@ -115,6 +116,7 @@ public class GeneralSerach {
         diaryProducts.add("Yogurt");
         Response<List<String>> response = impl.generalProductFilter(userId0, null, null, null, null, 7.0, diaryProducts, null);
         assertFalse(response.isSuccess());
+        assertEquals(ExceptionsEnum.productRateInvalid.toString(), response.getDescription());
     }
 
     @Test
@@ -125,5 +127,6 @@ public class GeneralSerach {
         diaryProducts.add("Yogurt");
         Response<List<String>> response = impl.generalProductFilter(userId0, null, null, null, null, null, diaryProducts, 7.0);
         assertFalse(response.isSuccess());
+        assertEquals(ExceptionsEnum.storeRateInvalid.toString(), response.getDescription());
     }
 }

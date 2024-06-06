@@ -99,6 +99,7 @@ public class Market {
         }
         String encrypted = authenticationAndSecurityFacade.encodePassword(password);
         String firstUserID = enterMarketSystem();
+        user.setUserId(firstUserID);
         String systemMangerId = userFacade.register(firstUserID, user, encrypted);
         synchronized (managersLock) {
             systemManagerIds.add(systemMangerId);
@@ -497,8 +498,8 @@ public class Market {
 
         userFacade.isUserLoggedInError(user_ID);
         String member_ID = this.userFacade.getMemberIdByUserId(user_ID);
-        roleFacade.verifyStoreOwnerError(store_ID, member_ID);
         storeFacade.verifyStoreExistError(store_ID);
+        roleFacade.verifyStoreOwnerError(store_ID, member_ID);
         information = roleFacade.getInformationAboutStoreRoles(store_ID);
 
         return information;
@@ -520,8 +521,8 @@ public class Market {
         userFacade.isUserLoggedInError(user_ID);
 
         String member_ID = this.userFacade.getMemberIdByUserId(user_ID);
-        roleFacade.verifyStoreOwnerError(store_ID, member_ID);
         storeFacade.verifyStoreExistError(store_ID);
+        roleFacade.verifyStoreOwnerError(store_ID, member_ID);
         managersAuthorizations = roleFacade.getStoreManagersAuthorizations(store_ID);
 
 

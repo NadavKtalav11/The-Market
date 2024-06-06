@@ -170,7 +170,7 @@ public class UserFacade {
             String memberId = getCurrentMemberID();
 
 
-            Member newMember = new Member(memberId, user, password);
+            Member newMember = new Member(memberId,user.getUserName(), user.getAddress(), user.getName(), password, user.getBirthday(), user.getCountry(), user.getCity());
             members.add(memberId, newMember);
             //todo pass the user to login page.
             return memberId;
@@ -182,7 +182,7 @@ public class UserFacade {
         validateRegistrationDetails(user,password);
         String memberId = getCurrentMemberID();
 
-        Member newMember = new Member(memberId, user,password);
+        Member newMember = new Member(memberId,user.getUserName(), user.getAddress(), user.getName(), password, user.getBirthday(), user.getCountry(), user.getCity());
             members.add(memberId, newMember);
 
         return memberId;
@@ -320,4 +320,29 @@ public class UserFacade {
     {
         userRepository.get(userId).addReceipt(receiptIdAndStoreId);
     }
+
+    public List<UserDTO> getAllUsers(){
+        List<User> users = userRepository.getAll();
+        List<UserDTO> userDTOList = new ArrayList<>();
+        for (User user:users ){
+            userDTOList.add(new UserDTO(user));
+        }
+        return userDTOList;
+    }
+
+    public UserDTO getUserDTOById(String userID){
+        return new UserDTO(getUserByID(userID));
+    }
+
+    public UserDTO updateUser( UserDTO userDTO){
+        User user = getUserByID(userDTO.getUserId());
+        user.updateByDTO(userDTO);
+        return new UserDTO(user);
+
+    }
+
+    public void removeUser(String userId){
+        userRepository.remove(userId);
+    }
+
 }
