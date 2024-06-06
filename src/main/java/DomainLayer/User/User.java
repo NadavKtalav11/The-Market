@@ -1,5 +1,7 @@
 package DomainLayer.User;
 
+import Util.UserDTO;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -22,8 +24,20 @@ public class User {
         this.city = null;
         this.address = null;
         this.state = new Guest(); //default state
+        this.name = null;
         //this.cart = new Cart();
     }
+
+    public void updateByDTO(UserDTO userDTO){
+        //this.userID = userDTO.getUserId();
+        this.birthday = userDTO.getBirthday();
+        this.country = userDTO.getCountry();
+        this.city = userDTO.getCity();
+        this.address = userDTO.getAddress();
+        this.name = userDTO.getName();
+    }
+
+
 
     public String getUserID(){
         return userID;
@@ -123,5 +137,9 @@ public class User {
     public void addReceipt(Map<String, String> receiptIdAndStoreId)
     {
         state.addReceipt(receiptIdAndStoreId);
+    }
+
+    public String getBirthday(){
+        return birthday;
     }
 }

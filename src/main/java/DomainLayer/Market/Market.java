@@ -99,6 +99,7 @@ public class Market {
         }
         String encrypted = authenticationAndSecurityFacade.encodePassword(password);
         String firstUserID = enterMarketSystem();
+        user.setUserId(firstUserID);
         String systemMangerId = userFacade.register(firstUserID, user, encrypted);
         synchronized (managersLock) {
             systemManagerIds.add(systemMangerId);
@@ -729,8 +730,10 @@ public class Market {
                 throw new Exception(ExceptionsEnum.sessionOver.toString());
             }
         }
-        List<String> filteredProductNames = new ArrayList<>();
 
+        storeFacade.checkCategory(categoryStr);
+
+        List<String> filteredProductNames = new ArrayList<>();
         List<String> stores = this.storeFacade.getStores();
         for(String store_ID: stores)
         {
@@ -742,9 +745,6 @@ public class Market {
                 continue;
             }
         }
-        if (filteredProductNames.isEmpty())
-            throw new IllegalArgumentException(ExceptionsEnum.productNotExistInMarket.toString());
-
         return filteredProductNames;
     }
 
@@ -776,12 +776,22 @@ public class Market {
                 throw new Exception(ExceptionsEnum.sessionOver.toString());
             }
         }
+        checkPrice(minPrice, maxPrice);
+        checkProductRating(productMinRating);
+        checkStoreRating(storeMinRating);
+        storeFacade.checkCategory(categoryStr);
+
         List<String> filteredProductNames = new ArrayList<>();
 
         List<String > stores = this.storeFacade.getStores();
         for(String store_ID: stores)
         {
-            filteredProductNames.addAll(inStoreProductFilter(userId, categoryStr, keywords, minPrice, maxPrice, productMinRating, store_ID, productsFromSearch, storeMinRating));
+            try{
+                filteredProductNames.addAll(inStoreProductFilter(userId, categoryStr, keywords, minPrice, maxPrice, productMinRating, store_ID, productsFromSearch, storeMinRating));
+            }catch (Exception e)
+            {
+                continue;
+            }
         }
         return filteredProductNames;
     }

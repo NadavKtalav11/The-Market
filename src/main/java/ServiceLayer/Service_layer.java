@@ -32,7 +32,7 @@ public class Service_layer {
                                  String paymentServiceName, String url, int licensedDealerNumber1, String supplyServiceName, HashSet<String> countries, HashSet<String> cities){
         logger.info("Starting the initialization of the system.");
         try {
-            market.init(new UserDTO(userName, birthday, country, city, address, name), password, licensedDealerNumber, paymentServiceName,
+            market.init(new UserDTO(null , userName, birthday, country, city, address, name), password, licensedDealerNumber, paymentServiceName,
                     url, licensedDealerNumber1, supplyServiceName, countries, cities);
             logger.info("System initialized successfully.");
             return new Response<>("Initialization successful", "System initialized successfully.");
@@ -98,7 +98,7 @@ public class Service_layer {
         logger.info("Initiating purchase for user: {}", user_ID);
         try {
             market.purchase(user_ID, new PaymentDTO(holderID,cardNumber, cvv, month, year),
-                    new UserDTO(null, null, country, city, address, null));
+                    new UserDTO(user_ID, null, null, country, city, address, null));
             logger.info("Purchase successful for user: {}", user_ID);
             return new Response<>("Purchase successful", "");
         } catch (Exception e) {
@@ -156,7 +156,7 @@ public class Service_layer {
     public Response<String> register(String userID, String userName, String birthday, String country, String city, String address, String name, String password) {
         logger.info("Registration");
         try {
-            String memberID = market.register(userID, new UserDTO(userName, birthday, country, city, address, name), password);
+            String memberID = market.register(userID, new UserDTO(userID, userName, birthday, country, city, address, name), password);
             return new Response<>("Registration successful", "User registered successfully.", memberID);
         } catch (Exception e) {
             logger.error("Error occurred during registration {}", e.getMessage());
