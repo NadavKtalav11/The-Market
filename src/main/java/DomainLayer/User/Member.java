@@ -23,7 +23,7 @@ public class Member extends State{
     private Map<String, String> receiptIdsAndStoreId; //<receiptId, storeId>
     //private boolean isLogin;
 
-    Member(String member_ID, UserDTO user, String password)
+    /*Member(String member_ID, UserDTO user, String password)
     {
         this.member_ID = member_ID;
         this.username = user.getUserName();
@@ -33,6 +33,20 @@ public class Member extends State{
         this.city =  user.getCity();
         this.address = user.getAddress();
         this.name = user.getName();
+        this.productIdCounter = 0;
+        this.receiptIdsAndStoreId = new HashMap<>();
+    }*/
+
+    Member(String member_ID, String username,String address, String name, String password , String birthday, String country, String city )
+    {
+        this.member_ID = member_ID;
+        this.username =username;
+        this.password = password;
+        this.birthday = birthday;
+        this.country = country;
+        this.city =  city;
+        this.address = address;
+        this.name = name;
         this.productIdCounter = 0;
         this.receiptIdsAndStoreId = new HashMap<>();
     }
