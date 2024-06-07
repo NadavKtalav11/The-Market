@@ -9,20 +9,31 @@ import java.util.HashMap;
 import java.util.Map;
 
 public  class ExternalPaymentService {
-    private int licensedDealerNumber;
+    private String licensedDealerNumber;
     private String paymentServiceName;
     private String url;
     private Map<String, Acquisition> idAndAcquisition = new HashMap<>();
     private HttpClient httpClient;
     private final Object acquisitionLock= new Object();
 
-    public ExternalPaymentService(int licensedDealerNumber, String paymentServiceName, String url) {
+    public ExternalPaymentService(String licensedDealerNumber, String paymentServiceName, String url) {
         this.licensedDealerNumber = licensedDealerNumber;
         this.paymentServiceName = paymentServiceName;
         this.url = url;
 
         this.httpClient = httpClient;
 
+    }
+
+    public String getLicensedDealerNumber(){
+        return licensedDealerNumber;
+    }
+
+    public String getPaymentServiceName(){
+        return paymentServiceName;
+    }
+    public String getUrl(){
+        return url;
     }
 
     // Abstract method for paying with a card
