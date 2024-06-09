@@ -1,7 +1,11 @@
 package DomainLayer.Store;
 
+import Util.UserDTO;
+import org.w3c.dom.ls.LSException;
+
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public class PurchasePolicy {
     private List<String> usersIdsActivatePolicy;
@@ -10,6 +14,7 @@ public class PurchasePolicy {
 
     private final Object usersLock;
     private final Object productLock;
+    private List<Rule<UserDTO, Map<String, List<Integer>>>> purchaseRules;
 
     public PurchasePolicy()
     {
@@ -20,9 +25,13 @@ public class PurchasePolicy {
         productLock = new Object();
     }
 
-    public boolean checkPurchasePolicy(String userId, String productName)
+    public boolean checkPurchasePolicy(UserDTO userDTO, Map<String, List<Integer>> products)
     {
-        //No requirement to policy policy, return true
+        for (Rule<UserDTO, Map<String, List<Integer>>> rule : purchaseRules)
+        {
+            if (!rule.checkRule(userDTO, products))
+                return false;
+        }
         return true;
     }
 

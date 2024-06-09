@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import java.util.stream.Collectors;
 import  DomainLayer.Notifications.Notification;
 import  DomainLayer.Notifications.StoreNotification;
-
+import Util.UserDTO;
 
 
 public class Store {
@@ -164,9 +164,9 @@ public class Store {
         return this.discountPolicy.checkDiscountPolicy(userId, productName);
     }
 
-    public boolean checkPurchasePolicy(String userId, String productName)
+    public boolean checkPurchasePolicy(UserDTO userDTO, Map<String, List<Integer>> products)
     {
-        return this.purchasePolicy.checkPurchasePolicy(userId, productName);
+        return this.purchasePolicy.checkPurchasePolicy(userDTO, products);
     }
 
     public List<String> matchProducts(String productName, String categoryStr, List<String> keywords)

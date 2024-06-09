@@ -21,7 +21,9 @@ public class RealToTest implements BridgeToTests {
 
     @Override
     public Response<String> init(String userName, String birthday, String country, String city, String address, String name, String password, String licensedDealerNumber,
+
                                  String paymentServiceName, String url, String licensedDealerNumber1, String supplyServiceName, HashSet<String> countries, HashSet<String> cities) {
+
         return service.init(userName, birthday, country, city, address, name, password, licensedDealerNumber, paymentServiceName, url, licensedDealerNumber1, supplyServiceName, countries, cities);
 
     }

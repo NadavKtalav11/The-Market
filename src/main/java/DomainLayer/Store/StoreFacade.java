@@ -2,6 +2,7 @@ package DomainLayer.Store;
 
 import Util.ExceptionsEnum;
 import Util.ProductDTO;
+import Util.UserDTO;
 
 import java.util.*;
 
@@ -70,14 +71,14 @@ public class StoreFacade {
     }
 
 
-    public boolean checkQuantityAndPolicies(String productName, int quantity, String storeId, String userId) {
+    public boolean checkQuantityAndPolicies(UserDTO userDTO, Map<String, List<Integer>> products, String productName, int quantity, String storeId, String userId) {
 
         this.checkIfProductExists(productName, storeId);
         this.checkProductQuantityAvailability(productName, storeId, quantity);
         this.checkIfProductQuantityIsPositive(quantity);
 
         //Check here all policies
-        this.checkPurchasePolicy(productName, storeId, userId);
+        this.checkPurchasePolicy(userDTO, products, storeId);
         this.checkDiscountPolicy(productName, storeId, userId);
         return true;
         //todo nitzan check merge ;
@@ -109,11 +110,11 @@ public class StoreFacade {
         }
     }
 
-    public void checkPurchasePolicy(String productName, String storeId, String userId)
+    public void checkPurchasePolicy(UserDTO userDTO, Map<String, List<Integer>> products, String storeId)
     {
         Store store = getStoreByID(storeId);
 
-        if (!store.checkPurchasePolicy(userId, productName))
+        if (!store.checkPurchasePolicy(userDTO, products))
         {
             throw new IllegalArgumentException(ExceptionsEnum.purchasePolicyIsNotMet.toString());
         }

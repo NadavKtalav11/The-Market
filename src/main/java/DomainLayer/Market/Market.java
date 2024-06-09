@@ -615,6 +615,7 @@ public class Market {
             removeProductFromBasket(productName, storeId, userId);
         else
         {
+            userFacade.checkIfCanRemove(productName, storeId, userId);
             storeFacade.checkQuantityAndPolicies(productName, quantity, storeId, userId);
             int totalPrice = storeFacade.calcPrice(productName, quantity, storeId, userId);
             userFacade.modifyBasketProduct(productName, quantity, storeId, userId, totalPrice);
