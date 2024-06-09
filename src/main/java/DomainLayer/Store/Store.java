@@ -5,6 +5,10 @@ import Util.ProductDTO;
 import java.util.*;
 import java.util.ArrayList;
 import java.util.stream.Collectors;
+import  DomainLayer.Notifications.Notification;
+import  DomainLayer.Notifications.StoreNotification;
+
+
 
 public class Store {
     private String store_ID;
@@ -40,6 +44,9 @@ public class Store {
         receiptsLock = new Object();
     }
 
+    public String getStoreName(){
+        return storeName;
+    }
 
     public void returnProductToStore(Map<String, Integer> products){
         synchronized (storeProductLock) {
@@ -121,7 +128,18 @@ public class Store {
         synchronized (isOpenedLock) {
             this.isOpened = false;
         }
+
+
     }
+
+    public void sendMessageToStaffOfStore(Notification notification) {
+//        founder.notifyObserver(notification);
+//        for (User u : getOwnersOfStore())
+//            u.notifyObserver(notification);
+//        for (User u : getManagersOfStore())
+//            u.notifyObserver(notification);
+    }
+
 
     public boolean getIsOpened()
     {
