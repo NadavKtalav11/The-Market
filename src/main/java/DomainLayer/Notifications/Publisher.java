@@ -15,8 +15,8 @@ public class Publisher implements Observer {
 
     @Override
     public boolean update(Notification newNotification) {
-        if(observableUser.getIsLoggedIn())
-            return publishNotifications(newNotification);
+        //if(observableUser.getIsLoggedIn())
+            //return publishNotifications(newNotification);
         return false;
     }
 

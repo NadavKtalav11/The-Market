@@ -1,0 +1,47 @@
+2024-06-09 19:03:33 ERROR o.s.b.d.LoggingFailureAnalysisReporter - 
+
+***************************
+APPLICATION FAILED TO START
+***************************
+
+Description:
+
+Web server failed to start. Port 8080 was already in use.
+
+Action:
+
+Identify and stop the process that's listening on port 8080 or configure this application to listen on another port.
+
+2024-06-09 19:48:12 ERROR o.s.b.d.LoggingFailureAnalysisReporter - 
+
+***************************
+APPLICATION FAILED TO START
+***************************
+
+Description:
+
+Parameter 0 of constructor in PresentationLayer.WAF.ExternalPaymentServiceController required a bean of type 'ServiceLayer.ExternalPaymentServiceService' that could not be found.
+
+
+Action:
+
+Consider defining a bean of type 'ServiceLayer.ExternalPaymentServiceService' in your configuration.
+
+2024-06-09 19:49:00 ERROR o.s.b.d.LoggingFailureAnalysisReporter - 
+
+***************************
+APPLICATION FAILED TO START
+***************************
+
+Description:
+
+Field userService in PresentationLayer.WAF.UserController required a bean of type 'PresentationLayer.WAF.UserService' that could not be found.
+
+The injection point has the following annotations:
+	- @org.springframework.beans.factory.annotation.Autowired(required=true)
+
+
+Action:
+
+Consider defining a bean of type 'PresentationLayer.WAF.UserService' in your configuration.
+
