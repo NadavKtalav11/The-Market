@@ -28,7 +28,7 @@ public class Service_layer {
     }
 
 
-    public Response<String> init(String userName, String birthday, String country, String city, String address, String name, String password, int licensedDealerNumber,
+    public Response<String> init(String userName, String birthday, String country, String city, String address, String name, String password, String licensedDealerNumber,
                                  String paymentServiceName, String url, int licensedDealerNumber1, String supplyServiceName, HashSet<String> countries, HashSet<String> cities){
         logger.info("Starting the initialization of the system.");
         try {
@@ -43,7 +43,7 @@ public class Service_layer {
         }
     }
 
-    public Response<String> addExternalPaymentService(int licensedDealerNumber,String paymentServiceName, String url, String systemMangerId) throws Exception {
+    public Response<String> addExternalPaymentService(String licensedDealerNumber,String paymentServiceName, String url, String systemMangerId) throws Exception {
         logger.info("Trying to add a new external payment service");
         try {
             market.addExternalPaymentService(licensedDealerNumber, paymentServiceName, url, systemMangerId);
@@ -56,7 +56,7 @@ public class Service_layer {
         }
     }
 
-    public Response<String> removeExternalPaymentService(int  licensedDealerNumber, String systemMangerId){
+    public Response<String> removeExternalPaymentService(String  licensedDealerNumber, String systemMangerId){
         logger.info("Trying to remove the payment service number: {}",licensedDealerNumber );
         try {
             market.removeExternalPaymentService(licensedDealerNumber,systemMangerId);
