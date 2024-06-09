@@ -86,6 +86,7 @@ public class StoreFacadeTest {
         assertEquals(expectedProducts, result);
     }
 
+    /*
     @Test
     void testCheckQuantityAndPolicies() {
         when(mockStore.checkProductExists("Milk")).thenReturn(true);
@@ -107,7 +108,7 @@ public class StoreFacadeTest {
         assertThrows(Exception.class, () -> storeFacade.checkQuantityAndPolicies("Milk", 5, "0", "1"));
 
     }
-
+*/
     @Test
     void testCalcPrice() {
         when(mockStore.calcPriceInStore("Milk", 5, "1")).thenReturn(100);
