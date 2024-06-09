@@ -1,0 +1,16 @@
+package DomainLayer.Store;
+
+public class SimpleRule<T, U> implements Rule<T, U>{
+
+    private TestRule rule;
+
+    public SimpleRule(TestRule rule) {
+        this.rule = rule;
+    }
+
+    @Override
+    public boolean checkRule(T user, U products) {
+        return rule.getPredicate().test(user, products);
+    }
+
+}
