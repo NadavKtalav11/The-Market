@@ -15,9 +15,10 @@ public enum RulesRepository implements TestRule<UserDTO, String>{
         LocalDate birthdate = LocalDate.parse(userDTO.getBirthday(), formatter);
         LocalDate today = LocalDate.now();
         int age = Period.between(birthdate, today).getYears();
-        return age > 18 || (age < 18 && !productsList.contains());
-    }),
-    NAME_STARTS_WITH_B(UserDTO -> UserDTO.getName().startsWith("B"));
+        return age > 18 ;//|| (age < 18 && !productsList.contains());
+    });
+
+    //NAME_STARTS_WITH_B(UserDTO -> UserDTO.getName().startsWith("B"));
 
     private final BiPredicate<UserDTO, List<String>> predicate;
 
