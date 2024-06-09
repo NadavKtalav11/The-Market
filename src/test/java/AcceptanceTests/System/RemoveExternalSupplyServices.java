@@ -29,8 +29,8 @@ public class RemoveExternalSupplyServices {
         HashSet<String> cities = new HashSet<>();
         countries.add("Israel");
         cities.add("Bash");
-        market.addExternalSupplyService(12345, "Hovalot", countries,cities, "77");
-        market.addExternalSupplyService(67890, "Hovalot1", countries,cities,"77");
+        market.addExternalSupplyService("12345", "Hovalot", countries,cities, "77");
+        market.addExternalSupplyService("67890", "Hovalot1", countries,cities,"77");
 
         // Act and Assert
         assertDoesNotThrow(() -> {
@@ -45,7 +45,7 @@ public class RemoveExternalSupplyServices {
         HashSet<String> cities = new HashSet<>();
         countries.add("Israel");
         cities.add("Bash");
-        market.addExternalSupplyService(12345, "Hovalat", countries,cities,"77");
+        market.addExternalSupplyService("12345", "Hovalat", countries,cities,"77");
 
         // Act and Assert
         Exception exception = assertThrows(Exception.class, () -> {
@@ -63,7 +63,7 @@ public class RemoveExternalSupplyServices {
         HashSet<String> cities = new HashSet<>();
         countries.add("Israel");
         cities.add("Bash");
-        market.addExternalSupplyService(12345, "Hovalot", countries,cities,"77");
+        market.addExternalSupplyService("12345", "Hovalot", countries,cities,"77");
 
         // Act and Assert
         Exception exception = assertThrows(Exception.class, () -> {

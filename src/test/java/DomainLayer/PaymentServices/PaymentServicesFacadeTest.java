@@ -45,7 +45,7 @@ public class PaymentServicesFacadeTest {
 
     @Test
     public void testAddExternalService() {
-        int licensedDealerNumber = 1;
+        String licensedDealerNumber = "1";
         String paymentServiceName = "TestService";
         String url = "http://testservice.com";
 
@@ -65,7 +65,7 @@ public class PaymentServicesFacadeTest {
         Map<String, Map<String, Integer>> productList = new HashMap<>();
         productList.put("store1", new HashMap<>());
 
-        paymentServicesFacade.addExternalService(1, "TestService", "http://testservice.com");
+        paymentServicesFacade.addExternalService("1", "TestService", "http://testservice.com");
         Map<String,String> acquisitionAndExternalService = null;
 
         acquisitionAndExternalService= paymentServicesFacade.pay(price, new PaymentDTO(holderID, creditCard, cvv, month, year), userId, productList);

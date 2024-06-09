@@ -3,6 +3,7 @@ package DomainLayer.User;
 
 import Util.ExceptionsEnum;
 import Util.UserDTO;
+import org.springframework.stereotype.Component;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -10,7 +11,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 
-
+@Component
 public class UserFacade {
     private static UserFacade userFacadeInstance;
     UserRepository<User> userRepository;

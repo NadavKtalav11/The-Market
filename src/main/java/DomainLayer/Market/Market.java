@@ -76,7 +76,7 @@ public class Market {
 
     public void init(UserDTO user, String password, String licensedDealerNumber,
                      String paymentServiceName, String url,
-                     int licensedDealerNumber1, String supplyServiceName, HashSet<String> countries, HashSet<String> cities) throws Exception {
+                     String licensedDealerNumber1, String supplyServiceName, HashSet<String> countries, HashSet<String> cities) throws Exception {
         synchronized (initializedLock) {
             if (initialized == true) {
                 return;
@@ -84,7 +84,7 @@ public class Market {
         }
         try {
             // Check for supply service
-            if (supplyServiceName == null || licensedDealerNumber1<0 || countries==null || cities==null ) {
+            if (supplyServiceName == null || licensedDealerNumber1.length()<0 || countries==null || cities==null ) {
                 throw new Exception("The system has not been able to be launched since there is a problem with the supply service details");
             }
             // Check for payment service
@@ -149,14 +149,14 @@ public class Market {
 
     }
 
-    public void addExternalSupplyService(int licensedDealerNumber, String supplyServiceName, HashSet<String> countries, HashSet<String> cities, String systemManagerId) throws Exception {
+    public void addExternalSupplyService(String licensedDealerNumber, String supplyServiceName, HashSet<String> countries, HashSet<String> cities, String systemManagerId) throws Exception {
         try {
             synchronized (managersLock) {
                 if (!systemManagerIds.contains(systemManagerId)) {
                     throw new Exception("Only system manager is allowed to add new external supply service");
                 }
             }
-            if (supplyServiceName == null || countries ==null || cities ==null || licensedDealerNumber < 0 || supplyServiceName == null ) {
+            if (supplyServiceName == null || countries ==null || cities ==null || licensedDealerNumber.length() == 0 || supplyServiceName == null ) {
                 throw new Exception("The system has not been able to add the supply service due to invalid details");
             }
         } catch (Exception e) {
@@ -678,7 +678,7 @@ public class Market {
             for(String productName: products.keySet()) {
                 quantity = products.get(productName).get(0);
                 this.storeFacade.checkQuantityAndPolicies(productName, quantity, store_ID, user_ID);
-                int availableExternalSupplyService = this.checkAvailableExternalSupplyService(userDTO.getCountry(), userDTO.getCity());
+                String availableExternalSupplyService = this.checkAvailableExternalSupplyService(userDTO.getCountry(), userDTO.getCity());
                 this.createShiftingDetails(userDTO.getCountry(), userDTO.getCity(), availableExternalSupplyService, userDTO.getAddress(), user_ID);
             }
 
@@ -691,14 +691,15 @@ public class Market {
         return new CartDTO(user_ID,totalPrice,getPurchaseList(user_ID));
     }
 
-    public int checkAvailableExternalSupplyService(String country, String city) throws Exception {
-        int availibleExteranlSupplyService =this.supplyServicesFacade.checkAvailableExternalSupplyService(country,city);
-        if(-1==availibleExteranlSupplyService)
+    public String checkAvailableExternalSupplyService(String country, String city) throws Exception {
+        String availibleExteranlSupplyService =this.supplyServicesFacade.checkAvailableExternalSupplyService(country,city);
+        if("".equals(availibleExteranlSupplyService)) {
             throw new Exception(ExceptionsEnum.ExternalSupplyServiceIsNotAvailable.toString());
+        }
         return availibleExteranlSupplyService;
     }
 
-    public void createShiftingDetails(String country, String city, int availibleExteranlSupplyService, String address, String user_ID) throws Exception
+    public void createShiftingDetails(String country, String city, String availibleExteranlSupplyService, String address, String user_ID) throws Exception
     {
         String userName = this.userFacade.getUserByID(user_ID).getName();
         if(!supplyServicesFacade.createShiftingDetails(availibleExteranlSupplyService, userName,country,city,address)){

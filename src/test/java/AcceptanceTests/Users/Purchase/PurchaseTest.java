@@ -33,7 +33,7 @@ public class PurchaseTest {
          HashSet<String> cities = new HashSet<>();
          cities.add("BeerSheva");
          impl.init("KobiM", "27/4/95", "Israel","Beer Sheva","Mesada","kobi Menashe", "Password123",
-                 1, "payementService", "kobi@gmail.com", 2, "supplyService", countries, cities);
+                 "1", "payementService", "kobi@gmail.com", "2", "supplyService", countries, cities);
 
         userID1 = impl.enterMarketSystem().getData();
         userID2 = impl.enterMarketSystem().getData();
