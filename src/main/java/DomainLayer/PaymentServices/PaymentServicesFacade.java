@@ -41,7 +41,7 @@ public class PaymentServicesFacade {
         return paymentServicesFacadeInstance;
     }
 
-    public void removeExternalService(int paymentId){
+    public void removeExternalService(String paymentId){
         synchronized (paymentServiceLock) {
             allPaymentServices.remove(paymentId);
         }
