@@ -2,6 +2,8 @@ package DomainLayer.PaymentServices;
 
 
 import Util.PaymentDTO;
+import Util.PaymentServiceDTO;
+import Util.UserDTO;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -9,7 +11,7 @@ import java.util.UUID;
 
 public class PaymentServicesFacade {
     private static PaymentServicesFacade paymentServicesFacadeInstance;
-    private Map<Integer, ExternalPaymentService>  allPaymentServices = new HashMap<Integer, ExternalPaymentService>();
+    private Map<String, ExternalPaymentService>  allPaymentServices = new HashMap<String, ExternalPaymentService>();
     private Map<String, Acquisition> IdAndAcquisition = new HashMap<>();
 
     private final Object paymentServiceLock;
@@ -39,13 +41,13 @@ public class PaymentServicesFacade {
         return paymentServicesFacadeInstance;
     }
 
-    public void removeExternalService(int paymentId){
+    public void removeExternalService(String paymentId){
         synchronized (paymentServiceLock) {
             allPaymentServices.remove(paymentId);
         }
     }
 
-    public boolean addExternalService(int licensedDealerNumber, String paymentServiceName, String url){
+    public boolean addExternalService(String licensedDealerNumber, String paymentServiceName, String url){
         synchronized (paymentServiceLock) {
             int size_before = allPaymentServices.size();
             ExternalPaymentService externalPaymentService = new ExternalPaymentService(licensedDealerNumber, paymentServiceName, url);
@@ -97,7 +99,7 @@ public class PaymentServicesFacade {
         return id;
     }
 
-    public Map<Integer, ExternalPaymentService> getAllPaymentServices(){
+    public Map<String, ExternalPaymentService> getAllPaymentServices(){
         synchronized (allPaymentServices) {
             return this.allPaymentServices;
         }
@@ -111,7 +113,18 @@ public class PaymentServicesFacade {
     //    return this.receiptIdCounter;
     //}
 
+    public PaymentServiceDTO getPaymentServiceDTOById(String paymentServiceId){
+        return new PaymentServiceDTO(getPaymentServiceById(paymentServiceId));
+    }
 
+    public ExternalPaymentService getPaymentServiceById(String paymentServiceId){
+        if(allPaymentServices.containsKey(paymentServiceId)){
+            return allPaymentServices.get(paymentServiceId);
+        }
+        else {
+            return null;
+        }
+    }
 
     public Map<String, Integer> getStorePurchaseInfo()
     {

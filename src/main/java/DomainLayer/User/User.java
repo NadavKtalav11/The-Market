@@ -1,12 +1,24 @@
 package DomainLayer.User;
+import  DomainLayer.Notifications.Observable;
+import  DomainLayer.Notifications.Observer;
+import  DomainLayer.Notifications.Notification;
+
+
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.ElementCollection;
+import javax.persistence.Transient;
 
 import Util.UserDTO;
 
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-public class User {
+public class User implements Observable {
 
     private String userID;
     private State state;
@@ -15,7 +27,13 @@ public class User {
     private String city;
     private String address;
     private String name;
-    //private Cart cart;
+
+    @Transient
+    private Observer observer;
+    // maps notification to a bool value: true - if was published to user, false - if wasn't
+
+    @ElementCollection
+    private Map<Notification,Boolean> notifications;
 
     public User(String userID){
         this.userID = userID;
@@ -35,6 +53,45 @@ public class User {
         this.city = userDTO.getCity();
         this.address = userDTO.getAddress();
         this.name = userDTO.getName();
+    }
+
+    @Override
+    public void registerObserver(Observer observer) {
+        this.observer=observer;
+        notifyObserver();
+    }
+
+    @Override
+    public boolean notifyObserver(Notification notification) {
+        if (notifications.get(notification)!=null && notifications.get(notification))
+            return false; //was already published...
+        boolean flag=notifications.putIfAbsent(notification, false)==null;
+        if(observer.update(notification))
+        {
+            if(flag) {
+                notifications.put(notification, true);
+               // DAO.getInstance().merge(this);
+                return true;
+            }
+            return true;
+        }
+        return false;
+        //DAO.getInstance().merge(this);
+    }
+
+    @Override
+    public void notifyObserver() {
+        LinkedList<Notification> published=new LinkedList<>();
+        for(Notification notification:notifications.keySet()){
+            if(notifyObserver(notification))
+                published.add(notification);
+        }
+
+        for(Notification n: published){
+            notifications.put(n,true);
+        }
+      //  if(published.size()>0)
+          //  DAO.getInstance().merge(this);
     }
 
 

@@ -56,7 +56,7 @@ public class GeneralSerach {
         assertTrue(res.isSuccess());
         List<String> unFilteredProducts = res.getResult();
         Set<String> filteredProductsSet = new HashSet<String>(unFilteredProducts);
-        assertIterableEquals(filteredProductsSet, productsSet);
+        assertEquals(filteredProductsSet, productsSet);
     }
 
     @Test
@@ -71,7 +71,7 @@ public class GeneralSerach {
         assertTrue(impl.generalProductSearch(userId0, null, "FOOD", null).isSuccess());
         List<String> filteredProducts = impl.generalProductSearch(storeId0, null, "FOOD", null).getResult();
         Set<String> filteredProductsSet = new HashSet<String>(filteredProducts);
-        assertIterableEquals(filteredProductsSet, dairySet);
+        assertEquals(filteredProductsSet, dairySet);
 
         List<String> shoes = new ArrayList<>();
         shoes.add("Shoes");

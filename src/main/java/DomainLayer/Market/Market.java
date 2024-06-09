@@ -1,6 +1,8 @@
 package DomainLayer.Market;
 
 import DomainLayer.AuthenticationAndSecurity.AuthenticationAndSecurityFacade;
+import DomainLayer.Notifications.Notification;
+import DomainLayer.Notifications.StoreNotification;
 import DomainLayer.PaymentServices.PaymentServicesFacade;
 import DomainLayer.Role.RoleFacade;
 import DomainLayer.Store.Product;
@@ -72,7 +74,7 @@ public class Market {
 
 
 
-    public void init(UserDTO user, String password, int licensedDealerNumber,
+    public void init(UserDTO user, String password, String licensedDealerNumber,
                      String paymentServiceName, String url,
                      int licensedDealerNumber1, String supplyServiceName, HashSet<String> countries, HashSet<String> cities) throws Exception {
         synchronized (initializedLock) {
@@ -86,7 +88,7 @@ public class Market {
                 throw new Exception("The system has not been able to be launched since there is a problem with the supply service details");
             }
             // Check for payment service
-            if (paymentServiceName == null || url==null || licensedDealerNumber <0) {
+            if (paymentServiceName == null || url==null || licensedDealerNumber ==null) {
                 throw new Exception("The system has not been able to be launched since there is a problem with the payment service details");
             }
             // Initialization logic here
@@ -111,14 +113,14 @@ public class Market {
         }
     }
 
-    public void addExternalPaymentService(int licensedDealerNumber,String paymentServiceName, String url, String systemMangerId) throws Exception {
+    public void addExternalPaymentService(String licensedDealerNumber,String paymentServiceName, String url, String systemMangerId) throws Exception {
         try {
             synchronized (managersLock) {
                 if (!systemManagerIds.contains(systemMangerId)) {
                     throw new Exception("Only system manager is allowed to add new external payment service");
                 }
             }
-            if (paymentServiceName == null || licensedDealerNumber<0 || url==null ) {
+            if (paymentServiceName == null || licensedDealerNumber==null || url==null ) {
                 throw new Exception("The system has not been able to add the payment service due to invalid details");
             }
         } catch (Exception e) {
@@ -128,7 +130,7 @@ public class Market {
         paymentServicesFacade.addExternalService(licensedDealerNumber, paymentServiceName, url);
     }
 
-    public void removeExternalPaymentService(int licensedDealerNumber, String systemMangerId) throws Exception {
+    public void removeExternalPaymentService(String licensedDealerNumber, String systemMangerId) throws Exception {
         try {
             synchronized (managersLock) {
                 if (!systemManagerIds.contains(systemMangerId)) {
@@ -471,6 +473,7 @@ public class Market {
                 logout(user_ID);
                 throw new Exception(ExceptionsEnum.sessionOver.toString());
             }
+
         }
         userFacade.isUserLoggedInError(user_ID);
         String member_ID = this.userFacade.getMemberIdByUserId(user_ID);
@@ -481,9 +484,24 @@ public class Market {
         List<String> storeManagers = roleFacade.getAllStoreManagers(store_ID);
         List<String> storeOwners = roleFacade.getAllStoreOwners(store_ID);
         //todo: add function which send notification to all store roles (notification component).
+        String storeName = storeFacade.getStoreByID(store_ID).getStoreName();
+
+        Notification n =new StoreNotification(storeName,"The store is now inactive");
+        sendMessageToStaffOfStore(n,member_ID);
         //todo: update use-case parameters
 
     }
+    public void sendMessageToStaffOfStore(Notification notification, String member_ID) {
+        userFacade.getUserByID(member_ID).notifyObserver(notification);
+//       // founder.notifyObserver(notification);
+//        for (User u : getOwnersOfStore())
+//            u.notifyObserver(notification);
+//        for (User u : getManagersOfStore())
+//            u.notifyObserver(notification);
+    }
+
+
+
 
     public Map<String, String> getInformationAboutRolesInStore(String user_ID, String store_ID) throws Exception {
         if (userFacade.isMember(user_ID)) {
@@ -498,8 +516,8 @@ public class Market {
 
         userFacade.isUserLoggedInError(user_ID);
         String member_ID = this.userFacade.getMemberIdByUserId(user_ID);
-        roleFacade.verifyStoreOwnerError(store_ID, member_ID);
         storeFacade.verifyStoreExistError(store_ID);
+        roleFacade.verifyStoreOwnerError(store_ID, member_ID);
         information = roleFacade.getInformationAboutStoreRoles(store_ID);
 
         return information;
@@ -521,8 +539,8 @@ public class Market {
         userFacade.isUserLoggedInError(user_ID);
 
         String member_ID = this.userFacade.getMemberIdByUserId(user_ID);
-        roleFacade.verifyStoreOwnerError(store_ID, member_ID);
         storeFacade.verifyStoreExistError(store_ID);
+        roleFacade.verifyStoreOwnerError(store_ID, member_ID);
         managersAuthorizations = roleFacade.getStoreManagersAuthorizations(store_ID);
 
 
