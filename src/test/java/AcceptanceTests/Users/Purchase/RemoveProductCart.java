@@ -17,46 +17,48 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class RemoveProductCart {
     private static BridgeToTests impl;
+    private static String userID1;
+    private static String storeID1;
 
 
     @BeforeAll
     public static void setUp() { //
         impl = new ProxyToTest("Real");
         //Do what you need
-        impl.enterMarketSystem();
-        impl.register("0","user1", "12/12/00", "Israel", "Beer Sheva", "Mesada", "Toy", "fSijsd281");
-        impl.login("0", "user1", "fSijsd281");
-        impl.openStore("0", "Zara", "clothing store");
-        impl.addProductToStore("0", "0","Milk", 10, 5, "Milk 5%", "food");
-        impl.addProductToStore("0", "0","Cheese", 15, 8, "Cheese 22%", "food");
-        impl.addProductToStore("0", "0","Yogurt", 4, 12, "Yogurt 20%", "food");
-        impl.addProductToStore("0", "0","Shoes", 4, 12, "Nike Shoes", "clothing");
+        userID1 = impl.enterMarketSystem().getData();
+        impl.register(userID1,"user1", "12/12/00", "Israel", "Beer Sheva", "Mesada", "Toy", "fSijsd281");
+        impl.login(userID1, "user1", "fSijsd281");
+        storeID1 = impl.openStore(userID1, "Zara", "clothing store").getData();
+        impl.addProductToStore(userID1, storeID1,"Milk", 10, 5, "Milk 5%", "food");
+        impl.addProductToStore(userID1, storeID1,"Cheese", 15, 8, "Cheese 22%", "food");
+        impl.addProductToStore(userID1, storeID1,"Yogurt", 4, 12, "Yogurt 20%", "food");
+        impl.addProductToStore(userID1, storeID1,"Shoes", 4, 12, "Nike Shoes", "clothing");
 
-        impl.addProductToBasket("Milk", 2, "0", "0");
-        impl.addProductToBasket("Cheese", 4, "0", "0");
-        impl.addProductToBasket("Yogurt", 5, "0", "0");
+        impl.addProductToBasket("Milk", 2, storeID1, userID1);
+        impl.addProductToBasket("Cheese", 4, storeID1, userID1);
+        impl.addProductToBasket("Yogurt", 5, storeID1, userID1);
     }
     
 
     @Test
     public void successfulRemoveTest() {
-        assertTrue(impl.removeProductFromBasket("Milk", "0", "0").isSuccess());
-        assertTrue(impl.removeProductFromBasket("Cheese", "0", "0").isSuccess());
-        assertTrue(impl.removeProductFromBasket("Yogurt", "0", "0").isSuccess());
+        assertTrue(impl.removeProductFromBasket("Milk", storeID1, userID1).isSuccess());
+        assertTrue(impl.removeProductFromBasket("Cheese", storeID1, userID1).isSuccess());
+        assertTrue(impl.removeProductFromBasket("Yogurt", storeID1, userID1).isSuccess());
     }
 
     @Test
     public void productNotExistTest() {
 
-        Response<String> response1 = impl.removeProductFromBasket("Shoes", "0", "0");
+        Response<String> response1 = impl.removeProductFromBasket("Shoes", storeID1, userID1);
         assertFalse(response1.isSuccess());
         assertEquals(ExceptionsEnum.productNotExistInCart.toString(), response1.getDescription());
 
-        Response<String> response2 = impl.removeProductFromBasket("Book", "0", "0");
+        Response<String> response2 = impl.removeProductFromBasket("Book", storeID1, userID1);
         assertFalse(response2.isSuccess());
         assertEquals(ExceptionsEnum.productNotExistInCart.toString(), response2.getDescription());
 
-        Response<String> response3 = impl.removeProductFromBasket("Juice", "0", "0");
+        Response<String> response3 = impl.removeProductFromBasket("Juice", storeID1, userID1);
         assertFalse(response3.isSuccess());
         assertEquals(ExceptionsEnum.productNotExistInCart.toString(), response3.getDescription());
 

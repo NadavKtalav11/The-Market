@@ -36,7 +36,7 @@ public class SystemStartup {
         String city = "New York";
         String address = "123 Main St";
         String name = "Manager Name";
-        int licensedDealerNumber = 12345;
+        String licensedDealerNumber = "12345";
         String paymentServiceName = "PayPal";
         String url = "http://example.com";
         int licensedDealerNumber1 = 67890;
@@ -65,7 +65,7 @@ public class SystemStartup {
         String city = "New York";
         String address = "123 Main St";
         String name = "Manager Name";
-        int licensedDealerNumber = 12345;
+        String licensedDealerNumber = "12345";
         String paymentServiceName = "PayPal";
         String url = "http://example.com";
         int licensedDealerNumber1 = 67890;
@@ -97,7 +97,7 @@ public class SystemStartup {
         String city = "New York";
         String address = "123 Main St";
         String name = "Manager Name";
-        int licensedDealerNumber = 12345;
+        String licensedDealerNumber = "12345";
         String paymentServiceName = null;
         String url = "http://example.com";
         int licensedDealerNumber1 = 67890;
