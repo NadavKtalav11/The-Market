@@ -4,10 +4,8 @@ import Util.ProductDTO;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import javax.persistence.criteria.CriteriaBuilder;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -147,8 +145,11 @@ public class StoreTest {
     @Test
     void testReturnProductToStore() {
         store.addProduct(new ProductDTO("Milk", 10, 100, "Dairy product", "Dairy"));
-        Map<String, Integer> productsToReturn = new HashMap<>();
-        productsToReturn.put("Milk", 10);
+        Map<String, List<Integer>> productsToReturn = new HashMap<>();
+        List<Integer> quantityAndPrice = new ArrayList();
+        quantityAndPrice.add(10);
+        quantityAndPrice.add(50);
+        productsToReturn.put("Milk", quantityAndPrice);
 
         store.returnProductToStore(productsToReturn);
 

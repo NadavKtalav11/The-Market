@@ -2,24 +2,19 @@ package DomainLayer.Store;
 
 import java.util.List;
 
-public class PurchaseAndRule<T, U> implements Rule<T, U>{
+public class PurchaseAndRule<T, U> extends PurchaseCompositeRule<T, U>{
 
-    public List<Rule<T, U>> rules;
-    public PurchaseAndRule() {
-        super();
+    public PurchaseAndRule(Rule<T, U> rule1, Rule<T, U> rule2) {
+        super(rule1, rule2);
     }
 
     @Override
     public boolean checkRule(T user, U products) {
-        for (Rule<T, U> rule : rules) {
-            if (!rule.checkRule(user, products)) {
-                return false;
-            }
-        }
-        return true;
+        return rule1.checkRule(user, products) && rule2.checkRule(user, products);
     }
 
-    public List<Rule<T, U>> getRules() {
-        return rules;
+    @Override
+    public String getDescription() {
+        return rule1.getDescription() + " and " + rule2.getDescription();
     }
 }

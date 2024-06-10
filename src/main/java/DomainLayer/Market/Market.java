@@ -255,7 +255,7 @@ public class Market {
     }
 
     //Map<StoreID, Map<ProductName, quantity>>
-    public void returnCartToStock(Map<String, Map<String, Integer>> products){
+    public void returnCartToStock(Map<String, Map<String, List<Integer>>> products){
         for (String storeId: products.keySet()){
             storeFacade.returnProductToStore(products.get(storeId), storeId);
         }
@@ -320,7 +320,8 @@ public class Market {
         storeFacade.checkQuantity(productName, quantity, storeId);
         Map<String, List<Integer>> products = this.userFacade.getCartProductsByStoreAndUser(storeId, userId);
         products.put(productName, new ArrayList<>(Arrays.asList(quantity)));
-        storeFacade.checkPolicies(new UserDTO(userFacade.getUserByID(userId)), products, storeId);
+        List<ProductDTO> productDTOS = storeFacade.getProductsDTOSByProductsNames(products, storeId);
+        storeFacade.checkPolicies(new UserDTO(userFacade.getUserByID(userId)), productDTOS, storeId);
         int totalPrice = storeFacade.calcPrice(productName, quantity, storeId, userId);
         userFacade.addItemsToBasket(productName, quantity, storeId, userId, totalPrice);
 
@@ -554,7 +555,7 @@ public class Market {
 
    // public List<Integer> getInformationAboutStores(String user_ID)throws Exception
 
-    public Map<String, Map<String, Integer>> getPurchaseList(String userId)throws Exception{
+    public Map<String, Map<String, List<Integer>>> getPurchaseList(String userId)throws Exception{
         if (userFacade.isMember(userId)) {
             String memberId = userFacade.getMemberIdByUserId(userId);
             boolean succeeded = authenticationAndSecurityFacade.validateToken(authenticationAndSecurityFacade.getToken(memberId));
@@ -563,14 +564,14 @@ public class Market {
                 throw new Exception(ExceptionsEnum.sessionOver.toString());
             }
         }
-        Map<String, Map<String, Integer>> purchaseList = new HashMap<>();
+        Map<String, Map<String, List<Integer>>> purchaseList = new HashMap<>();
         List<String> usersStores = userFacade.getCartStoresByUser(userId);
         for (String storeId: usersStores) {
-            Map<String, Integer> productAndQuantity = new HashMap<>();
+            Map<String, List<Integer>> productAndQuantity = new HashMap<>();
             purchaseList.put(storeId, productAndQuantity) ;
             Map <String, List<Integer>> returnedMap = userFacade.getCartProductsByStoreAndUser(storeId , userId);
             for (String productName : returnedMap.keySet()){
-                productAndQuantity.put(productName,returnedMap.get(productName).get(0) );
+                productAndQuantity.put(productName,returnedMap.get(productName));
             }
 
         }
@@ -623,7 +624,8 @@ public class Market {
             storeFacade.checkQuantity(productName, quantity, storeId);
             Map<String, List<Integer>> products = this.userFacade.getCartProductsByStoreAndUser(storeId, userId);
             products.put(productName, new ArrayList<>(Arrays.asList(quantity)));
-            storeFacade.checkPolicies(new UserDTO(userFacade.getUserByID(userId)), products, storeId);
+            List<ProductDTO> productDTOS = storeFacade.getProductsDTOSByProductsNames(products, storeId);
+            storeFacade.checkPolicies(new UserDTO(userFacade.getUserByID(userId)), productDTOS, storeId);
             int totalPrice = storeFacade.calcPrice(productName, quantity, storeId, userId);
             userFacade.modifyBasketProduct(productName, quantity, storeId, userId, totalPrice);
         }
@@ -683,12 +685,13 @@ public class Market {
         {
             Map<String, List<Integer>> products = this.userFacade.getCartProductsByStoreAndUser(store_ID, user_ID);
             int quantity;
+            List<ProductDTO> productDTOS = this.storeFacade.getProductsDTOSByProductsNames(products, store_ID);
             for(String productName: products.keySet()) {
                 quantity = products.get(productName).get(0);
                 this.storeFacade.checkQuantity(productName, quantity, store_ID);
             }
-            //todo: change to check policy
-            this.storeFacade.checkPolicies(userDTO, products, store_ID);
+
+            this.storeFacade.checkPolicies(userDTO, productDTOS, store_ID);
             String availableExternalSupplyService = this.checkAvailableExternalSupplyService(userDTO.getCountry(), userDTO.getCity());
             this.createShiftingDetails(userDTO.getCountry(), userDTO.getCity(), availableExternalSupplyService, userDTO.getAddress(), user_ID);
 
@@ -859,5 +862,49 @@ public class Market {
     {
         if (storeMinRating != null && (storeMinRating < 0 || storeMinRating > 5))
             throw new IllegalArgumentException(ExceptionsEnum.storeRateInvalid.toString());
+    }
+
+    public void addRuleToStore(List<Integer> ruleNums, List<String> operators, String userId, String storeId) throws Exception {
+        if (userFacade.isMember(userId)){
+            String memberId = userFacade.getMemberIdByUserId(userId);
+            boolean succeeded = authenticationAndSecurityFacade.validateToken(authenticationAndSecurityFacade.getToken(memberId));
+            if (!succeeded) {
+                logout(userId);
+                throw new IllegalArgumentException(ExceptionsEnum.sessionOver.toString());
+            }
+        }
+
+        checkRulesAndOperators(ruleNums, operators);
+        String member_ID = this.userFacade.getMemberIdByUserId(userId);
+        storeFacade.verifyStoreExistError(storeId);
+        roleFacade.verifyStoreOwnerError(storeId, member_ID);
+        storeFacade.addRuleToStore(ruleNums, operators, storeId);
+    }
+
+    public void removeRuleFromStore(int ruleNum,  String userId, String storeId) throws Exception {
+        if (userFacade.isMember(userId)){
+            String memberId = userFacade.getMemberIdByUserId(userId);
+            boolean succeeded = authenticationAndSecurityFacade.validateToken(authenticationAndSecurityFacade.getToken(memberId));
+            if (!succeeded) {
+                logout(userId);
+                throw new IllegalArgumentException(ExceptionsEnum.sessionOver.toString());
+            }
+        }
+
+        String member_ID = this.userFacade.getMemberIdByUserId(userId);
+        storeFacade.verifyStoreExistError(storeId);
+        roleFacade.verifyStoreOwnerError(storeId, member_ID);
+        storeFacade.removeRuleFromStore(ruleNum, storeId);
+    }
+
+    public void checkRulesAndOperators(List<Integer> ruleNums, List<String> operators) throws Exception {
+        if (ruleNums.size() != operators.size() + 1) {
+            throw new IllegalArgumentException(ExceptionsEnum.rulesNotMatchOpeators.toString());
+        }
+        for (int i = 0; i < operators.size(); i++) {
+            if (!operators.get(i).equals("AND") && !operators.get(i).equals("OR") && !operators.get(i).equals("COND")) {
+                throw new IllegalArgumentException(ExceptionsEnum.InvalidOperator.toString());
+            }
+        }
     }
 }

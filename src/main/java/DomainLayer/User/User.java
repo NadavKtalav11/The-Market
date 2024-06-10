@@ -11,7 +11,9 @@ import javax.persistence.Id;
 import javax.persistence.ElementCollection;
 import javax.persistence.Transient;
 
+import Util.CartDTO;
 import Util.UserDTO;
+import org.bouncycastle.crypto.generators.BaseKDFBytesGenerator;
 
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -198,5 +200,10 @@ public class User implements Observable {
 
     public String getBirthday(){
         return birthday;
+    }
+
+    public CartDTO getCartDTO(){
+        return getCart().getDTO(userID);
+
     }
 }

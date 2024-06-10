@@ -1,6 +1,7 @@
 package DomainLayer.User;
 
 
+import Util.CartDTO;
 import Util.ExceptionsEnum;
 import Util.UserDTO;
 import org.springframework.stereotype.Component;
@@ -344,6 +345,10 @@ public class UserFacade {
 
     public void removeUser(String userId){
         userRepository.remove(userId);
+    }
+
+    public CartDTO getCartDTO(String userId){
+        return getUserByID(userId).getCartDTO();
     }
 
 }

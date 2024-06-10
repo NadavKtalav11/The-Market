@@ -2,7 +2,6 @@ package PresentationLayer.WAF;
 
 import DomainLayer.Market.Market;
 import DomainLayer.User.UserFacade;
-import Util.CartDTO;
 import Util.UserDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.web.client.RestTemplateBuilder;
@@ -13,16 +12,15 @@ import org.springframework.web.client.RestTemplate;
 import java.util.List;
 
 @Service
-public class UserService {
+public class MarketService {
 
 
 
-    private final UserFacade userFacade;
     private final Market market;
 
 
-    public UserService (){
-        this.userFacade = UserFacade.getInstance();
+    public MarketService (){
+
         market = Market.getInstance();
     }
 
@@ -37,32 +35,9 @@ public class UserService {
         return builder.build();
     }
 
-    public List<UserDTO> getAllUsers(){
-        return userFacade.getAllUsers();
-    }
-
-    public UserDTO getUser(String userID){
-        return userFacade.getUserDTOById(userID);
-    }
-
-    public String addUser() {
-        return userFacade.addUser();
-    }
-
-    public UserDTO updateUser(UserDTO userDTO){
-        return userFacade.updateUser(userDTO);
-    }
-
-    public void delete(String userId){
-        userFacade.removeUser(userId);
-    }
 
     public String enterMarket(){
         return market.enterMarketSystem();
-    }
-
-    public CartDTO getCart(String userId){
-        return userFacade.getCartDTO(userId);
     }
 
 }

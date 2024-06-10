@@ -48,10 +48,10 @@ public class Store {
         return storeName;
     }
 
-    public void returnProductToStore(Map<String, Integer> products){
+    public void returnProductToStore(Map<String, List<Integer>> products){
         synchronized (storeProductLock) {
             for (String product : products.keySet()) {
-                storeProducts.get(product).addToStock(products.get(product));
+                storeProducts.get(product).addToStock(products.get(product).get(0));
             }
         }
     }
@@ -84,6 +84,15 @@ public class Store {
         }
     }
 
+    public ProductDTO getProductDTOByName(String productName, int quantity)
+    {
+        /*this function receives product from a user basket, with the quantity of this product in the basket and it's total price*/
+        synchronized (storeProductLock) {
+            Product product = storeProducts.get(productName);
+            return new ProductDTO(productName, product.getPrice(), quantity, product.getDescription(), product.getCategoryName());
+        }
+    }
+
     public boolean checkProductQuantity(String productName, int quantity)
     {
         Product productToCheck = getProductByName(productName);
@@ -94,8 +103,6 @@ public class Store {
     {
         Product productToCalc = getProductByName(productName);
         return productToCalc.getPrice() * quantity;
-
-        //in the future, add check for discount using the discount policy
     }
 
     public void removeProduct(String productName){
@@ -164,7 +171,7 @@ public class Store {
         return this.discountPolicy.checkDiscountPolicy(userId, productName);
     }
 
-    public boolean checkPurchasePolicy(UserDTO userDTO, Map<String, List<Integer>> products)
+    public boolean checkPurchasePolicy(UserDTO userDTO, List<ProductDTO> products)
     {
         return this.purchasePolicy.checkPurchasePolicy(userDTO, products);
     }
@@ -208,5 +215,34 @@ public class Store {
         synchronized (receiptId) {
             receiptsIdsUserIds.put(receiptId, userId);
         }
+    }
+
+
+    public void addRule(List<Rule<UserDTO, List<ProductDTO>>> rules, List<String> operators) {
+        purchasePolicy.addRule(rules, operators);
+    }
+
+    public void removeRule(int ruleNum) {
+        purchasePolicy.removeRule(ruleNum);
+    }
+  
+    public String getStore_ID() {
+        return store_ID;
+    }
+
+    public double getRating() {
+        return rating;
+    }
+
+    public int getNumOfRatings() {
+        return numOfRatings;
+    }
+
+    public DiscountPolicy getDiscountPolicy() {
+        return discountPolicy;
+    }
+
+    public String getDescription(){
+        return description;
     }
 }
