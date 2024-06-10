@@ -470,5 +470,17 @@ public class Service_layer {
         }
     }
 
+    public Response<String> addRuleToStore(List<Integer> ruleNums, List<String> operators, String storeId, String userId) {
+        logger.info("Adding rule to store");
+
+        try {
+            market.addRuleToStore(ruleNums, operators, storeId, userId);
+            return new Response<>("Rule added successfully", "Rule added to store successfully.");
+        } catch (Exception e) {
+            logger.error("Error occurred during adding rule to store", e.getMessage(), e);
+            return new Response<>(null, e.getMessage());
+        }
+    }
+
 
 }

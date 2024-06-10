@@ -217,6 +217,15 @@ public class Store {
         }
     }
 
+
+    public void addRule(List<Rule<UserDTO, List<ProductDTO>>> rules, List<String> operators) {
+        purchasePolicy.addRule(rules, operators);
+    }
+
+    public void removeRule(int ruleNum) {
+        purchasePolicy.removeRule(ruleNum);
+    }
+  
     public String getStore_ID() {
         return store_ID;
     }
