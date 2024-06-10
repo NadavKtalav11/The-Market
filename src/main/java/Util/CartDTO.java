@@ -1,10 +1,12 @@
 package Util;
 
+import java.util.List;
 import java.util.Map;
 
 public class CartDTO {
     String userID;
     int cartPrice;
+    Map<String, Map<String, List<Integer>>> storeToProducts;
 
     public String getUserID() {
         return userID;
@@ -22,21 +24,17 @@ public class CartDTO {
         this.cartPrice = cartPrice;
     }
 
-    public Map<String, Map<String, Integer>> getStoreToProducts() {
+    public Map<String, Map<String, List<Integer>>> getStoreToProducts() {
         return storeToProducts;
     }
 
-    public void setStoreToProducts(Map<String, Map<String, Integer>> storeToProducts) {
-        this.storeToProducts = storeToProducts;
-    }
-
-    Map<String, Map<String, Integer>> storeToProducts; //Map<storeID, Map<productName, quantity>>
-
-    public CartDTO (String userID, int cartPrice, Map<String, Map<String, Integer>> storeToProducts){
+    public CartDTO (String userID, int cartPrice, Map<String, Map<String, List<Integer>>> products){
         this.userID = userID;
         this.cartPrice = cartPrice;
-        this.storeToProducts = storeToProducts;
+        this.storeToProducts = products;
     }
+
+
 
 
 }
