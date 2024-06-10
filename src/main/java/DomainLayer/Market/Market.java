@@ -316,7 +316,11 @@ public class Market {
                 throw new Exception(ExceptionsEnum.sessionOver.toString());
             }
         }
-        storeFacade.checkQuantityAndPolicies(productName, quantity, storeId, userId);
+
+        storeFacade.checkQuantity(productName, quantity, storeId);
+        Map<String, List<Integer>> products = this.userFacade.getCartProductsByStoreAndUser(storeId, userId);
+        products.put(productName, new ArrayList<>(Arrays.asList(quantity)));
+        storeFacade.checkPolicies(new UserDTO(userFacade.getUserByID(userId)), products, storeId);
         int totalPrice = storeFacade.calcPrice(productName, quantity, storeId, userId);
         userFacade.addItemsToBasket(productName, quantity, storeId, userId, totalPrice);
 
@@ -616,7 +620,10 @@ public class Market {
         else
         {
             userFacade.checkIfCanRemove(productName, storeId, userId);
-            storeFacade.checkQuantityAndPolicies(productName, quantity, storeId, userId);
+            storeFacade.checkQuantity(productName, quantity, storeId);
+            Map<String, List<Integer>> products = this.userFacade.getCartProductsByStoreAndUser(storeId, userId);
+            products.put(productName, new ArrayList<>(Arrays.asList(quantity)));
+            storeFacade.checkPolicies(new UserDTO(userFacade.getUserByID(userId)), products, storeId);
             int totalPrice = storeFacade.calcPrice(productName, quantity, storeId, userId);
             userFacade.modifyBasketProduct(productName, quantity, storeId, userId, totalPrice);
         }
@@ -678,10 +685,12 @@ public class Market {
             int quantity;
             for(String productName: products.keySet()) {
                 quantity = products.get(productName).get(0);
-                this.storeFacade.checkQuantityAndPolicies(productName, quantity, store_ID, user_ID);
-                String availableExternalSupplyService = this.checkAvailableExternalSupplyService(userDTO.getCountry(), userDTO.getCity());
-                this.createShiftingDetails(userDTO.getCountry(), userDTO.getCity(), availableExternalSupplyService, userDTO.getAddress(), user_ID);
+                this.storeFacade.checkQuantity(productName, quantity, store_ID);
             }
+            //todo: change to check policy
+            this.storeFacade.checkPolicies(userDTO, products, store_ID);
+            String availableExternalSupplyService = this.checkAvailableExternalSupplyService(userDTO.getCountry(), userDTO.getCity());
+            this.createShiftingDetails(userDTO.getCountry(), userDTO.getCity(), availableExternalSupplyService, userDTO.getAddress(), user_ID);
 
             int storeTotalPriceBeforeDiscount = this.userFacade.getCartPriceByUser(user_ID);
             int storeTotalPrice = this.storeFacade.calculateTotalCartPriceAfterDiscount(store_ID, products, storeTotalPriceBeforeDiscount);

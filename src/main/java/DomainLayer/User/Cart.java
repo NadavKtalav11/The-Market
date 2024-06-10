@@ -110,6 +110,9 @@ public class Cart {
     public Map<String, List<Integer>> getProductsDetailsByStore(String store_ID)
     {
         synchronized (basketsLock) {
+            if (!baskets.containsKey(store_ID)) {
+                return new HashMap<>();
+            }
             return baskets.get(store_ID).getProducts();
         }
     }
