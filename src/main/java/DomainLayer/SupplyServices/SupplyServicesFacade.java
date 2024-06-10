@@ -9,13 +9,13 @@ import java.util.Map;
 
 public class SupplyServicesFacade {
     private static SupplyServicesFacade supplyServicesFacade;
-    private Map<Integer, ExternalSupplyService>  externalSupplyService;
+    private Map<String, ExternalSupplyService>  externalSupplyService;
    // private Map<Integer, Receipt> IdAndReceipt = new HashMap<>();
     private final Object externalSupplyServiceLock;
 
     private SupplyServicesFacade(){
         externalSupplyServiceLock = new Object();
-        externalSupplyService=  new HashMap<Integer, ExternalSupplyService>();
+        externalSupplyService=  new HashMap<String, ExternalSupplyService>();
     }
 
 
@@ -31,7 +31,7 @@ public class SupplyServicesFacade {
         return supplyServicesFacade;
     }
 
-    public Map<Integer, ExternalSupplyService>  getAllSupplyServices(){
+    public Map<String, ExternalSupplyService>  getAllSupplyServices(){
         return this.externalSupplyService;
     }
 
@@ -41,7 +41,7 @@ public class SupplyServicesFacade {
         }
     }
 
-    public boolean addExternalService(int licensedDealerNumber, String supplyServiceName, HashSet<String> countries, HashSet<String> cities){
+    public boolean addExternalService(String licensedDealerNumber, String supplyServiceName, HashSet<String> countries, HashSet<String> cities){
         synchronized (externalSupplyServiceLock) {
             int size_before = externalSupplyService.size();
             ExternalSupplyService externalPaymentService = new ExternalSupplyService(licensedDealerNumber, supplyServiceName, countries, cities);
@@ -50,20 +50,20 @@ public class SupplyServicesFacade {
         }
     }
 
-    public int checkAvailableExternalSupplyService(String country, String city) {
+    public String checkAvailableExternalSupplyService(String country, String city) {
         //   (private Map<Integer, ExternalSupplyService>  ExternalSupplyService)
         synchronized (externalSupplyServiceLock) {
-            for (Map.Entry<Integer, ExternalSupplyService> entry : externalSupplyService.entrySet()) {
+            for (Map.Entry<String, ExternalSupplyService> entry : externalSupplyService.entrySet()) {
                 ExternalSupplyService externalSupplyService1 = entry.getValue();
                 if (externalSupplyService1.checkAreaAvailability(country, city)) {
                     return externalSupplyService1.getLicensedDealerNumber();
                     }
             }
         }
-        return -1;
+        return "";
     }
 
-    public ExternalSupplyService getExternalSupplyServiceById(int externalSupplyServiceId){
+    public ExternalSupplyService getExternalSupplyServiceById(String externalSupplyServiceId){
         synchronized (externalSupplyServiceLock) {
             return externalSupplyService.get(externalSupplyServiceId);
         }
@@ -75,7 +75,7 @@ public class SupplyServicesFacade {
     }
 
 
-   public boolean createShiftingDetails(int externalSupplyServiceId,String userName,String country,String city,String address){
+   public boolean createShiftingDetails(String externalSupplyServiceId,String userName,String country,String city,String address){
         ExternalSupplyService externalSupplyService = getExternalSupplyServiceById(externalSupplyServiceId);
         return externalSupplyService.createShiftingDetails(userName,country ,city, address);
         // Check if the product exists in the instance's map and if the amount is sufficient

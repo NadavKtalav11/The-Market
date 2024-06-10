@@ -10,4 +10,11 @@ public class APIResponse<T> {
         this.errorMassage = errorMassage;
     }
 
+    public String getErrorMassage() {
+        return errorMassage;
+    }
+
+    public T getData() {
+        return data;
+    }
 }

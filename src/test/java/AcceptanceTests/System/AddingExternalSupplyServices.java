@@ -27,7 +27,7 @@ public class AddingExternalSupplyServices {
         // Arrange
         String systemManagerId = "user77";
         market.getSystemManagerIds().add(systemManagerId);
-        int licensedDealerNumber = 12345;
+        String licensedDealerNumber = "12345";
         String supplyServiceName = "Hovalot";
         HashSet<String> countries = new HashSet<>();
         HashSet<String> cities = new HashSet<>();
@@ -45,7 +45,7 @@ public class AddingExternalSupplyServices {
         String systemManagerId = "user77";
         String nonManagerId = "user2";
         market.getSystemManagerIds().add(systemManagerId);
-        int licensedDealerNumber = 12345;
+        String licensedDealerNumber = "12345";
         market.getSystemManagerIds().add(systemManagerId);
         String supplyServiceName = "Hovalot";
         HashSet<String> countries = new HashSet<>();
@@ -67,7 +67,7 @@ public class AddingExternalSupplyServices {
         // Arrange
         String systemManagerId = "user77";
         market.getSystemManagerIds().add(systemManagerId);
-        int licensedDealerNumber = -1;
+        String licensedDealerNumber = "-1";
         market.getSystemManagerIds().add(systemManagerId);
         String supplyServiceName = "Hovalot";
         HashSet<String> countries = new HashSet<>();

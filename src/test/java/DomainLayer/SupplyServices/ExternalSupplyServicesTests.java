@@ -29,7 +29,7 @@ public class ExternalSupplyServicesTests {
 
 
         // Initialize the service with the mock data
-        externalSupplyService = new ExternalSupplyService(12345, "MockService", countries, cities);
+        externalSupplyService = new ExternalSupplyService("12345", "MockService", countries, cities);
     }
 
     @Test

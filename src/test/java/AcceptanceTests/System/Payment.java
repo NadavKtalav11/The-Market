@@ -86,7 +86,7 @@ public class Payment {
 
         //  int systemMangerId1 = userFacade.registerSystemAdmin("david", "password", "birthday","country","city","address","name");
         market.getSystemManagerIds().add(systemMangerId);
-        int licensedDealerNumber = 12345;
+        String licensedDealerNumber = "12345";
         String paymentServiceName = "PayPal";
         String url = "http://paypal.com";
         market.addExternalPaymentService(licensedDealerNumber, paymentServiceName, url, systemMangerId);
@@ -120,7 +120,7 @@ public class Payment {
 
         String systemManagerId = "77";
         market.getSystemManagerIds().add(systemManagerId);
-        int licensedDealerNumber = 12345;
+        String licensedDealerNumber = "12345";
         String paymentServiceName = "PayPal";
         String url = "http://paypal.com";
         market.addExternalPaymentService(licensedDealerNumber, paymentServiceName, url, systemManagerId);
