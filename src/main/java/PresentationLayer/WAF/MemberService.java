@@ -29,15 +29,6 @@ public class MemberService {
         roleFacade= RoleFacade.getInstance();
     }
 
-        @Bean
-        public RestTemplate restTemplate() {
-            return new RestTemplate();
-        }
-
-        @Bean
-        public RestTemplate restTemplate(RestTemplateBuilder builder) {
-            return builder.build();
-        }
         public boolean isMember(String userId){
             return userFacade.isMember(userId);
         }

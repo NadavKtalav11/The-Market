@@ -2,14 +2,14 @@ package AcceptanceTests.Users.StoreOwner;
 
 import AcceptanceTests.BridgeToTests;
 import AcceptanceTests.ProxyToTest;
+import Util.PaymentServiceDTO;
 import Util.ProductDTO;
+import Util.SupplyServiceDTO;
 import Util.UserDTO;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -27,7 +27,7 @@ public class PurhcaseHistoryInfo {
         countries.add("Israel");
         cities.add("Bash");
 
-        impl.init("manager1", "12/12/12", "Israel", "Bash","Metsada", "Mike", "imTHeManager1" , "0","paypal","saddsa.com","2","DHL", countries, cities);
+        impl.init(new UserDTO("0" , "manager1", "12/12/12", "Israel", "Bash","Metsada", "Mike"), "imTHeManager1" ,new PaymentServiceDTO( "0","paypal","saddsa.com"),new SupplyServiceDTO("2","DHL", countries, cities));
 
         impl.enterMarketSystem();
         impl.register("1","user1", "12/12/00", "Israel", "Beer Sheva", "Mesada", "Toy", "fSijsd281");

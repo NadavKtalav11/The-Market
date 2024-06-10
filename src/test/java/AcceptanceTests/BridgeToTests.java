@@ -1,9 +1,7 @@
 package AcceptanceTests;
 
 import ServiceLayer.Response;
-import Util.PaymentDTO;
-import Util.ProductDTO;
-import Util.UserDTO;
+import Util.*;
 
 import java.util.HashSet;
 import java.util.List;
@@ -11,9 +9,7 @@ import java.util.Map;
 
 public interface BridgeToTests {
 
-    Response<String> init(String userName, String birthday, String country, String city, String address, String name, String password, String licensedDealerNumber,
-
-                          String paymentServiceName, String url, String licensedDealerNumber1, String supplyServiceName, HashSet<String> countries, HashSet<String> cities);
+    Response<String> init(UserDTO userDTO, String password, PaymentServiceDTO paymentServiceDTO, SupplyServiceDTO supplyServiceDTO);
 
 
 //    Response<String> payWithExternalPaymentService(int price,String cardNumber, int cvv, int month, int year, String holderID, String userID);

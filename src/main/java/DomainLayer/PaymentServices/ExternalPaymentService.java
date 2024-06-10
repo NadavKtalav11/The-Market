@@ -4,6 +4,7 @@ package DomainLayer.PaymentServices;
 // this class is for external payment service itself
 
 import Util.PaymentDTO;
+import Util.PaymentServiceDTO;
 
 import java.util.HashMap;
 import java.util.List;
@@ -22,9 +23,20 @@ public  class ExternalPaymentService {
         this.paymentServiceName = paymentServiceName;
         this.url = url;
 
-        this.httpClient = httpClient;
+       //this.httpClient = httpClient;
 
     }
+
+
+    public ExternalPaymentService(PaymentServiceDTO paymentServiceDTO) {
+        this.licensedDealerNumber = paymentServiceDTO.getLicensedDealerNumber();
+        this.paymentServiceName = paymentServiceDTO.getPaymentServiceName();
+        this.url = paymentServiceDTO.getUrl();
+
+        //this.httpClient = httpClient;
+
+    }
+
 
     public String getLicensedDealerNumber(){
         return licensedDealerNumber;

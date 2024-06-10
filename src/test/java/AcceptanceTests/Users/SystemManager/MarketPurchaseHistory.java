@@ -3,9 +3,7 @@ package AcceptanceTests.Users.SystemManager;
 import AcceptanceTests.BridgeToTests;
 import AcceptanceTests.ProxyToTest;
 import ServiceLayer.Response;
-import Util.ExceptionsEnum;
-import Util.ProductDTO;
-import Util.UserDTO;
+import Util.*;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
@@ -29,7 +27,8 @@ public class MarketPurchaseHistory {
         countries.add("Israel");
         cities.add("Bash");
 
-        impl.init("manager1" ,"12/12/12", "Israel", "Bash", "Metsada", "Mike", "imTHeManager1", "0","paypal","saddsa.com","2","DHL", countries, cities);
+        impl.init(new UserDTO("-1", "manager1" ,"12/12/12", "Israel", "Bash", "Metsada", "Mike"), "imTHeManager1",new PaymentServiceDTO("0","paypal","saddsa.com"),
+                new SupplyServiceDTO("2","DHL", countries, cities));
 
         impl.enterMarketSystem();
         impl.register("1","user1", "12/12/00", "Israel", "Beer Sheva", "Mesada", "Toy", "fSijsd281");

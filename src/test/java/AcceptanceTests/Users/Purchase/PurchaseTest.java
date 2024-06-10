@@ -3,9 +3,7 @@ package AcceptanceTests.Users.Purchase;
 import AcceptanceTests.BridgeToTests;
 import AcceptanceTests.ProxyToTest;
 import ServiceLayer.Response;
-import Util.ExceptionsEnum;
-import Util.PaymentDTO;
-import Util.UserDTO;
+import Util.*;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -32,9 +30,9 @@ public class PurchaseTest {
          countries.add("Israel");
          HashSet<String> cities = new HashSet<>();
          cities.add("BeerSheva");
-         impl.init("KobiM", "27/4/95", "Israel","Beer Sheva","Mesada","kobi Menashe", "Password123",
+         impl.init(new UserDTO("0", "KobiM", "27/4/95", "Israel","Beer Sheva","Mesada","kobi Menashe"), "Password123",
 
-                 "1", "payementService", "kobi@gmail.com", "2", "supplyService", countries, cities);
+                 new PaymentServiceDTO("1", "payementService", "kobi@gmail.com"),new SupplyServiceDTO("2", "supplyService", countries, cities));
 
 
         userID1 = impl.enterMarketSystem().getData();

@@ -3,6 +3,7 @@ package AcceptanceTests.System;
 import AcceptanceTests.BridgeToTests;
 import AcceptanceTests.ProxyToTest;
 import DomainLayer.Market.Market;
+import Util.PaymentServiceDTO;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
@@ -32,7 +33,7 @@ public class AddingExternalPaymentServices {
 
         // Act and Assert
         assertDoesNotThrow(() -> {
-            market.addExternalPaymentService(licensedDealerNumber, paymentServiceName, url, systemManagerId);
+            market.addExternalPaymentService(new PaymentServiceDTO(licensedDealerNumber, paymentServiceName, url), systemManagerId);
         });
     }
 
@@ -49,7 +50,7 @@ public class AddingExternalPaymentServices {
 
         // Act and Assert
         Exception exception = assertThrows(Exception.class, () -> {
-            market.addExternalPaymentService(licensedDealerNumber, paymentServiceName, url, nonManagerId);
+            market.addExternalPaymentService(new PaymentServiceDTO(licensedDealerNumber, paymentServiceName, url), nonManagerId);
         });
 
         // Optionally check the exception message
@@ -67,7 +68,7 @@ public class AddingExternalPaymentServices {
 
         // Act and Assert
         Exception exception = assertThrows(Exception.class, () -> {
-            market.addExternalPaymentService(licensedDealerNumber, paymentServiceName, url, systemManagerId);
+            market.addExternalPaymentService(new PaymentServiceDTO(licensedDealerNumber, paymentServiceName, url), systemManagerId);
         });
 
         // Optionally check the exception message

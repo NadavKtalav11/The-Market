@@ -11,6 +11,7 @@ public class UserDTO {
     private String name;
     private String userId;
 
+
     public UserDTO(String userId, String userName, String birthday, String country, String city, String address, String name){
         this.userName = userName;
         this.birthday = birthday;

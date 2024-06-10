@@ -10,6 +10,7 @@ import DomainLayer.User.User;
 import DomainLayer.User.UserFacade;
 import Util.CartDTO;
 import Util.PaymentDTO;
+import Util.PaymentServiceDTO;
 import Util.UserDTO;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -90,7 +91,7 @@ public class Payment {
         String licensedDealerNumber = "12345";
         String paymentServiceName = "PayPal";
         String url = "http://paypal.com";
-        market.addExternalPaymentService(licensedDealerNumber, paymentServiceName, url, systemMangerId);
+        market.addExternalPaymentService(new PaymentServiceDTO(licensedDealerNumber, paymentServiceName, url), systemMangerId);
         ExternalPaymentService externalPaymentService = paymentServicesFacade.getAllPaymentServices().get(licensedDealerNumber);
 
         int result = externalPaymentService.getIdAndAcquisition().size();
@@ -124,7 +125,7 @@ public class Payment {
         String licensedDealerNumber = "12345";
         String paymentServiceName = "PayPal";
         String url = "http://paypal.com";
-        market.addExternalPaymentService(licensedDealerNumber, paymentServiceName, url, systemManagerId);
+        market.addExternalPaymentService(new PaymentServiceDTO(licensedDealerNumber, paymentServiceName, url), systemManagerId);
         ExternalPaymentService externalPaymentService = paymentServicesFacade.getAllPaymentServices().get(licensedDealerNumber);
         int result = externalPaymentService.getIdAndAcquisition().size();
         assertEquals(0, result);
