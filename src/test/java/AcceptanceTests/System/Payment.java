@@ -18,6 +18,7 @@ import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -127,7 +128,7 @@ public class Payment {
         ExternalPaymentService externalPaymentService = paymentServicesFacade.getAllPaymentServices().get(licensedDealerNumber);
         int result = externalPaymentService.getIdAndAcquisition().size();
         assertEquals(0, result);
-        Map<String, Map<String, Integer>> productList = new HashMap<>();
+        Map<String, Map<String, List<Integer>>> productList = new HashMap<>();
 //
         //  when(userFacade.isUserLoggedIn(userID)).thenReturn(true);
         // Mocking User and UserFacade
@@ -158,7 +159,7 @@ public class Payment {
         String paymentServiceName = "PayPal";
         String url = "http://paypal.com";
         assertEquals(0, paymentServicesFacade.getAllPaymentServices().size()); // assert there is no AvailableExternalPaymentServiceTest
-        Map<String, Map<String, Integer>> productList = new HashMap<>();
+        Map<String, Map<String, List<Integer>>> productList = new HashMap<>();
 //
 
         Exception exception = assertThrows(Exception.class, () -> {

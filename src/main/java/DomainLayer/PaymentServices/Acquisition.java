@@ -18,7 +18,7 @@ public class Acquisition {
 
     private final Object storeReceiptLock;
 
-    public Acquisition(String acquisitionId, String userId, int totalPrice, PaymentDTO payment, Map<String, Map<String, Integer>> productList, String receiptIdCounter) {
+    public Acquisition(String acquisitionId, String userId, int totalPrice, PaymentDTO payment, Map<String, Map<String, List<Integer>>> productList, String receiptIdCounter) {
         this.acquisitionId = acquisitionId;
         this.userId = userId;
         this.totalPrice = totalPrice;

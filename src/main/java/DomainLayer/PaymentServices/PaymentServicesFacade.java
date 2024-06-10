@@ -6,6 +6,7 @@ import Util.PaymentServiceDTO;
 import Util.UserDTO;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -61,7 +62,7 @@ public class PaymentServicesFacade {
         }
     }
 
-    public Map<String,String> pay(int price, PaymentDTO payment, String userId, Map<String, Map<String, Integer>> productList) throws Exception{
+    public Map<String,String> pay(int price, PaymentDTO payment, String userId, Map<String, Map<String, List<Integer>>> productList) throws Exception{
        
         String acquisitionId  = getNewAcquisitionId();
         String receiptId = getNewReceiptId();
