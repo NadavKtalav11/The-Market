@@ -16,4 +16,9 @@ public class PruchaseCondRule<T, U> extends PurchaseCompositeRule<T, U> {
         }
         return false;
     }
+
+    @Override
+    public String getDescription() {
+        return rule2.getDescription() + " only if " + rule1.getDescription();
+    }
 }

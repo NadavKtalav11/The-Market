@@ -482,5 +482,16 @@ public class Service_layer {
         }
     }
 
+    //rule num is the index of the rule from all the rules displayed to the storeowner
+    public Response<String> removeRuleFromStore(int ruleNum, String storeId, String userId) {
+        logger.info("Removing rule from store");
 
+        try {
+            market.removeRuleFromStore(ruleNum, storeId, userId);
+            return new Response<>("Rule removed successfully", "Rule removed from store successfully.");
+        } catch (Exception e) {
+            logger.error("Error occurred during removing rule from store", e.getMessage(), e);
+            return new Response<>(null, e.getMessage());
+        }
+    }
 }
