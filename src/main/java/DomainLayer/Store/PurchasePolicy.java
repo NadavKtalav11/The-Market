@@ -1,5 +1,6 @@
 package DomainLayer.Store;
 
+import Util.ProductDTO;
 import Util.UserDTO;
 import org.w3c.dom.ls.LSException;
 
@@ -14,7 +15,7 @@ public class PurchasePolicy {
 
     private final Object usersLock;
     private final Object productLock;
-    private List<Rule<UserDTO, Map<String, List<Integer>>>> purchaseRules;
+    private List<Rule<UserDTO, List<ProductDTO>>> purchaseRules;
 
     public PurchasePolicy()
     {
@@ -25,9 +26,9 @@ public class PurchasePolicy {
         productLock = new Object();
     }
 
-    public boolean checkPurchasePolicy(UserDTO userDTO, Map<String, List<Integer>> products)
+    public boolean checkPurchasePolicy(UserDTO userDTO, List<ProductDTO> products)
     {
-        for (Rule<UserDTO, Map<String, List<Integer>>> rule : purchaseRules)
+        for (Rule<UserDTO, List<ProductDTO>> rule : purchaseRules)
         {
             if (!rule.checkRule(userDTO, products))
                 return false;
@@ -35,7 +36,7 @@ public class PurchasePolicy {
         return true;
     }
 
-    public void addRule(List<Rule<UserDTO, Map<String, List<Integer>>>> rules, String operator, Rule<UserDTO, Map<String, List<Integer>>> predicat)
+    public void addRule(List<Rule<UserDTO, List<ProductDTO>>> rules, String operator, Rule<UserDTO, List<ProductDTO>> predicat)
     {
         if(rules.size() == 1)
             purchaseRules.add(rules.get(0));

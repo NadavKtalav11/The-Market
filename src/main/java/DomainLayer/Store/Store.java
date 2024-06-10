@@ -84,6 +84,15 @@ public class Store {
         }
     }
 
+    public ProductDTO getProductDTOByName(String productName, int quantity, int totalPrice)
+    {
+        synchronized (storeProductLock) {
+            Product product = storeProducts.get(productName);
+            //todo: nitzan - check if parameter is totalPrice or product.getPrice()
+            return new ProductDTO(productName, totalPrice, quantity, product.getDescription(), product.getCategoryName());
+        }
+    }
+
     public boolean checkProductQuantity(String productName, int quantity)
     {
         Product productToCheck = getProductByName(productName);
@@ -164,7 +173,7 @@ public class Store {
         return this.discountPolicy.checkDiscountPolicy(userId, productName);
     }
 
-    public boolean checkPurchasePolicy(UserDTO userDTO, Map<String, List<Integer>> products)
+    public boolean checkPurchasePolicy(UserDTO userDTO, List<ProductDTO> products)
     {
         return this.purchasePolicy.checkPurchasePolicy(userDTO, products);
     }

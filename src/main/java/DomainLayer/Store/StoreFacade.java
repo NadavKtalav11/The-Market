@@ -71,7 +71,7 @@ public class StoreFacade {
     }
 
 
-    public boolean checkQuantityAndPolicies(UserDTO userDTO, Map<String, List<Integer>> products, String productName, int quantity, String storeId, String userId) {
+    public boolean checkQuantityAndPolicies(UserDTO userDTO,List<ProductDTO> products, String productName, int quantity, String storeId, String userId) {
 
         this.checkIfProductExists(productName, storeId);
         this.checkProductQuantityAvailability(productName, storeId, quantity);
@@ -93,6 +93,20 @@ public class StoreFacade {
         }
     }
 
+    public List<ProductDTO> getProductsDTOSByProductsNames(Map<String, List<Integer>> products, String storeId)
+    {
+        List<ProductDTO> productDTOS = new ArrayList<>();
+        Store store = getStoreByID(storeId);
+        for (Map.Entry<String, List<Integer>> product : products.entrySet()) {
+            String productName = product.getKey();
+            int quantity = product.getValue().get(0);
+            int totalPrice = product.getValue().get(1);
+            productDTOS.add(store.getProductDTOByName(productName, quantity, totalPrice));
+
+        }
+        return productDTOS;
+    }
+
     public void checkProductQuantityAvailability(String productName, String storeId, int quantity)
     {
         Store store = getStoreByID(storeId);
@@ -110,7 +124,7 @@ public class StoreFacade {
         }
     }
 
-    public void checkPurchasePolicy(UserDTO userDTO, Map<String, List<Integer>> products, String storeId)
+    public void checkPurchasePolicy(UserDTO userDTO, List<ProductDTO> products, String storeId)
     {
         Store store = getStoreByID(storeId);
 

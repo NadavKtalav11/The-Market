@@ -678,7 +678,8 @@ public class Market {
             int quantity;
             for(String productName: products.keySet()) {
                 quantity = products.get(productName).get(0);
-                this.storeFacade.checkQuantityAndPolicies(productName, quantity, store_ID, user_ID);
+                List<ProductDTO> productDTOS = this.storeFacade.getProductsDTOSByProductsNames(products, store_ID);
+                this.storeFacade.checkQuantityAndPolicies(userDTO, productDTOS, productName, quantity, store_ID, user_ID);
                 String availableExternalSupplyService = this.checkAvailableExternalSupplyService(userDTO.getCountry(), userDTO.getCity());
                 this.createShiftingDetails(userDTO.getCountry(), userDTO.getCity(), availableExternalSupplyService, userDTO.getAddress(), user_ID);
             }
