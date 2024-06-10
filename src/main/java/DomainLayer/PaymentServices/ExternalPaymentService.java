@@ -6,6 +6,7 @@ package DomainLayer.PaymentServices;
 import Util.PaymentDTO;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public  class ExternalPaymentService {
@@ -37,7 +38,7 @@ public  class ExternalPaymentService {
     }
 
     // Abstract method for paying with a card
-    public Map<String, String> payWithCard(int price, PaymentDTO payment, String id, Map<String, Map<String, Integer>> productList,
+    public Map<String, String> payWithCard(int price, PaymentDTO payment, String id, Map<String, Map<String, List<Integer>>> productList,
                                              String acquisitionIdCounter, String receiptIdCounter) throws Exception {
         // Mocking HTTP request to check if there is enough money in the card
         boolean response = httpClient.get(url + "?creditCard=" + payment.getCreditCardNumber() + "&amount=" + price);

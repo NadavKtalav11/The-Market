@@ -2,6 +2,7 @@ package DomainLayer.Store;
 
 import Util.ExceptionsEnum;
 import Util.ProductDTO;
+import Util.StoreDTO;
 import Util.UserDTO;
 
 import java.util.*;
@@ -37,17 +38,37 @@ public class StoreFacade {
         return storeFacadeInstance;
     }
 
+
+
     public StoreFacade newForTest(){
         storeFacadeInstance= new StoreFacade();
         return storeFacadeInstance;
     }
 
-    public void returnProductToStore(Map<String, Integer> products , String storeId){
+    public void returnProductToStore(Map<String, List<Integer>> products , String storeId){
         getStoreByID(storeId).returnProductToStore(products);
     }
 
     public Store getStoreByID(String storeID){
         return allStores.get(storeID);
+    }
+
+    public StoreDTO getStoreDTOFromStore(Store store){
+        return new StoreDTO(store.getProducts(), store.getStoreID(), store.getIsOpened(),store.getRating(), store.getNumOfRatings(),store.getStoreName() , store.getDescription());
+    }
+
+    public List<StoreDTO> getAllDTOs(){
+        List<StoreDTO> storesDTOList= new ArrayList<>();
+        List<Store> allStoresList = allStores.getAll();
+        for (Store store : allStoresList){
+            storesDTOList.add(getStoreDTOFromStore(store));
+        }
+        return storesDTOList;
+    }
+
+    public StoreDTO getStoreDTOById(String storeId){
+        Store store = getStoreByID(storeId);
+        return getStoreDTOFromStore(store);
     }
 
     public void errorIfStoreNotExist(String storeID) throws Exception {

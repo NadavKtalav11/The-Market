@@ -255,7 +255,7 @@ public class Market {
     }
 
     //Map<StoreID, Map<ProductName, quantity>>
-    public void returnCartToStock(Map<String, Map<String, Integer>> products){
+    public void returnCartToStock(Map<String, Map<String, List<Integer>>> products){
         for (String storeId: products.keySet()){
             storeFacade.returnProductToStore(products.get(storeId), storeId);
         }
@@ -555,7 +555,7 @@ public class Market {
 
    // public List<Integer> getInformationAboutStores(String user_ID)throws Exception
 
-    public Map<String, Map<String, Integer>> getPurchaseList(String userId)throws Exception{
+    public Map<String, Map<String, List<Integer>>> getPurchaseList(String userId)throws Exception{
         if (userFacade.isMember(userId)) {
             String memberId = userFacade.getMemberIdByUserId(userId);
             boolean succeeded = authenticationAndSecurityFacade.validateToken(authenticationAndSecurityFacade.getToken(memberId));
@@ -564,14 +564,14 @@ public class Market {
                 throw new Exception(ExceptionsEnum.sessionOver.toString());
             }
         }
-        Map<String, Map<String, Integer>> purchaseList = new HashMap<>();
+        Map<String, Map<String, List<Integer>>> purchaseList = new HashMap<>();
         List<String> usersStores = userFacade.getCartStoresByUser(userId);
         for (String storeId: usersStores) {
-            Map<String, Integer> productAndQuantity = new HashMap<>();
+            Map<String, List<Integer>> productAndQuantity = new HashMap<>();
             purchaseList.put(storeId, productAndQuantity) ;
             Map <String, List<Integer>> returnedMap = userFacade.getCartProductsByStoreAndUser(storeId , userId);
             for (String productName : returnedMap.keySet()){
-                productAndQuantity.put(productName,returnedMap.get(productName).get(0) );
+                productAndQuantity.put(productName,returnedMap.get(productName));
             }
 
         }

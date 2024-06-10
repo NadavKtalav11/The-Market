@@ -8,6 +8,7 @@ import org.mockito.Mockito;
 
 import java.lang.reflect.Field;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -62,7 +63,7 @@ public class PaymentServicesFacadeTest {
         int year = 2023;
         String holderID = "holderID";
         String userId = "user1";
-        Map<String, Map<String, Integer>> productList = new HashMap<>();
+        Map<String, Map<String, List<Integer>>> productList = new HashMap<>();
         productList.put("store1", new HashMap<>());
 
         paymentServicesFacade.addExternalService("1", "TestService", "http://testservice.com");
