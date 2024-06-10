@@ -71,18 +71,18 @@ public class StoreFacade {
     }
 
 
-    public boolean checkQuantityAndPolicies(UserDTO userDTO,List<ProductDTO> products, String productName, int quantity, String storeId, String userId) {
-
+    public void checkQuantity(String productName, int quantity, String storeId)
+    {
         this.checkIfProductExists(productName, storeId);
         this.checkProductQuantityAvailability(productName, storeId, quantity);
         this.checkIfProductQuantityIsPositive(quantity);
+    }
 
+    public boolean checkPolicies(UserDTO userDTO, List<ProductDTO> products, String storeId) {
         //Check here all policies
         this.checkPurchasePolicy(userDTO, products, storeId);
-        this.checkDiscountPolicy(productName, storeId, userId);
+        //this.checkDiscountPolicy(productName, storeId, userId);
         return true;
-        //todo nitzan check merge ;
-
     }
 
     public void checkIfProductExists(String productName, String storeId){
