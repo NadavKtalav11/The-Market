@@ -21,5 +21,7 @@ public abstract class PurchaseCompositeRule<T, U> implements Rule<T, U>{
         return rule2;
     }
 
+    public abstract String getDescription();
+
     public abstract boolean checkRule(T user, U products);
 }

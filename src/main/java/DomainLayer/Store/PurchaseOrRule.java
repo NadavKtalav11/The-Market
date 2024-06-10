@@ -11,4 +11,9 @@ public class PurchaseOrRule<T, U> extends PurchaseCompositeRule<T, U>{
     public boolean checkRule(T user, U products) {
         return rule1.checkRule(user, products) || rule2.checkRule(user, products);
     }
+
+    @Override
+    public String getDescription() {
+        return rule1.getDescription() + " or " + rule2.getDescription();
+    }
 }
