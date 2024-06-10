@@ -320,7 +320,8 @@ public class Market {
         storeFacade.checkQuantity(productName, quantity, storeId);
         Map<String, List<Integer>> products = this.userFacade.getCartProductsByStoreAndUser(storeId, userId);
         products.put(productName, new ArrayList<>(Arrays.asList(quantity)));
-        storeFacade.checkPolicies(new UserDTO(userFacade.getUserByID(userId)), products, storeId);
+        List<ProductDTO> productDTOS = storeFacade.getProductsDTOSByProductsNames(products, storeId);
+        storeFacade.checkPolicies(new UserDTO(userFacade.getUserByID(userId)), productDTOS, storeId);
         int totalPrice = storeFacade.calcPrice(productName, quantity, storeId, userId);
         userFacade.addItemsToBasket(productName, quantity, storeId, userId, totalPrice);
 
@@ -623,7 +624,8 @@ public class Market {
             storeFacade.checkQuantity(productName, quantity, storeId);
             Map<String, List<Integer>> products = this.userFacade.getCartProductsByStoreAndUser(storeId, userId);
             products.put(productName, new ArrayList<>(Arrays.asList(quantity)));
-            storeFacade.checkPolicies(new UserDTO(userFacade.getUserByID(userId)), products, storeId);
+            List<ProductDTO> productDTOS = storeFacade.getProductsDTOSByProductsNames(products, storeId);
+            storeFacade.checkPolicies(new UserDTO(userFacade.getUserByID(userId)), productDTOS, storeId);
             int totalPrice = storeFacade.calcPrice(productName, quantity, storeId, userId);
             userFacade.modifyBasketProduct(productName, quantity, storeId, userId, totalPrice);
         }
