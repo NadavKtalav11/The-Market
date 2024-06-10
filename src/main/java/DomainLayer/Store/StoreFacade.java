@@ -70,21 +70,19 @@ public class StoreFacade {
         return newStore.getStoreID();
     }
 
+
     public void checkQuantity(String productName, int quantity, String storeId)
     {
         this.checkIfProductExists(productName, storeId);
         this.checkProductQuantityAvailability(productName, storeId, quantity);
         this.checkIfProductQuantityIsPositive(quantity);
-
     }
 
-    public boolean checkPolicies(UserDTO userDTO, Map<String, List<Integer>> products, String storeId) {
+    public boolean checkPolicies(UserDTO userDTO, List<ProductDTO> products, String storeId) {
         //Check here all policies
         this.checkPurchasePolicy(userDTO, products, storeId);
         //this.checkDiscountPolicy(productName, storeId, userId);
         return true;
-        //todo nitzan check merge ;
-
     }
 
     public void checkIfProductExists(String productName, String storeId){
@@ -93,6 +91,20 @@ public class StoreFacade {
         {
             throw new IllegalArgumentException(ExceptionsEnum.productNotExistInStore.toString());
         }
+    }
+
+    public List<ProductDTO> getProductsDTOSByProductsNames(Map<String, List<Integer>> products, String storeId)
+    {
+        List<ProductDTO> productDTOS = new ArrayList<>();
+        Store store = getStoreByID(storeId);
+        for (Map.Entry<String, List<Integer>> product : products.entrySet()) {
+            String productName = product.getKey();
+            int quantity = product.getValue().get(0);
+            int totalPrice = product.getValue().get(1);
+            productDTOS.add(store.getProductDTOByName(productName, quantity, totalPrice));
+
+        }
+        return productDTOS;
     }
 
     public void checkProductQuantityAvailability(String productName, String storeId, int quantity)
@@ -112,7 +124,7 @@ public class StoreFacade {
         }
     }
 
-    public void checkPurchasePolicy(UserDTO userDTO, Map<String, List<Integer>> products, String storeId)
+    public void checkPurchasePolicy(UserDTO userDTO, List<ProductDTO> products, String storeId)
     {
         Store store = getStoreByID(storeId);
 

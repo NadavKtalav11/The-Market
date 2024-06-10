@@ -7,6 +7,7 @@ public enum Category {
     HOME,
     BOOKS,
     TOYS,
+    ALCOHOL,
     DAIRY;
 
     public static Category fromString(String categoryStr) {
