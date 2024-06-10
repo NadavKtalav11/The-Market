@@ -5,7 +5,7 @@ import java.util.HashSet;
 import java.util.Map;
 
 public class ExternalSupplyService {
-    private int licensedDealerNumber;
+    private String licensedDealerNumber;
     private String supplyServiceName;
     private HashSet<String> countries = new HashSet<>();
     private HashSet<String> cities = new HashSet<>();
@@ -16,7 +16,7 @@ public class ExternalSupplyService {
 
     int ShiftIDCounter= 1;
 
-    public ExternalSupplyService(int licensedDealerNumber, String supplyServiceName, HashSet<String> countries, HashSet<String> cities){
+    public ExternalSupplyService(String licensedDealerNumber, String supplyServiceName, HashSet<String> countries, HashSet<String> cities){
 
         this.licensedDealerNumber=licensedDealerNumber;
         this.supplyServiceName = supplyServiceName;
@@ -27,7 +27,7 @@ public class ExternalSupplyService {
         shiftLock = new Object();
     }
 
-    public int getLicensedDealerNumber(){
+    public String getLicensedDealerNumber(){
         return this.licensedDealerNumber;
     }
 

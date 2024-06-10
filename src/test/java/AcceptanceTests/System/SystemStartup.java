@@ -39,7 +39,7 @@ public class SystemStartup {
         String licensedDealerNumber = "12345";
         String paymentServiceName = "PayPal";
         String url = "http://example.com";
-        int licensedDealerNumber1 = 67890;
+        String licensedDealerNumber1 = "67890";
         String supplyServiceName = "SupplyService";
         HashSet<String> countries = new HashSet<>(Arrays.asList("USA", "Canada"));
         HashSet<String> cities = new HashSet<>(Arrays.asList("New York", "Los Angeles"));
@@ -68,7 +68,7 @@ public class SystemStartup {
         String licensedDealerNumber = "12345";
         String paymentServiceName = "PayPal";
         String url = "http://example.com";
-        int licensedDealerNumber1 = 67890;
+        String licensedDealerNumber1 = "67890";
         String supplyServiceName = null; // No supply service provided
         HashSet<String> countries = new HashSet<>(Arrays.asList("USA", "Canada"));
         HashSet<String> cities = new HashSet<>(Arrays.asList("New York", "Los Angeles"));
@@ -100,7 +100,7 @@ public class SystemStartup {
         String licensedDealerNumber = "12345";
         String paymentServiceName = null;
         String url = "http://example.com";
-        int licensedDealerNumber1 = 67890;
+        String licensedDealerNumber1 = "67890";
         String supplyServiceName = "serviceService"; // No supply service provided
         HashSet<String> countries = new HashSet<>(Arrays.asList("USA", "Canada"));
         HashSet<String> cities = new HashSet<>(Arrays.asList("New York", "Los Angeles"));
