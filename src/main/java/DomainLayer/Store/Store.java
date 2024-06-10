@@ -84,12 +84,12 @@ public class Store {
         }
     }
 
-    public ProductDTO getProductDTOByName(String productName, int quantity, int totalPrice)
+    public ProductDTO getProductDTOByName(String productName, int quantity)
     {
+        /*this function receives product from a user basket, with the quantity of this product in the basket and it's total price*/
         synchronized (storeProductLock) {
             Product product = storeProducts.get(productName);
-            //todo: nitzan - check if parameter is totalPrice or product.getPrice()
-            return new ProductDTO(productName, totalPrice, quantity, product.getDescription(), product.getCategoryName());
+            return new ProductDTO(productName, product.getPrice(), quantity, product.getDescription(), product.getCategoryName());
         }
     }
 
@@ -103,8 +103,6 @@ public class Store {
     {
         Product productToCalc = getProductByName(productName);
         return productToCalc.getPrice() * quantity;
-
-        //in the future, add check for discount using the discount policy
     }
 
     public void removeProduct(String productName){

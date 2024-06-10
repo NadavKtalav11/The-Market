@@ -100,9 +100,7 @@ public class StoreFacade {
         for (Map.Entry<String, List<Integer>> product : products.entrySet()) {
             String productName = product.getKey();
             int quantity = product.getValue().get(0);
-            int totalPrice = product.getValue().get(1);
-            productDTOS.add(store.getProductDTOByName(productName, quantity, totalPrice));
-
+            productDTOS.add(store.getProductDTOByName(productName, quantity));
         }
         return productDTOS;
     }
