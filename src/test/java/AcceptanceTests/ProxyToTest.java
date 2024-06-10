@@ -1,7 +1,9 @@
 package AcceptanceTests;
 
 import ServiceLayer.Response;
+import Util.PaymentServiceDTO;
 import Util.ProductDTO;
+import Util.SupplyServiceDTO;
 import Util.UserDTO;
 
 import java.util.HashSet;
@@ -21,13 +23,11 @@ public class ProxyToTest implements BridgeToTests {
 
 
     @Override
-    public Response<String> init(String userName, String birthday, String country, String city, String address, String name, String password, String licensedDealerNumber,
-
-                                 String paymentServiceName, String url, String licensedDealerNumber1, String supplyServiceName, HashSet<String> countries, HashSet<String> cities)
+    public Response<String> init(UserDTO userDTO, String password, PaymentServiceDTO paymentServiceDTO, SupplyServiceDTO supplyServiceDTO)
 
     {
         if (realServiceAdaptor != null)
-            return realServiceAdaptor.init(userName,birthday, country ,city, address, name , password,licensedDealerNumber, paymentServiceName, url, licensedDealerNumber1, supplyServiceName, countries, cities);
+            return realServiceAdaptor.init(userDTO, password, paymentServiceDTO, supplyServiceDTO);
 
         else
             return new Response<>(null, "Not Implemented yet");

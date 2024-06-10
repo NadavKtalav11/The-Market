@@ -3,6 +3,7 @@ package AcceptanceTests.System;
 import AcceptanceTests.BridgeToTests;
 import AcceptanceTests.ProxyToTest;
 import DomainLayer.Market.Market;
+import Util.SupplyServiceDTO;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -35,7 +36,7 @@ public class AddingExternalSupplyServices {
         cities.add("Bash");
         // Act and Assert
         assertDoesNotThrow(() -> {
-            market.addExternalSupplyService(licensedDealerNumber, supplyServiceName, countries,cities, systemManagerId);
+            market.addExternalSupplyService(new SupplyServiceDTO(licensedDealerNumber, supplyServiceName, countries,cities), systemManagerId);
         });
     }
 
@@ -55,7 +56,7 @@ public class AddingExternalSupplyServices {
 
         // Act and Assert
         Exception exception = assertThrows(Exception.class, () -> {
-            market.addExternalSupplyService(licensedDealerNumber, supplyServiceName, countries,cities, nonManagerId);
+            market.addExternalSupplyService(new SupplyServiceDTO(licensedDealerNumber, supplyServiceName, countries,cities), nonManagerId);
         });
 
         // Optionally check the exception message
@@ -77,7 +78,7 @@ public class AddingExternalSupplyServices {
 
         // Act and Assert
         Exception exception = assertThrows(Exception.class, () -> {
-            market.addExternalSupplyService(licensedDealerNumber, supplyServiceName, countries,cities, systemManagerId);
+            market.addExternalSupplyService(new SupplyServiceDTO(licensedDealerNumber, supplyServiceName, countries,cities), systemManagerId);
         });
 
         // Optionally check the exception message

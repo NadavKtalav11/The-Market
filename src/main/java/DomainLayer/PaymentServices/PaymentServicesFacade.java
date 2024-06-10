@@ -56,6 +56,15 @@ public class PaymentServicesFacade {
             return allPaymentServices.size() == size_before + 1;
         }
     }
+
+    public boolean addExternalService(PaymentServiceDTO paymentServiceDTO){
+        synchronized (paymentServiceLock) {
+            int size_before = allPaymentServices.size();
+            ExternalPaymentService externalPaymentService = new ExternalPaymentService(paymentServiceDTO);
+            allPaymentServices.put(paymentServiceDTO.getLicensedDealerNumber(), externalPaymentService);
+            return allPaymentServices.size() == size_before + 1;
+        }
+    }
     public void clearPaymentServices() {
         synchronized (paymentServiceLock) {
             allPaymentServices.clear();
@@ -115,7 +124,8 @@ public class PaymentServicesFacade {
     //}
 
     public PaymentServiceDTO getPaymentServiceDTOById(String paymentServiceId){
-        return new PaymentServiceDTO(getPaymentServiceById(paymentServiceId));
+        ExternalPaymentService externalPaymentService = getPaymentServiceById(paymentServiceId);
+        return new PaymentServiceDTO(externalPaymentService.getLicensedDealerNumber(), externalPaymentService.getPaymentServiceName(), externalPaymentService.getUrl());
     }
 
     public ExternalPaymentService getPaymentServiceById(String paymentServiceId){

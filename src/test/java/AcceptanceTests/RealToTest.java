@@ -1,8 +1,9 @@
 package AcceptanceTests;
 
 import ServiceLayer.Response;
-import ServiceLayer.Service_layer;
-import Util.ProductDTO;
+import PresentationLayer.WAF.Service_layer;
+import Util.PaymentServiceDTO;
+import Util.SupplyServiceDTO;
 import Util.UserDTO;
 
 import java.util.HashSet;
@@ -20,11 +21,9 @@ public class RealToTest implements BridgeToTests {
     }
 
     @Override
-    public Response<String> init(String userName, String birthday, String country, String city, String address, String name, String password, String licensedDealerNumber,
+    public Response<String> init(UserDTO userDTO,  String password, PaymentServiceDTO paymentServiceDTO, SupplyServiceDTO supplyServiceDTO) {
 
-                                 String paymentServiceName, String url, String licensedDealerNumber1, String supplyServiceName, HashSet<String> countries, HashSet<String> cities) {
-
-        return service.init(userName, birthday, country, city, address, name, password, licensedDealerNumber, paymentServiceName, url, licensedDealerNumber1, supplyServiceName, countries, cities);
+        return service.init(userDTO, password, paymentServiceDTO,supplyServiceDTO);
 
     }
 

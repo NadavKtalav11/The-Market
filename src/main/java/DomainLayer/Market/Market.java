@@ -9,11 +9,7 @@ import DomainLayer.Store.Product;
 import DomainLayer.Store.StoreFacade;
 import DomainLayer.User.UserFacade;
 import DomainLayer.SupplyServices.SupplyServicesFacade;
-import Util.CartDTO;
-import Util.ExceptionsEnum;
-import Util.PaymentDTO;
-import Util.ProductDTO;
-import Util.UserDTO;
+import Util.*;
 
 import java.util.*;
 import java.util.regex.Pattern;
@@ -74,9 +70,7 @@ public class Market {
 
 
 
-    public void init(UserDTO user, String password, String licensedDealerNumber,
-                     String paymentServiceName, String url,
-                     String licensedDealerNumber1, String supplyServiceName, HashSet<String> countries, HashSet<String> cities) throws Exception {
+    public void init(UserDTO user, String password, PaymentServiceDTO paymentServiceDTO,  SupplyServiceDTO supplyServiceDTO) throws Exception {
         synchronized (initializedLock) {
             if (initialized == true) {
                 return;
@@ -84,11 +78,11 @@ public class Market {
         }
         try {
             // Check for supply service
-            if (supplyServiceName == null || licensedDealerNumber1.length()<0 || countries==null || cities==null ) {
+            if (supplyServiceDTO.getSupplyServiceName() == null || supplyServiceDTO.getLicensedDealerNumber().length()<0 || supplyServiceDTO.getCountries()==null || supplyServiceDTO.getCities()==null ) {
                 throw new Exception("The system has not been able to be launched since there is a problem with the supply service details");
             }
             // Check for payment service
-            if (paymentServiceName == null || url==null || licensedDealerNumber ==null) {
+            if (paymentServiceDTO.getPaymentServiceName() == null || paymentServiceDTO.getUrl()==null || paymentServiceDTO.getLicensedDealerNumber() ==null) {
                 throw new Exception("The system has not been able to be launched since there is a problem with the payment service details");
             }
             // Initialization logic here
@@ -106,28 +100,28 @@ public class Market {
         synchronized (managersLock) {
             systemManagerIds.add(systemMangerId);
         }
-        paymentServicesFacade.addExternalService(licensedDealerNumber,paymentServiceName,url);
-        supplyServicesFacade.addExternalService(licensedDealerNumber1,supplyServiceName, countries, cities);
+        paymentServicesFacade.addExternalService(paymentServiceDTO);
+        supplyServicesFacade.addExternalService(supplyServiceDTO);
         synchronized (initializedLock) {
             initialized = true;
         }
     }
 
-    public void addExternalPaymentService(String licensedDealerNumber,String paymentServiceName, String url, String systemMangerId) throws Exception {
+    public void addExternalPaymentService(PaymentServiceDTO paymentServiceDTO, String systemMangerId) throws Exception {
         try {
             synchronized (managersLock) {
                 if (!systemManagerIds.contains(systemMangerId)) {
                     throw new Exception("Only system manager is allowed to add new external payment service");
                 }
             }
-            if (paymentServiceName == null || licensedDealerNumber==null || url==null ) {
+            if (paymentServiceDTO.getPaymentServiceName() == null || paymentServiceDTO.getLicensedDealerNumber()==null || paymentServiceDTO.getUrl()==null ) {
                 throw new Exception("The system has not been able to add the payment service due to invalid details");
             }
         } catch (Exception e) {
             // Log the error or handle it as needed
             throw e;  // Re-throwing the exception to be handled by the caller
         }
-        paymentServicesFacade.addExternalService(licensedDealerNumber, paymentServiceName, url);
+        paymentServicesFacade.addExternalService(paymentServiceDTO);
     }
 
     public void removeExternalPaymentService(String licensedDealerNumber, String systemMangerId) throws Exception {
@@ -149,24 +143,24 @@ public class Market {
 
     }
 
-    public void addExternalSupplyService(String licensedDealerNumber, String supplyServiceName, HashSet<String> countries, HashSet<String> cities, String systemManagerId) throws Exception {
+    public void addExternalSupplyService(SupplyServiceDTO supplyServiceDTO, String systemManagerId) throws Exception {
         try {
             synchronized (managersLock) {
                 if (!systemManagerIds.contains(systemManagerId)) {
                     throw new Exception("Only system manager is allowed to add new external supply service");
                 }
             }
-            if (supplyServiceName == null || countries ==null || cities ==null || licensedDealerNumber.length() == 0 || supplyServiceName == null ) {
+            if (supplyServiceDTO.getSupplyServiceName() == null || supplyServiceDTO.getCountries() ==null || supplyServiceDTO.getCities() ==null || supplyServiceDTO.getLicensedDealerNumber().length() == 0  ) {
                 throw new Exception("The system has not been able to add the supply service due to invalid details");
             }
         } catch (Exception e) {
             throw e;  // Re-throwing the exception to be handled by the caller
         }
-        supplyServicesFacade.addExternalService(licensedDealerNumber, supplyServiceName, countries, cities);
+        supplyServicesFacade.addExternalService(supplyServiceDTO);
 
     }
 
-    public void removeExternalSupplyService(int licensedDealerNumber, String systemManagerId) throws Exception {
+    public void removeExternalSupplyService(String licensedDealerNumber, String systemManagerId) throws Exception {
 
             try {
                 synchronized (managersLock) {

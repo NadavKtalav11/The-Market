@@ -1,23 +1,38 @@
-package ServiceLayer;
-import Util.PaymentDTO;
-import Util.ProductDTO;
-import Util.UserDTO;
+package PresentationLayer.WAF;
+import ServiceLayer.Response;
+import Util.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import DomainLayer.Market.Market;
+import org.springframework.boot.web.client.RestTemplateBuilder;
+import org.springframework.context.annotation.Bean;
+import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
+
+@Service
 public class Service_layer {
     private static final Logger logger = LoggerFactory.getLogger(Service_layer.class);
     private Market market;
 
     public Service_layer() {
-
         this.market = Market.getInstance(); // Initialize the Market instance
+    }
+
+
+    @Bean
+    public RestTemplate restTemplate() {
+        return new RestTemplate();
+    }
+
+    @Bean
+    public RestTemplate restTemplate(RestTemplateBuilder builder) {
+        return builder.build();
     }
 
     public Service_layer(int i) {
@@ -28,12 +43,10 @@ public class Service_layer {
     }
 
 
-    public Response<String> init(String userName, String birthday, String country, String city, String address, String name, String password, String licensedDealerNumber,
-                                 String paymentServiceName, String url, String licensedDealerNumber1, String supplyServiceName, HashSet<String> countries, HashSet<String> cities){
+    public Response<String> init(UserDTO userDTO ,String password , PaymentServiceDTO paymentDTO, SupplyServiceDTO supplyServiceDTO){
         logger.info("Starting the initialization of the system.");
         try {
-            market.init(new UserDTO(null , userName, birthday, country, city, address, name), password, licensedDealerNumber, paymentServiceName,
-                    url, licensedDealerNumber1, supplyServiceName, countries, cities);
+            market.init(userDTO,password, paymentDTO, supplyServiceDTO );
             logger.info("System initialized successfully.");
             return new Response<>("Initialization successful", "System initialized successfully.");
 
@@ -43,10 +56,10 @@ public class Service_layer {
         }
     }
 
-    public Response<String> addExternalPaymentService(String licensedDealerNumber,String paymentServiceName, String url, String systemMangerId) throws Exception {
+    public Response<String> addExternalPaymentService(PaymentServiceDTO paymentServiceDTO , String managerId) throws Exception {
         logger.info("Trying to add a new external payment service");
         try {
-            market.addExternalPaymentService(licensedDealerNumber, paymentServiceName, url, systemMangerId);
+            market.addExternalPaymentService(paymentServiceDTO ,managerId );
             logger.info("Adding new external payment service have been done successfully.");
             return new Response<>("Successful adding", "Adding new external payment service have been done successfully.");
 
@@ -70,10 +83,10 @@ public class Service_layer {
 
     }
 
-    public Response<String> addExternalSupplyService(String licensedDealerNumber, String supplyServiceName, HashSet<String> countries, HashSet<String> cities, String systemManagerId) throws Exception {
+    public Response<String> addExternalSupplyService(SupplyServiceDTO supplyServiceDTO, String systemManagerId) throws Exception {
         logger.info("Trying to add a new external supply service");
         try {
-            market.addExternalSupplyService(licensedDealerNumber, supplyServiceName, countries, cities, systemManagerId);
+            market.addExternalSupplyService(supplyServiceDTO, systemManagerId);
             logger.info("Adding new external supply service has been done successfully.");
             return new Response<>("Successful adding", "Adding new external supply service has been done successfully.");
         } catch (Exception e) {
@@ -82,7 +95,7 @@ public class Service_layer {
         }
     }
 
-    public Response<String> removeExternalSupplyService(int licensedDealerNumber, String systemManagerId) {
+    public Response<String> removeExternalSupplyService(String licensedDealerNumber, String systemManagerId) {
         logger.info("Trying to remove the supply service number: {}", licensedDealerNumber);
         try {
             market.removeExternalSupplyService(licensedDealerNumber, systemManagerId);
