@@ -148,6 +148,12 @@ package Util;
         invalidCity{
             public String toString(){ return "City is not exist"; }
         },
+        rulesNotMatchOpeators{
+            public String toString(){ return "The number of operators must be one less than the number of rules"; }
+        },
+        InvalidOperator{
+            public String toString(){ return "The operator must be 'AND' or 'OR' or 'COND'"; }
+        },
     }
 
 

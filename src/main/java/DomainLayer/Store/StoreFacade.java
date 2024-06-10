@@ -279,4 +279,16 @@ public class StoreFacade {
         allStores.get(storeId).addReceipt(receiptId, userId);
     }
 
+    public void addRuleToStore(List<Integer> ruleNums, List<String> operators, String storeId) {
+        List<Rule<UserDTO, List<ProductDTO>>> rules = new ArrayList<>();
+        for (int ruleNum : ruleNums) {
+            rules.add(new SimpleRule<>(RulesRepository.getByRuleNumber(ruleNum)));
+        }
+        allStores.get(storeId).addRule(rules, operators);
+    }
+
+    //implement removeRuleFromStore
+    public void removeRuleFromStore(int ruleNum, String storeId) {
+        allStores.get(storeId).removeRule(ruleNum);
+    }
 }

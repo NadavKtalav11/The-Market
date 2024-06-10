@@ -4,17 +4,12 @@ import java.util.List;
 
 public class PurchaseAndRule<T, U> extends PurchaseCompositeRule<T, U>{
 
-    public PurchaseAndRule(List<Rule<T,U>> rules) {
-        super(rules);
+    public PurchaseAndRule(Rule<T, U> rule1, Rule<T, U> rule2) {
+        super(rule1, rule2);
     }
 
     @Override
     public boolean checkRule(T user, U products) {
-        for (Rule<T, U> rule : rules) {
-            if (!rule.checkRule(user, products)) {
-                return false;
-            }
-        }
-        return true;
+        return rule1.checkRule(user, products) && rule2.checkRule(user, products);
     }
 }

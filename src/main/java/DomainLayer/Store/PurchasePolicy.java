@@ -24,6 +24,7 @@ public class PurchasePolicy {
         this.purchase = new Purchase(); //Default purchase policy
         usersLock = new Object();
         productLock = new Object();
+        this.purchaseRules = new ArrayList<>();
     }
 
     public boolean checkPurchasePolicy(UserDTO userDTO, List<ProductDTO> products)
@@ -36,18 +37,30 @@ public class PurchasePolicy {
         return true;
     }
 
-    public void addRule(List<Rule<UserDTO, List<ProductDTO>>> rules, String operator, Rule<UserDTO, List<ProductDTO>> predicat)
+    public void addRule(List<Rule<UserDTO, List<ProductDTO>>> rules, List<String> operators)
     {
-        if(rules.size() == 1)
-            purchaseRules.add(rules.get(0));
-        else
-        {
-            switch (operator) {
-                case "AND" -> purchaseRules.add(new PurchaseAndRule<>(rules));
-                case "OR" -> purchaseRules.add(new PurchaseOrRule<>(rules));
-                case "COND" -> purchaseRules.add(new PruchaseCondRule<>(rules, predicat));
+        Rule<UserDTO, List<ProductDTO>> rule = rules.get(0);
+        if(rules.size() > 1) {
+            for (int i = 0; i < operators.size(); i++) {
+                switch (operators.get(i)) {
+                    case "AND" -> rule = new PurchaseAndRule<>(rule, rules.get(i + 1));
+                    case "OR" -> rule = new PurchaseOrRule<>(rule, rules.get(i + 1));
+                    case "COND" -> rule = new PruchaseCondRule<>(rule, rules.get(i + 1));
+                }
             }
         }
+        purchaseRules.add(rule);
     }
 
+    public List<String> getRulesDescriptions() {
+        List<String> rulesDescriptions = new ArrayList<>();
+        for (Rule<UserDTO, List<ProductDTO>> rule : purchaseRules) {
+            rulesDescriptions.add(rule.getDescription());
+        }
+        return rulesDescriptions;
+    }
+
+    public void removeRule(int ruleNum) {
+        purchaseRules.remove(ruleNum);
+    }
 }

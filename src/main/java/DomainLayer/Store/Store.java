@@ -216,4 +216,12 @@ public class Store {
             receiptsIdsUserIds.put(receiptId, userId);
         }
     }
+
+    public void addRule(List<Rule<UserDTO, List<ProductDTO>>> rules, List<String> operators) {
+        purchasePolicy.addRule(rules, operators);
+    }
+
+    public void removeRule(int ruleNum) {
+        purchasePolicy.removeRule(ruleNum);
+    }
 }
