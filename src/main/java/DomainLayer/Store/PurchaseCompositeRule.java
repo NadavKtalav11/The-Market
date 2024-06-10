@@ -2,28 +2,26 @@ package DomainLayer.Store;
 
 import java.util.List;
 
+
 public abstract class PurchaseCompositeRule<T, U> implements Rule<T, U>{
-    protected List<Rule<T,U>> rules;
+    protected Rule<T,U> rule1;
+    protected Rule<T,U> rule2;
 
-    public PurchaseCompositeRule(List<Rule<T,U>> rules) {
-        this.rules = rules;
+
+    public PurchaseCompositeRule(Rule<T,U> rule1, Rule<T,U> rule2) {
+        this.rule1 = rule1;
+        this.rule2 = rule2;
     }
 
-    public List<Rule<T,U>> getRules() {
-        return rules;
+    public Rule<T, U> getRule1() {
+        return rule1;
     }
 
-    public void setRules(List<Rule<T,U>> rules) {
-        this.rules = rules;
+    public Rule<T, U> getRule2() {
+        return rule2;
     }
 
-    public void addRule(Rule<T,U> rule) {
-        rules.add(rule);
-    }
-
-    public void removeRule(Rule<T,U> rule) {
-        rules.remove(rule);
-    }
+    public abstract String getDescription();
 
     public abstract boolean checkRule(T user, U products);
 }

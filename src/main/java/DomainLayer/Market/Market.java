@@ -857,4 +857,48 @@ public class Market {
         if (storeMinRating != null && (storeMinRating < 0 || storeMinRating > 5))
             throw new IllegalArgumentException(ExceptionsEnum.storeRateInvalid.toString());
     }
+
+    public void addRuleToStore(List<Integer> ruleNums, List<String> operators, String userId, String storeId) throws Exception {
+        if (userFacade.isMember(userId)){
+            String memberId = userFacade.getMemberIdByUserId(userId);
+            boolean succeeded = authenticationAndSecurityFacade.validateToken(authenticationAndSecurityFacade.getToken(memberId));
+            if (!succeeded) {
+                logout(userId);
+                throw new IllegalArgumentException(ExceptionsEnum.sessionOver.toString());
+            }
+        }
+
+        checkRulesAndOperators(ruleNums, operators);
+        String member_ID = this.userFacade.getMemberIdByUserId(userId);
+        storeFacade.verifyStoreExistError(storeId);
+        roleFacade.verifyStoreOwnerError(storeId, member_ID);
+        storeFacade.addRuleToStore(ruleNums, operators, storeId);
+    }
+
+    public void removeRuleFromStore(int ruleNum,  String userId, String storeId) throws Exception {
+        if (userFacade.isMember(userId)){
+            String memberId = userFacade.getMemberIdByUserId(userId);
+            boolean succeeded = authenticationAndSecurityFacade.validateToken(authenticationAndSecurityFacade.getToken(memberId));
+            if (!succeeded) {
+                logout(userId);
+                throw new IllegalArgumentException(ExceptionsEnum.sessionOver.toString());
+            }
+        }
+
+        String member_ID = this.userFacade.getMemberIdByUserId(userId);
+        storeFacade.verifyStoreExistError(storeId);
+        roleFacade.verifyStoreOwnerError(storeId, member_ID);
+        storeFacade.removeRuleFromStore(ruleNum, storeId);
+    }
+
+    public void checkRulesAndOperators(List<Integer> ruleNums, List<String> operators) throws Exception {
+        if (ruleNums.size() != operators.size() + 1) {
+            throw new IllegalArgumentException(ExceptionsEnum.rulesNotMatchOpeators.toString());
+        }
+        for (int i = 0; i < operators.size(); i++) {
+            if (!operators.get(i).equals("AND") && !operators.get(i).equals("OR") && !operators.get(i).equals("COND")) {
+                throw new IllegalArgumentException(ExceptionsEnum.InvalidOperator.toString());
+            }
+        }
+    }
 }
