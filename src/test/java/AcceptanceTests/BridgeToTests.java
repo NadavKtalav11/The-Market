@@ -11,8 +11,10 @@ import java.util.Map;
 
 public interface BridgeToTests {
 
-    Response<String> init(String userName, String birthday, String country, String city, String address, String name, String password, int licensedDealerNumber,
-                          String paymentServiceName, String url, int licensedDealerNumber1, String supplyServiceName, HashSet<String> countries, HashSet<String> cities);
+    Response<String> init(String userName, String birthday, String country, String city, String address, String name, String password, String licensedDealerNumber,
+
+                          String paymentServiceName, String url, String licensedDealerNumber1, String supplyServiceName, HashSet<String> countries, HashSet<String> cities);
+
 
 //    Response<String> payWithExternalPaymentService(int price,String cardNumber, int cvv, int month, int year, String holderID, String userID);
 

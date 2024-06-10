@@ -29,7 +29,7 @@ public class Service_layer {
 
 
     public Response<String> init(String userName, String birthday, String country, String city, String address, String name, String password, String licensedDealerNumber,
-                                 String paymentServiceName, String url, int licensedDealerNumber1, String supplyServiceName, HashSet<String> countries, HashSet<String> cities){
+                                 String paymentServiceName, String url, String licensedDealerNumber1, String supplyServiceName, HashSet<String> countries, HashSet<String> cities){
         logger.info("Starting the initialization of the system.");
         try {
             market.init(new UserDTO(null , userName, birthday, country, city, address, name), password, licensedDealerNumber, paymentServiceName,
@@ -70,7 +70,7 @@ public class Service_layer {
 
     }
 
-    public Response<String> addExternalSupplyService(int licensedDealerNumber, String supplyServiceName, HashSet<String> countries, HashSet<String> cities, String systemManagerId) throws Exception {
+    public Response<String> addExternalSupplyService(String licensedDealerNumber, String supplyServiceName, HashSet<String> countries, HashSet<String> cities, String systemManagerId) throws Exception {
         logger.info("Trying to add a new external supply service");
         try {
             market.addExternalSupplyService(licensedDealerNumber, supplyServiceName, countries, cities, systemManagerId);
