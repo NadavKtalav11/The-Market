@@ -2,11 +2,10 @@ package DomainLayer.Store;
 
 import java.util.List;
 
-public class PurchaseAndRule<T, U> implements Rule<T, U>{
+public class PurchaseAndRule<T, U> extends PurchaseCompositeRule<T, U>{
 
-    public List<Rule<T, U>> rules;
-    public PurchaseAndRule() {
-        super();
+    public PurchaseAndRule(List<Rule<T,U>> rules) {
+        super(rules);
     }
 
     @Override
@@ -17,9 +16,5 @@ public class PurchaseAndRule<T, U> implements Rule<T, U>{
             }
         }
         return true;
-    }
-
-    public List<Rule<T, U>> getRules() {
-        return rules;
     }
 }

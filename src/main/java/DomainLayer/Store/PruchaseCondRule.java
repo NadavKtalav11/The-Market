@@ -2,13 +2,12 @@ package DomainLayer.Store;
 
 import java.util.List;
 
-public class PruchaseCondRule<T, U> implements Rule<T, U> {
+public class PruchaseCondRule<T, U> extends PurchaseCompositeRule<T, U> {
 
-    public List<Rule<T, U>> rules;
     public Rule<T, U> predicate;
 
-    public PruchaseCondRule(Rule<T, U> predicate) {
-        super();
+    public PruchaseCondRule(List<Rule<T, U>> rules, Rule<T, U> predicate) {
+        super(rules);
         this.predicate = predicate;
     }
 
