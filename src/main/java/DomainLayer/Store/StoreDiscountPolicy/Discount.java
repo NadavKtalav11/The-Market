@@ -1,6 +1,4 @@
-package DomainLayer.Store;
-
-import java.util.List;
+package DomainLayer.Store.StoreDiscountPolicy;
 
 public class Discount {
     private int percentage;

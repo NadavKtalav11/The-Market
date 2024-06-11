@@ -1,12 +1,12 @@
-package DomainLayer.Store;
+package DomainLayer.Store.PoliciesRulesLogicalConditions;
 
 import java.util.List;
 
-public class PruchaseCondRule<T, U> extends PurchaseCompositeRule<T, U> {
+public class CondRule<T, U> extends CompositeRule<T, U> {
 
     public Rule<T, U> predicate;
 
-    public PruchaseCondRule(List<Rule<T, U>> rules, Rule<T, U> predicate) {
+    public CondRule(List<Rule<T, U>> rules, Rule<T, U> predicate) {
         super(rules);
         this.predicate = predicate;
     }

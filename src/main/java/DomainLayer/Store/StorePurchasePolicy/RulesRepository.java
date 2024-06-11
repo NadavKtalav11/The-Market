@@ -1,4 +1,4 @@
-package DomainLayer.Store;
+package DomainLayer.Store.StorePurchasePolicy;
 
 import Util.ProductDTO;
 import Util.UserDTO;
@@ -10,7 +10,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.function.BiPredicate;
 
-public enum RulesRepository implements TestRule<UserDTO, List<ProductDTO>>{
+public enum RulesRepository implements TestRule<UserDTO, List<ProductDTO>> {
 
     ALCOHOL_RESTRICTION_BELOW_AGE_18((userDTO,products) -> {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("d/M/yy");

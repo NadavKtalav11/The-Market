@@ -1,11 +1,11 @@
-package DomainLayer.Store;
+package DomainLayer.Store.PoliciesRulesLogicalConditions;
 
 import java.util.List;
 
-public abstract class PurchaseCompositeRule<T, U> implements Rule<T, U>{
+public abstract class CompositeRule<T, U> implements Rule<T, U> {
     protected List<Rule<T,U>> rules;
 
-    public PurchaseCompositeRule(List<Rule<T,U>> rules) {
+    public CompositeRule(List<Rule<T,U>> rules) {
         this.rules = rules;
     }
 

@@ -1,12 +1,14 @@
-package DomainLayer.Store;
+package DomainLayer.Store.StorePurchasePolicy;
 
+import DomainLayer.Store.PoliciesRulesLogicalConditions.CondRule;
+import DomainLayer.Store.PoliciesRulesLogicalConditions.AndRule;
+import DomainLayer.Store.PoliciesRulesLogicalConditions.OrRule;
+import DomainLayer.Store.PoliciesRulesLogicalConditions.Rule;
 import Util.ProductDTO;
 import Util.UserDTO;
-import org.w3c.dom.ls.LSException;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 public class PurchasePolicy {
     private List<String> usersIdsActivatePolicy;
@@ -43,9 +45,9 @@ public class PurchasePolicy {
         else
         {
             switch (operator) {
-                case "AND" -> purchaseRules.add(new PurchaseAndRule<>(rules));
-                case "OR" -> purchaseRules.add(new PurchaseOrRule<>(rules));
-                case "COND" -> purchaseRules.add(new PruchaseCondRule<>(rules, predicat));
+                case "AND" -> purchaseRules.add(new AndRule<>(rules));
+                case "OR" -> purchaseRules.add(new OrRule<>(rules));
+                case "COND" -> purchaseRules.add(new CondRule<>(rules, predicat));
             }
         }
     }

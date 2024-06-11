@@ -1,9 +1,10 @@
-package DomainLayer.Store;
+package DomainLayer.Store.PoliciesRulesLogicalConditions;
+
 import java.util.List;
 
 
-public class PurchaseOrRule<T, U> extends PurchaseCompositeRule<T, U>{
-    public PurchaseOrRule(List<Rule<T,U>> rules) {
+public class OrRule<T, U> extends CompositeRule<T, U> {
+    public OrRule(List<Rule<T,U>> rules) {
         super(rules);
     }
 
