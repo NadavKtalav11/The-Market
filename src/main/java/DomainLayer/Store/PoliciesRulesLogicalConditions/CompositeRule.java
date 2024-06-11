@@ -6,11 +6,6 @@ public abstract class CompositeRule<T, U> implements Rule<T, U> {
     protected Rule<T,U> rule1;
     protected Rule<T,U> rule2;
 
-    public CompositeRule(List<Rule<T,U>> rules) {
-        this.rule1 = rule1;
-        this.rule2 = rule2;
-    }
-
     public CompositeRule(Rule<T,U> rule1, Rule<T,U> rule2) {
         this.rule1 = rule1;
         this.rule2 = rule2;
