@@ -2,6 +2,7 @@ package AcceptanceTests.System;
 import AcceptanceTests.BridgeToTests;
 import AcceptanceTests.ProxyToTest;
 import DomainLayer.Market.Market;
+import Util.SupplyServiceDTO;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -29,12 +30,12 @@ public class RemoveExternalSupplyServices {
         HashSet<String> cities = new HashSet<>();
         countries.add("Israel");
         cities.add("Bash");
-        market.addExternalSupplyService("12345", "Hovalot", countries,cities, "77");
-        market.addExternalSupplyService("67890", "Hovalot1", countries,cities,"77");
+        market.addExternalSupplyService(new SupplyServiceDTO("12345", "Hovalot", countries,cities), "77");
+        market.addExternalSupplyService(new SupplyServiceDTO("67890", "Hovalot1", countries,cities),"77");
 
         // Act and Assert
         assertDoesNotThrow(() -> {
-            market.removeExternalSupplyService(12345, "77");
+            market.removeExternalSupplyService("12345", "77");
         });
     }
 
@@ -45,11 +46,11 @@ public class RemoveExternalSupplyServices {
         HashSet<String> cities = new HashSet<>();
         countries.add("Israel");
         cities.add("Bash");
-        market.addExternalSupplyService("12345", "Hovalat", countries,cities,"77");
+        market.addExternalSupplyService(new SupplyServiceDTO("12345", "Hovalat", countries,cities),"77");
 
         // Act and Assert
         Exception exception = assertThrows(Exception.class, () -> {
-            market.removeExternalSupplyService(12345, "2"); // 2 is not a system manager ID
+            market.removeExternalSupplyService("12345", "2"); // 2 is not a system manager ID
         });
 
         // Optionally check the exception message
@@ -63,11 +64,11 @@ public class RemoveExternalSupplyServices {
         HashSet<String> cities = new HashSet<>();
         countries.add("Israel");
         cities.add("Bash");
-        market.addExternalSupplyService("12345", "Hovalot", countries,cities,"77");
+        market.addExternalSupplyService(new SupplyServiceDTO("12345", "Hovalot", countries,cities),"77");
 
         // Act and Assert
         Exception exception = assertThrows(Exception.class, () -> {
-            market.removeExternalSupplyService(12345, "77");
+            market.removeExternalSupplyService("12345", "77");
         });
 
         // Optionally check the exception message

@@ -1,6 +1,8 @@
-package DomainLayer.Store;
+package DomainLayer.Store.PoliciesRulesLogicalConditions;
 
-public class SimpleRule<T, U> implements Rule<T, U>{
+import DomainLayer.Store.StorePurchasePolicy.TestRule;
+
+public class SimpleRule<T, U> implements Rule<T, U> {
 
     private TestRule rule;
 

@@ -1,5 +1,7 @@
 package DomainLayer.SupplyServices;
 
+import Util.SupplyServiceDTO;
+
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -22,6 +24,17 @@ public class ExternalSupplyService {
         this.supplyServiceName = supplyServiceName;
         this.countries  = countries;
         this.cities = cities;
+        countriesLock =new Object();
+        citiesLock = new Object();
+        shiftLock = new Object();
+    }
+
+    public ExternalSupplyService(SupplyServiceDTO supplyServiceDTO){
+
+        this.licensedDealerNumber=supplyServiceDTO.getLicensedDealerNumber();
+        this.supplyServiceName = supplyServiceDTO.getSupplyServiceName();
+        this.countries  = supplyServiceDTO.getCountries();
+        this.cities = supplyServiceDTO.getCities();
         countriesLock =new Object();
         citiesLock = new Object();
         shiftLock = new Object();

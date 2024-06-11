@@ -1,6 +1,4 @@
-package DomainLayer.Store;
-
-import java.util.List;
+package DomainLayer.Store.StorePurchasePolicy;
 
 public class Purchase {
 

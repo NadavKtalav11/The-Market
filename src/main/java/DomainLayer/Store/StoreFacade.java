@@ -4,6 +4,9 @@ import Util.ExceptionsEnum;
 import Util.ProductDTO;
 import Util.StoreDTO;
 import Util.UserDTO;
+import DomainLayer.Store.PoliciesRulesLogicalConditions.Rule;
+import DomainLayer.Store.PoliciesRulesLogicalConditions.SimpleRule;
+import DomainLayer.Store.StorePurchasePolicy.RulesRepository;
 
 import java.util.*;
 

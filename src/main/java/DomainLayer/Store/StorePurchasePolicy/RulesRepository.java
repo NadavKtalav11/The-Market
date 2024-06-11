@@ -1,4 +1,4 @@
-package DomainLayer.Store;
+package DomainLayer.Store.StorePurchasePolicy;
 
 import Util.ProductDTO;
 import Util.UserDTO;
