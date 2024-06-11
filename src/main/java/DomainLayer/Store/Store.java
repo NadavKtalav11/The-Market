@@ -1,12 +1,14 @@
 package DomainLayer.Store;
 
+import DomainLayer.Store.StoreDiscountPolicy.DiscountPolicy;
+import DomainLayer.Store.StorePurchasePolicy.PurchasePolicy;
+import DomainLayer.Store.PoliciesRulesLogicalConditions.Rule;
 import Util.ProductDTO;
 
 import java.util.*;
 import java.util.ArrayList;
 import java.util.stream.Collectors;
 import  DomainLayer.Notifications.Notification;
-import  DomainLayer.Notifications.StoreNotification;
 import Util.UserDTO;
 
 

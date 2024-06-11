@@ -1,4 +1,4 @@
-package DomainLayer.Store;
+package DomainLayer.Store.StoreDiscountPolicy;
 
 import java.util.ArrayList;
 import java.util.List;
