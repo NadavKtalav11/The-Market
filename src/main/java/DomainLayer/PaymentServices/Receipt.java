@@ -1,17 +1,18 @@
 package DomainLayer.PaymentServices;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class Receipt {
     private String receiptId;
     private String storeId;
     private String userId;
-    private Map<String, Integer> productList = new HashMap<>(); //<productName, price>
+    private Map<String, List<Integer>> productList = new HashMap<>(); //<productName, price>
 
     private final Object productListLock;
 
-    public Receipt(String receiptId, String storeId, String userId, Map<String, Integer> productList)
+    public Receipt(String receiptId, String storeId, String userId, Map<String, List<Integer>> productList)
     {
         this.receiptId = receiptId;
         this.storeId = storeId;
@@ -25,7 +26,7 @@ public class Receipt {
         synchronized (productListLock) {
             int storePrice = 0;
             for (String productName : productList.keySet()) {
-                storePrice += productList.get(productName);
+                storePrice += productList.get(productName).get(1);
             }
             return storePrice;
         }

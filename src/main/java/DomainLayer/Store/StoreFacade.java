@@ -2,7 +2,11 @@ package DomainLayer.Store;
 
 import Util.ExceptionsEnum;
 import Util.ProductDTO;
+import Util.StoreDTO;
 import Util.UserDTO;
+import DomainLayer.Store.PoliciesRulesLogicalConditions.Rule;
+import DomainLayer.Store.PoliciesRulesLogicalConditions.SimpleRule;
+import DomainLayer.Store.StorePurchasePolicy.RulesRepository;
 
 import java.util.*;
 
@@ -37,17 +41,37 @@ public class StoreFacade {
         return storeFacadeInstance;
     }
 
+
+
     public StoreFacade newForTest(){
         storeFacadeInstance= new StoreFacade();
         return storeFacadeInstance;
     }
 
-    public void returnProductToStore(Map<String, Integer> products , String storeId){
+    public void returnProductToStore(Map<String, List<Integer>> products , String storeId){
         getStoreByID(storeId).returnProductToStore(products);
     }
 
     public Store getStoreByID(String storeID){
         return allStores.get(storeID);
+    }
+
+    public StoreDTO getStoreDTOFromStore(Store store){
+        return new StoreDTO(store.getProducts(), store.getStoreID(), store.getIsOpened(),store.getRating(), store.getNumOfRatings(),store.getStoreName() , store.getDescription());
+    }
+
+    public List<StoreDTO> getAllDTOs(){
+        List<StoreDTO> storesDTOList= new ArrayList<>();
+        List<Store> allStoresList = allStores.getAll();
+        for (Store store : allStoresList){
+            storesDTOList.add(getStoreDTOFromStore(store));
+        }
+        return storesDTOList;
+    }
+
+    public StoreDTO getStoreDTOById(String storeId){
+        Store store = getStoreByID(storeId);
+        return getStoreDTOFromStore(store);
     }
 
     public void errorIfStoreNotExist(String storeID) throws Exception {
@@ -279,4 +303,16 @@ public class StoreFacade {
         allStores.get(storeId).addReceipt(receiptId, userId);
     }
 
+    public void addRuleToStore(List<Integer> ruleNums, List<String> operators, String storeId) {
+        List<Rule<UserDTO, List<ProductDTO>>> rules = new ArrayList<>();
+        for (int ruleNum : ruleNums) {
+            rules.add(new SimpleRule<>(RulesRepository.getByRuleNumber(ruleNum)));
+        }
+        allStores.get(storeId).addRule(rules, operators);
+    }
+
+    //implement removeRuleFromStore
+    public void removeRuleFromStore(int ruleNum, String storeId) {
+        allStores.get(storeId).removeRule(ruleNum);
+    }
 }

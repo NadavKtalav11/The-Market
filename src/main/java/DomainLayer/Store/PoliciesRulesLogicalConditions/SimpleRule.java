@@ -10,6 +10,10 @@ public class SimpleRule<T, U> implements Rule<T, U> {
         this.rule = rule;
     }
 
+    public String getDescription() {
+        return rule.getDescription();
+    }
+
     @Override
     public boolean checkRule(T user, U products) {
         return rule.getPredicate().test(user, products);

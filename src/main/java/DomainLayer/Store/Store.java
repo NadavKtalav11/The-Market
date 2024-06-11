@@ -2,6 +2,7 @@ package DomainLayer.Store;
 
 import DomainLayer.Store.StoreDiscountPolicy.DiscountPolicy;
 import DomainLayer.Store.StorePurchasePolicy.PurchasePolicy;
+import DomainLayer.Store.PoliciesRulesLogicalConditions.Rule;
 import Util.ProductDTO;
 
 import java.util.*;
@@ -49,10 +50,10 @@ public class Store {
         return storeName;
     }
 
-    public void returnProductToStore(Map<String, Integer> products){
+    public void returnProductToStore(Map<String, List<Integer>> products){
         synchronized (storeProductLock) {
             for (String product : products.keySet()) {
-                storeProducts.get(product).addToStock(products.get(product));
+                storeProducts.get(product).addToStock(products.get(product).get(0));
             }
         }
     }
@@ -216,5 +217,34 @@ public class Store {
         synchronized (receiptId) {
             receiptsIdsUserIds.put(receiptId, userId);
         }
+    }
+
+
+    public void addRule(List<Rule<UserDTO, List<ProductDTO>>> rules, List<String> operators) {
+        purchasePolicy.addRule(rules, operators);
+    }
+
+    public void removeRule(int ruleNum) {
+        purchasePolicy.removeRule(ruleNum);
+    }
+  
+    public String getStore_ID() {
+        return store_ID;
+    }
+
+    public double getRating() {
+        return rating;
+    }
+
+    public int getNumOfRatings() {
+        return numOfRatings;
+    }
+
+    public DiscountPolicy getDiscountPolicy() {
+        return discountPolicy;
+    }
+
+    public String getDescription(){
+        return description;
     }
 }

@@ -1,5 +1,7 @@
 package DomainLayer.User;
 
+import Util.CartDTO;
+
 import java.util.*;
 
 public class Cart {
@@ -143,5 +145,19 @@ public class Cart {
         synchronized (basketsLock) {
             return new ArrayList<>(baskets.keySet());
         }
+    }
+
+    public CartDTO getDTO(String userId){
+        return new CartDTO(userId, getCartPrice(),getBasketForDTO());
+    }
+
+    public Map<String,Map<String ,List<Integer>>> getBasketForDTO() {
+        Map<String,Map<String ,List<Integer>>> basketsProd = new HashMap<>();
+        synchronized (basketsLock) {
+            for (String id : baskets.keySet()) {
+                basketsProd.put(id, baskets.get(id).getProducts());
+            }
+        }
+        return basketsProd;
     }
 }

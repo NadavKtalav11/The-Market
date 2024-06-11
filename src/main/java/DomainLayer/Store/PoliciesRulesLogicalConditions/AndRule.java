@@ -4,17 +4,17 @@ import java.util.List;
 
 public class AndRule<T, U> extends CompositeRule<T, U> {
 
-    public AndRule(List<Rule<T,U>> rules) {
-        super(rules);
+    public AndRule(Rule<T, U> rule1, Rule<T, U> rule2) {
+        super(rule1, rule2);
     }
 
     @Override
     public boolean checkRule(T user, U products) {
-        for (Rule<T, U> rule : rules) {
-            if (!rule.checkRule(user, products)) {
-                return false;
-            }
-        }
-        return true;
+        return rule1.checkRule(user, products) && rule2.checkRule(user, products);
+    }
+
+    @Override
+    public String getDescription() {
+        return rule1.getDescription() + " and " + rule2.getDescription();
     }
 }
