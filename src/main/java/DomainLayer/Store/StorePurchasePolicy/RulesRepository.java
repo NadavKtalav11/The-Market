@@ -3,6 +3,7 @@ package DomainLayer.Store.StorePurchasePolicy;
 import Util.ProductDTO;
 import Util.UserDTO;
 
+import java.time.Clock;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.Period;
@@ -15,7 +16,7 @@ public enum RulesRepository implements TestRule<UserDTO, List<ProductDTO>> {
     ALCOHOL_RESTRICTION_BELOW_AGE_18(1, "Alcohol cannot be sold to users below the age of 18", (userDTO, products) -> {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("d/M/yy");
         LocalDate birthdate = LocalDate.parse(userDTO.getBirthday(), formatter);
-        LocalDate today = LocalDate.now();
+        LocalDate today = LocalDate.now(getClock());
         int age = Period.between(birthdate, today).getYears();
         boolean isAlcohol = false;
         for(ProductDTO product: products) {
@@ -28,7 +29,7 @@ public enum RulesRepository implements TestRule<UserDTO, List<ProductDTO>> {
     }),
 
     ALCOHOL_RESTRICTION_AFTER_2300(2, "Alcohol cannot be sold after 23:00", (userDTO, products) -> {
-        LocalTime time = LocalTime.now();
+        LocalTime time = LocalTime.now(getClock());
         LocalTime targetTime = LocalTime.of(23, 0);
         boolean isAlcohol = false;
         for(ProductDTO product: products) {
@@ -60,7 +61,7 @@ public enum RulesRepository implements TestRule<UserDTO, List<ProductDTO>> {
             }
         }
         if(isIceCream) {
-            LocalDate today = LocalDate.now();
+            LocalDate today = LocalDate.now(getClock());
             return today.getDayOfMonth() != 1;
         }
         return true;
@@ -93,7 +94,7 @@ public enum RulesRepository implements TestRule<UserDTO, List<ProductDTO>> {
         holidays.add(LocalDate.of(year, 12, 25)); // Christmas
         holidays.add(LocalDate.of(year, 1, 6)); // Epiphany
         holidays.add(LocalDate.of(year, 11, 1)); // All Saints' Day
-        LocalDate today = LocalDate.now();
+        LocalDate today = LocalDate.now(getClock());
         LocalDate tomorrow = today.plusDays(1);
         return holidays.contains(tomorrow);
     });
@@ -101,6 +102,7 @@ public enum RulesRepository implements TestRule<UserDTO, List<ProductDTO>> {
     private final int ruleNumber;
     private final String description;
     private final BiPredicate<UserDTO, List<ProductDTO>> predicate;
+    private static final ThreadLocal<Clock> clock = ThreadLocal.withInitial(Clock::systemDefaultZone); // Default clock
 
     RulesRepository(int ruleNumber, String description, BiPredicate<UserDTO, List<ProductDTO>> predicate) {
         this.ruleNumber = ruleNumber;
@@ -128,5 +130,13 @@ public enum RulesRepository implements TestRule<UserDTO, List<ProductDTO>> {
     @Override
     public BiPredicate<UserDTO, List<ProductDTO>> getPredicate() {
         return predicate;
+    }
+
+    public static void setClock(Clock newClock) {
+        clock.set(newClock);
+    }
+
+    public static Clock getClock() {
+        return clock.get();
     }
 }

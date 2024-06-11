@@ -1,9 +1,12 @@
 package DomainLayer.Store;
 
+import DomainLayer.Store.PoliciesRulesLogicalConditions.*;
+import DomainLayer.Store.StorePurchasePolicy.*;
 import Util.ProductDTO;
 import Util.UserDTO;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import DomainLayer.Store.*;
 import org.mockito.MockedStatic;
 
 import java.time.*;
@@ -40,19 +43,18 @@ class SimpleRuleTest {
 
     @Test
     void testAlcoholRestrictionAfter2300() {
+        Clock after2300Clock = Clock.fixed(Instant.parse("2024-06-01T23:30:00Z"), ZoneId.of("UTC"));
+        RulesRepository.setClock(after2300Clock);
         SimpleRule<UserDTO, List<ProductDTO>> rule = new SimpleRule<>(RulesRepository.ALCOHOL_RESTRICTION_AFTER_2300);
 
         ProductDTO product = new ProductDTO("Beer", 10, 1, "Alcohol", "ALCOHOL");
         products.add(product);
 
-        // Test for time after 23:00
-        Clock after2300Clock = Clock.fixed(Instant.parse("2024-06-01T23:30:00Z"), ZoneId.of("UTC"));
-        LocalTime now = LocalTime.now(after2300Clock);
         assertFalse(rule.checkRule(userDTO, products));
 
-        // Test for time before 23:00
         Clock before2300Clock = Clock.fixed(Instant.parse("2024-06-01T22:30:00Z"), ZoneId.of("UTC"));
-        now = LocalTime.now(before2300Clock);
+        RulesRepository.setClock(before2300Clock);
+        rule = new SimpleRule<>(RulesRepository.ALCOHOL_RESTRICTION_AFTER_2300);
         assertTrue(rule.checkRule(userDTO, products));
     }
 
@@ -70,19 +72,18 @@ class SimpleRuleTest {
 
     @Test
     void testNoIceCreamInRoshHodesh() {
+        Clock roshHodeshClock = Clock.fixed(Instant.parse("2024-06-01T10:00:00Z"), ZoneId.of("UTC"));
+        RulesRepository.setClock(roshHodeshClock);
         SimpleRule<UserDTO, List<ProductDTO>> rule = new SimpleRule<>(RulesRepository.NO_ICE_CREAM_IN_ROSH_HODESH);
 
         ProductDTO product = new ProductDTO("ice cream", 9, 1, "Dessert", "FOOD");
         products.add(product);
 
-        // Test for Rosh Hodesh (1st day of the month)
-        Clock roshHodeshClock = Clock.fixed(Instant.parse("2024-06-01T10:00:00Z"), ZoneId.of("UTC"));
-        LocalDate today = LocalDate.now(roshHodeshClock);
         assertFalse(rule.checkRule(userDTO, products));
 
-        // Test for not Rosh Hodesh (2nd day of the month)
         Clock notRoshHodeshClock = Clock.fixed(Instant.parse("2024-06-02T10:00:00Z"), ZoneId.of("UTC"));
-        today = LocalDate.now(notRoshHodeshClock);
+        RulesRepository.setClock(notRoshHodeshClock);
+        rule = new SimpleRule<>(RulesRepository.NO_ICE_CREAM_IN_ROSH_HODESH);
         assertTrue(rule.checkRule(userDTO, products));
     }
 
@@ -115,12 +116,12 @@ class SimpleRuleTest {
 
         // Test for the evening before Christmas
         Clock christmasEveClock = Clock.fixed(Instant.parse("2024-12-24T10:00:00Z"), ZoneId.of("UTC"));
-        LocalDate today = LocalDate.now(christmasEveClock);
+        RulesRepository.setClock(christmasEveClock);
         assertTrue(rule.checkRule(userDTO, products));
 
         // Test for a regular day
         Clock regularDayClock = Clock.fixed(Instant.parse("2024-12-26T10:00:00Z"), ZoneId.of("UTC"));
-        today = LocalDate.now(regularDayClock);
+        RulesRepository.setClock(regularDayClock);
         assertFalse(rule.checkRule(userDTO, products));
     }
 }
