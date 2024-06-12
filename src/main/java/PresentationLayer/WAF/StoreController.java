@@ -33,12 +33,13 @@ public class StoreController {
         }
     }
 
+
+
     @GetMapping("/getAllStores")
-    public ResponseEntity<APIResponse<List<StoreDTO>>> getId() {
+    public ResponseEntity<APIResponse<List<StoreDTO>>> getAllStores() {
         try {
-            System.out.println("hi\n");
+
             List<StoreDTO> allStores = storeService.getAllStores();
-            System.out.println("hi2\n");
             HttpHeaders headers = new HttpHeaders();
             headers.add("accept", "*/*");
 
@@ -49,5 +50,7 @@ public class StoreController {
                     .body(new APIResponse<>(null, e.getMessage()));
         }
     }
+
+
 }
 

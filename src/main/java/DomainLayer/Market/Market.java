@@ -183,13 +183,13 @@ public class Market {
         }
     }
 
-    public void purchase(String userID, PaymentDTO paymentDTO, UserDTO userDTO) throws Exception {
+    public void purchase(PaymentDTO paymentDTO, UserDTO userDTO) throws Exception {
         CartDTO cartDTO = null;
         ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
         ScheduledFuture<?> timeoutHandle = null;
 
         try {
-            cartDTO = checkingCartValidationBeforePurchase(userID, userDTO);
+            cartDTO = checkingCartValidationBeforePurchase(userDTO.getUserId(), userDTO);
 
             // Create a CompletableFuture for user input
 //            CompletableFuture<Void> userInputFuture = new CompletableFuture<>();
@@ -208,7 +208,7 @@ public class Market {
 //            userInputFuture.get();
 
             // Proceed with payment if user input is received
-            payWithExternalPaymentService(cartDTO, paymentDTO, userID);
+            payWithExternalPaymentService(cartDTO, paymentDTO, userDTO.getUserId());
         } catch (Exception e) {
             if (cartDTO != null) {
                 returnCartToStock(cartDTO.getStoreToProducts());
