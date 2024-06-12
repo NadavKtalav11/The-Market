@@ -21,15 +21,6 @@ public class UserController {
         this.userService = userService;
     }
 
-    @PostMapping
-    public ResponseEntity<APIResponse<String>> createUser() {
-        try {
-            String userId = userService.addUser();
-            return ResponseEntity.status(HttpStatus.CREATED).body(new APIResponse<>(userId, null));
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new APIResponse<>(null, e.getMessage()));
-        }
-    }
 
     @GetMapping("/getUser/{userId}")
     public ResponseEntity<APIResponse<UserDTO>> getUser(@PathVariable String userId) {
@@ -47,29 +38,21 @@ public class UserController {
         }
     }
 
-    @PutMapping("/updateUser/{id}")
-    public ResponseEntity<APIResponse<UserDTO>> updateUser(@PathVariable String id, @RequestBody UserDTO userDetails) {
-        try {
-            UserDTO user = userService.updateUser(userDetails);
-            if (user != null) {
-                return ResponseEntity.ok(new APIResponse<>(user, null));
-            } else {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new APIResponse<>(null, "User not found"));
-            }
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new APIResponse<>(null, e.getMessage()));
-        }
-    }
+//    @PutMapping("/updateUser/{id}")
+//    public ResponseEntity<APIResponse<UserDTO>> updateUser(@PathVariable String id, @RequestBody UserDTO userDetails) {
+//        try {
+//            UserDTO user = userService.updateUser(userDetails);
+//            if (user != null) {
+//                return ResponseEntity.ok(new APIResponse<>(user, null));
+//            } else {
+//                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new APIResponse<>(null, "User not found"));
+//            }
+//        } catch (Exception e) {
+//            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new APIResponse<>(null, e.getMessage()));
+//        }
+//    }
 
-    @DeleteMapping("delete/{id}")
-    public ResponseEntity<APIResponse<Void>> deleteUser(@PathVariable String id) {
-        try {
-            userService.delete(id);
-            return ResponseEntity.ok(new APIResponse<>(null, null));
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new APIResponse<>(null, e.getMessage()));
-        }
-    }
+
 
     @GetMapping("/getCart/{id}")
     public ResponseEntity<APIResponse<CartDTO>> getCart(@PathVariable String id) {
@@ -80,6 +63,31 @@ public class UserController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new APIResponse<>(null, e.getMessage()));
         }
     }
+
+
+
+
+//    @PostMapping
+//    public ResponseEntity<APIResponse<String>> createUser() {
+//        try {
+//            String userId = userService.addUser();
+//            return ResponseEntity.status(HttpStatus.CREATED).body(new APIResponse<>(userId, null));
+//        } catch (Exception e) {
+//            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new APIResponse<>(null, e.getMessage()));
+//        }
+//    }
+
+//
+//
+//    @DeleteMapping("delete/{id}")
+//    public ResponseEntity<APIResponse<Void>> deleteUser(@PathVariable String id) {
+//        try {
+//            userService.delete(id);
+//            return ResponseEntity.ok(new APIResponse<>(null, null));
+//        } catch (Exception e) {
+//            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new APIResponse<>(null, e.getMessage()));
+//        }
+//    }
 
 
 }

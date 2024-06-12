@@ -2,9 +2,7 @@ package AcceptanceTests;
 
 import ServiceLayer.Response;
 import PresentationLayer.WAF.Service_layer;
-import Util.PaymentServiceDTO;
-import Util.SupplyServiceDTO;
-import Util.UserDTO;
+import Util.*;
 
 import java.util.HashSet;
 import java.util.List;
@@ -48,7 +46,7 @@ public class RealToTest implements BridgeToTests {
 
     public Response<String> register(String userID, String userName, String birthdate, String country, String city, String address, String name, String password)
     {
-        return service.register(userID, userName, birthdate, country, city, address, name, password);
+        return service.register(new UserDTO(userID, userName, birthdate, country, city, address, name) , password);
     }
 
     public Response<String> login(String userID, String username, String password)
@@ -63,7 +61,7 @@ public class RealToTest implements BridgeToTests {
 
     public Response<String> addProductToStore(String userId, String storeID, String productName, int price, int quantity, String description, String categoryStr)
     {
-        return service.addProductToStore(userId, storeID, productName, price, quantity, description, categoryStr);
+        return service.addProductToStore(userId, storeID, new ProductDTO(productName, price, quantity, description, categoryStr));
     }
 
     public Response<String> removeProductFromStore(String userId, String storeID, String productName)
@@ -73,7 +71,7 @@ public class RealToTest implements BridgeToTests {
 
     public Response<String> updateProductInStore(String userId, String storeID, String productName, int price, int quantity, String description, String categoryStr)
     {
-        return service.updateProductInStore(userId, storeID, productName, price, quantity, description, categoryStr);
+        return service.updateProductInStore(userId, storeID, new ProductDTO(productName, price, quantity, description, categoryStr));
     }
 
     public Response<String> appointStoreOwner(String nominatorUserId, String nominatorUsername, String storeID)
@@ -172,7 +170,7 @@ public class RealToTest implements BridgeToTests {
     }
 
     public Response<String> purchase(String user_ID, String country, String city, String address, String cardNumber, int cvv, int month, int year, String holderID){
-        return service.purchase(user_ID, country, city, address, cardNumber, cvv, month, year, holderID);
+        return service.purchase(new UserDTO(user_ID,null, null, country, city, address, null) , new PaymentDTO(holderID,cardNumber,  cvv, month, year));
 
     }
 
