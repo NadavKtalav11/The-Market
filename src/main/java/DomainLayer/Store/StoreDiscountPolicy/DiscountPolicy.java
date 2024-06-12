@@ -15,7 +15,9 @@ public class DiscountPolicy {
     {
         this.usersIdsToDiscount = new ArrayList<>();
         this.productNameToDiscount = new ArrayList<>();
-        this.discount = new Discount(0); //Default discount percentage is 0
+        //todo: Nitzan+Tomer fix below two lines (those are temporary lines)
+        DiscountValue discountValue = new SimpleDiscountValue(0, null, true, null);//Default discount percentage is 0
+        this.discount = new Discount(new ArrayList<>(List.of(discountValue)), null);
         userIdLock = new Object();
         productNameLock = new Object();
     }
