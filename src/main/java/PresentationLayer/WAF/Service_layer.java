@@ -24,7 +24,6 @@ public class Service_layer {
         this.market = Market.getInstance(); // Initialize the Market instance
     }
 
-
     @Bean
     public RestTemplate restTemplate() {
         return new RestTemplate();
@@ -34,6 +33,12 @@ public class Service_layer {
     public RestTemplate restTemplate(RestTemplateBuilder builder) {
         return builder.build();
     }
+
+
+
+
+
+
 
     public Service_layer(int i) {
         market = Market.getInstance();

@@ -45,3 +45,103 @@ Action:
 
 Consider defining a bean of type 'PresentationLayer.WAF.UserService' in your configuration.
 
+2024-06-12 16:40:51 ERROR o.s.b.d.LoggingFailureAnalysisReporter - 
+
+***************************
+APPLICATION FAILED TO START
+***************************
+
+Description:
+
+The bean 'restTemplate', defined in class path resource [PresentationLayer/WAF/Service_layer.class], could not be registered. A bean with that name has already been defined in class path resource [PresentationLayer/WAF/MarketService.class] and overriding is disabled.
+
+Action:
+
+Consider renaming one of the beans or enabling overriding by setting spring.main.allow-bean-definition-overriding=true
+
+2024-06-12 16:43:49 ERROR o.s.b.d.LoggingFailureAnalysisReporter - 
+
+***************************
+APPLICATION FAILED TO START
+***************************
+
+Description:
+
+The bean 'restTemplate', defined in class path resource [PresentationLayer/WAF/Service_layer.class], could not be registered. A bean with that name has already been defined in class path resource [PresentationLayer/WAF/MarketService.class] and overriding is disabled.
+
+Action:
+
+Consider renaming one of the beans or enabling overriding by setting spring.main.allow-bean-definition-overriding=true
+
+2024-06-12 16:47:10 ERROR o.s.b.d.LoggingFailureAnalysisReporter - 
+
+***************************
+APPLICATION FAILED TO START
+***************************
+
+Description:
+
+The bean 'restTemplate', defined in class path resource [PresentationLayer/WAF/StoreService.class], could not be registered. A bean with that name has already been defined in class path resource [PresentationLayer/WAF/MarketService.class] and overriding is disabled.
+
+Action:
+
+Consider renaming one of the beans or enabling overriding by setting spring.main.allow-bean-definition-overriding=true
+
+2024-06-12 16:47:37 ERROR o.s.b.d.LoggingFailureAnalysisReporter - 
+
+***************************
+APPLICATION FAILED TO START
+***************************
+
+Description:
+
+The bean 'restTemplate', defined in class path resource [PresentationLayer/WAF/StoreService.class], could not be registered. A bean with that name has already been defined in class path resource [PresentationLayer/WAF/MarketService.class] and overriding is disabled.
+
+Action:
+
+Consider renaming one of the beans or enabling overriding by setting spring.main.allow-bean-definition-overriding=true
+
+2024-06-12 16:47:55 ERROR o.s.b.d.LoggingFailureAnalysisReporter - 
+
+***************************
+APPLICATION FAILED TO START
+***************************
+
+Description:
+
+The bean 'restTemplate', defined in class path resource [PresentationLayer/WAF/StoreService.class], could not be registered. A bean with that name has already been defined in class path resource [PresentationLayer/WAF/MarketService.class] and overriding is disabled.
+
+Action:
+
+Consider renaming one of the beans or enabling overriding by setting spring.main.allow-bean-definition-overriding=true
+
+2024-06-12 16:55:04 ERROR o.s.b.d.LoggingFailureAnalysisReporter - 
+
+***************************
+APPLICATION FAILED TO START
+***************************
+
+Description:
+
+Parameter 1 of constructor in PresentationLayer.WAF.MarketController required a bean of type 'PresentationLayer.WAF.Service_layer' that could not be found.
+
+
+Action:
+
+Consider defining a bean of type 'PresentationLayer.WAF.Service_layer' in your configuration.
+
+2024-06-12 16:56:00 ERROR o.s.b.d.LoggingFailureAnalysisReporter - 
+
+***************************
+APPLICATION FAILED TO START
+***************************
+
+Description:
+
+Parameter 1 of constructor in PresentationLayer.WAF.MarketController required a bean of type 'PresentationLayer.WAF.Service_layer' that could not be found.
+
+
+Action:
+
+Consider defining a bean of type 'PresentationLayer.WAF.Service_layer' in your configuration.
+
