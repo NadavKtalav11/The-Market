@@ -268,6 +268,14 @@ public class StoreFacade {
         return filteredProducts;
     }
 
+    public List<ProductDTO> inStoreProductSearchDTO(String productName, String categoryStr, List<String> keywords, String storeId)
+    {
+        Store storeToSearchIn = getStoreByID(storeId);
+        List<ProductDTO> filteredProducts = storeToSearchIn.matchProductsDTO(productName, categoryStr, keywords);
+        return filteredProducts;
+    }
+
+
     public List<String> inStoreProductFilter(String categoryStr, List<String> keywords, Integer minPrice, Integer maxPrice, Double minRating, String storeId, List<String> productsFromSearch, Double storeMinRating)
     {
         Store storeToSearchIn = getStoreByID(storeId);
