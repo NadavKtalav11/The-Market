@@ -11,6 +11,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -38,15 +39,19 @@ public class StoreController {
 
 
     @GetMapping("/getAllStores")
-    public ResponseEntity<APIResponse<String>> getAllStores() {
+    public ResponseEntity<APIResponse<List<String>>> getAllStores() {
         try {
             ObjectMapper objectMapper= new ObjectMapper();
             List<StoreDTO> allStores = storeService.getAllStores();
             HttpHeaders headers = new HttpHeaders();
             headers.add("accept", "*/*");
+            List<String> dtosRes = new ArrayList<>();
+            for (StoreDTO storeDTO : allStores ){
+                dtosRes.add(objectMapper.writeValueAsString(storeDTO));
+            }
 
             return ResponseEntity.status(HttpStatus.OK).headers(headers)
-                    .body(new APIResponse<>(objectMapper.writeValueAsString(allStores), null));
+                    .body(new APIResponse<>(dtosRes, null));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(new APIResponse<>(null, e.getMessage()));
