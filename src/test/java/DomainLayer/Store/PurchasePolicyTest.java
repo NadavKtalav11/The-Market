@@ -1,6 +1,7 @@
 package DomainLayer.Store;
 
-import DomainLayer.Store.PurchasePolicy;
+import DomainLayer.Store.StorePurchasePolicy.PurchasePolicy;
+import DomainLayer.Store.PoliciesRulesLogicalConditions.Rule;
 import Util.ProductDTO;
 import Util.UserDTO;
 import org.junit.jupiter.api.BeforeEach;

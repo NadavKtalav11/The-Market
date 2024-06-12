@@ -1,8 +1,8 @@
 package Util;
 
-import DomainLayer.Store.DiscountPolicy;
+import DomainLayer.Store.StoreDiscountPolicy.DiscountPolicy;
 import DomainLayer.Store.Product;
-import DomainLayer.Store.PurchasePolicy;
+import DomainLayer.Store.StorePurchasePolicy.PurchasePolicy;
 
 import java.util.HashMap;
 import java.util.List;
