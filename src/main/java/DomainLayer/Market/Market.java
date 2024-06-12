@@ -295,10 +295,11 @@ public class Market {
 
     }
 
-    public void Login(String userId,String username, String password) throws Exception {
+    public String Login(String userId,String username, String password) throws Exception {
         String encryptedPassword = authenticationAndSecurityFacade.encodePassword(password);
-        userFacade.Login(userId, username,encryptedPassword);
+        String memberId = userFacade.Login(userId, username,encryptedPassword);
         authenticationAndSecurityFacade.generateToken(userId);
+        return memberId;
     }
 
     public void addProductToBasket(String productName, int quantity, String storeId, String userId) throws Exception {
@@ -747,6 +748,20 @@ public class Market {
         return storeFacade.inStoreProductSearch(productName, categoryStr, keywords, storeId);
     }
 
+    public List<ProductDTO> inStoreProductSearchDTO(String userId, String productName, String categoryStr, List<String> keywords, String storeId) throws Exception {
+        if (userFacade.isMember(userId)) {
+            String memberId = userFacade.getMemberIdByUserId(userId);
+            boolean succeeded = authenticationAndSecurityFacade.validateToken(authenticationAndSecurityFacade.getToken(memberId));
+            if (!succeeded) {
+                logout(userId);
+                throw new Exception(ExceptionsEnum.sessionOver.toString());
+            }
+        }
+        storeFacade.checkCategory(categoryStr);
+        storeFacade.verifyStoreExistError(storeId);
+        return storeFacade.inStoreProductSearchDTO(productName, categoryStr, keywords, storeId);
+    }
+
     public List<String> generalProductSearch(String userId, String productName, String categoryStr, List<String> keywords) throws Exception {
         if (userFacade.isMember(userId)) {
             String memberId = userFacade.getMemberIdByUserId(userId);
@@ -765,6 +780,33 @@ public class Market {
         {
             try {
                 filteredProductNames.addAll(inStoreProductSearch(userId, productName, categoryStr, keywords,store_ID));
+            }
+            catch (Exception e)
+            {
+                continue;
+            }
+        }
+        return filteredProductNames;
+    }
+
+    public List<ProductDTO> generalProductSearchDTO(String userId, String productName, String categoryStr, List<String> keywords) throws Exception {
+        if (userFacade.isMember(userId)) {
+            String memberId = userFacade.getMemberIdByUserId(userId);
+            boolean succeeded = authenticationAndSecurityFacade.validateToken(authenticationAndSecurityFacade.getToken(memberId));
+            if (!succeeded) {
+                logout(userId);
+                throw new Exception(ExceptionsEnum.sessionOver.toString());
+            }
+        }
+
+        storeFacade.checkCategory(categoryStr);
+
+        List<ProductDTO> filteredProductNames = new ArrayList<>();
+        List<String> stores = this.storeFacade.getStores();
+        for(String store_ID: stores)
+        {
+            try {
+                filteredProductNames.addAll(inStoreProductSearchDTO(userId, productName, categoryStr, keywords,store_ID));
             }
             catch (Exception e)
             {

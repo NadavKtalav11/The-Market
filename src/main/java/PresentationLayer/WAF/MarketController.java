@@ -2,6 +2,7 @@ package PresentationLayer.WAF;
 
 import ServiceLayer.Response;
 import Util.*;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -9,6 +10,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -17,12 +19,14 @@ import java.util.Map;
 public class MarketController {
 
     //private final MarketService marketService;
+    private final ObjectMapper objectMapper;
     private final Service_layer serviceLayer;
 
     @Autowired
-    public MarketController(Service_layer serviceLayer) {
+    public MarketController(Service_layer serviceLayer, ObjectMapper objectMapper) {
         //this.marketService = marketService;
         this.serviceLayer = serviceLayer;
+        this.objectMapper =new ObjectMapper();
     }
 
 
@@ -48,9 +52,10 @@ public class MarketController {
     }
 
     @PostMapping("/init/{userDTO}/{password}/{paymentServiceDTO}/{supplyServiceDTO}")
-    public ResponseEntity<APIResponse<String>> init(@PathVariable UserDTO userDTO, @PathVariable String password, @PathVariable PaymentServiceDTO paymentServiceDTO, @PathVariable SupplyServiceDTO supplyServiceDTO) {
+    public ResponseEntity<APIResponse<String>> init(@PathVariable String userDTO, @PathVariable String password, @PathVariable  String paymentServiceDTO, @PathVariable String supplyServiceDTO) {
         try {
-            Response<String> response = serviceLayer.init(userDTO, password, paymentServiceDTO, supplyServiceDTO);
+
+            Response<String> response = serviceLayer.init(objectMapper.readValue(userDTO,UserDTO.class), password, objectMapper.readValue(paymentServiceDTO, PaymentServiceDTO.class), objectMapper.readValue(supplyServiceDTO,SupplyServiceDTO.class));
             if (response.isSuccess()) {
                 String userId = response.getData();
                 HttpHeaders headers = new HttpHeaders();
@@ -70,9 +75,9 @@ public class MarketController {
     }
 
     @PostMapping("/addExternalPaymentService/{paymentServiceDTO}/{managerId}")
-    public ResponseEntity<APIResponse<String>> addExternalPaymentService(@PathVariable PaymentServiceDTO paymentServiceDTO, @PathVariable String managerId) {
+    public ResponseEntity<APIResponse<String>> addExternalPaymentService(@PathVariable String paymentServiceDTO, @PathVariable String managerId) {
         try {
-            Response<String> response = serviceLayer.addExternalPaymentService(paymentServiceDTO, managerId);
+            Response<String> response = serviceLayer.addExternalPaymentService(objectMapper.readValue(paymentServiceDTO,PaymentServiceDTO.class), managerId);
             if (response.isSuccess()) {
                 String result = response.getResult();
                 HttpHeaders headers = new HttpHeaders();
@@ -114,9 +119,9 @@ public class MarketController {
     }
 
     @PostMapping("/addExternalSupplyService/{supplyServiceDTO}/{managerId}")
-    public ResponseEntity<APIResponse<String>> addExternalSupplyService(@PathVariable SupplyServiceDTO supplyServiceDTO, @PathVariable String managerId) {
+    public ResponseEntity<APIResponse<String>> addExternalSupplyService(@PathVariable String supplyServiceDTO, @PathVariable String managerId) {
         try {
-            Response<String> response = serviceLayer.addExternalSupplyService(supplyServiceDTO, managerId);
+            Response<String> response = serviceLayer.addExternalSupplyService(objectMapper.readValue(supplyServiceDTO,SupplyServiceDTO.class), managerId);
             if (response.isSuccess()) {
                 String result = response.getResult();
                 HttpHeaders headers = new HttpHeaders();
@@ -158,9 +163,9 @@ public class MarketController {
     }
 
     @PostMapping("/purchase/{userDTO}/{paymentDTO}")
-    public ResponseEntity<APIResponse<String>> purchase(@PathVariable UserDTO userDTO, @PathVariable PaymentDTO paymentDTO) {
+    public ResponseEntity<APIResponse<String>> purchase(@PathVariable String userDTO, @PathVariable String paymentDTO) {
         try {
-            Response<String> response = serviceLayer.purchase(userDTO, paymentDTO);
+            Response<String> response = serviceLayer.purchase(objectMapper.readValue(userDTO, UserDTO.class),objectMapper.readValue( paymentDTO, PaymentDTO.class));
             if (response.isSuccess()) {
                 String result = response.getResult();
                 HttpHeaders headers = new HttpHeaders();
@@ -203,9 +208,9 @@ public class MarketController {
 
 
     @PostMapping("/register/{userDTO}/{password}")
-    public ResponseEntity<APIResponse<String>> register(@PathVariable UserDTO userDTO, @PathVariable String password) {
+    public ResponseEntity<APIResponse<String>> register(@PathVariable String userDTO, @PathVariable String password) {
         try {
-            Response<String> response = serviceLayer.register(userDTO, password);
+            Response<String> response = serviceLayer.register(objectMapper.readValue(userDTO, UserDTO.class), password);
             if (response.isSuccess()) {
                 String result = response.getData();
                 HttpHeaders headers = new HttpHeaders();
@@ -230,7 +235,7 @@ public class MarketController {
         try {
             Response<String> response = serviceLayer.login(userId, userName, password);
             if (response.isSuccess()) {
-                String result = response.getResult();
+                String result = response.getData();
                 HttpHeaders headers = new HttpHeaders();
                 headers.add("accept", "*/*");
 
@@ -270,11 +275,28 @@ public class MarketController {
     }
 
     @PostMapping("/addProductToStore/{userId}/{storeId}/{productDTO}")
-    public ResponseEntity<APIResponse<String>> addProductToStore(@PathVariable String userId, @PathVariable String storeId, @PathVariable ProductDTO productDTO) {
+    public ResponseEntity<APIResponse<String>> addProductToStore(@PathVariable String userId, @PathVariable String storeId, @PathVariable String productDTO) {
+        try {
+            Response<String> response = serviceLayer.addProductToStore(userId, storeId, objectMapper.readValue(productDTO, ProductDTO.class));
+            if (response.isSuccess()) {
+                String result = response.getResult();
+                HttpHeaders headers = new HttpHeaders();
+                headers.add("accept", "*/*");
 
-        Response<String> response = serviceLayer.addProductToStore(userId, storeId, productDTO);
-        return checkIfResponseIsGood(response);
+                return ResponseEntity.status(HttpStatus.OK).headers(headers)
+                        .body(new APIResponse<String>(result, null));
+            } else {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                        .body(new APIResponse<String>(null, response.getDescription()));
+            }
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new APIResponse<>(null, e.getMessage()));
+
+        }
+
     }
+
 
     @DeleteMapping("/removeProductFromStore/{userId}/{storeId}/{productId}")
     public ResponseEntity<APIResponse<String>> removeProductFromStore(@PathVariable String userId, @PathVariable String storeId, @PathVariable String productId) {
@@ -284,10 +306,25 @@ public class MarketController {
     }
 
     @PostMapping("/updateProductInStore/{userId}/{storeId}/{productDTO}")
-    public ResponseEntity<APIResponse<String>> updateProductInStore(@PathVariable String userId, @PathVariable String storeId, @PathVariable ProductDTO productDTO) {
+    public ResponseEntity<APIResponse<String>> updateProductInStore(@PathVariable String userId, @PathVariable String storeId, @PathVariable String productDTO) {
+        try {
+            Response<String> response = serviceLayer.updateProductInStore(userId, storeId, objectMapper.readValue(productDTO, ProductDTO.class));
+            if (response.isSuccess()) {
+                String result = response.getResult();
+                HttpHeaders headers = new HttpHeaders();
+                headers.add("accept", "*/*");
 
-        Response<String> response = serviceLayer.updateProductInStore(userId, storeId, productDTO);
-        return checkIfResponseIsGood(response);
+                return ResponseEntity.status(HttpStatus.OK).headers(headers)
+                        .body(new APIResponse<String>(result, null));
+            } else {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                        .body(new APIResponse<String>(null, response.getDescription()));
+            }
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new APIResponse<>(null, e.getMessage()));
+
+        }
     }
 
     @PostMapping("/appointStoreOwner/{userId}/{appointedId}/{storeId}")
@@ -337,14 +374,19 @@ public class MarketController {
     @GetMapping("/generalProductSearch/{userId}/{productName}/{categoryStr}/{keywords}")
     public ResponseEntity<APIResponse<List<String>>> generalProductSearch(@PathVariable String userId,@PathVariable String productName,@PathVariable String categoryStr,@PathVariable List<String> keywords) {
         try {
-            Response<List<String>> response = serviceLayer.generalProductSearch(userId,productName , categoryStr , keywords);
+            Response<List<ProductDTO>> response = serviceLayer.generalProductSearchDTO(userId,productName , categoryStr , keywords);
+
             if (response.isSuccess()) {
-                List<String> result = response.getResult();
+                List<String> dtos = new ArrayList<>();
+                for (ProductDTO productDTO: response.getResult()){
+                    dtos.add(objectMapper.writeValueAsString(productDTO));
+                }
+                //List<ProductDTO> result = response.getResult();
                 HttpHeaders headers = new HttpHeaders();
                 headers.add("accept", "*/*");
 
                 return ResponseEntity.status(HttpStatus.OK).headers(headers)
-                        .body(new APIResponse<List<String>>(result, null));
+                        .body(new APIResponse<List<String>>(dtos, null));
             } else {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                         .body(new APIResponse<>(null, response.getDescription()));
@@ -355,6 +397,8 @@ public class MarketController {
 
         }
     }
+
+
 
     @GetMapping("/getInformationAboutStores/{userId}")
     public ResponseEntity<APIResponse<List<String>>> getInformationAboutStores(@PathVariable String userId) {

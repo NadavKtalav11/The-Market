@@ -191,6 +191,19 @@ public class Store {
         }
     }
 
+    public List<ProductDTO> matchProductsDTO(String productName, String categoryStr, List<String> keywords)
+    {
+        synchronized (storeProductLock) {
+            List<Product> products = storeProducts.values().stream().toList();
+            return products.stream()
+                    .filter(product -> productName == null || product.getProductName().toLowerCase().contains(productName.toLowerCase()))
+                    .filter(product -> categoryStr == null || product.getCategoryName().equalsIgnoreCase(categoryStr))
+                    .filter(product -> keywords == null || keywords.stream().anyMatch(keyword -> product.getDescription().toLowerCase().contains(keyword.toLowerCase())))
+                    .map(Product::getProductDTO)
+                    .collect(Collectors.toList());
+        }
+    }
+
     public List<String> filterProducts(String categoryStr, List<String> keywords, Integer minPrice, Integer maxPrice, Double minRating, List<String> productsFromSearch, Double storeMinRating)
     {
         List<Product> products = new ArrayList<>();

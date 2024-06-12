@@ -168,8 +168,8 @@ public class Service_layer {
         logger.info("Log in");
 
         try {
-            market.Login(userID, username, password);
-            return new Response<>("Login successful", "User logged in successfully.");
+            String memberId = market.Login(userID, username, password);
+            return new Response<>("Login successful", "User logged in successfully.", memberId);
         } catch (Exception e) {
             logger.error("Error occurred during log in - {}", e.getMessage());
             return new Response<>(null, e.getMessage(), e.getMessage());
@@ -282,6 +282,19 @@ public class Service_layer {
             return new Response<>(filteredProductNames, "Product filter applied successfully.");
         } catch (Exception e) {
             logger.error("Error occurred during the general product search filter: {}", e.getMessage(), e);
+            return new Response<>(null, e.getMessage());
+        }
+    }
+
+    public Response<List<ProductDTO>> generalProductSearchDTO(String userId, String productName, String categoryStr, List<String> keywords)
+    {
+        logger.info("Starting general product search in the system.");
+
+        try {
+            List<ProductDTO> filteredProductNames = market.generalProductSearchDTO(userId, productName, categoryStr, keywords);
+            return new Response<>(filteredProductNames, "Product search completed successfully.");
+        } catch (Exception e) {
+            logger.error("Error occurred during the general product search: {}", e.getMessage(), e);
             return new Response<>(null, e.getMessage());
         }
     }

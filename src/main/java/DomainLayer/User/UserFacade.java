@@ -261,7 +261,7 @@ public class UserFacade {
     }
 
 
-    public void Login(String userID, String username, String password) throws Exception {
+    public String Login(String userID, String username, String password) throws Exception {
         Member loginMember = getMemberByUsername(username);
         if (loginMember == null){
             throw new Exception(ExceptionsEnum.usernameOrPasswordIncorrect.toString());
@@ -271,6 +271,7 @@ public class UserFacade {
         }*/
         loginMember.validatePassword(password);
         getUserByID(userID).Login(loginMember);
+        return loginMember.getMemberID();
     }
 
     public Member getMemberByUsername(String userName) {
