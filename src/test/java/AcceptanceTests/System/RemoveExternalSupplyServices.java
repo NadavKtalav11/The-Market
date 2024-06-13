@@ -2,6 +2,7 @@ package AcceptanceTests.System;
 import AcceptanceTests.BridgeToTests;
 import AcceptanceTests.ProxyToTest;
 import DomainLayer.Market.Market;
+import Util.ExceptionsEnum;
 import Util.SupplyServiceDTO;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -54,7 +55,7 @@ public class RemoveExternalSupplyServices {
         });
 
         // Optionally check the exception message
-        assertEquals("Only system manager is allowed to remove external supply service", exception.getMessage());
+        assertEquals(ExceptionsEnum.SystemManagerSupplyAuthorizationRemove.toString(), exception.getMessage());
     }
 
     @Test
@@ -72,7 +73,7 @@ public class RemoveExternalSupplyServices {
         });
 
         // Optionally check the exception message
-        assertEquals("There must remain at least one external supply service in the system", exception.getMessage());
+        assertEquals(ExceptionsEnum.OnlySupplyService.toString(), exception.getMessage());
     }
 
 }
