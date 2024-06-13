@@ -6858,3 +6858,4 @@ java.lang.IllegalArgumentException: The product rate you entered is invalid
  password must contains at least 8 characters
 2024-06-13 03:40:55 ERROR PresentationLayer.WAF.Service_layer - Error occurred during registration Fields cannot be empty
 2024-06-13 04:12:11 ERROR PresentationLayer.WAF.Service_layer - Error occurred during registration Fields cannot be empty
+2024-06-14 01:35:24 ERROR PresentationLayer.WAF.Service_layer - Error occurred during log in - username or password is incorrect

@@ -77,7 +77,7 @@ public class MarketController {
         }
     }
 
-    @PostMapping("/addExternalPaymentService}")
+    @PostMapping("/addExternalPaymentService")
     public ResponseEntity<APIResponse<String>> addExternalPaymentService(@RequestParam Map<String,String> params) {
         try {
             String paymentServiceDTO =params.get("paymentServiceDTO");
@@ -123,7 +123,7 @@ public class MarketController {
         }
     }
 
-    @PostMapping("/addExternalSupplyService}")
+    @PostMapping("/addExternalSupplyService")
     public ResponseEntity<APIResponse<String>> addExternalSupplyService(@RequestParam Map<String,String> params) {
         try {
             String supplyServiceDTO = params.get("supplyServiceDTO");

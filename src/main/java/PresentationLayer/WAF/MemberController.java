@@ -36,6 +36,21 @@ public class MemberController {
         }
     }
 
+    @GetMapping("/getMemberName/{memberId}")
+    public ResponseEntity<APIResponse<String>> getMemberName(@PathVariable String memberId) {
+        try {
+            String userName = memberService.getMemberNane(memberId);
+            HttpHeaders headers = new HttpHeaders();
+            headers.add("accept", "*/*");
+
+            return ResponseEntity.status(HttpStatus.OK).headers(headers)
+                    .body(new APIResponse<String>(userName, null));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new APIResponse<>(null, e.getMessage()));
+        }
+    }
+
     @GetMapping("/isStoreOwner/{memberId}/{storeId}")
     public ResponseEntity<APIResponse<Boolean>> isStoreOwner(@PathVariable String memberId, @PathVariable String storeId) {
         try {

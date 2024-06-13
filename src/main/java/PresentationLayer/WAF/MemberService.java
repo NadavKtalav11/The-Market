@@ -29,6 +29,10 @@ public class MemberService {
         roleFacade= RoleFacade.getInstance();
     }
 
+    public String getMemberNane(String memberID){
+        return userFacade.getMemberName(memberID);
+    }
+
         public boolean isMember(String userId){
             return userFacade.isMember(userId);
         }
