@@ -46,6 +46,10 @@ public class UserFacade {
         //memberIdPrefix = "user";
     }
 
+    public String getMemberName(String memberId){
+        return members.get(memberId).getUsername();
+    }
+
     public synchronized static UserFacade getInstance() {
         if (userFacadeInstance == null) {
             userFacadeInstance = new UserFacade();
