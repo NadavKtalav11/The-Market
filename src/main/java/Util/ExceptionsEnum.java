@@ -18,6 +18,11 @@ package Util;
                 return "Store does not exist";
             }
         },
+        storeAlreadyOpen{
+            public String toString() {
+                return "The store is already open";
+            }
+        },
         userNotExist{
             public String toString() {
                 return "User does not exist";

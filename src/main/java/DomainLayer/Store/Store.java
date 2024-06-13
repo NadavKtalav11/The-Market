@@ -137,17 +137,18 @@ public class Store {
         synchronized (isOpenedLock) {
             this.isOpened = false;
         }
-
-
     }
 
-    public void sendMessageToStaffOfStore(Notification notification) {
-//        founder.notifyObserver(notification);
-//        for (User u : getOwnersOfStore())
-//            u.notifyObserver(notification);
-//        for (User u : getManagersOfStore())
-//            u.notifyObserver(notification);
+    public void reOpenStore()
+    {
+        synchronized (isOpenedLock) {
+            this.isOpened = true;
+        }
     }
+
+
+
+
 
 
     public boolean getIsOpened()

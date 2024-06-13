@@ -51,7 +51,11 @@ public interface BridgeToTests {
 
     Response<Map<String, List<Integer>>> getAuthorizationsOfManagersInStore(String user_ID, String store_ID);
 
+
     Response<String> closeStore(String user_ID, String store_ID);
+
+    Response<String> reOpenStore(String user_ID, String store_ID);
+
 
     Response<String> openStore(String user_ID, String name, String description);
 

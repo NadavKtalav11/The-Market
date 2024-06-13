@@ -129,6 +129,11 @@ public class RealToTest implements BridgeToTests {
         return service.closeStore(user_ID, store_ID);
     }
 
+    public Response<String> reOpenStore(String user_ID, String store_ID)
+    {
+        return service.reOpenStore(user_ID, store_ID);
+    }
+
     public Response<String> openStore(String user_ID, String name, String description)
     {
 

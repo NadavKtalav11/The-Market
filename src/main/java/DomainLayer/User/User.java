@@ -143,6 +143,7 @@ public class User implements Observable {
     public void Login(Member loginMember) throws Exception {
         state.Login();
         setState(loginMember);
+
     }
 
     public State getState()

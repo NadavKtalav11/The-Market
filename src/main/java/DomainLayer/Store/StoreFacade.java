@@ -227,6 +227,16 @@ public class StoreFacade {
         storeToClose.closeStore();
     }
 
+    public void reOpenStore(String store_Id) throws Exception{
+        Store storeToreOpen = this.getStoreByID(store_Id);
+        if (storeToreOpen.getIsOpened()){
+            throw new Exception(ExceptionsEnum.storeAlreadyOpen.toString());
+        }
+        storeToreOpen.reOpenStore();
+
+
+    }
+
     public List<String> getInformationAboutOpenStores()
     {
         List<String> openStoreInformation = new ArrayList<>();

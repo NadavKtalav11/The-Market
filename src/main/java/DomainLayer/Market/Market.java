@@ -1,10 +1,11 @@
 package DomainLayer.Market;
 
 import DomainLayer.AuthenticationAndSecurity.AuthenticationAndSecurityFacade;
-import DomainLayer.Notifications.Notification;
-import DomainLayer.Notifications.StoreNotification;
+
 import DomainLayer.PaymentServices.PaymentServicesFacade;
 import DomainLayer.Role.RoleFacade;
+import DomainLayer.Sockets.SocketFacade;
+
 import DomainLayer.Store.Product;
 import DomainLayer.Store.StoreFacade;
 import DomainLayer.User.UserFacade;
@@ -24,6 +25,7 @@ public class Market {
     private Set<String> systemManagerIds;
     private AuthenticationAndSecurityFacade authenticationAndSecurityFacade;
     private StoreFacade storeFacade;
+    private SocketFacade socketFacade;
     private UserFacade userFacade;
     private RoleFacade roleFacade;
     private boolean initialized= false;
@@ -41,6 +43,7 @@ public class Market {
         this.storeFacade = StoreFacade.getInstance();
         this.userFacade = UserFacade.getInstance();
         this.roleFacade = RoleFacade.getInstance();
+       // this.socketFacade = SocketFacade.getInstance();
         this.paymentServicesFacade = PaymentServicesFacade.getInstance();
         this.authenticationAndSecurityFacade = AuthenticationAndSecurityFacade.getInstance();
         supplyServicesFacade= SupplyServicesFacade.getInstance();
@@ -97,6 +100,7 @@ public class Market {
         String firstUserID = enterMarketSystem();
         user.setUserId(firstUserID);
         String systemMangerId = userFacade.register(firstUserID, user, encrypted);
+
         synchronized (managersLock) {
             systemManagerIds.add(systemMangerId);
         }
@@ -242,6 +246,12 @@ public class Market {
         for (String receiptId : receiptIdStoreId.keySet()) {
             storeFacade.addReceiptToStore(receiptIdStoreId.get(receiptId), receiptId, userId);
         }
+
+        Map<String, Map<String, List<Integer>>> StoreToProducts = cartDTO.getStoreToProducts();
+       // Notification n =new Notification(storeName,"The store is now inactive");
+
+
+
     }
 
     public void paymentFailed(CartDTO cartDTO) throws Exception {
@@ -480,24 +490,47 @@ public class Market {
         roleFacade.verifyStoreOwnerIsFounder(store_ID, member_ID);
         storeFacade.verifyStoreExistError(store_ID);
         storeFacade.closeStore(store_ID);
-        List<String> storeManagers = roleFacade.getAllStoreManagers(store_ID);
-        List<String> storeOwners = roleFacade.getAllStoreOwners(store_ID);
-        //todo: add function which send notification to all store roles (notification component).
+
         String storeName = storeFacade.getStoreByID(store_ID).getStoreName();
 
-        Notification n =new StoreNotification(storeName,"The store is now inactive");
-        sendMessageToStaffOfStore(n,member_ID);
+
         //todo: update use-case parameters
 
     }
-    public void sendMessageToStaffOfStore(Notification notification, String member_ID) {
-        userFacade.getUserByID(member_ID).notifyObserver(notification);
-//       // founder.notifyObserver(notification);
-//        for (User u : getOwnersOfStore())
-//            u.notifyObserver(notification);
-//        for (User u : getManagersOfStore())
-//            u.notifyObserver(notification);
+
+    public void reOpenStore(String user_ID, String store_ID) throws Exception{
+        if (userFacade.isMember(user_ID)) {
+            String memberId = userFacade.getMemberIdByUserId(user_ID);
+            boolean succeeded = authenticationAndSecurityFacade.validateToken(authenticationAndSecurityFacade.getToken(memberId));
+            if (!succeeded) {
+                logout(user_ID);
+                throw new Exception(ExceptionsEnum.sessionOver.toString());
+            }
+
+        }
+        userFacade.isUserLoggedInError(user_ID);
+        String member_ID = this.userFacade.getMemberIdByUserId(user_ID);
+        roleFacade.verifyStoreOwnerError(store_ID, member_ID);
+        roleFacade.verifyStoreOwnerIsFounder(store_ID, member_ID);
+        storeFacade.verifyStoreExistError(store_ID);
+        storeFacade.reOpenStore(store_ID);
+        String storeName = storeFacade.getStoreByID(store_ID).getStoreName();
+
+
+
     }
+
+//    public void sendMessageToStaffOfStore(Notification notification, String member_ID, String storeId) {
+//        userFacade.getUserByID(member_ID).notifyObserver(notification);
+//        List<String> storeManagers = roleFacade.getAllStoreManagers(storeId);
+//        List<String> storeOwners = roleFacade.getAllStoreOwners(storeId);
+//        for (String storeOwnerId : storeOwners){
+//            userFacade.getUserByID(storeOwnerId).notifyObserver(notification);}
+//        for(String storeManagerId: storeManagers){
+//            userFacade.getUserByID(storeManagerId).notifyObserver(notification);
+//        }
+
+//    }
 
 
 

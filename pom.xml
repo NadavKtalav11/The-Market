@@ -1,8 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0"
+<project> xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
+
+    <repositories>
+        <!-- Maven Central Repository -->
+        <repository>
+            <id>central</id>
+            <url>https://repo.maven.apache.org/maven2</url>
+        </repository>
+    </repositories>
 
     <groupId>thesevengroup</groupId>
     <artifactId>untitled104</artifactId>
@@ -37,6 +45,9 @@
             <artifactId>jjwt-jackson</artifactId>
             <version>0.12.2</version> <!-- Or the latest version -->
         </dependency>
+
+
+
 
         <!-- Spring Boot Dependencies -->
         <dependency>
@@ -122,6 +133,21 @@
         </dependency>
 
         <dependency>
+            <groupId>com.corundumstudio.socketio</groupId>
+            <artifactId>netty-socketio</artifactId>
+            <version>1.7.16</version>
+        </dependency>
+
+        <!-- Netty Dependency (required by Socket.IO Server) -->
+        <dependency>
+            <groupId>io.netty</groupId>
+            <artifactId>netty-all</artifactId>
+            <version>4.1.63.Final</version>
+        </dependency>
+
+
+
+        <dependency>
             <groupId>com.ibm.icu</groupId>
             <artifactId>icu4j</artifactId>
             <version>72.1</version>
@@ -129,6 +155,11 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-actuator</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-websocket</artifactId>
+            <version>5.3.12</version>
         </dependency>
     </dependencies>
 </project>

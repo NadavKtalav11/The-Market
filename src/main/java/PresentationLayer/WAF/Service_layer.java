@@ -19,8 +19,12 @@ import java.util.Map;
 public class Service_layer {
     private static final Logger logger = LoggerFactory.getLogger(Service_layer.class);
     private Market market;
+    private ServerSocket serverSocket;
+    private ClientSocket clientSocket;
+
 
     public Service_layer() {
+
         this.market = Market.getInstance(); // Initialize the Market instance
     }
 
@@ -48,6 +52,7 @@ public class Service_layer {
         try {
             market.init(userDTO,password, paymentDTO, supplyServiceDTO );
             logger.info("System initialized successfully.");
+            serverSocket = new ServerSocket();
             return new Response<>("Initialization successful", "System initialized successfully.");
 
         } catch (Exception e) {
@@ -121,24 +126,24 @@ public class Service_layer {
     }
 
 
-//    public Response<String> payWithExternalPaymentService(int price, String holderId, String creditCardNumber, int cvv, int month, int year, String userID) {
-//        logger.info("Reaching for the payment service in order to complete the purchase.");
-//        try {
-//            market.payWithExternalPaymentService(price, new PaymentDTO(holderId, creditCardNumber, cvv, month, year),  userID, market.getPurchaseList(userID) );
-//            return new Response<>("Successful payment", "payment went successfully.");
-//
-//        } catch (Exception e) {
-//            try {
-//                market.paymentFailed(userID);
-//            }
-//            catch (Exception exception){
-//                logger.error("Error occurred while restore stock data: {}", e.getMessage(), e);
-//                return new Response<>(null, "restore stock data failed: " + e.getMessage());
-//            }
-//            logger.error("Error occurred while paying: {}", e.getMessage(), e);
-//            return new Response<>(null, "Payment failed: " + e.getMessage());
-//        }
-//    }
+    public Response<String> payWithExternalPaymentService(CartDTO cartDTO,PaymentDTO payment, String userId) {
+        logger.info("Reaching for the payment service in order to complete the purchase.");
+        try {
+            market.payWithExternalPaymentService( cartDTO, payment,  userId );
+            return new Response<>("Successful payment", "payment went successfully.");
+
+        } catch (Exception e) {
+            try {
+                market.paymentFailed(cartDTO);
+            }
+            catch (Exception exception){
+                logger.error("Error occurred while restore stock data: {}", e.getMessage(), e);
+                return new Response<>(null, "restore stock data failed: " + e.getMessage());
+            }
+            logger.error("Error occurred while paying: {}", e.getMessage(), e);
+            return new Response<>(null, "Payment failed: " + e.getMessage());
+        }
+    }
 
 
     public Response<String> exitMarketSystem(String userID) {
@@ -368,16 +373,29 @@ public class Service_layer {
 
     public Response<String> closeStore(String user_ID, String store_ID)
     {
-        logger.info("Store owner started  store closing.");
+        logger.info("Store founder started  store closing.");
 
         try {
             market.closeStore(user_ID, store_ID);
             return new Response<>("Store closed successfully", "Store closed successfully.");
         } catch (Exception e) {
-            logger.error("Error occurred during store owner was trying to close a store: {}", e.getMessage(), e);
+            logger.error("Error occurred during store's founder was trying to close a store: {}", e.getMessage(), e);
             return new Response<>(null, e.getMessage());
         }
     }
+
+    public Response<String> reOpenStore(String user_ID, String store_ID) {
+        logger.info("Store founder started store re-opening.");
+        try {
+            market.reOpenStore(user_ID, store_ID);
+            return new Response<>("Store reOpened successfully", "Store reOpened successfully.");
+        } catch (Exception e) {
+            logger.error("Error occurred during store's founder was trying to reOpen the store: {}", e.getMessage(), e);
+            return new Response<>(null, e.getMessage());
+        }
+    }
+
+
 
     public Response<String> openStore(String user_ID, String name, String description)
     {
