@@ -278,9 +278,9 @@ public class Market {
         if (password == null || password.equals("")){
             throw new Exception(ExceptionsEnum.emptyField.toString());
         }
-        if (!checkPasswordValidation(password)){
-            throw new Exception("password must contains at least one digit, lowercase letter and uppercase letter.\n password must contains at least 8 characters");
-        }
+        //if (!checkPasswordValidation(password)){
+        //    throw new Exception("password must contains at least one digit, lowercase letter and uppercase letter.\n password must contains at least 8 characters");
+        //}
         String encryptedPassword = authenticationAndSecurityFacade.encodePassword(password);
         String memberId = userFacade.register(userId, user, encryptedPassword);
         authenticationAndSecurityFacade.generateToken(memberId);

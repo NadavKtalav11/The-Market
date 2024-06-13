@@ -9,6 +9,11 @@ public class SupplyServiceDTO {
     private HashSet<String> countries;
     private HashSet<String> cities ;
 
+    public SupplyServiceDTO(){
+
+    }
+
+
     public SupplyServiceDTO(String licensedDealerNumber, String supplyServiceName,HashSet<String> countries, HashSet<String> cities ){
         this.cities = cities;
         this.countries = countries;

@@ -27,6 +27,11 @@ public class StoreDTO {
         this.storeName = storeName;
         this.products = products;
     }
+
+    public StoreDTO(){
+
+    }
+
     // Getters and Setters
 
 
