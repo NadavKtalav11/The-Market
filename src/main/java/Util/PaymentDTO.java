@@ -55,5 +55,10 @@ public class PaymentDTO {
         this.year = year;
     }
 
+    public PaymentDTO(){
+
+    }
+
+
 
 }

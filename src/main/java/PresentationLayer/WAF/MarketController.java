@@ -23,7 +23,7 @@ public class MarketController {
     private final Service_layer serviceLayer;
 
     @Autowired
-    public MarketController(Service_layer serviceLayer, ObjectMapper objectMapper) {
+    public MarketController(Service_layer serviceLayer) {
         //this.marketService = marketService;
         this.serviceLayer = serviceLayer;
         this.objectMapper =new ObjectMapper();
@@ -51,10 +51,13 @@ public class MarketController {
         }
     }
 
-    @PostMapping("/init/{userDTO}/{password}/{paymentServiceDTO}/{supplyServiceDTO}")
-    public ResponseEntity<APIResponse<String>> init(@PathVariable String userDTO, @PathVariable String password, @PathVariable  String paymentServiceDTO, @PathVariable String supplyServiceDTO) {
+    @PostMapping("/init")
+    public ResponseEntity<APIResponse<String>> init(@RequestParam Map<String,String> params) {
         try {
-
+            String userDTO = params.get("userDTO");
+            String password = params.get("password");
+            String paymentServiceDTO = params.get("paymentServiceDTO");
+            String supplyServiceDTO = params.get("supplyServiceDTO");
             Response<String> response = serviceLayer.init(objectMapper.readValue(userDTO,UserDTO.class), password, objectMapper.readValue(paymentServiceDTO, PaymentServiceDTO.class), objectMapper.readValue(supplyServiceDTO,SupplyServiceDTO.class));
             if (response.isSuccess()) {
                 String userId = response.getData();
@@ -74,9 +77,11 @@ public class MarketController {
         }
     }
 
-    @PostMapping("/addExternalPaymentService/{paymentServiceDTO}/{managerId}")
-    public ResponseEntity<APIResponse<String>> addExternalPaymentService(@PathVariable String paymentServiceDTO, @PathVariable String managerId) {
+    @PostMapping("/addExternalPaymentService}")
+    public ResponseEntity<APIResponse<String>> addExternalPaymentService(@RequestParam Map<String,String> params) {
         try {
+            String paymentServiceDTO =params.get("paymentServiceDTO");
+            String managerId = params.get("memberId");
             Response<String> response = serviceLayer.addExternalPaymentService(objectMapper.readValue(paymentServiceDTO,PaymentServiceDTO.class), managerId);
             if (response.isSuccess()) {
                 String result = response.getResult();
@@ -118,9 +123,11 @@ public class MarketController {
         }
     }
 
-    @PostMapping("/addExternalSupplyService/{supplyServiceDTO}/{managerId}")
-    public ResponseEntity<APIResponse<String>> addExternalSupplyService(@PathVariable String supplyServiceDTO, @PathVariable String managerId) {
+    @PostMapping("/addExternalSupplyService}")
+    public ResponseEntity<APIResponse<String>> addExternalSupplyService(@RequestParam Map<String,String> params) {
         try {
+            String supplyServiceDTO = params.get("supplyServiceDTO");
+            String managerId= params.get("managerId");
             Response<String> response = serviceLayer.addExternalSupplyService(objectMapper.readValue(supplyServiceDTO,SupplyServiceDTO.class), managerId);
             if (response.isSuccess()) {
                 String result = response.getResult();
@@ -162,9 +169,11 @@ public class MarketController {
         }
     }
 
-    @PostMapping("/purchase/{userDTO}/{paymentDTO}")
-    public ResponseEntity<APIResponse<String>> purchase(@PathVariable String userDTO, @PathVariable String paymentDTO) {
+    @PostMapping("/purchase")
+    public ResponseEntity<APIResponse<String>> purchase(@RequestParam Map<String,String> params) {
         try {
+            String userDTO = params.get("userDTO");
+            String paymentDTO= params.get("paymentDTO");
             Response<String> response = serviceLayer.purchase(objectMapper.readValue(userDTO, UserDTO.class),objectMapper.readValue( paymentDTO, PaymentDTO.class));
             if (response.isSuccess()) {
                 String result = response.getResult();
@@ -207,9 +216,13 @@ public class MarketController {
     }
 
 
-    @PostMapping("/register/{userDTO}/{password}")
-    public ResponseEntity<APIResponse<String>> register(@PathVariable String userDTO, @PathVariable String password) {
-        try {
+    @PostMapping("/register")
+    //@PostMapping("/register")
+    public ResponseEntity<APIResponse<String>> register(@RequestParam Map<String,String> params) {
+        try{
+            String userDTO = params.get("userDTO");
+            String password = params.get("password");
+
             Response<String> response = serviceLayer.register(objectMapper.readValue(userDTO, UserDTO.class), password);
             if (response.isSuccess()) {
                 String result = response.getData();
@@ -228,6 +241,8 @@ public class MarketController {
                     .body(new APIResponse<>(null, e.getMessage()));
         }
     }
+
+
 
 
     @PostMapping("/login/{userId}/{userName}/{password}")
@@ -274,9 +289,12 @@ public class MarketController {
         }
     }
 
-    @PostMapping("/addProductToStore/{userId}/{storeId}/{productDTO}")
-    public ResponseEntity<APIResponse<String>> addProductToStore(@PathVariable String userId, @PathVariable String storeId, @PathVariable String productDTO) {
+    @PostMapping("/addProductToStore")
+    public ResponseEntity<APIResponse<String>> addProductToStore(@RequestParam Map<String,String> params) {
         try {
+            String userId = params.get("userId");
+            String storeId = params.get("storeId");
+            String productDTO = params.get("productDTO");
             Response<String> response = serviceLayer.addProductToStore(userId, storeId, objectMapper.readValue(productDTO, ProductDTO.class));
             if (response.isSuccess()) {
                 String result = response.getResult();
@@ -305,9 +323,13 @@ public class MarketController {
         return checkIfResponseIsGood(response);
     }
 
-    @PostMapping("/updateProductInStore/{userId}/{storeId}/{productDTO}")
-    public ResponseEntity<APIResponse<String>> updateProductInStore(@PathVariable String userId, @PathVariable String storeId, @PathVariable String productDTO) {
+    @PostMapping("/updateProductInStore")
+    public ResponseEntity<APIResponse<String>> updateProductInStore(@RequestParam Map<String,String> params) {
         try {
+            String userId = params.get("userId");
+            String storeId= params.get("storeId");
+            String productDTO= params.get("productDTO");
+
             Response<String> response = serviceLayer.updateProductInStore(userId, storeId, objectMapper.readValue(productDTO, ProductDTO.class));
             if (response.isSuccess()) {
                 String result = response.getResult();
