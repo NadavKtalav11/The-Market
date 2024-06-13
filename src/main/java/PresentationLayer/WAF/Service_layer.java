@@ -5,6 +5,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import DomainLayer.Market.Market;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Service;
@@ -20,11 +21,12 @@ public class Service_layer {
     private static final Logger logger = LoggerFactory.getLogger(Service_layer.class);
     private Market market;
     private ServerSocket serverSocket;
-    private ClientSocket clientSocket;
+    private NotificationService notificationService ;
+//    private ClientSocket clientSocket;
 
-
-    public Service_layer() {
-
+    @Autowired
+    public Service_layer(NotificationService notificationService) {
+        this.notificationService = notificationService;
         this.market = Market.getInstance(); // Initialize the Market instance
     }
 
@@ -175,6 +177,7 @@ public class Service_layer {
         logger.info("Registration");
         try {
             String memberID = market.register(userID, new UserDTO(userID, userName, birthday, country, city, address, name), password);
+            notificationService.sendNotificationToUser(userID, "work good");
             return new Response<>("Registration successful", "User registered successfully.", memberID);
         } catch (Exception e) {
             logger.error("Error occurred during registration {}", e.getMessage());

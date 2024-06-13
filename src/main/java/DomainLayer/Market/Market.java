@@ -10,6 +10,7 @@ import DomainLayer.Store.Product;
 import DomainLayer.Store.StoreFacade;
 import DomainLayer.User.UserFacade;
 import DomainLayer.SupplyServices.SupplyServicesFacade;
+import PresentationLayer.WAF.NotificationService;
 import Util.*;
 
 import java.util.*;
@@ -31,6 +32,7 @@ public class Market {
     private boolean initialized= false;
     private final Object initializedLock;
     private final Object managersLock;
+   // private NotificationService notificationService;
 
     public synchronized static Market getInstance() {
         if (MarketInstance == null) {
@@ -292,6 +294,9 @@ public class Market {
         String encryptedPassword = authenticationAndSecurityFacade.encodePassword(password);
         String memberId = userFacade.register(userId, user, encryptedPassword);
         authenticationAndSecurityFacade.generateToken(memberId);
+
+        //notificationService.sendNotification(username, "Welcome back, " + username + "!");
+
         return memberId;
     }
 

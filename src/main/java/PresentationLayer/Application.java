@@ -33,7 +33,7 @@ import com.vaadin.flow.theme.Theme;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
-@SpringBootApplication(scanBasePackages = {"PresentationLayer.WAF", "ServiceLayer"})
+@SpringBootApplication(scanBasePackages = {"PresentationLayer.WAF", "PresentationLayer.Vaadin.webpush"})
 @Theme(value = "webpush")
 @PWA(name = "Web Push", shortName = "Push")
 @EnableScheduling

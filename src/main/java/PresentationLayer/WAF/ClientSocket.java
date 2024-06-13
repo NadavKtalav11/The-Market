@@ -5,7 +5,7 @@ import com.corundumstudio.socketio.SocketIOClient;
 import com.corundumstudio.socketio.SocketIONamespace;
 import com.corundumstudio.socketio.SocketIOServer;
 
-public class ClientSocket {
+/*public class ClientSocket {
     private SocketIOServer server;
 
     public ClientSocket() {
@@ -62,5 +62,5 @@ public class ClientSocket {
 
         clientSocket.disconnect();
     }
-}
+}*/
 

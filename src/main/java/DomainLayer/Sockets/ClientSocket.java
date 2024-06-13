@@ -1,4 +1,4 @@
-package DomainLayer.Sockets;
+/*package DomainLayer.Sockets;
 
 import com.corundumstudio.socketio.Configuration;
 import com.corundumstudio.socketio.SocketIOClient;
@@ -16,7 +16,7 @@ import reactor.core.publisher.Mono;
 import java.net.URI;
 import java.util.Scanner;
 
-public class ClientSocket {
+/*public class ClientSocket {
 
     private final WebSocketClient client = new ReactorNettyWebSocketClient();
 
@@ -46,4 +46,4 @@ public class ClientSocket {
     public static void main(String[] args) {
         new ClientSocket();
     }
-}
+}*/
