@@ -3,6 +3,7 @@ package DomainLayer.PaymentServices;
 
 // this class is for external payment service itself
 
+import Util.ExceptionsEnum;
 import Util.PaymentDTO;
 import Util.PaymentServiceDTO;
 
@@ -15,7 +16,7 @@ public  class ExternalPaymentService {
     private String paymentServiceName;
     private String url;
     private Map<String, Acquisition> idAndAcquisition = new HashMap<>();
-    private HttpClient httpClient;
+    private HttpClient httpClient=new SimpleHttpClient();
     private final Object acquisitionLock= new Object();
 
     public ExternalPaymentService(String licensedDealerNumber, String paymentServiceName, String url) {
@@ -23,7 +24,6 @@ public  class ExternalPaymentService {
         this.paymentServiceName = paymentServiceName;
         this.url = url;
 
-       //this.httpClient = httpClient;
 
     }
 
@@ -34,7 +34,14 @@ public  class ExternalPaymentService {
         this.url = paymentServiceDTO.getUrl();
 
         //this.httpClient = httpClient;
+    }
 
+    public ExternalPaymentService(PaymentServiceDTO paymentServiceDTO, HttpClient httpClient) {
+        this.licensedDealerNumber = paymentServiceDTO.getLicensedDealerNumber();
+        this.paymentServiceName = paymentServiceDTO.getPaymentServiceName();
+        this.url = paymentServiceDTO.getUrl();
+
+        this.httpClient = httpClient;
     }
 
 
@@ -53,9 +60,9 @@ public  class ExternalPaymentService {
     public Map<String, String> payWithCard(int price, PaymentDTO payment, String id, Map<String, Map<String, List<Integer>>> productList,
                                              String acquisitionIdCounter, String receiptIdCounter) throws Exception {
         // Mocking HTTP request to check if there is enough money in the card
-        boolean response = httpClient.get(url + "?creditCard=" + payment.getCreditCardNumber() + "&amount=" + price);
+        boolean response = httpClient.checkCreditCard( url, payment );
         if(!response){
-            throw new Exception("There is not enough money in the credit card");
+            throw new Exception(ExceptionsEnum.CreditCardIssue.toString());
         }
       Acquisition acquisition = new Acquisition(acquisitionIdCounter, id, price, payment, productList, receiptIdCounter);
         synchronized (acquisitionLock) {

@@ -6,6 +6,8 @@ import DomainLayer.Notifications.StoreNotification;
 import DomainLayer.PaymentServices.PaymentServicesFacade;
 import DomainLayer.Role.RoleFacade;
 import DomainLayer.Store.Product;
+import Util.ExceptionsEnum;
+
 import DomainLayer.Store.StoreFacade;
 import DomainLayer.User.UserFacade;
 import DomainLayer.SupplyServices.SupplyServicesFacade;
@@ -79,11 +81,11 @@ public class Market {
         try {
             // Check for supply service
             if (supplyServiceDTO.getSupplyServiceName() == null || supplyServiceDTO.getLicensedDealerNumber().length()<0 || supplyServiceDTO.getCountries()==null || supplyServiceDTO.getCities()==null ) {
-                throw new Exception("The system has not been able to be launched since there is a problem with the supply service details");
+                throw new IllegalArgumentException(ExceptionsEnum.InvalidSupplyServiceDetails.toString());
             }
             // Check for payment service
             if (paymentServiceDTO.getPaymentServiceName() == null || paymentServiceDTO.getUrl()==null || paymentServiceDTO.getLicensedDealerNumber() ==null) {
-                throw new Exception("The system has not been able to be launched since there is a problem with the payment service details");
+                throw new IllegalArgumentException(ExceptionsEnum.InvalidPaymentServiceDetails.toString());
             }
             // Initialization logic here
             synchronized (initializedLock) {
@@ -111,11 +113,11 @@ public class Market {
         try {
             synchronized (managersLock) {
                 if (!systemManagerIds.contains(systemMangerId)) {
-                    throw new Exception("Only system manager is allowed to add new external payment service");
+                    throw new Exception(ExceptionsEnum.SystemManagerPaymentAuthorization.toString());
                 }
             }
             if (paymentServiceDTO.getPaymentServiceName() == null || paymentServiceDTO.getLicensedDealerNumber()==null || paymentServiceDTO.getUrl()==null ) {
-                throw new Exception("The system has not been able to add the payment service due to invalid details");
+                throw new IllegalArgumentException(ExceptionsEnum.InvalidPaymentServiceParameters.toString());
             }
         } catch (Exception e) {
             // Log the error or handle it as needed
@@ -128,11 +130,11 @@ public class Market {
         try {
             synchronized (managersLock) {
                 if (!systemManagerIds.contains(systemMangerId)) {
-                    throw new Exception("Only system manager is allowed to remove external payment services");
+                    throw new Exception(ExceptionsEnum.SystemManagerPaymentAuthorizationRemove.toString());
                 }
             }
             if (paymentServicesFacade.getAllPaymentServices().size() <= 1) {
-                throw new Exception("There must remain at least one external payment service in the system");
+                throw new Exception(ExceptionsEnum.OnlyPaymentService.toString());
             }
         }
         catch (Exception e) {
@@ -147,11 +149,11 @@ public class Market {
         try {
             synchronized (managersLock) {
                 if (!systemManagerIds.contains(systemManagerId)) {
-                    throw new Exception("Only system manager is allowed to add new external supply service");
+                    throw new Exception(ExceptionsEnum.SystemManagerSupplyAuthorization.toString());
                 }
             }
-            if (supplyServiceDTO.getSupplyServiceName() == null || supplyServiceDTO.getCountries() ==null || supplyServiceDTO.getCities() ==null || supplyServiceDTO.getLicensedDealerNumber().length() == 0  ) {
-                throw new Exception("The system has not been able to add the supply service due to invalid details");
+            if (supplyServiceDTO.getSupplyServiceName() == null || supplyServiceDTO.getCountries() ==null || supplyServiceDTO.getCities() ==null || Integer.parseInt(supplyServiceDTO.getLicensedDealerNumber())< 0  ) {
+                throw new IllegalArgumentException(ExceptionsEnum.InvalidSupplyServiceParameters.toString());
             }
         } catch (Exception e) {
             throw e;  // Re-throwing the exception to be handled by the caller
@@ -165,11 +167,11 @@ public class Market {
             try {
                 synchronized (managersLock) {
                     if (!systemManagerIds.contains(systemManagerId)) {
-                        throw new Exception("Only system manager is allowed to remove external supply service");
+                        throw new Exception(ExceptionsEnum.SystemManagerSupplyAuthorizationRemove.toString());
                     }
                 }
                 if (supplyServicesFacade.getAllSupplyServices().size() <= 1) {
-                    throw new Exception("There must remain at least one external supply service in the system");
+                    throw new Exception(ExceptionsEnum.OnlySupplyService.toString());
                 }
                 supplyServicesFacade.removeExternalService(licensedDealerNumber);
             } catch (Exception e) {
@@ -225,10 +227,10 @@ public class Market {
 
     public void payWithExternalPaymentService(CartDTO cartDTO,PaymentDTO payment, String userId) throws Exception{
         if(cartDTO.getCartPrice()<= 0 || payment.getMonth()> 12 || payment.getMonth()<1 || payment.getYear() < 2020 ||payment.getHolderId()==null ||cartDTO.getStoreToProducts()==null) {
-            throw new Exception("There is a problem with the provided payment measure or details of the order.\n");
+            throw new IllegalArgumentException(ExceptionsEnum.InvalidCreditCardParameters.toString());
         }
         if(paymentServicesFacade.getAllPaymentServices().size()<1){
-            throw new Exception("There is no available external payment system.\n");
+            throw new Exception(ExceptionsEnum.noAvailableExternalPaymentService.toString());
         }
         Map<String,String> receiptIdStoreId = paymentServicesFacade.pay(cartDTO.getCartPrice(), payment, userId, cartDTO.getStoreToProducts()); //<receiptId, storeId>
         //print when implement notifications (purchase successes)

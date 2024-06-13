@@ -71,7 +71,7 @@ public class SupplyServicesFacade {
                     }
             }
         }
-        return "";
+        return "-1";
     }
 
     public ExternalSupplyService getExternalSupplyServiceById(String externalSupplyServiceId){

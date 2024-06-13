@@ -3,6 +3,7 @@ package AcceptanceTests.System;
 import AcceptanceTests.BridgeToTests;
 import AcceptanceTests.ProxyToTest;
 import DomainLayer.Market.Market;
+import Util.ExceptionsEnum;
 import Util.PaymentServiceDTO;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -45,7 +46,7 @@ public class RemoveExternalPaymentServices {
         });
 
         // Optionally check the exception message
-        assertEquals("Only system manager is allowed to remove external payment services", exception.getMessage());
+        assertEquals(ExceptionsEnum.SystemManagerPaymentAuthorizationRemove.toString(), exception.getMessage());
     }
 
     @Test
@@ -59,7 +60,7 @@ public class RemoveExternalPaymentServices {
         });
 
         // Optionally check the exception message
-        assertEquals("There must remain at least one external payment service in the system", exception.getMessage());
+        assertEquals(ExceptionsEnum.OnlyPaymentService.toString(), exception.getMessage());
     }
 
 }
