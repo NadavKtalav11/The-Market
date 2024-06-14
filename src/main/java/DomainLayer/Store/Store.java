@@ -86,6 +86,16 @@ public class Store {
         }
     }
 
+    public List<ProductDTO> getProductsDTO(){
+        List<ProductDTO> productDTOList = new ArrayList<>();
+        synchronized (storeProductLock){
+            for (Product product: storeProducts.values()){
+                productDTOList.add(new ProductDTO(product));
+            }
+        }
+        return productDTOList;
+    }
+
     public ProductDTO getProductDTOByName(String productName, int quantity)
     {
         /*this function receives product from a user basket, with the quantity of this product in the basket and it's total price*/

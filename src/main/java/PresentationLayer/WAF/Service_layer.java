@@ -1,15 +1,22 @@
 package PresentationLayer.WAF;
 import ServiceLayer.Response;
 import Util.*;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import DomainLayer.Market.Market;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.context.annotation.Bean;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.client.RestTemplate;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -51,9 +58,9 @@ public class Service_layer {
     public Response<String> init(UserDTO userDTO ,String password , PaymentServiceDTO paymentDTO, SupplyServiceDTO supplyServiceDTO){
         logger.info("Starting the initialization of the system.");
         try {
-            market.init(userDTO,password, paymentDTO, supplyServiceDTO );
+            String userId = market.init(userDTO,password, paymentDTO, supplyServiceDTO );
             logger.info("System initialized successfully.");
-            return new Response<>("Initialization successful", "System initialized successfully.");
+            return new Response<>("Initialization successful", "System initialized successfully.",userId);
 
         } catch (Exception e) {
             logger.error("Error occurred during the initialization: {}", e.getMessage(), e);
@@ -285,6 +292,56 @@ public class Service_layer {
             return new Response<>(null, e.getMessage());
         }
     }
+
+
+    public Response<List<ProductDTO>> getProductStores(String userId)
+    {
+
+        try {
+            List<ProductDTO> products = market.getStoreProducts(userId);
+            return new Response<>(products, "product getter good result.");
+        } catch (Exception e) {
+            logger.error("Error occurred during the product getter {}", e.getMessage(), e);
+            return new Response<>(null, e.getMessage());
+        }
+    }
+
+
+    public Response<List<UserDTO>> getStoreWorkers(String storeId)
+    {
+        try {
+            List<UserDTO> workers = market.getStoreWorkers(storeId);
+            return new Response<>(workers, "Store Workers get good result.");
+        } catch (Exception e) {
+            logger.error("Error occurred during the product getter {}", e.getMessage(), e);
+            return new Response<>(null, e.getMessage());
+        }
+    }
+
+
+    public Response<List<UserDTO>> getStoreManagers(String storeId)
+    {
+        try {
+            List<UserDTO> workers = market.getStoreManagers(storeId);
+            return new Response<>(workers, "Store managers get good result.");
+        } catch (Exception e) {
+            logger.error("Error occurred during the managers getter {}", e.getMessage(), e);
+            return new Response<>(null, e.getMessage());
+        }
+    }
+
+    public Response<List<UserDTO>> getStoreOwners(String storeId)
+    {
+        try {
+            List<UserDTO> workers = market.getStoreOwners(storeId);
+            return new Response<>(workers, "Store owners get good result.");
+        } catch (Exception e) {
+            logger.error("Error occurred during the managers getter {}", e.getMessage(), e);
+            return new Response<>(null, e.getMessage());
+        }
+    }
+
+
 
     public Response<List<ProductDTO>> generalProductSearchDTO(String userId, String productName, String categoryStr, List<String> keywords)
     {

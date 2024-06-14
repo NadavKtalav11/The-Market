@@ -20,8 +20,8 @@ public class StoreFacadeTest {
     private StoreFacade storeFacade;
     private Store mockStore;
     private ProductDTO mockProduct;
-    private final String userId = "1";
-    private final String storeId = "0";
+    //private final String userId = "1";
+    private  String storeId ;
     private final String productName = "Product1";
     private final int quantity = 2;
     private final int totalPrice = 100;
@@ -36,7 +36,7 @@ public class StoreFacadeTest {
 
     @Test
     void testOpenStore() {
-        String storeId = storeFacade.openStore("Grocery", "");
+        storeId = storeFacade.openStore("Grocery", "");
         assertNotNull(storeFacade.getStoreByID(storeId));
     }
 

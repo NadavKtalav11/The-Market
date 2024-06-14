@@ -99,6 +99,14 @@ public class UserFacade {
         return ((Member)user.getState()).getMemberID();
     }*/
 
+    public List<UserDTO> getUserDTOByMemberId(List<String> memberIdList){
+        List<UserDTO> userDTOList = new ArrayList<>();
+        for (String memberID : memberIdList){
+            userDTOList.add(getUserDTOById(members.get(memberID).getUserId()));
+        }
+        return userDTOList;
+    }
+
     public boolean isMember(String userId){
         if(getUserByID(userId) == null){
             return false;
@@ -176,24 +184,24 @@ public class UserFacade {
             String memberId = getCurrentMemberID();
 
 
-            Member newMember = new Member(memberId,user.getUserName(), user.getAddress(), user.getName(), password, user.getBirthday(), user.getCountry(), user.getCity());
+            Member newMember = new Member(userID, memberId,user.getUserName(), user.getAddress(), user.getName(), password, user.getBirthday(), user.getCountry(), user.getCity());
             members.add(memberId, newMember);
             //todo pass the user to login page.
             return memberId;
         }
     }
 
-    public String registerSystemAdmin(UserDTO user, String password) throws Exception {
+    /*public String registerSystemAdmin(UserDTO user, String password) throws Exception {
 
         validateRegistrationDetails(user,password);
         String memberId = getCurrentMemberID();
 
-        Member newMember = new Member(memberId,user.getUserName(), user.getAddress(), user.getName(), password, user.getBirthday(), user.getCountry(), user.getCity());
+        Member newMember = new Member(user.getUserId(), memberId,user.getUserName(), user.getAddress(), user.getName(), password, user.getBirthday(), user.getCountry(), user.getCity());
             members.add(memberId, newMember);
 
         return memberId;
         //todo pass the user to login page.
-    }
+    }*/
 
 
 
