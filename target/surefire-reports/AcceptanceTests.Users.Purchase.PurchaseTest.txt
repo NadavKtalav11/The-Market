@@ -1,0 +1,16 @@
+-------------------------------------------------------------------------------
+Test set: AcceptanceTests.Users.Purchase.PurchaseTest
+-------------------------------------------------------------------------------
+Tests run: 6, Failures: 3, Errors: 0, Skipped: 0, Time elapsed: 0.887 s <<< FAILURE! - in AcceptanceTests.Users.Purchase.PurchaseTest
+shippingInvalidTest  Time elapsed: 0.069 s  <<< FAILURE!
+org.opentest4j.AssertionFailedError: expected: <Unfortunately, there is no shipping for the user address> but was: <Cannot invoke "DomainLayer.SupplyServices.ExternalSupplyService.createShiftingDetails(String, String, String, String)" because "externalSupplyService" is null>
+	at AcceptanceTests.Users.Purchase.PurchaseTest.shippingInvalidTest(PurchaseTest.java:134)
+
+productNotExistTest  Time elapsed: 0.016 s  <<< FAILURE!
+org.opentest4j.AssertionFailedError: expected: <product does not exist in store> but was: <Cannot invoke "DomainLayer.Store.Product.getPrice()" because "product" is null>
+	at AcceptanceTests.Users.Purchase.PurchaseTest.productNotExistTest(PurchaseTest.java:115)
+
+purchasePolicyInvalidTest  Time elapsed: 0.007 s  <<< FAILURE!
+org.opentest4j.AssertionFailedError: expected: <false> but was: <true>
+	at AcceptanceTests.Users.Purchase.PurchaseTest.purchasePolicyInvalidTest(PurchaseTest.java:124)
+
