@@ -528,8 +528,26 @@ public class Service_layer {
         }
     }
 
+
+  public Response<List<ProductDTO>> inStoreProductSearchDTO(String userId, String productName, String categoryStr, List<String> keywords, String storeId)
+    {
+        logger.info("Starting in-store product search in the system.");
+
+        try {
+            List<ProductDTO> filteredProductNames = market.inStoreProductSearchDTO(userId, productName, categoryStr, keywords, storeId);
+            return new Response<>(filteredProductNames, "In-store product search completed successfully.");
+        } catch (Exception e) {
+            logger.error("Error occurred during the in-store product search: {}", e.getMessage(), e);
+            return new Response<>(null, e.getMessage());
+        }
+    }
+
+    public Response<String> addRuleToStore(List<Integer> ruleNums, List<String> operators, String storeId, String userId) {
+        logger.info("Adding rule to store");
+
     public Response<String> addPurchaseRuleToStore(List<Integer> ruleNums, List<String> operators, String storeId, String userId) {
         logger.info("Adding purchase rule to store");
+
 
         try {
             market.addPurchaseRuleToStore(ruleNums, operators, storeId, userId);
