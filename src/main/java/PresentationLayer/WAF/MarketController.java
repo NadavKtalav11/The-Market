@@ -242,6 +242,26 @@ public class MarketController {
         }
     }
 
+    @GetMapping("/getStoreProducts/{storeId}")
+    public ResponseEntity<APIResponse<List<String>>> getStoreProducts(@PathVariable String storeId) {
+        try {
+            ObjectMapper objectMapper= new ObjectMapper();
+            Response<List<ProductDTO>> response = serviceLayer.getProductStores(storeId);
+            HttpHeaders headers = new HttpHeaders();
+            headers.add("accept", "*/*");
+            List<String> dtosRes = new ArrayList<>();
+            for (ProductDTO productDTO : response.getResult() ){
+                dtosRes.add(objectMapper.writeValueAsString(productDTO));
+            }
+
+            return ResponseEntity.status(HttpStatus.OK).headers(headers)
+                    .body(new APIResponse<>(dtosRes, null));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new APIResponse<>(null, e.getMessage()));
+        }
+    }
+
 
 
 
@@ -349,6 +369,9 @@ public class MarketController {
         }
     }
 
+
+
+
     @PostMapping("/appointStoreOwner/{userId}/{appointedId}/{storeId}")
     public ResponseEntity<APIResponse<String>> appointStoreOwner(@PathVariable String userId, @PathVariable String appointedId, @PathVariable String storeId) {
 
@@ -433,6 +456,80 @@ public class MarketController {
 
                 return ResponseEntity.status(HttpStatus.OK).headers(headers)
                         .body(new APIResponse<List<String>>(result, null));
+            } else {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                        .body(new APIResponse<>(null, response.getDescription()));
+            }
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new APIResponse<>(null, e.getMessage()));
+
+        }
+    }
+
+    @GetMapping("/getStoreWorkers/{storeId}")
+    public ResponseEntity<APIResponse<List<String>>> getStoreWorkers(@PathVariable String storeId) {
+        try {
+            Response<List<UserDTO>> response = serviceLayer.getStoreWorkers( storeId);
+            List<String> dtosRes = new ArrayList<>();
+            if (response.isSuccess()) {
+                List<UserDTO> result = response.getResult();
+                HttpHeaders headers = new HttpHeaders();
+                headers.add("accept", "*/*");
+                for (UserDTO userDTO : response.getResult() ) {
+                    dtosRes.add(objectMapper.writeValueAsString(userDTO));
+                }
+                return ResponseEntity.status(HttpStatus.OK).headers(headers)
+                        .body(new APIResponse<List<String>>(dtosRes, null));
+            } else {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                        .body(new APIResponse<>(null, response.getDescription()));
+            }
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new APIResponse<>(null, e.getMessage()));
+
+        }
+    }
+
+    @GetMapping("/getStoreOwners/{storeId}")
+    public ResponseEntity<APIResponse<List<String>>> getStoreOwners(@PathVariable String storeId) {
+        try {
+            Response<List<UserDTO>> response = serviceLayer.getStoreOwners( storeId);
+            List<String> dtosRes = new ArrayList<>();
+            if (response.isSuccess()) {
+                List<UserDTO> result = response.getResult();
+                HttpHeaders headers = new HttpHeaders();
+                headers.add("accept", "*/*");
+                for (UserDTO userDTO : response.getResult() ) {
+                    dtosRes.add(objectMapper.writeValueAsString(userDTO));
+                }
+                return ResponseEntity.status(HttpStatus.OK).headers(headers)
+                        .body(new APIResponse<List<String>>(dtosRes, null));
+            } else {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                        .body(new APIResponse<>(null, response.getDescription()));
+            }
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new APIResponse<>(null, e.getMessage()));
+
+        }
+    }
+    @GetMapping("/getStoreManagers/{storeId}")
+    public ResponseEntity<APIResponse<List<String>>> getStoreManagers(@PathVariable String storeId) {
+        try {
+            Response<List<UserDTO>> response = serviceLayer.getStoreManagers( storeId);
+            List<String> dtosRes = new ArrayList<>();
+            if (response.isSuccess()) {
+                List<UserDTO> result = response.getResult();
+                HttpHeaders headers = new HttpHeaders();
+                headers.add("accept", "*/*");
+                for (UserDTO userDTO : result) {
+                    dtosRes.add(objectMapper.writeValueAsString(userDTO));
+                }
+                return ResponseEntity.status(HttpStatus.OK).headers(headers)
+                        .body(new APIResponse<List<String>>(dtosRes, null));
             } else {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                         .body(new APIResponse<>(null, response.getDescription()));

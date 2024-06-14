@@ -69,6 +69,12 @@ public class StoreFacade {
         return storesDTOList;
     }
 
+
+    public List<ProductDTO> getStoreProductsDTO(String storeId){
+        Store store = allStores.get(storeId);
+        return  store.getProductsDTO();
+    }
+
     public StoreDTO getStoreDTOById(String storeId){
         Store store = getStoreByID(storeId);
         return getStoreDTOFromStore(store);

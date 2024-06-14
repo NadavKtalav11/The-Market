@@ -33,7 +33,7 @@ public class MemberService {
         return userFacade.getMemberName(memberID);
     }
 
-        public boolean isMember(String userId){
+        public boolean isMember(String userId) {
             return userFacade.isMember(userId);
         }
 
