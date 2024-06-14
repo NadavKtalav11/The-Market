@@ -201,8 +201,17 @@ public class Store {
         }
     }
 
+
     public List<ProductDTO> matchProductsDTO(String productName, String categoryStr, List<String> keywords)
     {
+        //if keyword looks like ["food"]
+        if (keywords.get(0).contains("[")) {
+            keywords.set(0, keywords.get(0).replace("[", ""));
+        }
+        if (keywords.get(keywords.size() - 1).contains("]")) {
+            keywords.set(keywords.size() - 1, keywords.get(keywords.size() - 1).replace("]", ""));
+        }
+
         synchronized (storeProductLock) {
             List<Product> products = storeProducts.values().stream().toList();
             return products.stream()
