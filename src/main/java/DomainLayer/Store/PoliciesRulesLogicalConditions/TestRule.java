@@ -1,4 +1,4 @@
-package DomainLayer.Store.StorePurchasePolicy;
+package DomainLayer.Store.PoliciesRulesLogicalConditions;
 
 import java.util.function.BiPredicate;
 
