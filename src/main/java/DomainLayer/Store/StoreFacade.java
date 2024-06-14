@@ -1,12 +1,10 @@
 package DomainLayer.Store;
 
-import Util.ExceptionsEnum;
-import Util.ProductDTO;
-import Util.StoreDTO;
-import Util.UserDTO;
+import DomainLayer.Store.StoreDiscountPolicy.DiscountRulesRepository;
+import Util.*;
 import DomainLayer.Store.PoliciesRulesLogicalConditions.Rule;
 import DomainLayer.Store.PoliciesRulesLogicalConditions.SimpleRule;
-import DomainLayer.Store.StorePurchasePolicy.RulesRepository;
+import DomainLayer.Store.StorePurchasePolicy.PurchaseRulesRepository;
 
 import java.util.*;
 
@@ -297,22 +295,37 @@ public class StoreFacade {
             return allStores.getAllIds();
         }
 
-
     public void addReceiptToStore(String storeId, String  receiptId, String userId)
     {
         allStores.get(storeId).addReceipt(receiptId, userId);
     }
 
-    public void addRuleToStore(List<Integer> ruleNums, List<String> operators, String storeId) {
+    public void addPurchaseRuleToStore(List<Integer> ruleNums, List<String> operators, String storeId) {
         List<Rule<UserDTO, List<ProductDTO>>> rules = new ArrayList<>();
         for (int ruleNum : ruleNums) {
-            rules.add(new SimpleRule<>(RulesRepository.getByRuleNumber(ruleNum)));
+            rules.add(new SimpleRule<>(PurchaseRulesRepository.getByRuleNumber(ruleNum)));
         }
-        allStores.get(storeId).addRule(rules, operators);
+        allStores.get(storeId).addPurchaseRule(rules, operators);
     }
 
     //implement removeRuleFromStore
-    public void removeRuleFromStore(int ruleNum, String storeId) {
-        allStores.get(storeId).removeRule(ruleNum);
+    public void removePurchaseRuleFromStore(int ruleNum, String storeId) {
+        allStores.get(storeId).removePurchaseRule(ruleNum);
+    }
+
+    public void addDiscountCondRuleToStore(List<Integer> ruleNums, List<String> operators, List<DiscountValueDTO> discDetails, List<String> numericalOperators, String storeId) {
+        List<Rule<UserDTO, List<ProductDTO>>> rules = new ArrayList<>();
+        for (int ruleNum : ruleNums) {
+            rules.add(new SimpleRule<>(DiscountRulesRepository.getByRuleNumber(ruleNum)));
+        }
+        allStores.get(storeId).addDiscountCondRule(rules, operators, discDetails, numericalOperators);
+    }
+
+    public void addDiscountSimpleRuleToStore(List<DiscountValueDTO> discDetails, List<String> numericalOperators, String storeId) {
+        allStores.get(storeId).addDiscountSimple(discDetails, numericalOperators);
+    }
+
+    public void removeDiscountRuleFromStore(int ruleNum, String storeId) {
+        allStores.get(storeId).removeDiscountRule(ruleNum);
     }
 }
