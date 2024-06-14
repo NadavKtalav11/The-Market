@@ -1,5 +1,6 @@
 package DomainLayer.Store.StorePurchasePolicy;
 
+import DomainLayer.Store.PoliciesRulesLogicalConditions.TestRule;
 import Util.ProductDTO;
 import Util.UserDTO;
 
@@ -11,7 +12,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.function.BiPredicate;
 
-public enum RulesRepository implements TestRule<UserDTO, List<ProductDTO>> {
+public enum PurchaseRulesRepository implements TestRule<UserDTO, List<ProductDTO>> {
 
     ALCOHOL_RESTRICTION_BELOW_AGE_18(1, "Alcohol cannot be sold to users below the age of 18", (userDTO, products) -> {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("d/M/yy");
@@ -104,7 +105,7 @@ public enum RulesRepository implements TestRule<UserDTO, List<ProductDTO>> {
     private final BiPredicate<UserDTO, List<ProductDTO>> predicate;
     private static final ThreadLocal<Clock> clock = ThreadLocal.withInitial(Clock::systemDefaultZone); // Default clock
 
-    RulesRepository(int ruleNumber, String description, BiPredicate<UserDTO, List<ProductDTO>> predicate) {
+    PurchaseRulesRepository(int ruleNumber, String description, BiPredicate<UserDTO, List<ProductDTO>> predicate) {
         this.ruleNumber = ruleNumber;
         this.description = description;
         this.predicate = predicate;
@@ -118,8 +119,8 @@ public enum RulesRepository implements TestRule<UserDTO, List<ProductDTO>> {
         return description;
     }
 
-    public static RulesRepository getByRuleNumber(int ruleNumber) {
-        for (RulesRepository rule : values()) {
+    public static PurchaseRulesRepository getByRuleNumber(int ruleNumber) {
+        for (PurchaseRulesRepository rule : values()) {
             if (rule.getRuleNumber() == ruleNumber) {
                 return rule;
             }

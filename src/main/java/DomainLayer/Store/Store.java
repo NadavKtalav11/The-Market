@@ -3,6 +3,7 @@ package DomainLayer.Store;
 import DomainLayer.Store.StoreDiscountPolicy.DiscountPolicy;
 import DomainLayer.Store.StorePurchasePolicy.PurchasePolicy;
 import DomainLayer.Store.PoliciesRulesLogicalConditions.Rule;
+//import Util.DiscountValueDTO;
 import Util.ProductDTO;
 
 import java.util.*;
@@ -201,8 +202,17 @@ public class Store {
         }
     }
 
+
     public List<ProductDTO> matchProductsDTO(String productName, String categoryStr, List<String> keywords)
     {
+        //if keyword looks like ["food"]
+        if (keywords.get(0).contains("[")) {
+            keywords.set(0, keywords.get(0).replace("[", ""));
+        }
+        if (keywords.get(keywords.size() - 1).contains("]")) {
+            keywords.set(keywords.size() - 1, keywords.get(keywords.size() - 1).replace("]", ""));
+        }
+
         synchronized (storeProductLock) {
             List<Product> products = storeProducts.values().stream().toList();
             return products.stream()
@@ -242,14 +252,6 @@ public class Store {
         }
     }
 
-
-    public void addRule(List<Rule<UserDTO, List<ProductDTO>>> rules, List<String> operators) {
-        purchasePolicy.addRule(rules, operators);
-    }
-
-    public void removeRule(int ruleNum) {
-        purchasePolicy.removeRule(ruleNum);
-    }
   
     public String getStore_ID() {
         return store_ID;
@@ -269,5 +271,25 @@ public class Store {
 
     public String getDescription(){
         return description;
+    }
+
+    public void addPurchaseRule(List<Rule<UserDTO, List<ProductDTO>>> rules, List<String> operators) {
+        purchasePolicy.addRule(rules, operators);
+    }
+
+    public void removePurchaseRule(int ruleNum) {
+        purchasePolicy.removeRule(ruleNum);
+    }
+
+//    public void addDiscountCondRule(List<Rule<UserDTO, List<ProductDTO>>> rules, List<String> logicalOperators, List<DiscountValueDTO> discDetails, List<String> numericalOperators) {
+//        discountPolicy.addCondRule(rules, logicalOperators, discDetails, numericalOperators);
+//    }
+
+//    public void addDiscountSimple(List<DiscountValueDTO> discDetails, List<String> numericalOperators) {
+//        discountPolicy.addSimple(discDetails, numericalOperators);
+//    }
+
+    public void removeDiscountRule(int ruleNum) {
+        discountPolicy.removeRule(ruleNum);
     }
 }

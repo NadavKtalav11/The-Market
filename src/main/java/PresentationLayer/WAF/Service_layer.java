@@ -528,27 +528,84 @@ public class Service_layer {
         }
     }
 
-    public Response<String> addRuleToStore(List<Integer> ruleNums, List<String> operators, String storeId, String userId) {
-        logger.info("Adding rule to store");
+
+  public Response<List<ProductDTO>> inStoreProductSearchDTO(String userId, String productName, String categoryStr, List<String> keywords, String storeId)
+    {
+        logger.info("Starting in-store product search in the system.");
 
         try {
-            market.addRuleToStore(ruleNums, operators, storeId, userId);
-            return new Response<>("Rule added successfully", "Rule added to store successfully.");
+            List<ProductDTO> filteredProductNames = market.inStoreProductSearchDTO(userId, productName, categoryStr, keywords, storeId);
+            return new Response<>(filteredProductNames, "In-store product search completed successfully.");
         } catch (Exception e) {
-            logger.error("Error occurred during adding rule to store", e.getMessage(), e);
+            logger.error("Error occurred during the in-store product search: {}", e.getMessage(), e);
+            return new Response<>(null, e.getMessage());
+        }
+    }
+
+    public Response<String> addRuleToStore(List<Integer> ruleNums, List<String> operators, String storeId, String userId) {
+        logger.info("Adding rule to store");
+        return new Response<>("Eule added successfully","Rule added to store successfully.");
+    }
+
+    public Response<String> addPurchaseRuleToStore(List<Integer> ruleNums, List<String> operators, String storeId, String userId) {
+        logger.info("Adding purchase rule to store");
+
+
+        try {
+            market.addPurchaseRuleToStore(ruleNums, operators, storeId, userId);
+            return new Response<>("Purchase rule added successfully", "Purchase rule added to store successfully.");
+        } catch (Exception e) {
+            logger.error("Error occurred during adding purchase rule to store: {}", e.getMessage(), e);
             return new Response<>(null, e.getMessage());
         }
     }
 
     //rule num is the index of the rule from all the rules displayed to the storeowner
-    public Response<String> removeRuleFromStore(int ruleNum, String storeId, String userId) {
-        logger.info("Removing rule from store");
+    public Response<String> removePurchaseRuleFromStore(int ruleNum, String storeId, String userId) {
+        logger.info("Removing purchase rule from store");
 
         try {
-            market.removeRuleFromStore(ruleNum, storeId, userId);
-            return new Response<>("Rule removed successfully", "Rule removed from store successfully.");
+            market.removePurchaseRuleFromStore(ruleNum, storeId, userId);
+            return new Response<>("Removing purchase rule removed successfully", "Removing purchase rule removed from store successfully.");
         } catch (Exception e) {
-            logger.error("Error occurred during removing rule from store", e.getMessage(), e);
+            logger.error("Error occurred during removing purchase rule from store: {}", e.getMessage(), e);
+            return new Response<>(null, e.getMessage());
+        }
+    }
+
+//    public Response<String> addDiscountCondRuleToStore(List<Integer> ruleNums, List<String> logicoOperators, List<DiscountValueDTO> discDetails, List<String> numericalOperators,String storeId, String userId) {
+//        logger.info("Adding discount rule to store");
+//
+//        try {
+//            market.addDiscountCondRuleToStore(ruleNums, logicoOperators, discDetails, numericalOperators, storeId, userId);
+//            return new Response<>("Discount conditional rule added successfully", "Discount conditional rule added to store successfully.");
+//        } catch (Exception e) {
+//            logger.error("Error occurred during adding conditional discount rule to store: {}", e.getMessage(), e);
+//            return new Response<>(null, e.getMessage());
+//        }
+//    }
+
+//    public Response<String> addDiscountSimpleRuleToStore(List<DiscountValueDTO> discs, List<String> numericalOperators, String storeId, String userId) {
+//        logger.info("Adding discount rule to store");
+//
+//        try {
+//            market.addDiscountSimpleRuleToStore(discs, numericalOperators, storeId, userId);
+//            return new Response<>("Discount simple rule added successfully", "Discount simple rule added to store successfully.");
+//        } catch (Exception e) {
+//            logger.error("Error occurred during adding simple discount rule to store: {}", e.getMessage(), e);
+//            return new Response<>(null, e.getMessage());
+//        }
+//    }
+
+    //rule num is the index of the rule from all the rules displayed to the storeowner
+    public Response<String> removeDiscountRuleFromStore(int ruleNum, String storeId, String userId) {
+        logger.info("Removing discount rule from store");
+
+        try {
+            market.removeDiscountRuleFromStore(ruleNum, storeId, userId);
+            return new Response<>("Discount rule removed successfully", "Discount rule removed from store successfully.");
+        } catch (Exception e) {
+            logger.error("Error occurred during removing discount rule from store: {}", e.getMessage(), e);
             return new Response<>(null, e.getMessage());
         }
     }

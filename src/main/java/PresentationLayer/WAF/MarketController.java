@@ -690,18 +690,20 @@ public class MarketController {
         }
     }
 
-
     @GetMapping("/inStoreProductSearch/{userId}/{productName}/{categoryStr}/{keywords}/{storeId}")
     public ResponseEntity<APIResponse<List<String>>> inStoreProductSearch(@PathVariable String userId,@PathVariable String productName,@PathVariable String categoryStr,@PathVariable List<String> keywords, @PathVariable String storeId) {
         try {
-            Response<List<String>> response = serviceLayer.inStoreProductSearch(userId,productName , categoryStr , keywords,storeId);
+            Response<List<ProductDTO>> response = serviceLayer.inStoreProductSearchDTO(userId,productName , categoryStr , keywords,storeId);
             if (response.isSuccess()) {
-                List<String> result = response.getResult();
+                List<String> dtos = new ArrayList<>();
+                for (ProductDTO productDTO: response.getResult()){
+                    dtos.add(objectMapper.writeValueAsString(productDTO));
+                }
                 HttpHeaders headers = new HttpHeaders();
                 headers.add("accept", "*/*");
 
                 return ResponseEntity.status(HttpStatus.OK).headers(headers)
-                        .body(new APIResponse<List<String>>(result, null));
+                        .body(new APIResponse<List<String>>(dtos, null));
             } else {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                         .body(new APIResponse<>(null, response.getDescription()));
@@ -728,8 +730,6 @@ public class MarketController {
         Response<String> response = serviceLayer.removeRuleFromStore(ruleNum,storeId,userId);
         return checkIfResponseIsGood(response);
     }
-
-
 
 
 
