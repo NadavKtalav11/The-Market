@@ -37,12 +37,12 @@ public class MemberService {
             return userFacade.isMember(userId);
         }
 
-    public boolean isStoreOwner(String userId,String storeId){
-        return roleFacade.verifyStoreOwner(userId,storeId);
+    public boolean isStoreOwner(String memberId,String storeId){
+        return roleFacade.verifyStoreOwner(storeId, memberId);
     }
 
     public boolean isStoreManager(String memberId,String storeId){
-        return roleFacade.verifyStoreManager(memberId,storeId);
+        return roleFacade.verifyStoreManager(storeId, memberId);
     }
 
     public boolean hasInventoryPermission(String memberID, String storeId){
