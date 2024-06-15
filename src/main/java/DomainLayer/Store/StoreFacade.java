@@ -128,8 +128,7 @@ public class StoreFacade {
         }
     }
 
-    public List<ProductDTO> getProductsDTOSByProductsNames(Map<String, List<Integer>> products, String storeId)
-    {
+    public List<ProductDTO> getProductsDTOSByProductsNames(Map<String, List<Integer>> products, String storeId) throws Exception {
         List<ProductDTO> productDTOS = new ArrayList<>();
         Store store = getStoreByID(storeId);
         for (Map.Entry<String, List<Integer>> product : products.entrySet()) {
