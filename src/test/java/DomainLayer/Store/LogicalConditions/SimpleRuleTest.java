@@ -1,4 +1,4 @@
-package DomainLayer.Store;
+package DomainLayer.Store.LogicalConditions;
 
 import DomainLayer.Store.PoliciesRulesLogicalConditions.*;
 import DomainLayer.Store.StorePurchasePolicy.*;
