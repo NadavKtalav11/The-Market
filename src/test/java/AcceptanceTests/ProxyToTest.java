@@ -271,25 +271,25 @@ public class ProxyToTest implements BridgeToTests {
     }
 
     @Override
-    public Response<String> addDiscountCondRuleToStore(List<Integer> ruleNums, List<String> logicOperators, List<DiscountValueDTO> discDetails, List<String> numericalOperators, String storeId, String userId) {
+    public Response<String> addDiscountCondRuleToStore(List<Integer> ruleNums, List<String> logicOperators, List<DiscountValueDTO> discDetails, List<String> numericalOperators, String userId, String storeId) {
         if (realServiceAdaptor != null)
-            return realServiceAdaptor.addDiscountCondRuleToStore(ruleNums, logicOperators, discDetails, numericalOperators, storeId, userId);
+            return realServiceAdaptor.addDiscountCondRuleToStore(ruleNums, logicOperators, discDetails, numericalOperators, userId, storeId);
         else
             return new Response<>(null, "Not Implemented yet");
     }
 
     @Override
-    public Response<String> addDiscountSimpleRuleToStore(List<DiscountValueDTO> discDetails, List<String> discountValueOperators, String storeId, String userId) {
+    public Response<String> addDiscountSimpleRuleToStore(List<DiscountValueDTO> discDetails, List<String> discountValueOperators, String userId, String storeId) {
         if (realServiceAdaptor != null)
-            return realServiceAdaptor.addDiscountSimpleRuleToStore(discDetails, discountValueOperators, storeId, userId);
+            return realServiceAdaptor.addDiscountSimpleRuleToStore(discDetails, discountValueOperators, userId, storeId);
         else
             return new Response<>(null, "Not Implemented yet");
     }
 
     @Override
-    public Response<String> removeDiscountRuleFromStore(int ruleNum, String storeId, String userId) {
+    public Response<String> removeDiscountRuleFromStore(int ruleNum, String userId, String storeId) {
         if (realServiceAdaptor != null)
-            return realServiceAdaptor.removeDiscountRuleFromStore(ruleNum, storeId, userId);
+            return realServiceAdaptor.removeDiscountRuleFromStore(ruleNum, userId, storeId);
         else
             return new Response<>(null, "Not Implemented yet");
     }

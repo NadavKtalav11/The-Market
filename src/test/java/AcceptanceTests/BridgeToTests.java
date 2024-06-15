@@ -75,11 +75,11 @@ public interface BridgeToTests {
 
     Response<String> removePurchaseRuleFromStore(int ruleNum, String userId, String storeId);
 
-    Response<String> addDiscountCondRuleToStore(List<Integer> ruleNums, List<String> logicOperators, List<DiscountValueDTO> discDetails, List<String> numericalOperators,String storeId, String userId);
+    Response<String> addDiscountCondRuleToStore(List<Integer> ruleNums, List<String> logicOperators, List<DiscountValueDTO> discDetails, List<String> numericalOperators,String userId, String storeId);
 
-    Response<String> addDiscountSimpleRuleToStore(List<DiscountValueDTO> discDetails, List<String> discountValueOperators, String storeId, String userId);
+    Response<String> addDiscountSimpleRuleToStore(List<DiscountValueDTO> discDetails, List<String> discountValueOperators, String userId, String storeId);
 
-    Response<String> removeDiscountRuleFromStore(int ruleNum, String storeId, String userId);
+    Response<String> removeDiscountRuleFromStore(int ruleNum, String userId, String storeId);
 
 
 }
