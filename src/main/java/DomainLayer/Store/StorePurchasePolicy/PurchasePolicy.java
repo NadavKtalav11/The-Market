@@ -10,6 +10,8 @@ import Util.UserDTO;
 import java.util.ArrayList;
 import java.util.List;
 
+import static Util.ExceptionsEnum.*;
+
 public class PurchasePolicy {
     private List<String> usersIdsActivatePolicy;
     private List<String> productNamesActivatePolicy;
@@ -63,6 +65,8 @@ public class PurchasePolicy {
     }
 
     public void removeRule(int ruleNum) {
-        purchaseRules.remove(ruleNum);
+        if (ruleNum < purchaseRules.size())
+            purchaseRules.remove(ruleNum);
+        else throw new IllegalArgumentException(InvalidRuleIndex.toString());
     }
 }

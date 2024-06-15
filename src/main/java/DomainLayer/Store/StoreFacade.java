@@ -108,13 +108,6 @@ public class StoreFacade {
         this.checkIfProductQuantityIsPositive(quantity);
     }
 
-    public boolean checkPolicies(UserDTO userDTO, List<ProductDTO> products, String storeId) {
-        //Check here all policies
-        this.checkPurchasePolicy(userDTO, products, storeId);
-        //this.checkDiscountPolicy(productName, storeId, userId);
-        return true;
-    }
-
     public void checkIfProductExists(String productName, String storeId){
         Store store = getStoreByID(storeId);
         if (!store.checkProductExists(productName))
@@ -260,9 +253,6 @@ public class StoreFacade {
         return store.getProducts();
     }
 
-    public int calculateTotalCartPriceAfterDiscount(String store_ID, Map<String, List<Integer>> products, int totalPriceBeforeDiscount) {
-        return totalPriceBeforeDiscount; //In the future - check discount and calculate price by policies
-    }
     public List<String> inStoreProductSearch(String productName, String categoryStr, List<String> keywords, String storeId)
     {
         Store storeToSearchIn = getStoreByID(storeId);

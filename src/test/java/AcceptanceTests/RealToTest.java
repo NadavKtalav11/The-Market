@@ -175,13 +175,13 @@ public class RealToTest implements BridgeToTests {
     }
 
 
-    public Response<String> addPurchaseRuleToStore(List<Integer> ruleNums, List<String> operators, String storeId, String userId) {
-        return service.addPurchaseRuleToStore(ruleNums, operators, storeId, userId);
+    public Response<String> addPurchaseRuleToStore(List<Integer> ruleNums, List<String> operators, String userId, String storeId) {
+        return service.addPurchaseRuleToStore(ruleNums, operators, userId, storeId);
     }
 
 
-    public Response<String> removePurchaseRuleFromStore(int ruleNum, String storeId, String userId) {
-        return service.removePurchaseRuleFromStore(ruleNum, storeId, userId);
+    public Response<String> removePurchaseRuleFromStore(int ruleNum, String userId, String storeId) {
+        return service.removePurchaseRuleFromStore(ruleNum, userId, storeId);
     }
 
 

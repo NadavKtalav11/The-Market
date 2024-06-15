@@ -543,11 +543,11 @@ public class Service_layer {
     }
 
 
-    public Response<String> addPurchaseRuleToStore(List<Integer> ruleNums, List<String> operators, String storeId, String userId) {
+    public Response<String> addPurchaseRuleToStore(List<Integer> ruleNums, List<String> operators, String userId, String storeId) {
         logger.info("Adding purchase rule to store");
 
         try {
-            market.addPurchaseRuleToStore(ruleNums, operators, storeId, userId);
+            market.addPurchaseRuleToStore(ruleNums, operators, userId, storeId);
             return new Response<>("Purchase rule added successfully", "Purchase rule added to store successfully.");
         } catch (Exception e) {
             logger.error("Error occurred during adding purchase rule to store: {}", e.getMessage(), e);
@@ -556,11 +556,11 @@ public class Service_layer {
     }
 
     //rule num is the index of the rule from all the rules displayed to the storeowner
-    public Response<String> removePurchaseRuleFromStore(int ruleNum, String storeId, String userId) {
+    public Response<String> removePurchaseRuleFromStore(int ruleNum, String userId, String storeId) {
         logger.info("Removing purchase rule from store");
 
         try {
-            market.removePurchaseRuleFromStore(ruleNum, storeId, userId);
+            market.removePurchaseRuleFromStore(ruleNum, userId, storeId);
             return new Response<>("Removing purchase rule removed successfully", "Removing purchase rule removed from store successfully.");
         } catch (Exception e) {
             logger.error("Error occurred during removing purchase rule from store: {}", e.getMessage(), e);
