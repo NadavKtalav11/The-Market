@@ -719,7 +719,7 @@ public class MarketController {
     @PostMapping("/addRuleToStore/{ruleNums}/{operators}/{storeId}/{userId}")
     public ResponseEntity<APIResponse<String>> addRuleToStore(@PathVariable List<Integer> ruleNums,  @PathVariable List<String> operators,  @PathVariable String storeId, @PathVariable String userId ) {
 
-        Response<String> response = serviceLayer.addRuleToStore(ruleNums,operators,storeId,userId);
+        Response<String> response = serviceLayer.addPurchaseRuleToStore(ruleNums,operators,storeId,userId);
         return checkIfResponseIsGood(response);
     }
 
@@ -727,7 +727,7 @@ public class MarketController {
     @PostMapping("/removeRuleFromStore/{ruleNums}/{storeId}/{userId}")
     public ResponseEntity<APIResponse<String>> removeRuleFromStore(@PathVariable int ruleNum,  @PathVariable String storeId, @PathVariable String userId ) {
 
-        Response<String> response = serviceLayer.removeRuleFromStore(ruleNum,storeId,userId);
+        Response<String> response = serviceLayer.removePurchaseRuleFromStore(ruleNum,storeId,userId);
         return checkIfResponseIsGood(response);
     }
 

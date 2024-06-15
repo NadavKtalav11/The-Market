@@ -1,10 +1,7 @@
 package AcceptanceTests;
 
 import ServiceLayer.Response;
-import Util.PaymentServiceDTO;
-import Util.ProductDTO;
-import Util.SupplyServiceDTO;
-import Util.UserDTO;
+import Util.*;
 
 import java.util.HashSet;
 import java.util.List;
@@ -253,6 +250,46 @@ public class ProxyToTest implements BridgeToTests {
     public Response<String> purchase(String user_ID, String country, String city, String address, String cardNumber, int cvv, int month, int year, String holderID){
         if (realServiceAdaptor != null)
             return realServiceAdaptor.purchase(user_ID, country, city, address, cardNumber ,cvv,month,year,holderID);
+        else
+            return new Response<>(null, "Not Implemented yet");
+    }
+
+    @Override
+    public Response<String> addPurchaseRuleToStore(List<Integer> ruleNums, List<String> operators, String storeId, String userId) {
+        if (realServiceAdaptor != null)
+            return realServiceAdaptor.addPurchaseRuleToStore(ruleNums, operators, storeId, userId);
+        else
+            return new Response<>(null, "Not Implemented yet");
+    }
+
+    @Override
+    public Response<String> removePurchaseRuleFromStore(int ruleNum, String storeId, String userId) {
+        if (realServiceAdaptor != null)
+            return realServiceAdaptor.removePurchaseRuleFromStore(ruleNum, storeId, userId);
+        else
+            return new Response<>(null, "Not Implemented yet");
+    }
+
+    @Override
+    public Response<String> addDiscountCondRuleToStore(List<Integer> ruleNums, List<String> logicOperators, List<DiscountValueDTO> discDetails, List<String> numericalOperators, String storeId, String userId) {
+        if (realServiceAdaptor != null)
+            return realServiceAdaptor.addDiscountCondRuleToStore(ruleNums, logicOperators, discDetails, numericalOperators, storeId, userId);
+        else
+            return new Response<>(null, "Not Implemented yet");
+    }
+
+    @Override
+    public Response<String> addDiscountSimpleRuleToStore(List<DiscountValueDTO> discDetails, List<String> discountValueOperators, String storeId, String userId) {
+        if (realServiceAdaptor != null)
+            return realServiceAdaptor.addDiscountSimpleRuleToStore(discDetails, discountValueOperators, storeId, userId);
+        else
+            return new Response<>(null, "Not Implemented yet");
+    }
+
+    @Override
+    public Response<String> removeDiscountRuleFromStore(int ruleNum, String storeId, String userId) {
+        if (realServiceAdaptor != null)
+            return realServiceAdaptor.removeDiscountRuleFromStore(ruleNum, storeId, userId);
         else
             return new Response<>(null, "Not Implemented yet");
     }

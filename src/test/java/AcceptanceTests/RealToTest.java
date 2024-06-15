@@ -174,4 +174,29 @@ public class RealToTest implements BridgeToTests {
 
     }
 
+
+    public Response<String> addPurchaseRuleToStore(List<Integer> ruleNums, List<String> operators, String storeId, String userId) {
+        return service.addPurchaseRuleToStore(ruleNums, operators, storeId, userId);
+    }
+
+
+    public Response<String> removePurchaseRuleFromStore(int ruleNum, String storeId, String userId) {
+        return service.removePurchaseRuleFromStore(ruleNum, storeId, userId);
+    }
+
+
+    public Response<String> addDiscountCondRuleToStore(List<Integer> ruleNums, List<String> logicOperators, List<DiscountValueDTO> discDetails, List<String> numericalOperators, String storeId, String userId) {
+        return service.addDiscountCondRuleToStore(ruleNums, logicOperators, discDetails, numericalOperators, storeId, userId);
+    }
+
+
+    public Response<String> addDiscountSimpleRuleToStore(List<DiscountValueDTO> discDetails, List<String> discountValueOperators, String storeId, String userId) {
+        return service.addDiscountSimpleRuleToStore(discDetails, discountValueOperators, storeId, userId);
+    }
+
+
+    public Response<String> removeDiscountRuleFromStore(int ruleNum, String storeId, String userId) {
+        return service.removeDiscountRuleFromStore(ruleNum, storeId, userId);
+    }
+
 }
