@@ -154,6 +154,9 @@ package Util;
         InvalidOperator{
             public String toString(){ return "The operator must be 'AND' or 'OR' or 'COND'"; }
         },
+        InvalidDiscountValueParameters{
+            public String toString(){ return "The discount must apply to the basket or some of store's the products or to a category"; }
+        },
     }
 
 
