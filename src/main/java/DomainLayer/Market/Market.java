@@ -101,6 +101,7 @@ public class Market {
         String systemMangerId = userFacade.register(firstUserID, user, encrypted);
         synchronized (managersLock) {
             systemManagerIds.add(systemMangerId);
+
         }
         paymentServicesFacade.addExternalService(paymentServiceDTO);
         supplyServicesFacade.addExternalService(supplyServiceDTO);
@@ -695,7 +696,8 @@ public class Market {
             }
         }
         userFacade.isUserLoggedInError(user_ID);
-        roleFacade.verifyMemberIsSystemManagerError(user_ID);
+        if (!systemManagerIds.contains(userFacade.getMemberIdByUserId(user_ID)))
+            throw new IllegalArgumentException(ExceptionsEnum.notSystemManager.toString());
         return paymentServicesFacade.getStorePurchaseInfo();
     }
 
