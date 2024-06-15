@@ -40,7 +40,15 @@ public class DiscountPolicy {
         discountRules.add(new Discount(discDetails, discountValueOperators));
     }
 
+    public void addRule(Discount discount) {
+        discountRules.add(discount);
+    }
+
     public void removeRule(int ruleNum) {
         discountRules.remove(ruleNum);
+    }
+
+    public List<Discount> getDiscountRules() {
+        return discountRules;
     }
 }
