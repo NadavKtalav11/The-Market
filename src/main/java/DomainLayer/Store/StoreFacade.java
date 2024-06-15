@@ -86,6 +86,14 @@ public class StoreFacade {
         }
     }
 
+    public List<String> getStoreCategories(){
+       List<String> categories = new ArrayList<>();
+       for (Category cat : EnumSet.allOf(Category.class)){
+           categories.add(cat.toString());
+       }
+       return categories;
+    }
+
     public String getNewStoreId(){
         UUID uuid = UUID.randomUUID();
         String storeId = "store" + uuid.toString();

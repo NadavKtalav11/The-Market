@@ -89,6 +89,7 @@ public class Store {
         }
     }
 
+
     public List<ProductDTO> getProductsDTO(){
         List<ProductDTO> productDTOList = new ArrayList<>();
         synchronized (storeProductLock){
