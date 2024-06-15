@@ -601,9 +601,6 @@ public class Market {
         return managersAuthorizations;
     }
 
-
-   // public List<Integer> getInformationAboutStores(String user_ID)throws Exception
-
     public Map<String, Map<String, List<Integer>>> getPurchaseList(String userId)throws Exception{
         if (userFacade.isMember(userId)) {
             String memberId = userFacade.getMemberIdByUserId(userId);
@@ -640,12 +637,13 @@ public class Market {
         List<String> closedStores = storeFacade.getInformationAboutClosedStores(); //closed stores available only for owners/ system managers
         List<String> closedStoreAvailable = null;
 
-        userFacade.isUserLoggedInError(user_ID);
-        String member_ID = this.userFacade.getMemberIdByUserId(user_ID);
-        if (!this.roleFacade.verifyMemberIsSystemManager(user_ID))
-            closedStoreAvailable = roleFacade.getStoresByOwner(closedStores, member_ID);
-        else
-            closedStoreAvailable = closedStores;
+        if(userFacade.isMember(user_ID)) {
+            String member_ID = this.userFacade.getMemberIdByUserId(user_ID);
+            if (!this.roleFacade.verifyMemberIsSystemManager(user_ID))
+                closedStoreAvailable = roleFacade.getStoresByOwner(closedStores, member_ID);
+            else
+                closedStoreAvailable = closedStores; //all stores are available for system managers
+        }
 
         List<String> allAvailableStores = new ArrayList<>(openedStores);
         if (closedStoreAvailable != null) {
