@@ -12,7 +12,7 @@ import java.util.List;
 
 public class CondDiscount extends Discount{
     private Rule<UserDTO, List<ProductDTO>> discountRule;
-    CondDiscount(List<DiscountValue> discountValue, List<String> discountValueOperators, List<Rule<UserDTO, List<ProductDTO>>> discountRule, List<String> discountRuleOperators) {
+    public CondDiscount(List<DiscountValue> discountValue, List<String> discountValueOperators, List<Rule<UserDTO, List<ProductDTO>>> discountRule, List<String> discountRuleOperators) {
         super(discountValue, discountValueOperators);
         this.setDiscountRule(discountRule, discountRuleOperators);
     }
@@ -34,5 +34,12 @@ public class CondDiscount extends Discount{
 
     public String getDiscountRulesDescriptions() {
         return this.discountRule.getDescription();
+    }
+
+    @Override
+    public int calcDiscount(List<ProductDTO> basketProducts , UserDTO userDTO) {
+        if(discountRule.checkRule(userDTO, basketProducts))
+            return calcDiscount(basketProducts, userDTO);
+        return 0;
     }
 }

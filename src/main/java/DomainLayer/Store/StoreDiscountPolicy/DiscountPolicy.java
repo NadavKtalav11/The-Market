@@ -17,35 +17,27 @@ public class DiscountPolicy {
 
     public DiscountPolicy()
     {
-        List<DiscountValue> discountValue = new ArrayList<>();
-        discountValue.add(new SimpleDiscountValue(0, null, true, null)); //Default is 0 percentage on the store
         this.discountRules = new ArrayList<>();
-        discountRules.add(new Discount(discountValue, new ArrayList<>()));
         userIdLock = new Object();
         productNameLock = new Object();
     }
 
-    public boolean checkDiscountPolicy(String userId, String productName)
+    public int calcDiscountPolicy(UserDTO userDTO, List<ProductDTO> products)
     {
-        //TODO: implement so that it will calculate the total price need to reduce from the basket
-        return true;
+        int totalDiscount = 0;
+        for (Discount discountRule : discountRules)
+        {
+            totalDiscount += discountRule.calcDiscount(products, userDTO);
+        }
+        return totalDiscount;
     }
 
-    public void addCondRule(List<Rule<UserDTO, List<ProductDTO>>> rules, List<String> logicalOperators, List<DiscountValueDTO> discDetails, List<String> numericalOperators) {
-        List<DiscountValue> discountValue = new ArrayList<>();
-        for (DiscountValueDTO discDetail : discDetails) {
-            discountValue.add(new SimpleDiscountValue(discDetail.getPercentage(), Category.fromString(discDetail.getCategory()) , discDetail.getIsStoreDiscount(), discDetail.getProductsNames()));
-        }
-        discountRules.add(new CondDiscount(discountValue, numericalOperators, rules, logicalOperators));
+    public void addCondRule(List<Rule<UserDTO, List<ProductDTO>>> rules, List<String> logicalOperators, List<DiscountValue> discDetails, List<String> numericalOperators) {
+        discountRules.add(new CondDiscount(discDetails, numericalOperators, rules, logicalOperators));
     }
 
-    public void addSimple(List<DiscountValueDTO> discDetails, List<String> discountValueOperators) {
-        //call to Discount constructor
-        List<DiscountValue> discountValue = new ArrayList<>();
-        for (DiscountValueDTO discDetail : discDetails) {
-            discountValue.add(new SimpleDiscountValue(discDetail.getPercentage(), Category.fromString(discDetail.getCategory()) , discDetail.getIsStoreDiscount(), discDetail.getProductsNames()));
-        }
-        discountRules.add(new Discount(discountValue, discountValueOperators));
+    public void addSimple(List<DiscountValue> discDetails, List<String> discountValueOperators) {
+        discountRules.add(new Discount(discDetails, discountValueOperators));
     }
 
     public void removeRule(int ruleNum) {
