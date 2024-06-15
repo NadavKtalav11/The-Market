@@ -42,9 +42,17 @@ public class DiscountPolicy {
         discountRules.add(new Discount(discDetails, discountValueOperators));
     }
 
+    public void addRule(Discount discount) {
+        discountRules.add(discount);
+    }
+
     public void removeRule(int ruleNum) {
         if (ruleNum < discountRules.size())
             discountRules.remove(ruleNum);
         else throw new IllegalArgumentException(InvalidRuleIndex.toString());
+    }
+
+    public List<Discount> getDiscountRules() {
+        return discountRules;
     }
 }

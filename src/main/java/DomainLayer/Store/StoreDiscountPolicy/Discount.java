@@ -32,4 +32,8 @@ public class Discount {
     public int calcDiscount(List<ProductDTO> basketProducts, UserDTO userDTO) {
         return discountValue.calcDiscount(basketProducts);
     }
+
+    public DiscountValue getDiscountValue() {
+        return discountValue;
+    }
 }
