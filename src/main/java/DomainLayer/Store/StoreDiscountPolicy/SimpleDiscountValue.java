@@ -54,7 +54,7 @@ public class SimpleDiscountValue implements DiscountValue {
             return percentage;
         }
 
-        public boolean isStoreDiscount(List<ProductDTO> basketProducts) {
+        public boolean isStoreDiscount() {
             return isStoreDiscount;
         }
 

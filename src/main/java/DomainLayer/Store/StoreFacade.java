@@ -1,6 +1,8 @@
 package DomainLayer.Store;
 
 import DomainLayer.Store.StoreDiscountPolicy.DiscountRulesRepository;
+import DomainLayer.Store.StoreDiscountPolicy.DiscountValue;
+import DomainLayer.Store.StoreDiscountPolicy.SimpleDiscountValue;
 import Util.*;
 import DomainLayer.Store.PoliciesRulesLogicalConditions.Rule;
 import DomainLayer.Store.PoliciesRulesLogicalConditions.SimpleRule;
@@ -160,14 +162,10 @@ public class StoreFacade {
         }
     }
 
-    public void checkDiscountPolicy(String productName, String storeId, String userId)
+    public int calcDiscountPolicy(UserDTO userDTO, List<ProductDTO> products, String storeId)
     {
         Store store = getStoreByID(storeId);
-
-        if (!store.checkDiscountPolicy(userId, productName))
-        {
-            throw new IllegalArgumentException(ExceptionsEnum.discountPolicyIsNotMet.toString());
-        }
+        return store.calcDiscountPolicy(userDTO, products);
     }
 
     public int calcPrice(String productName, int quantity, String storeId, String userId)
@@ -328,18 +326,33 @@ public class StoreFacade {
     }
 
     public void addDiscountCondRuleToStore(List<Integer> ruleNums, List<String> operators, List<DiscountValueDTO> discDetails, List<String> numericalOperators, String storeId) {
+
+        List<DiscountValue> discountValue = getDiscountValuesList(discDetails);
+
         List<Rule<UserDTO, List<ProductDTO>>> rules = new ArrayList<>();
         for (int ruleNum : ruleNums) {
             rules.add(new SimpleRule<>(DiscountRulesRepository.getByRuleNumber(ruleNum)));
         }
-        allStores.get(storeId).addDiscountCondRule(rules, operators, discDetails, numericalOperators);
+
+        allStores.get(storeId).addDiscountCondRule(rules, operators, discountValue, numericalOperators);
     }
 
     public void addDiscountSimpleRuleToStore(List<DiscountValueDTO> discDetails, List<String> numericalOperators, String storeId) {
-        allStores.get(storeId).addDiscountSimple(discDetails, numericalOperators);
+        List<DiscountValue> discountValue = getDiscountValuesList(discDetails);
+
+        allStores.get(storeId).addDiscountSimple(discountValue, numericalOperators);
     }
 
     public void removeDiscountRuleFromStore(int ruleNum, String storeId) {
         allStores.get(storeId).removeDiscountRule(ruleNum);
+    }
+
+    public List<DiscountValue> getDiscountValuesList(List<DiscountValueDTO> discDetails) {
+        List<DiscountValue> discountValue = new ArrayList<>();
+
+        for (DiscountValueDTO discDetail : discDetails) {
+            discountValue.add(new SimpleDiscountValue(discDetail.getPercentage(), Category.fromString(discDetail.getCategory()) , discDetail.getIsStoreDiscount(), discDetail.getProductsNames()));
+        }
+        return discountValue;
     }
 }

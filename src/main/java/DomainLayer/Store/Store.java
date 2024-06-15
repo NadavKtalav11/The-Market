@@ -1,9 +1,11 @@
 package DomainLayer.Store;
 
 import DomainLayer.Store.StoreDiscountPolicy.DiscountPolicy;
+import DomainLayer.Store.StoreDiscountPolicy.DiscountValue;
 import DomainLayer.Store.StorePurchasePolicy.PurchasePolicy;
 import DomainLayer.Store.PoliciesRulesLogicalConditions.Rule;
 //import Util.DiscountValueDTO;
+import Util.DiscountValueDTO;
 import Util.ProductDTO;
 
 import java.util.*;
@@ -179,9 +181,9 @@ public class Store {
         }
     }
 
-    public boolean checkDiscountPolicy(String userId, String productName)
+    public int calcDiscountPolicy(UserDTO userDTO, List<ProductDTO> products)
     {
-        return this.discountPolicy.checkDiscountPolicy(userId, productName);
+        return this.discountPolicy.calcDiscountPolicy(userDTO, products);
     }
 
     public boolean checkPurchasePolicy(UserDTO userDTO, List<ProductDTO> products)
@@ -281,13 +283,13 @@ public class Store {
         purchasePolicy.removeRule(ruleNum);
     }
 
-//    public void addDiscountCondRule(List<Rule<UserDTO, List<ProductDTO>>> rules, List<String> logicalOperators, List<DiscountValueDTO> discDetails, List<String> numericalOperators) {
-//        discountPolicy.addCondRule(rules, logicalOperators, discDetails, numericalOperators);
-//    }
+    public void addDiscountCondRule(List<Rule<UserDTO, List<ProductDTO>>> rules, List<String> logicalOperators, List<DiscountValue> discDetails, List<String> numericalOperators) {
+        discountPolicy.addCondRule(rules, logicalOperators, discDetails, numericalOperators);
+    }
 
-//    public void addDiscountSimple(List<DiscountValueDTO> discDetails, List<String> numericalOperators) {
-//        discountPolicy.addSimple(discDetails, numericalOperators);
-//    }
+    public void addDiscountSimple(List<DiscountValue> discDetails, List<String> numericalOperators) {
+        discountPolicy.addSimple(discDetails, numericalOperators);
+    }
 
     public void removeDiscountRule(int ruleNum) {
         discountPolicy.removeRule(ruleNum);
