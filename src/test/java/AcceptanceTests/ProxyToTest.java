@@ -255,17 +255,17 @@ public class ProxyToTest implements BridgeToTests {
     }
 
     @Override
-    public Response<String> addPurchaseRuleToStore(List<Integer> ruleNums, List<String> operators, String storeId, String userId) {
+    public Response<String> addPurchaseRuleToStore(List<Integer> ruleNums, List<String> operators, String userId, String storeId) {
         if (realServiceAdaptor != null)
-            return realServiceAdaptor.addPurchaseRuleToStore(ruleNums, operators, storeId, userId);
+            return realServiceAdaptor.addPurchaseRuleToStore(ruleNums, operators, userId, storeId);
         else
             return new Response<>(null, "Not Implemented yet");
     }
 
     @Override
-    public Response<String> removePurchaseRuleFromStore(int ruleNum, String storeId, String userId) {
+    public Response<String> removePurchaseRuleFromStore(int ruleNum, String userId, String storeId) {
         if (realServiceAdaptor != null)
-            return realServiceAdaptor.removePurchaseRuleFromStore(ruleNum, storeId, userId);
+            return realServiceAdaptor.removePurchaseRuleFromStore(ruleNum, userId, storeId);
         else
             return new Response<>(null, "Not Implemented yet");
     }
