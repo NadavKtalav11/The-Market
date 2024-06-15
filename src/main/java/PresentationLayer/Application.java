@@ -31,7 +31,7 @@ import org.springframework.stereotype.Component;
 
 
 @SpringBootApplication(scanBasePackages = {"PresentationLayer.Vaadin", "PresentationLayer.WAF"})
-//@ComponentScan(basePackages = {"PresentationLayer.Vaadin", "PresentationLayer.WAF"})
+
 @Theme(value = "webpush")
 @PWA(name = "Web Push", shortName = "Push")
 @EnableScheduling
