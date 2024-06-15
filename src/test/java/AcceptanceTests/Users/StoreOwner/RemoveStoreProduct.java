@@ -23,7 +23,7 @@ public class RemoveStoreProduct {
         impl.register(saarUserID,"saar", "10/04/84", "Israel", "Jerusalem", "Yehuda halevi 18", "saar", "Fadidaa1");
         impl.login(saarUserID, "saar", "Fadidaa1");
         storeID= impl.openStore(saarUserID, "alona", "shopping").getData();
-        impl.addProductToStore(saarUserID, storeID,"weddingDress", 10, 5, "pink", "clothes");
+        impl.addProductToStore(saarUserID, storeID,"weddingDress", 10, 5, "pink", "CLOTHING");
     }
 
     @Test

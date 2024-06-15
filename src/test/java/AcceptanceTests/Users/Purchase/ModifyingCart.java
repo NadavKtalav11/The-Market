@@ -9,6 +9,9 @@ import Util.UserDTO;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 public class ModifyingCart {
@@ -95,8 +98,9 @@ public class ModifyingCart {
 
     @Test
     public void purchasePolicyInvalidTest() {
-        //Test will fil, no purchase policies yet
-        //impl.addProductToBasket("Shoes", 5, 0, 0);
-        //assertFalse(impl.modifyShoppingCart("Shoes", 2,0, 0).isSuccess());
+        impl.addPurchaseRuleToStore(List.of(5), new ArrayList<>(), userID1, storeID1);
+        Response<String> response = impl.addProductToBasket("Milk", 2, storeID1, userID1);
+        assertFalse(response.isSuccess());
+        assertEquals(ExceptionsEnum.purchasePolicyIsNotMet.toString(), response.getDescription());
     }
 }

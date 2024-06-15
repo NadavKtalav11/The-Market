@@ -227,6 +227,18 @@ package Util;
                 return "The system has not been able to be launched since there is a problem with the payment service details";
             }
         },
+
+        InvalidRuleNumber{
+            public String toString(){
+                return "The rule number you entered is invalid";
+            }
+        },
+
+        InvalidRuleIndex{
+            public String toString(){
+                return "the index you entered is invalid";
+            }
+        };
     }
 
 

@@ -12,6 +12,8 @@ import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.function.BiPredicate;
 
+import static Util.ExceptionsEnum.*;
+
 public enum PurchaseRulesRepository implements TestRule<UserDTO, List<ProductDTO>> {
 
     ALCOHOL_RESTRICTION_BELOW_AGE_18(1, "Alcohol cannot be sold to users below the age of 18", (userDTO, products) -> {
@@ -125,7 +127,7 @@ public enum PurchaseRulesRepository implements TestRule<UserDTO, List<ProductDTO
                 return rule;
             }
         }
-        throw new IllegalArgumentException("No rule found with rule number: " + ruleNumber);
+        throw new IllegalArgumentException(InvalidRuleNumber.toString());
     }
 
     @Override

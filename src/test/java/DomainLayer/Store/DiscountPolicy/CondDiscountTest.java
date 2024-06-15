@@ -39,7 +39,7 @@ public class CondDiscountTest {
     public void setUp() {
         MockitoAnnotations.openMocks(this);
         List<DiscountValue> discountValues = Arrays.asList(discountValue1, discountValue2);
-        List<String> discountValueOperators = Arrays.asList("ADD");
+        List<String> discountValueOperators = Arrays.asList("ADDITION");
         List<Rule<UserDTO, List<ProductDTO>>> discountRules = Arrays.asList(mockRule1, mockRule2);
         List<String> discountRuleOperators = Arrays.asList("AND");
         condDiscount = new CondDiscount(discountValues, discountValueOperators, discountRules, discountRuleOperators);
@@ -94,13 +94,16 @@ public class CondDiscountTest {
     @Test
     public void testGetDiscountRulesDescriptions() {
         // Arrange
-        String ruleDescription = "Rule Description";
-        when(mockRule1.getDescription()).thenReturn(ruleDescription);
+        String rule1Description = "Rule1 Description";
+        String rule2Description = "Rule2 Description";
+
+        when(mockRule1.getDescription()).thenReturn(rule1Description);
+        when(mockRule2.getDescription()).thenReturn(rule2Description);
 
         // Act
         String description = condDiscount.getDiscountRulesDescriptions();
 
         // Assert
-        assertEquals(ruleDescription, description);
+        assertEquals(rule1Description + " and " + rule2Description, description);
     }
 }

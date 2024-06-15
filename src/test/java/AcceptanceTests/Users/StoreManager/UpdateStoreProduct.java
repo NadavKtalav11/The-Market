@@ -29,19 +29,19 @@ public class UpdateStoreProduct {
         impl.login(tomUserID, "tom", "Shlaifer2");
         storeId = impl.openStore(saarUserID, "alona", "shopping").getData();
         impl.appointStoreManager(saarUserID, "tom", storeId, true, false);
-        impl.addProductToStore(saarUserID, storeId,"weddingDress", 10, 5, "pink", "clothes");
+        impl.addProductToStore(saarUserID, storeId,"weddingDress", 10, 5, "pink", "CLOTHING");
     }
 
     @Test
     public void successfulUpdateTest() {
         assertTrue(impl.updateProductInStore(tomUserID,storeId,"weddingDress", 11, 4,
-                                                            "pink", "clothes").isSuccess());
+                                                            "pink", "CLOTHING").isSuccess());
     }
 
     @Test
     public void productNotExistTest() {
         Response<String> response = impl.updateProductInStore(tomUserID,storeId,"heels", 1, 41,
-                "black", "shoes");
+                "black", "CLOTHING");
         assertFalse(response.isSuccess());
         assertEquals(ExceptionsEnum.productNotExistInStore.toString(), response.getDescription());
     }
@@ -49,7 +49,7 @@ public class UpdateStoreProduct {
     @Test
     public void negQuantityTest() {
         Response<String> response = impl.updateProductInStore(tomUserID,storeId,"weddingDress", 11, -4,
-                "pink", "clothes");
+                "pink", "CLOTHING");
         assertFalse(response.isSuccess());
         assertEquals(ExceptionsEnum.productQuantityIsNegative.toString(), response.getDescription());
     }

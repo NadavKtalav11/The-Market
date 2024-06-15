@@ -71,15 +71,15 @@ public interface BridgeToTests {
 
     Response<String> purchase(String user_ID, String country, String city, String address, String cardNumber, int cvv, int month, int year, String holderID);
 
-    Response<String> addPurchaseRuleToStore(List<Integer> ruleNums, List<String> operators, String storeId, String userId);
+    Response<String> addPurchaseRuleToStore(List<Integer> ruleNums, List<String> operators, String userId, String storeId);
 
-    Response<String> removePurchaseRuleFromStore(int ruleNum, String storeId, String userId);
+    Response<String> removePurchaseRuleFromStore(int ruleNum, String userId, String storeId);
 
-    Response<String> addDiscountCondRuleToStore(List<Integer> ruleNums, List<String> logicOperators, List<DiscountValueDTO> discDetails, List<String> numericalOperators,String storeId, String userId);
+    Response<String> addDiscountCondRuleToStore(List<Integer> ruleNums, List<String> logicOperators, List<DiscountValueDTO> discDetails, List<String> numericalOperators,String userId, String storeId);
 
-    Response<String> addDiscountSimpleRuleToStore(List<DiscountValueDTO> discDetails, List<String> discountValueOperators, String storeId, String userId);
+    Response<String> addDiscountSimpleRuleToStore(List<DiscountValueDTO> discDetails, List<String> discountValueOperators, String userId, String storeId);
 
-    Response<String> removeDiscountRuleFromStore(int ruleNum, String storeId, String userId);
+    Response<String> removeDiscountRuleFromStore(int ruleNum, String userId, String storeId);
 
 
 }

@@ -41,6 +41,10 @@ public class StoreFacade {
         return storeFacadeInstance;
     }
 
+    // Added for testing purposes
+    public StoreFacade(StoreRepository storeRepository) {
+        this.allStores = storeRepository;
+    }
 
 
     public StoreFacade newForTest(){
@@ -86,6 +90,14 @@ public class StoreFacade {
         }
     }
 
+    public List<String> getStoreCategories(){
+       List<String> categories = new ArrayList<>();
+       for (Category cat : EnumSet.allOf(Category.class)){
+           categories.add(cat.toString());
+       }
+       return categories;
+    }
+
     public String getNewStoreId(){
         UUID uuid = UUID.randomUUID();
         String storeId = "store" + uuid.toString();
@@ -108,13 +120,6 @@ public class StoreFacade {
         this.checkIfProductQuantityIsPositive(quantity);
     }
 
-    public boolean checkPolicies(UserDTO userDTO, List<ProductDTO> products, String storeId) {
-        //Check here all policies
-        this.checkPurchasePolicy(userDTO, products, storeId);
-        //this.checkDiscountPolicy(productName, storeId, userId);
-        return true;
-    }
-
     public void checkIfProductExists(String productName, String storeId){
         Store store = getStoreByID(storeId);
         if (!store.checkProductExists(productName))
@@ -123,8 +128,7 @@ public class StoreFacade {
         }
     }
 
-    public List<ProductDTO> getProductsDTOSByProductsNames(Map<String, List<Integer>> products, String storeId)
-    {
+    public List<ProductDTO> getProductsDTOSByProductsNames(Map<String, List<Integer>> products, String storeId) throws Exception {
         List<ProductDTO> productDTOS = new ArrayList<>();
         Store store = getStoreByID(storeId);
         for (Map.Entry<String, List<Integer>> product : products.entrySet()) {
@@ -260,9 +264,6 @@ public class StoreFacade {
         return store.getProducts();
     }
 
-    public int calculateTotalCartPriceAfterDiscount(String store_ID, Map<String, List<Integer>> products, int totalPriceBeforeDiscount) {
-        return totalPriceBeforeDiscount; //In the future - check discount and calculate price by policies
-    }
     public List<String> inStoreProductSearch(String productName, String categoryStr, List<String> keywords, String storeId)
     {
         Store storeToSearchIn = getStoreByID(storeId);
@@ -289,10 +290,7 @@ public class StoreFacade {
     {
         if (categoryStr != null)
         {
-            if (Category.fromString(categoryStr) == null)
-            {
-                throw new IllegalArgumentException(ExceptionsEnum.categoryNotExist.toString());
-            }
+            Category.fromString(categoryStr);
         }
     }
 
