@@ -319,7 +319,9 @@ public class Market {
         Map<String, List<Integer>> products = this.userFacade.getCartProductsByStoreAndUser(storeId, userId);
         products.put(productName, new ArrayList<>(Arrays.asList(quantity)));
         List<ProductDTO> productDTOS = storeFacade.getProductsDTOSByProductsNames(products, storeId);
-        storeFacade.checkPolicies(new UserDTO(userFacade.getUserByID(userId)), productDTOS, storeId);
+        UserDTO user = new UserDTO(userFacade.getUserByID(userId));
+        storeFacade.checkPurchasePolicy(user, productDTOS, storeId);
+        int priceToReduce = storeFacade.calcDiscountPolicy(user, productDTOS, storeId);
         int totalPrice = storeFacade.calcPrice(productName, quantity, storeId, userId);
         userFacade.addItemsToBasket(productName, quantity, storeId, userId, totalPrice);
 
@@ -725,12 +727,14 @@ public class Market {
                 this.storeFacade.checkQuantity(productName, quantity, store_ID);
             }
 
-            this.storeFacade.checkPolicies(userDTO, productDTOS, store_ID);
+            storeFacade.checkPurchasePolicy(userDTO, productDTOS, store_ID);
+            int priceToReduce = storeFacade.calcDiscountPolicy(userDTO, productDTOS, store_ID);
+
             String availableExternalSupplyService = this.checkAvailableExternalSupplyService(userDTO.getCountry(), userDTO.getCity());
             this.createShiftingDetails(userDTO.getCountry(), userDTO.getCity(), availableExternalSupplyService, userDTO.getAddress(), user_ID);
 
             int storeTotalPriceBeforeDiscount = this.userFacade.getCartPriceByUser(user_ID);
-            int storeTotalPrice = this.storeFacade.calculateTotalCartPriceAfterDiscount(store_ID, products, storeTotalPriceBeforeDiscount);
+            int storeTotalPrice = storeTotalPriceBeforeDiscount - priceToReduce;
             totalPrice += storeTotalPrice;
         }
         //remove items from stock
