@@ -51,6 +51,34 @@ public class Market {
         managersLock = new Object();
     }
 
+    public Market(UserFacade userFacade, AuthenticationAndSecurityFacade authenticationAndSecurityFacade,
+                               StoreFacade storeFacade){
+        this.storeFacade = storeFacade;
+        this.userFacade = userFacade;
+        this.roleFacade = RoleFacade.getInstance();
+        this.paymentServicesFacade = PaymentServicesFacade.getInstance();
+        this.authenticationAndSecurityFacade = authenticationAndSecurityFacade;
+        supplyServicesFacade= SupplyServicesFacade.getInstance();
+        initializedLock= new Object();
+        this.systemManagerIds = new HashSet<>();
+        managersLock = new Object();
+
+    }
+
+    public Market(UserFacade userFacade, AuthenticationAndSecurityFacade authenticationAndSecurityFacade,
+                  StoreFacade storeFacade, SupplyServicesFacade supplyServicesFacade){
+        this.storeFacade = storeFacade;
+        this.userFacade = userFacade;
+        this.roleFacade = RoleFacade.getInstance();
+        this.paymentServicesFacade = PaymentServicesFacade.getInstance();
+        this.authenticationAndSecurityFacade = authenticationAndSecurityFacade;
+        this.supplyServicesFacade= supplyServicesFacade;
+        initializedLock= new Object();
+        this.systemManagerIds = new HashSet<>();
+        managersLock = new Object();
+
+    }
+
     public Market newForTests(){
         MarketInstance = new Market();
         StoreFacade storeFacade1 =  storeFacade.newForTest();
@@ -69,7 +97,6 @@ public class Market {
 
 
     }
-
 
 
     public String init(UserDTO user, String password, PaymentServiceDTO paymentServiceDTO,  SupplyServiceDTO supplyServiceDTO) throws Exception {
@@ -183,6 +210,44 @@ public class Market {
     public Set<String> getSystemManagerIds(){
         synchronized (managersLock) {
             return systemManagerIds;
+        }
+    }
+    public void purchaseForTest(PaymentDTO paymentDTO, UserDTO userDTO) throws Exception {
+        CartDTO cartDTO = null;
+        ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
+        ScheduledFuture<?> timeoutHandle = null;
+
+        try {
+            cartDTO = checkingCartValidationBeforePurchase1(userDTO.getUserId(), userDTO);
+
+            // Create a CompletableFuture for user input
+//            CompletableFuture<Void> userInputFuture = new CompletableFuture<>();
+//
+//            // Schedule a task to complete the future with an exception if the user does not respond in time
+//            timeoutHandle = scheduler.schedule(() -> {
+//                userInputFuture.completeExceptionally(new TimeoutException("User input time expired"));
+//            }, 5, TimeUnit.SECONDS);
+//
+//            // Here you should integrate your actual user input mechanism
+//            // For this example, we simulate user input with a manual completion
+//            // In a real application, replace this line with actual user input handling
+//            // userInputFuture.complete(null);  // Uncomment this to simulate user input completion
+//
+//            // Wait for user input or timeout
+//            userInputFuture.get();
+
+            // Proceed with payment if user input is received
+            //payWithExternalPaymentService(cartDTO, paymentDTO, userDTO.getUserId());
+        } catch (Exception e) {
+            if (cartDTO != null) {
+                returnCartToStock(cartDTO.getStoreToProducts());
+            }
+            throw e;
+        } finally {
+            if (timeoutHandle != null && !timeoutHandle.isDone()) {
+                timeoutHandle.cancel(true);
+            }
+            scheduler.shutdown();
         }
     }
 
@@ -702,6 +767,40 @@ public class Market {
             throw new IllegalArgumentException("There are no purchases in the store");
         return storeReceiptsAndTotalAmount;
     }
+    public CartDTO checkingCartValidationBeforePurchase1(String user_ID,UserDTO userDTO) throws Exception {
+        if (userFacade.isMember(user_ID)) {
+            String memberId = userFacade.getMemberIdByUserId(user_ID);
+            boolean succeeded = authenticationAndSecurityFacade.validateToken(authenticationAndSecurityFacade.getToken(memberId));if (!succeeded) {
+                logout(user_ID);
+                throw new Exception(ExceptionsEnum.sessionOver.toString());
+            }
+        }
+        int totalPrice = 0;
+        this.userFacade.isUserCartEmpty(user_ID);
+
+        List<String> stores = this.userFacade.getCartStoresByUser(user_ID);
+        for(String store_ID: stores)
+        {
+            Map<String, List<Integer>> products = this.userFacade.getCartProductsByStoreAndUser(store_ID, user_ID);
+            int quantity;
+            List<ProductDTO> productDTOS = this.storeFacade.getProductsDTOSByProductsNames(products, store_ID);
+            for(String productName: products.keySet()) {
+                quantity = products.get(productName).get(0);
+                this.storeFacade.checkQuantity(productName, quantity, store_ID);
+            }
+
+            this.storeFacade.checkPolicies(userDTO, productDTOS, store_ID);
+            String availableExternalSupplyService = this.checkAvailableExternalSupplyService(userDTO.getCountry(), userDTO.getCity());
+            this.createShiftingDetails1(userDTO.getCountry(), userDTO.getCity(), availableExternalSupplyService, userDTO.getAddress(), user_ID);
+
+            int storeTotalPriceBeforeDiscount = this.userFacade.getCartPriceByUser(user_ID);
+            int storeTotalPrice = this.storeFacade.calculateTotalCartPriceAfterDiscount(store_ID, products, storeTotalPriceBeforeDiscount);
+            totalPrice += storeTotalPrice;
+        }
+        //remove items from stock
+        //removeUserCartFromStock(user_ID);
+        return new CartDTO(user_ID,totalPrice,getPurchaseList(user_ID));
+    }
 
     public CartDTO checkingCartValidationBeforePurchase(String user_ID,UserDTO userDTO) throws Exception {
         if (userFacade.isMember(user_ID)) {
@@ -740,8 +839,11 @@ public class Market {
 
     public String checkAvailableExternalSupplyService(String country, String city) throws Exception {
         String availibleExteranlSupplyService =this.supplyServicesFacade.checkAvailableExternalSupplyService(country,city);
-        if("".equals(availibleExteranlSupplyService)) {
-            throw new Exception(ExceptionsEnum.ExternalSupplyServiceIsNotAvailable.toString());
+        if("-1".equals(availibleExteranlSupplyService)) {
+            throw new Exception(ExceptionsEnum.NoExternalSupplyService.toString());
+        }
+        if("-2".equals(availibleExteranlSupplyService)) {
+            throw new Exception(ExceptionsEnum.ExternalSupplyServiceIsNotAvailableForArea.toString());
         }
         return availibleExteranlSupplyService;
     }
@@ -749,6 +851,13 @@ public class Market {
     public void createShiftingDetails(String country, String city, String availibleExteranlSupplyService, String address, String user_ID) throws Exception
     {
         String userName = this.userFacade.getUserByID(user_ID).getName();
+        if(!supplyServicesFacade.createShiftingDetails(availibleExteranlSupplyService, userName,country,city,address)){
+            throw new Exception(ExceptionsEnum.createShiftingError.toString());
+        }
+    }
+    public void createShiftingDetails1(String country, String city, String availibleExteranlSupplyService, String address, String user_ID) throws Exception
+    {
+        String userName ="testUser" ;
         if(!supplyServicesFacade.createShiftingDetails(availibleExteranlSupplyService, userName,country,city,address)){
             throw new Exception(ExceptionsEnum.createShiftingError.toString());
         }

@@ -19,6 +19,12 @@ public class SupplyServicesFacade {
         externalSupplyService=  new HashMap<String, ExternalSupplyService>();
     }
 
+    public void clearPaymentServices() {
+        synchronized (externalSupplyServiceLock) {
+            externalSupplyService.clear();
+        }
+    }
+
 
     public synchronized static SupplyServicesFacade getInstance() {
         if (supplyServicesFacade == null) {
@@ -64,6 +70,9 @@ public class SupplyServicesFacade {
     public String checkAvailableExternalSupplyService(String country, String city) {
         //   (private Map<Integer, ExternalSupplyService>  ExternalSupplyService)
         synchronized (externalSupplyServiceLock) {
+            if(externalSupplyService.size()<=0){
+                return "-1";
+            }
             for (Map.Entry<String, ExternalSupplyService> entry : externalSupplyService.entrySet()) {
                 ExternalSupplyService externalSupplyService1 = entry.getValue();
                 if (externalSupplyService1.checkAreaAvailability(country, city)) {
@@ -71,7 +80,7 @@ public class SupplyServicesFacade {
                     }
             }
         }
-        return "-1";
+        return "-2";
     }
 
     public ExternalSupplyService getExternalSupplyServiceById(String externalSupplyServiceId){

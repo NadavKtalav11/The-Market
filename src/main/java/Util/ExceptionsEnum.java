@@ -59,7 +59,11 @@ package Util;
         userCartIsEmpty{
             public String toString() {return "User cart is empty, there's nothing to purchase";}
         },
-        ExternalSupplyServiceIsNotAvailable{
+
+        NoExternalSupplyService{
+            public String toString() {return "There is no external supply service in the system";}
+        },
+        ExternalSupplyServiceIsNotAvailableForArea{
             public String toString() {return "Unfortunately, there is no shipping for the user address";}
         },
         createShiftingError{
