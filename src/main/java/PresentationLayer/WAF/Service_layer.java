@@ -542,14 +542,9 @@ public class Service_layer {
         }
     }
 
-    public Response<String> addRuleToStore(List<Integer> ruleNums, List<String> operators, String storeId, String userId) {
-        logger.info("Adding rule to store");
-        return new Response<>("Eule added successfully","Rule added to store successfully.");
-    }
 
     public Response<String> addPurchaseRuleToStore(List<Integer> ruleNums, List<String> operators, String storeId, String userId) {
         logger.info("Adding purchase rule to store");
-
 
         try {
             market.addPurchaseRuleToStore(ruleNums, operators, storeId, userId);
@@ -573,11 +568,11 @@ public class Service_layer {
         }
     }
 
-    public Response<String> addDiscountCondRuleToStore(List<Integer> ruleNums, List<String> logicoOperators, List<DiscountValueDTO> discDetails, List<String> numericalOperators,String storeId, String userId) {
+    public Response<String> addDiscountCondRuleToStore(List<Integer> ruleNums, List<String> logicOperators, List<DiscountValueDTO> discDetails, List<String> numericalOperators,String storeId, String userId) {
         logger.info("Adding conditional discount rule to store");
 
         try {
-            market.addDiscountCondRuleToStore(ruleNums, logicoOperators, discDetails, numericalOperators, storeId, userId);
+            market.addDiscountCondRuleToStore(ruleNums, logicOperators, discDetails, numericalOperators, storeId, userId);
             return new Response<>("Discount conditional rule added successfully", "Discount conditional rule added to store successfully.");
         } catch (Exception e) {
             logger.error("Error occurred during adding conditional discount rule to store: {}", e.getMessage(), e);
