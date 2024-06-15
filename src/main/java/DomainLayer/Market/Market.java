@@ -675,11 +675,11 @@ public class Market {
             userFacade.checkIfCanRemove(productName, storeId, userId);
             storeFacade.checkQuantity(productName, quantity, storeId);
             Map<String, List<Integer>> products = this.userFacade.getCartProductsByStoreAndUser(storeId, userId);
-            int totalPrice = storeFacade.calcPrice(productName, quantity, storeId, userId);
-            products.put(productName, new ArrayList<>(Arrays.asList(quantity, totalPrice)));
+            products.put(productName, new ArrayList<>(Arrays.asList(quantity)));
             List<ProductDTO> productDTOS = storeFacade.getProductsDTOSByProductsNames(products, storeId);
             UserDTO user = new UserDTO(userFacade.getUserByID(userId));
             storeFacade.checkPurchasePolicy(user, productDTOS, storeId);
+            int totalPrice = storeFacade.calcPrice(productName, quantity, storeId, userId);
             userFacade.modifyBasketProduct(productName, quantity, storeId, userId, totalPrice);
         }
     }
