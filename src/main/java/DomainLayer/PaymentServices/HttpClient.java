@@ -1,6 +1,8 @@
 package DomainLayer.PaymentServices;
 
+import Util.PaymentDTO;
+
 public interface HttpClient {
-    boolean get(String url);
+    boolean checkCreditCard(String url, PaymentDTO paymentDTO);
 }
 

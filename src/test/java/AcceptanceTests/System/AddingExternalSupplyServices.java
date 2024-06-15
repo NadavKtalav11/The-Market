@@ -6,6 +6,8 @@ import DomainLayer.Market.Market;
 import Util.SupplyServiceDTO;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import Util.ExceptionsEnum;
+
 
 import java.util.HashSet;
 
@@ -60,7 +62,7 @@ public class AddingExternalSupplyServices {
         });
 
         // Optionally check the exception message
-        assertEquals("Only system manager is allowed to add new external supply service", exception.getMessage());
+        assertEquals(ExceptionsEnum.SystemManagerSupplyAuthorization.toString(), exception.getMessage());
     }
 
     @Test
@@ -82,7 +84,7 @@ public class AddingExternalSupplyServices {
         });
 
         // Optionally check the exception message
-        assertEquals("The system has not been able to add the supply service due to invalid details", exception.getMessage());
+        assertEquals(ExceptionsEnum.InvalidSupplyServiceParameters.toString(), exception.getMessage());
     }
 
 

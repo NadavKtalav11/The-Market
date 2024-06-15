@@ -1,5 +1,7 @@
 package Util;
 
+import DomainLayer.Store.Product;
+
 public class ProductDTO {
     private String productName;
     private int price;
@@ -14,6 +16,14 @@ public class ProductDTO {
         this.quantity = quantity;
         this.description = description;
         this.categoryStr = categoryStr;
+    }
+
+    public ProductDTO(Product product) {
+        this.productName = product.getProductName();
+        this.price= product.getPrice();
+        this.quantity = product.getQuantity();
+        this.description = product.getDescription();
+        this.categoryStr = product.getCategoryName();
     }
     // Getters and Setters
     public String getName() {
@@ -55,4 +65,9 @@ public class ProductDTO {
     public void setCategoryStr(String category) {
         this.categoryStr = category;
     }
+
+    public ProductDTO(){
+
+    }
+
 }

@@ -71,5 +71,9 @@ public class Product {
         this.quantity = quantity+amount;
     }
 
+    public ProductDTO getProductDTO(){
+        return new ProductDTO(productName, price,quantity,description,category.name());
+    }
+
 
 }

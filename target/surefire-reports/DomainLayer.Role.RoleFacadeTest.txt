@@ -1,0 +1,24 @@
+-------------------------------------------------------------------------------
+Test set: DomainLayer.Role.RoleFacadeTest
+-------------------------------------------------------------------------------
+Tests run: 11, Failures: 5, Errors: 0, Skipped: 0, Time elapsed: 0.047 s <<< FAILURE! - in DomainLayer.Role.RoleFacadeTest
+testGetAllStoreManagers  Time elapsed: 0 s  <<< FAILURE!
+org.opentest4j.AssertionFailedError: expected: <true> but was: <false>
+	at DomainLayer.Role.RoleFacadeTest.testGetAllStoreManagers(RoleFacadeTest.java:102)
+
+testGetAllStoreOwners  Time elapsed: 0 s  <<< FAILURE!
+org.opentest4j.AssertionFailedError: expected: <true> but was: <false>
+	at DomainLayer.Role.RoleFacadeTest.testGetAllStoreOwners(RoleFacadeTest.java:113)
+
+testGetInformationAboutStoreRoles  Time elapsed: 0 s  <<< FAILURE!
+org.opentest4j.AssertionFailedError: expected: <owner> but was: <null>
+	at DomainLayer.Role.RoleFacadeTest.testGetInformationAboutStoreRoles(RoleFacadeTest.java:80)
+
+testGetStoreManagersAuthorizations  Time elapsed: 0 s  <<< FAILURE!
+org.opentest4j.AssertionFailedError: expected: <true> but was: <false>
+	at DomainLayer.Role.RoleFacadeTest.testGetStoreManagersAuthorizations(RoleFacadeTest.java:91)
+
+testGetStoresByOwner  Time elapsed: 0 s  <<< FAILURE!
+org.opentest4j.AssertionFailedError: expected: <true> but was: <false>
+	at DomainLayer.Role.RoleFacadeTest.testGetStoresByOwner(RoleFacadeTest.java:128)
+

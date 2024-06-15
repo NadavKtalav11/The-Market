@@ -65,6 +65,14 @@ public class PaymentServicesFacade {
             return allPaymentServices.size() == size_before + 1;
         }
     }
+    public boolean addExternalService(PaymentServiceDTO paymentServiceDTO, HttpClient httpClient){
+        synchronized (paymentServiceLock) {
+            int size_before = allPaymentServices.size();
+            ExternalPaymentService externalPaymentService = new ExternalPaymentService(paymentServiceDTO, httpClient);
+            allPaymentServices.put(paymentServiceDTO.getLicensedDealerNumber(), externalPaymentService);
+            return allPaymentServices.size() == size_before + 1;
+        }
+    }
     public void clearPaymentServices() {
         synchronized (paymentServiceLock) {
             allPaymentServices.clear();

@@ -3,7 +3,7 @@ package DomainLayer.Store;
 import DomainLayer.Store.StoreDiscountPolicy.DiscountPolicy;
 import DomainLayer.Store.StorePurchasePolicy.PurchasePolicy;
 import DomainLayer.Store.PoliciesRulesLogicalConditions.Rule;
-import Util.DiscountValueDTO;
+//import Util.DiscountValueDTO;
 import Util.ProductDTO;
 
 import java.util.*;
@@ -85,6 +85,16 @@ public class Store {
         synchronized (storeProductLock) {
             return storeProducts.containsKey(productName);
         }
+    }
+
+    public List<ProductDTO> getProductsDTO(){
+        List<ProductDTO> productDTOList = new ArrayList<>();
+        synchronized (storeProductLock){
+            for (Product product: storeProducts.values()){
+                productDTOList.add(new ProductDTO(product));
+            }
+        }
+        return productDTOList;
     }
 
     public ProductDTO getProductDTOByName(String productName, int quantity)
@@ -192,6 +202,28 @@ public class Store {
         }
     }
 
+
+    public List<ProductDTO> matchProductsDTO(String productName, String categoryStr, List<String> keywords)
+    {
+        //if keyword looks like ["food"]
+        if (keywords.get(0).contains("[")) {
+            keywords.set(0, keywords.get(0).replace("[", ""));
+        }
+        if (keywords.get(keywords.size() - 1).contains("]")) {
+            keywords.set(keywords.size() - 1, keywords.get(keywords.size() - 1).replace("]", ""));
+        }
+
+        synchronized (storeProductLock) {
+            List<Product> products = storeProducts.values().stream().toList();
+            return products.stream()
+                    .filter(product -> productName == null || product.getProductName().toLowerCase().contains(productName.toLowerCase()))
+                    .filter(product -> categoryStr == null || product.getCategoryName().equalsIgnoreCase(categoryStr))
+                    .filter(product -> keywords == null || keywords.stream().anyMatch(keyword -> product.getDescription().toLowerCase().contains(keyword.toLowerCase())))
+                    .map(Product::getProductDTO)
+                    .collect(Collectors.toList());
+        }
+    }
+
     public List<String> filterProducts(String categoryStr, List<String> keywords, Integer minPrice, Integer maxPrice, Double minRating, List<String> productsFromSearch, Double storeMinRating)
     {
         List<Product> products = new ArrayList<>();
@@ -249,13 +281,13 @@ public class Store {
         purchasePolicy.removeRule(ruleNum);
     }
 
-    public void addDiscountCondRule(List<Rule<UserDTO, List<ProductDTO>>> rules, List<String> logicalOperators, List<DiscountValueDTO> discDetails, List<String> numericalOperators) {
-        discountPolicy.addCondRule(rules, logicalOperators, discDetails, numericalOperators);
-    }
+//    public void addDiscountCondRule(List<Rule<UserDTO, List<ProductDTO>>> rules, List<String> logicalOperators, List<DiscountValueDTO> discDetails, List<String> numericalOperators) {
+//        discountPolicy.addCondRule(rules, logicalOperators, discDetails, numericalOperators);
+//    }
 
-    public void addDiscountSimple(List<DiscountValueDTO> discDetails, List<String> numericalOperators) {
-        discountPolicy.addSimple(discDetails, numericalOperators);
-    }
+//    public void addDiscountSimple(List<DiscountValueDTO> discDetails, List<String> numericalOperators) {
+//        discountPolicy.addSimple(discDetails, numericalOperators);
+//    }
 
     public void removeDiscountRule(int ruleNum) {
         discountPolicy.removeRule(ruleNum);
