@@ -288,6 +288,8 @@ public class Market {
         return memberId;
     }
 
+
+
     public boolean checkPasswordValidation(String password){
         String PASSWORD_PATTERN =
                 "^(?=.*[0-9])" +           // at least one digit
@@ -486,7 +488,7 @@ public class Market {
 
     }
 
-    public List<UserDTO> getStoreManagers(String storeId){
+    public List<UserDTO> getStoreManagersDTO(String storeId){
         List<UserDTO> managers = new ArrayList<>();
         List<String> managersIdList = roleFacade.getAllStoreManagers(storeId);
         managers.addAll(userFacade.getUserDTOByMemberId(managersIdList));
@@ -495,11 +497,23 @@ public class Market {
 
     }
 
-    public List<UserDTO> getStoreOwners(String storeId){
+    public List<UserDTO> getStoreOwnersDTO(String storeId){
         List<UserDTO> owners = new ArrayList<>();
         List<String> ownersIdList = roleFacade.getAllStoreOwners(storeId);
         owners.addAll(userFacade.getUserDTOByMemberId(ownersIdList));
         return owners;
+
+    }
+
+    public List<String> getStoreManagers(String storeId){
+
+        return roleFacade.getAllStoreManagers(storeId);
+
+
+    }
+    public List<String> getStoreOwners(String storeId){
+
+        return roleFacade.getAllStoreOwners(storeId);
 
     }
 
@@ -638,6 +652,10 @@ public class Market {
         }
 
         return allAvailableStores;
+    }
+
+    public List<String> getStoreCategories(){
+        return storeFacade.getStoreCategories();
     }
 
     public void modifyShoppingCart(String productName, int quantity, String storeId, String userId)throws Exception
