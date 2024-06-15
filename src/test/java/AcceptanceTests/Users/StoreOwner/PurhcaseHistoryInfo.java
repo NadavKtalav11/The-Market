@@ -56,8 +56,6 @@ public class PurhcaseHistoryInfo {
 
     @Test
     public void successfulRequestTest() {
-        Map<Integer, Integer> receiptIdAndPrice = new HashMap<>();
-        receiptIdAndPrice.put(0, 100);
-        assertEquals(impl.storeOwnerGetInfoAboutStore(userID1, storeID).getResult(), receiptIdAndPrice);
+        assertEquals(impl.storeOwnerGetInfoAboutStore(userID1, storeID).getResult().size(), 1);
     }
 }

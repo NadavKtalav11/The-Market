@@ -23,25 +23,25 @@ public class AddStoreProduct {
         impl.register(saarUserID,"saar", "10/04/84", "Israel", "Jerusalem", "Yehuda halevi 18", "saar", "Fadidaa1");
         impl.login(saarUserID, "saar", "Fadidaa1");
         storeId = impl.openStore(saarUserID, "alona", "shopping").getData();
-        impl.addProductToStore(saarUserID, storeId,"weddingDress", 10, 5, "pink", "clothes");
+        impl.addProductToStore(saarUserID, storeId,"weddingDress", 10, 5, "pink", "CLOTHING");
     }
 
     @Test
     public void successfulAdditionTest() {
-        assertTrue(impl.addProductToStore(saarUserID,storeId,"heels", 4, 2, "black", "shoes").isSuccess());
-        assertTrue(impl.addProductToStore(saarUserID,storeId,"skirt", 3, 6, "purple", "clothes").isSuccess());
+        assertTrue(impl.addProductToStore(saarUserID,storeId,"heels", 4, 2, "black", "CLOTHING").isSuccess());
+        assertTrue(impl.addProductToStore(saarUserID,storeId,"skirt", 3, 6, "purple", "CLOTHING").isSuccess());
     }
 
     @Test
     public void alreadyExistTest() {
-        Response<String> response = impl.addProductToStore(saarUserID,storeId,"weddingDress", 3, 6, "pink", "clothes");
+        Response<String> response = impl.addProductToStore(saarUserID,storeId,"weddingDress", 3, 6, "pink", "CLOTHING");
         assertFalse(response.isSuccess());
         assertEquals(ExceptionsEnum.productAlreadyExistInStore.toString(), response.getDescription());
     }
 
     @Test
     public void negQuantityTest() {
-        Response<String> response = impl.addProductToStore(saarUserID,storeId,"shirt", 5, -4, "green", "clothes");
+        Response<String> response = impl.addProductToStore(saarUserID,storeId,"shirt", 5, -4, "green", "CLOTHING");
         assertFalse(response.isSuccess());
         assertEquals(ExceptionsEnum.productQuantityIsNegative.toString(), response.getDescription());
     }

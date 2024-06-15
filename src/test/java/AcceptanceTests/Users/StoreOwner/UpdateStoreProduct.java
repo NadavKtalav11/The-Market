@@ -21,13 +21,13 @@ public class UpdateStoreProduct {
         impl.register(saarUserID,"saar", "10/04/84", "Israel", "Jerusalem", "Yehuda halevi 18", "saar", "Fadidaa1");
         impl.login(saarUserID, "saar", "Fadidaa1");
         storeID = impl.openStore(saarUserID, "alona", "shopping").getData();
-        impl.addProductToStore(saarUserID, storeID,"weddingDress", 10, 5, "pink", "clothes");
+        impl.addProductToStore(saarUserID, storeID,"weddingDress", 10, 5, "pink", "CLOTHING");
     }
 
     @Test
     public void successfulUpdateTest() {
         assertTrue(impl.updateProductInStore(saarUserID,storeID,"weddingDress", 11, 4,
-                                                            "pink", "clothes").isSuccess());
+                                                            "pink", "CLOTHING").isSuccess());
     }
 
     @Test
@@ -41,7 +41,7 @@ public class UpdateStoreProduct {
     @Test
     public void negQuantityTest() {
         Response<String> response = impl.updateProductInStore(saarUserID,storeID,"weddingDress", 11, -4,
-                "pink", "clothes");
+                "pink", "CLOTHING");
         assertFalse(response.isSuccess());
         assertEquals(ExceptionsEnum.productQuantityIsNegative.toString(), response.getDescription());
     }
