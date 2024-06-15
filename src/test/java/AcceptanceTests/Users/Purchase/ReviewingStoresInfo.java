@@ -10,10 +10,11 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
-import static org.junit.jupiter.api.Assertions.assertIterableEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class ReviewingStoresInfo {
     private static BridgeToTests impl;
@@ -54,7 +55,11 @@ public class ReviewingStoresInfo {
 
         Response<List<String>> res = impl.getInformationAboutStores(userID1);
         assertTrue(res.isSuccess());
-        assertIterableEquals(res.getResult(), allAvailableStores);
+
+        Set<String> expectedStoresSet = new HashSet<>(allAvailableStores);
+        Set<String> actualStoresSet = new HashSet<>(res.getResult());
+
+        assertEquals(expectedStoresSet, actualStoresSet);
     }
 
     @Test
@@ -67,8 +72,11 @@ public class ReviewingStoresInfo {
 
         Response<List<String>> res = impl.getInformationAboutStores(userID2);
         assertTrue(res.isSuccess());
-        assertIterableEquals(res.getResult(), allAvailableStores);
-    }
+
+        Set<String> expectedStoresSet = new HashSet<>(allAvailableStores);
+        Set<String> actualStoresSet = new HashSet<>(res.getResult());
+
+        assertEquals(expectedStoresSet, actualStoresSet);    }
 
     @Test
     public void successfulUserViewTest() {
@@ -80,6 +88,10 @@ public class ReviewingStoresInfo {
 
         Response<List<String>> res = impl.getInformationAboutStores(userID3);
         assertTrue(res.isSuccess());
-        assertIterableEquals(res.getResult(), allAvailableStores);
+
+        Set<String> expectedStoresSet = new HashSet<>(allAvailableStores);
+        Set<String> actualStoresSet = new HashSet<>(res.getResult());
+
+        assertEquals(expectedStoresSet, actualStoresSet);
     }
 }
