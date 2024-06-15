@@ -8,6 +8,8 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.concurrent.TimeoutException;
 
@@ -49,10 +51,9 @@ public class PurchaseTest {
         impl.addProductToBasket("Milk", 2, storeID, userID2);
         impl.addProductToBasket("Cheese", 4, storeID, userID2);
         impl.addProductToBasket("Yogurt", 5, storeID, userID2);
-
         // Initialize paymentDTO and userDTO
         paymentDTO = new PaymentDTO("holderName", "1111222233334444", 1, 12, 2025);
-        userDTO = new UserDTO(userID1, "newUser1", "12/12/2000", "Israel", "BeerSheva", "bialik", "noa");
+        userDTO = new UserDTO(userID2, "newUser2", "12/12/2000", "Israel", "BeerSheva", "bialik", "noa");
     }
 
     @Test
@@ -117,8 +118,7 @@ public class PurchaseTest {
 
      @Test
      public void purchasePolicyInvalidTest() {
-         // TODO: 31/05/2024 change this test to use mock
-         // TODO: 31/05/2024 maybe need to add also test for discount policy
+         impl.addPurchaseRuleToStore(new ArrayList<>(Arrays.asList(5)), new ArrayList<>(), userID1, storeID);
 
          Response<String> response =impl.purchase(userID2, userDTO.getCountry(), userDTO.getCity(), userDTO.getAddress(), paymentDTO.getCreditCardNumber(),paymentDTO.getCvv(),paymentDTO.getMonth(), paymentDTO.getYear(),paymentDTO.getHolderId());
          assertFalse(response.isSuccess());
