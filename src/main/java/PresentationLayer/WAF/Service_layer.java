@@ -307,6 +307,18 @@ public class Service_layer {
     }
 
 
+    public Response<List<String>> getStoreCategories()
+    {
+        try {
+            List<String> products = market.getStoreCategories();
+            return new Response<>(products, "product getter good result.");
+        } catch (Exception e) {
+            logger.error("Error occurred during the product getter {}", e.getMessage(), e);
+            return new Response<>(null, e.getMessage());
+        }
+    }
+
+
     public Response<List<UserDTO>> getStoreWorkers(String storeId)
     {
         try {
@@ -319,10 +331,10 @@ public class Service_layer {
     }
 
 
-    public Response<List<UserDTO>> getStoreManagers(String storeId)
+    public Response<List<UserDTO>> getStoreManagersDTO(String storeId)
     {
         try {
-            List<UserDTO> workers = market.getStoreManagers(storeId);
+            List<UserDTO> workers = market.getStoreManagersDTO(storeId);
             return new Response<>(workers, "Store managers get good result.");
         } catch (Exception e) {
             logger.error("Error occurred during the managers getter {}", e.getMessage(), e);
@@ -330,10 +342,32 @@ public class Service_layer {
         }
     }
 
-    public Response<List<UserDTO>> getStoreOwners(String storeId)
+    public Response<List<UserDTO>> getStoreOwnersDTO(String storeId)
     {
         try {
-            List<UserDTO> workers = market.getStoreOwners(storeId);
+            List<UserDTO> workers = market.getStoreOwnersDTO(storeId);
+            return new Response<>(workers, "Store owners get good result.");
+        } catch (Exception e) {
+            logger.error("Error occurred during the managers getter {}", e.getMessage(), e);
+            return new Response<>(null, e.getMessage());
+        }
+    }
+
+    public Response<List<String>> getStoreManagers(String storeId)
+    {
+        try {
+            List<String> workers = market.getStoreManagers(storeId);
+            return new Response<>(workers, "Store managers get good result.");
+        } catch (Exception e) {
+            logger.error("Error occurred during the managers getter {}", e.getMessage(), e);
+            return new Response<>(null, e.getMessage());
+        }
+    }
+
+    public Response<List<String>> getStoreOwners(String storeId)
+    {
+        try {
+            List<String> workers = market.getStoreOwners(storeId);
             return new Response<>(workers, "Store owners get good result.");
         } catch (Exception e) {
             logger.error("Error occurred during the managers getter {}", e.getMessage(), e);
