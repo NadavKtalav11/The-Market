@@ -39,7 +39,7 @@ public class CondDiscount extends Discount{
     @Override
     public int calcDiscount(List<ProductDTO> basketProducts , UserDTO userDTO) {
         if(discountRule.checkRule(userDTO, basketProducts))
-            return calcDiscount(basketProducts, userDTO);
+            return super.calcDiscount(basketProducts, userDTO);
         return 0;
     }
 }
