@@ -568,11 +568,11 @@ public class Service_layer {
         }
     }
 
-    public Response<String> addDiscountCondRuleToStore(List<Integer> ruleNums, List<String> logicOperators, List<DiscountValueDTO> discDetails, List<String> numericalOperators,String storeId, String userId) {
+    public Response<String> addDiscountCondRuleToStore(List<Integer> ruleNums, List<String> logicOperators, List<DiscountValueDTO> discDetails, List<String> numericalOperators, String userId, String storeId) {
         logger.info("Adding conditional discount rule to store");
 
         try {
-            market.addDiscountCondRuleToStore(ruleNums, logicOperators, discDetails, numericalOperators, storeId, userId);
+            market.addDiscountCondRuleToStore(ruleNums, logicOperators, discDetails, numericalOperators, userId, storeId);
             return new Response<>("Discount conditional rule added successfully", "Discount conditional rule added to store successfully.");
         } catch (Exception e) {
             logger.error("Error occurred during adding conditional discount rule to store: {}", e.getMessage(), e);
@@ -580,11 +580,11 @@ public class Service_layer {
         }
     }
 
-    public Response<String> addDiscountSimpleRuleToStore(List<DiscountValueDTO> discs, List<String> numericalOperators, String storeId, String userId) {
+    public Response<String> addDiscountSimpleRuleToStore(List<DiscountValueDTO> discs, List<String> numericalOperators, String userId, String storeId) {
         logger.info("Adding simple discount rule to store");
 
         try {
-            market.addDiscountSimpleRuleToStore(discs, numericalOperators, storeId, userId);
+            market.addDiscountSimpleRuleToStore(discs, numericalOperators, userId, storeId);
             return new Response<>("Discount simple rule added successfully", "Discount simple rule added to store successfully.");
         } catch (Exception e) {
             logger.error("Error occurred during adding simple discount rule to store: {}", e.getMessage(), e);
@@ -593,11 +593,11 @@ public class Service_layer {
     }
 
     //rule num is the index of the rule from all the rules displayed to the storeowner
-    public Response<String> removeDiscountRuleFromStore(int ruleNum, String storeId, String userId) {
+    public Response<String> removeDiscountRuleFromStore(int ruleNum, String userId, String storeId) {
         logger.info("Removing discount rule from store");
 
         try {
-            market.removeDiscountRuleFromStore(ruleNum, storeId, userId);
+            market.removeDiscountRuleFromStore(ruleNum, userId, storeId);
             return new Response<>("Discount rule removed successfully", "Discount rule removed from store successfully.");
         } catch (Exception e) {
             logger.error("Error occurred during removing discount rule from store: {}", e.getMessage(), e);

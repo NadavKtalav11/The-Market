@@ -976,7 +976,7 @@ public class Market {
         storeFacade.removePurchaseRuleFromStore(ruleNum, storeId);
     }
 
-    public void addDiscountCondRuleToStore(List<Integer> ruleNums, List<String> logicOperators, List<DiscountValueDTO> discDetails, List<String> numericalOperators, String storeId, String userId) throws Exception {
+    public void addDiscountCondRuleToStore(List<Integer> ruleNums, List<String> logicOperators, List<DiscountValueDTO> discDetails, List<String> numericalOperators, String userId ,String storeId) throws Exception {
         if (userFacade.isMember(userId)){
             String memberId = userFacade.getMemberIdByUserId(userId);
             boolean succeeded = authenticationAndSecurityFacade.validateToken(authenticationAndSecurityFacade.getToken(memberId));
@@ -988,13 +988,15 @@ public class Market {
 
         checkLogicalRulesAndOperators(ruleNums, logicOperators);
         checkNumericalRulesAndOperators(discDetails, numericalOperators);
+        checkProductDiscountDetails(discDetails);
         String member_ID = this.userFacade.getMemberIdByUserId(userId);
         storeFacade.verifyStoreExistError(storeId);
         roleFacade.verifyStoreOwnerError(storeId, member_ID);
         storeFacade.addDiscountCondRuleToStore(ruleNums, logicOperators, discDetails, numericalOperators, storeId);
     }
 
-    public void addDiscountSimpleRuleToStore(List<DiscountValueDTO> discDetails, List<String> numericalOperators, String storeId, String userId) throws Exception {
+
+    public void addDiscountSimpleRuleToStore(List<DiscountValueDTO> discDetails, List<String> numericalOperators, String userId ,String storeId) throws Exception {
         if (userFacade.isMember(userId)){
             String memberId = userFacade.getMemberIdByUserId(userId);
             boolean succeeded = authenticationAndSecurityFacade.validateToken(authenticationAndSecurityFacade.getToken(memberId));
@@ -1005,13 +1007,14 @@ public class Market {
         }
 
         checkNumericalRulesAndOperators(discDetails, numericalOperators);
+        checkProductDiscountDetails(discDetails);
         String member_ID = this.userFacade.getMemberIdByUserId(userId);
         storeFacade.verifyStoreExistError(storeId);
         roleFacade.verifyStoreOwnerError(storeId, member_ID);
         storeFacade.addDiscountSimpleRuleToStore(discDetails, numericalOperators, storeId);
     }
 
-    public void removeDiscountRuleFromStore(int ruleNum, String storeId, String userId) throws Exception {
+    public void removeDiscountRuleFromStore(int ruleNum, String userId ,String storeId) throws Exception {
         if (userFacade.isMember(userId)){
             String memberId = userFacade.getMemberIdByUserId(userId);
             boolean succeeded = authenticationAndSecurityFacade.validateToken(authenticationAndSecurityFacade.getToken(memberId));
@@ -1025,6 +1028,24 @@ public class Market {
         storeFacade.verifyStoreExistError(storeId);
         roleFacade.verifyStoreOwnerError(storeId, member_ID);
         storeFacade.removeDiscountRuleFromStore(ruleNum, storeId);
+    }
+
+    private void checkProductDiscountDetails(List<DiscountValueDTO> discDetails) {
+        for (DiscountValueDTO discountValueDTO : discDetails) {
+            int count = 0;
+            if (discountValueDTO.getCategory() != null) {
+                count++;
+            }
+            if (discountValueDTO.getIsStoreDiscount()) {
+                count++;
+            }
+            if (discountValueDTO.getProductsNames() != null) {
+                count++;
+            }
+            if (count != 1) {
+                throw new IllegalArgumentException(ExceptionsEnum.InvalidDiscountValueParameters.toString());
+            }
+        }
     }
 
     public void checkLogicalRulesAndOperators(List<Integer> ruleNums, List<String> operators) throws Exception {

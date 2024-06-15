@@ -9,6 +9,8 @@ import Util.UserDTO;
 import java.util.ArrayList;
 import java.util.List;
 
+import static Util.ExceptionsEnum.InvalidRuleIndex;
+
 public class DiscountPolicy {
     private List<Discount> discountRules;
 
@@ -41,6 +43,8 @@ public class DiscountPolicy {
     }
 
     public void removeRule(int ruleNum) {
-        discountRules.remove(ruleNum);
+        if (ruleNum < discountRules.size())
+            discountRules.remove(ruleNum);
+        else throw new IllegalArgumentException(InvalidRuleIndex.toString());
     }
 }

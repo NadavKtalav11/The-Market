@@ -12,6 +12,8 @@ import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.function.BiPredicate;
 
+import static Util.ExceptionsEnum.InvalidRuleNumber;
+
 public enum DiscountRulesRepository implements TestRule<UserDTO, List<ProductDTO>> {
 
     BASKET_PRICE_GREATER_THAN_100(1, "Basket price is greater than 100 shekels", (userDTO, products) -> {
@@ -108,7 +110,7 @@ public enum DiscountRulesRepository implements TestRule<UserDTO, List<ProductDTO
                 return rule;
             }
         }
-        throw new IllegalArgumentException("No rule found with rule number: " + ruleNumber);
+        throw new IllegalArgumentException(InvalidRuleNumber.toString());
     }
 
     @Override
