@@ -41,6 +41,10 @@ public class StoreFacade {
         return storeFacadeInstance;
     }
 
+    // Added for testing purposes
+    public StoreFacade(StoreRepository storeRepository) {
+        this.allStores = storeRepository;
+    }
 
 
     public StoreFacade newForTest(){

@@ -17,7 +17,7 @@ public enum Category {
             return null;
         try {
             return Category.valueOf(categoryStr.toUpperCase());
-        } catch (IllegalArgumentException e) {
+        } catch (Exception e) {
             throw new RuntimeException(ExceptionsEnum.categoryNotExist.toString());
         }
     }
