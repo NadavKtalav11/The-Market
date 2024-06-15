@@ -4,6 +4,7 @@ import AcceptanceTests.BridgeToTests;
 import AcceptanceTests.ProxyToTest;
 import DomainLayer.Market.Market;
 import Util.PaymentServiceDTO;
+import Util.ExceptionsEnum;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
@@ -54,7 +55,7 @@ public class AddingExternalPaymentServices {
         });
 
         // Optionally check the exception message
-        assertEquals("Only system manager is allowed to add new external payment service", exception.getMessage());
+        assertEquals(ExceptionsEnum.SystemManagerPaymentAuthorization.toString(), exception.getMessage());
     }
 
     @Test
@@ -72,7 +73,7 @@ public class AddingExternalPaymentServices {
         });
 
         // Optionally check the exception message
-        assertEquals("The system has not been able to add the payment service due to invalid details", exception.getMessage());
+        assertEquals(ExceptionsEnum.InvalidPaymentServiceParameters.toString(), exception.getMessage());
     }
 
 }

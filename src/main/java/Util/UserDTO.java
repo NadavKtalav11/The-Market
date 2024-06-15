@@ -41,6 +41,10 @@ public class UserDTO {
         this.name = null;
     }
 
+    public UserDTO(){
+
+    }
+
     public String getUserName() {
         return userName;
     }

@@ -23,7 +23,13 @@ public class PaymentServiceDTO {
         return paymentServiceName;
     }
 
+
     public String getUrl() {
         return url;
     }
+
+    public PaymentServiceDTO(){
+
+    }
+
 }

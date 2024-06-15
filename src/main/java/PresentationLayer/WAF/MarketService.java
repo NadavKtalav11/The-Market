@@ -11,13 +11,12 @@ public class MarketService {
 
 
 
-    private final Market market;
-    Service_layer service;
+    private final Service_layer service;
 
 
     public MarketService (){
         service = new Service_layer();
-        market = Market.getInstance();
+        //market = Market.getInstance();
 
     }
 
@@ -34,7 +33,7 @@ public class MarketService {
 
 
     public String enterMarket(){
-        return market.enterMarketSystem();
+        return service.enterMarketSystem().getData();
     }
 
 

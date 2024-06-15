@@ -5,6 +5,7 @@ import AcceptanceTests.ProxyToTest;
 import DomainLayer.Market.Market;
 import static org.junit.jupiter.api.Assertions.*;
 
+import Util.ExceptionsEnum;
 import Util.PaymentServiceDTO;
 import Util.SupplyServiceDTO;
 import Util.UserDTO;
@@ -83,7 +84,7 @@ public class SystemStartup {
 
 
         // Optionally check the exception message
-        assertEquals("The system has not been able to be launched since there is a problem with the supply service details", exception.getMessage());
+        assertEquals(ExceptionsEnum.InvalidSupplyServiceDetails.toString(), exception.getMessage());
         assertFalse(market.isInitialized());
 
     }
@@ -115,7 +116,7 @@ public class SystemStartup {
 
 
         // Optionally check the exception message
-        assertEquals("The system has not been able to be launched since there is a problem with the payment service details", exception.getMessage());
+        assertEquals(ExceptionsEnum.InvalidPaymentServiceDetails.toString(), exception.getMessage());
         assertFalse(market.isInitialized());
     }
 }

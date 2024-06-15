@@ -1,5 +1,6 @@
 package PresentationLayer.Vaadin.webpush;
 
+import DomainLayer.Sockets.MultiClientServer;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.annotation.PostConstruct;
@@ -10,6 +11,8 @@ import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpResponse;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.jose4j.lang.JoseException;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -21,7 +24,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
+import java.lang.*;
 
+@SuppressWarnings("SpringJavaInjectionPointsAutowiringInspection")
 @Service
 public class WebPushService {
 
@@ -33,13 +38,26 @@ public class WebPushService {
     private String subject;
 
     private PushService pushService;
-
     private final Map<String, Subscription> endpointToSubscription = new HashMap<>();
+    private final WebSocketHandler webSocketHandler;
+
+    @Autowired
+    public WebPushService(WebSocketHandler webSocketHandler) {
+        this.webSocketHandler = webSocketHandler;
+    }
 
     @PostConstruct
     private void init() throws GeneralSecurityException {
         Security.addProvider(new BouncyCastleProvider());
         pushService = new PushService(publicKey, privateKey, subject);
+        int port = 8080;  // Your chosen port
+        int poolSize = 1000;  // Your chosen thread pool size
+        try {
+            MultiClientServer server = new MultiClientServer(this, port, poolSize);
+            new Thread(server::start).start();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     public String getPublicKey() {
@@ -64,13 +82,6 @@ public class WebPushService {
 
     public void subscribe(Subscription subscription) {
         System.out.println("Subscribed to " + subscription.endpoint);
-        /*
-         * Note, in a real world app you'll want to persist these
-         * in the backend. Also, you probably want to know which
-         * subscription belongs to which user to send custom messages
-         * for different users. In this demo, we'll just use
-         * endpoint URL as key to store subscriptions in memory.
-         */
         endpointToSubscription.put(subscription.endpoint, subscription);
     }
 
@@ -79,20 +90,21 @@ public class WebPushService {
         endpointToSubscription.remove(subscription.endpoint);
     }
 
-
-    public record Message(String title, String body) {
-    }
-
-    ObjectMapper mapper = new ObjectMapper();
-
     public void notifyAll(String title, String body) {
         try {
             String msg = mapper.writeValueAsString(new Message(title, body));
-            endpointToSubscription.values().forEach(subscription -> {
-                sendNotification(subscription, msg);
-            });
+            endpointToSubscription.values().forEach(subscription -> sendNotification(subscription, msg));
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }
     }
+
+    public void notifyUser(String userId, String message) {
+        webSocketHandler.sendMessageToUser(userId, message);
+    }
+
+    public record Message(String title, String body) {
+    }
+
+    private final ObjectMapper mapper = new ObjectMapper();
 }

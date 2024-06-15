@@ -2,6 +2,7 @@ package DomainLayer.Store.StoreDiscountPolicy;
 
 import DomainLayer.Store.Category;
 import DomainLayer.Store.PoliciesRulesLogicalConditions.Rule;
+import Util.ProductDTO;
 
 import java.util.List;
 
@@ -14,5 +15,5 @@ public abstract class CompositeNumericalDiscount implements DiscountValue{
         this.discountValue2 = discountValue2;
     }
 
-    public abstract int calcDiscount();
+    public abstract int calcDiscount(List<ProductDTO> basketProducts);
 }

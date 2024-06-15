@@ -1,0 +1,8 @@
+-------------------------------------------------------------------------------
+Test set: DomainLayer.User.UserFacadeTest
+-------------------------------------------------------------------------------
+Tests run: 8, Failures: 0, Errors: 1, Skipped: 0, Time elapsed: 0.184 s <<< FAILURE! - in DomainLayer.User.UserFacadeTest
+testRegister  Time elapsed: 0 s  <<< ERROR!
+java.lang.Exception: Invalid date format.
+	at DomainLayer.User.UserFacadeTest.testRegister(UserFacadeTest.java:69)
+

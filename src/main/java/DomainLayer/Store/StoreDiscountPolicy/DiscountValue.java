@@ -6,5 +6,5 @@ import Util.UserDTO;
 import java.util.List;
 
 public interface DiscountValue {
-    public int calcDiscount();
+    public int calcDiscount(List<ProductDTO> basketProducts);
 }
