@@ -77,8 +77,8 @@ public class RoleFacadeTest {
 
         Map<String, String> roles = roleFacade.getInformationAboutStoreRoles("1");
         assertEquals(2, roles.size());
-        assertEquals("owner", roles.get(1));
-        assertEquals("manager", roles.get(2));
+        assertEquals("owner", roles.get("1"));
+        assertEquals("manager", roles.get("2"));
     }
 
     @Test
@@ -88,8 +88,8 @@ public class RoleFacadeTest {
 
         Map<String, List<Integer>> authorizations = roleFacade.getStoreManagersAuthorizations("1");
         assertEquals(2, authorizations.size());
-        assertTrue(authorizations.containsKey(1));
-        assertTrue(authorizations.containsKey(2));
+        assertTrue(authorizations.containsKey("1"));
+        assertTrue(authorizations.containsKey("2"));
     }
 
     @Test
@@ -99,8 +99,8 @@ public class RoleFacadeTest {
 
         List<String> managers = roleFacade.getAllStoreManagers("1");
         assertEquals(2, managers.size());
-        assertTrue(managers.contains(1));
-        assertTrue(managers.contains(2));
+        assertTrue(managers.contains("1"));
+        assertTrue(managers.contains("2"));
     }
 
     @Test
@@ -110,8 +110,8 @@ public class RoleFacadeTest {
 
         List<String> owners = roleFacade.getAllStoreOwners("1");
         assertEquals(2, owners.size());
-        assertTrue(owners.contains(1));
-        assertTrue(owners.contains(2));
+        assertTrue(owners.contains("1"));
+        assertTrue(owners.contains("2"));
     }
 
     @Test
@@ -125,8 +125,8 @@ public class RoleFacadeTest {
 
         List<String> storesByOwner = roleFacade.getStoresByOwner(stores, "1");
         assertEquals(2, storesByOwner.size());
-        assertTrue(storesByOwner.contains(1));
-        assertTrue(storesByOwner.contains(2));
+        assertTrue(storesByOwner.contains("1"));
+        assertTrue(storesByOwner.contains("2"));
     }
 
 }
