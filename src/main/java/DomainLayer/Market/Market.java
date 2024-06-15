@@ -858,7 +858,7 @@ public class Market {
             throw new IllegalArgumentException(ExceptionsEnum.storeRateInvalid.toString());
     }
 
-    public void addRuleToStore(List<Integer> ruleNums, List<String> operators, String userId, String storeId) throws Exception {
+    public void addPurchaseRuleToStore(List<Integer> ruleNums, List<String> operators, String userId, String storeId) throws Exception {
         if (userFacade.isMember(userId)){
             String memberId = userFacade.getMemberIdByUserId(userId);
             boolean succeeded = authenticationAndSecurityFacade.validateToken(authenticationAndSecurityFacade.getToken(memberId));
@@ -868,14 +868,14 @@ public class Market {
             }
         }
 
-        checkRulesAndOperators(ruleNums, operators);
+        checkLogicalRulesAndOperators(ruleNums, operators);
         String member_ID = this.userFacade.getMemberIdByUserId(userId);
         storeFacade.verifyStoreExistError(storeId);
         roleFacade.verifyStoreOwnerError(storeId, member_ID);
-        storeFacade.addRuleToStore(ruleNums, operators, storeId);
+        storeFacade.addPurchaseRuleToStore(ruleNums, operators, storeId);
     }
 
-    public void removeRuleFromStore(int ruleNum,  String userId, String storeId) throws Exception {
+    public void removePurchaseRuleFromStore(int ruleNum,  String userId, String storeId) throws Exception {
         if (userFacade.isMember(userId)){
             String memberId = userFacade.getMemberIdByUserId(userId);
             boolean succeeded = authenticationAndSecurityFacade.validateToken(authenticationAndSecurityFacade.getToken(memberId));
@@ -888,15 +888,77 @@ public class Market {
         String member_ID = this.userFacade.getMemberIdByUserId(userId);
         storeFacade.verifyStoreExistError(storeId);
         roleFacade.verifyStoreOwnerError(storeId, member_ID);
-        storeFacade.removeRuleFromStore(ruleNum, storeId);
+        storeFacade.removePurchaseRuleFromStore(ruleNum, storeId);
     }
 
-    public void checkRulesAndOperators(List<Integer> ruleNums, List<String> operators) throws Exception {
+    public void addDiscountCondRuleToStore(List<Integer> ruleNums, List<String> logicOperators, List<DiscountValueDTO> discDetails, List<String> numericalOperators, String storeId, String userId) throws Exception {
+        if (userFacade.isMember(userId)){
+            String memberId = userFacade.getMemberIdByUserId(userId);
+            boolean succeeded = authenticationAndSecurityFacade.validateToken(authenticationAndSecurityFacade.getToken(memberId));
+            if (!succeeded) {
+                logout(userId);
+                throw new IllegalArgumentException(ExceptionsEnum.sessionOver.toString());
+            }
+        }
+
+        checkLogicalRulesAndOperators(ruleNums, logicOperators);
+        checkNumericalRulesAndOperators(discDetails, numericalOperators);
+        String member_ID = this.userFacade.getMemberIdByUserId(userId);
+        storeFacade.verifyStoreExistError(storeId);
+        roleFacade.verifyStoreOwnerError(storeId, member_ID);
+        storeFacade.addDiscountCondRuleToStore(ruleNums, logicOperators, discDetails, numericalOperators, storeId);
+    }
+
+    public void addDiscountSimpleRuleToStore(List<DiscountValueDTO> discDetails, List<String> numericalOperators, String storeId, String userId) throws Exception {
+        if (userFacade.isMember(userId)){
+            String memberId = userFacade.getMemberIdByUserId(userId);
+            boolean succeeded = authenticationAndSecurityFacade.validateToken(authenticationAndSecurityFacade.getToken(memberId));
+            if (!succeeded) {
+                logout(userId);
+                throw new IllegalArgumentException(ExceptionsEnum.sessionOver.toString());
+            }
+        }
+
+        checkNumericalRulesAndOperators(discDetails, numericalOperators);
+        String member_ID = this.userFacade.getMemberIdByUserId(userId);
+        storeFacade.verifyStoreExistError(storeId);
+        roleFacade.verifyStoreOwnerError(storeId, member_ID);
+        storeFacade.addDiscountSimpleRuleToStore(discDetails, numericalOperators, storeId);
+    }
+
+    public void removeDiscountRuleFromStore(int ruleNum, String storeId, String userId) throws Exception {
+        if (userFacade.isMember(userId)){
+            String memberId = userFacade.getMemberIdByUserId(userId);
+            boolean succeeded = authenticationAndSecurityFacade.validateToken(authenticationAndSecurityFacade.getToken(memberId));
+            if (!succeeded) {
+                logout(userId);
+                throw new IllegalArgumentException(ExceptionsEnum.sessionOver.toString());
+            }
+        }
+
+        String member_ID = this.userFacade.getMemberIdByUserId(userId);
+        storeFacade.verifyStoreExistError(storeId);
+        roleFacade.verifyStoreOwnerError(storeId, member_ID);
+        storeFacade.removeDiscountRuleFromStore(ruleNum, storeId);
+    }
+
+    public void checkLogicalRulesAndOperators(List<Integer> ruleNums, List<String> operators) throws Exception {
         if (ruleNums.size() != operators.size() + 1) {
             throw new IllegalArgumentException(ExceptionsEnum.rulesNotMatchOpeators.toString());
         }
         for (int i = 0; i < operators.size(); i++) {
-            if (!operators.get(i).equals("AND") && !operators.get(i).equals("OR") && !operators.get(i).equals("COND")) {
+            if (!operators.get(i).equals("AND") && !operators.get(i).equals("OR") && !operators.get(i).equals("COND") && !operators.get(i).equals("XOR")) {
+                throw new IllegalArgumentException(ExceptionsEnum.InvalidOperator.toString());
+            }
+        }
+    }
+
+    public void checkNumericalRulesAndOperators(List<DiscountValueDTO> discDetails, List<String> numericalOperators) throws Exception {
+        if (discDetails.size() != numericalOperators.size() + 1) {
+            throw new IllegalArgumentException(ExceptionsEnum.rulesNotMatchOpeators.toString());
+        }
+        for (int i = 0; i < numericalOperators.size(); i++) {
+            if (!numericalOperators.get(i).equals("MAX") && !numericalOperators.get(i).equals("ADD")) {
                 throw new IllegalArgumentException(ExceptionsEnum.InvalidOperator.toString());
             }
         }
