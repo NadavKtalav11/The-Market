@@ -11,6 +11,11 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.time.Clock;
+import java.time.Instant;
+import java.time.ZoneId;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -127,8 +132,10 @@ public class AddProductCart {
     @Test
     public void purchasePolicyInvalidTest()
     {
-        //Test will fil, no purchase policies yet
-        //assertFalse(impl.addProductToBasket("Shoes", 1, 0, 0).isSuccess());
+        impl.addPurchaseRuleToStore(List.of(5), new ArrayList<>(), userId0, storeId0);
+        Response<String> response = impl.addProductToBasket("Milk", 2, storeId0, userId0);
+        assertFalse(response.isSuccess());
+        assertEquals(ExceptionsEnum.purchasePolicyIsNotMet.toString(), response.getDescription());
     }
 
     @Test
