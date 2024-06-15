@@ -6,6 +6,7 @@ import DomainLayer.Store.StorePurchasePolicy.PurchasePolicy;
 import DomainLayer.Store.PoliciesRulesLogicalConditions.Rule;
 //import Util.DiscountValueDTO;
 import Util.DiscountValueDTO;
+import Util.ExceptionsEnum;
 import Util.ProductDTO;
 
 import java.util.*;
@@ -100,11 +101,12 @@ public class Store {
         return productDTOList;
     }
 
-    public ProductDTO getProductDTOByName(String productName, int quantity)
-    {
+    public ProductDTO getProductDTOByName(String productName, int quantity) throws Exception {
         /*this function receives product from a user basket, with the quantity of this product in the basket and it's total price*/
         synchronized (storeProductLock) {
             Product product = storeProducts.get(productName);
+            if(product == null)
+                throw new Exception(ExceptionsEnum.productNotExistInStore.toString());
             return new ProductDTO(productName, product.getPrice(), quantity, product.getDescription(), product.getCategoryName());
         }
     }

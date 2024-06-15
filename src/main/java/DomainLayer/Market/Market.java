@@ -763,7 +763,7 @@ public class Market {
 
     public String checkAvailableExternalSupplyService(String country, String city) throws Exception {
         String availibleExteranlSupplyService =this.supplyServicesFacade.checkAvailableExternalSupplyService(country,city);
-        if("".equals(availibleExteranlSupplyService)) {
+        if("-1".equals(availibleExteranlSupplyService)) {
             throw new Exception(ExceptionsEnum.ExternalSupplyServiceIsNotAvailable.toString());
         }
         return availibleExteranlSupplyService;
