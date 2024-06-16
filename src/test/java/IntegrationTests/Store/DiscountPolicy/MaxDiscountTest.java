@@ -1,10 +1,9 @@
 package IntegrationTests.Store.DiscountPolicy;
 
 import DomainLayer.Store.Category;
-import DomainLayer.Store.StoreDiscountPolicy.AdditionDiscount;
 import DomainLayer.Store.StoreDiscountPolicy.DiscountValue;
+import DomainLayer.Store.StoreDiscountPolicy.MaxDiscount;
 import DomainLayer.Store.StoreDiscountPolicy.SimpleDiscountValue;
-import Util.DiscountValueDTO;
 import Util.ProductDTO;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -14,7 +13,7 @@ import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 
-public class AdditionDiscountTest {
+public class MaxDiscountTest {
 
     private List<ProductDTO> products;
 
@@ -29,30 +28,30 @@ public class AdditionDiscountTest {
 
     @Test
     public void testCalcDiscount() {
-        // Create an AdditionDiscount with specific discount values
-        DiscountValue discountValue1 = new SimpleDiscountValue(50, Category.TOYS,false, null);
-        DiscountValue discountValue2 = new SimpleDiscountValue(20, null,true, null);
-        AdditionDiscount additionDiscount = new AdditionDiscount(discountValue1, discountValue2);
+        // Create a MaxDiscount with specific discount values
+        DiscountValue discountValue1 = new SimpleDiscountValue(50, Category.TOYS, false, null);
+        DiscountValue discountValue2 = new SimpleDiscountValue(20, Category.BOOKS, false, null);
+        MaxDiscount maxDiscount = new MaxDiscount(discountValue1, discountValue2);
 
         // Calculate discount
-        int totalDiscount = additionDiscount.calcDiscount(products);
+        int totalDiscount = maxDiscount.calcDiscount(products);
 
-       //expected discount calculation:
+        // Expected discount calculation:
         // TOYS category discount: (100 + 300) * 0.5 = 200
-        // Store discount: (100 + 200 + 300) * 0.2 = 120
-        // Total discount: 120 + 200 = 320
-        assertEquals("Total discount calculated", 320, totalDiscount);
+        // BOOKS category discount: 200 * 0.2 = 40
+        // Maximum discount: max(200, 40) = 200
+        assertEquals("Total discount calculated", 200, totalDiscount);
     }
 
     @Test
     public void testCalcDiscountNoMatchingProducts() {
-        // Create an AdditionDiscount with discount values that won't match any products
-        DiscountValue discountValue1 = new SimpleDiscountValue(50, Category.ELECTRONICS,false, null);
-        DiscountValue discountValue2 = new SimpleDiscountValue(20, Category.FOOD,false, null);
-        AdditionDiscount additionDiscount = new AdditionDiscount(discountValue1, discountValue2);
+        // Create a MaxDiscount with discount values that won't match any products
+        DiscountValue discountValue1 = new SimpleDiscountValue(50, Category.ELECTRONICS, false, null);
+        DiscountValue discountValue2 = new SimpleDiscountValue(20, Category.FOOD, false, null);
+        MaxDiscount maxDiscount = new MaxDiscount(discountValue1, discountValue2);
 
         // Calculate discount
-        int totalDiscount = additionDiscount.calcDiscount(products);
+        int totalDiscount = maxDiscount.calcDiscount(products);
 
         // Expected discount calculation:
         // No products match 'ELECTRONICS' or 'FOOD', so total discount should be 0
