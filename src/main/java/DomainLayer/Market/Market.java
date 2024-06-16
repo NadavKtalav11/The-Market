@@ -842,7 +842,7 @@ public class Market {
         return storeReceiptsAndTotalAmount;
     }
 
-    public synchronized CartDTO checkingCartValidationBeforePurchase(String user_ID,UserDTO userDTO) throws Exception {
+    public  CartDTO checkingCartValidationBeforePurchase(String user_ID,UserDTO userDTO) throws Exception {
         synchronized (validationLock) {
             if (userFacade.isMember(user_ID)) {
                 String memberId = userFacade.getMemberIdByUserId(user_ID);

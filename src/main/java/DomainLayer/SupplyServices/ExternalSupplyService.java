@@ -5,13 +5,14 @@ import Util.SupplyServiceDTO;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 public class ExternalSupplyService {
     private String licensedDealerNumber;
     private String supplyServiceName;
-    private HashSet<String> countries = new HashSet<>();
-    private HashSet<String> cities = new HashSet<>();
-    private HashMap<Integer, ShiftingDetails> shiftIdAndDetails = new HashMap<>();
+    private Set<String> countries = new HashSet<>();
+    private Set<String> cities = new HashSet<>();
+    private Map<Integer, ShiftingDetails> shiftIdAndDetails = new HashMap<>();
     private final Object countriesLock;
     private final Object citiesLock;
     private final Object shiftLock;
@@ -72,12 +73,12 @@ public class ExternalSupplyService {
 
     }
 
-    public HashSet<String> getCountries(){
+    public Set<String> getCountries(){
         synchronized (countriesLock) {
             return this.countries;
         }
     }
-    public HashSet<String> getCities(){
+    public Set<String> getCities(){
         synchronized (citiesLock) {
             return this.cities;
         }
@@ -93,7 +94,7 @@ public class ExternalSupplyService {
             return shiftIdAndDetails.size() == size + 1;
         }
     }
-    public HashMap<Integer,ShiftingDetails> getShiftIdAndDetails(){
+    public Map<Integer,ShiftingDetails> getShiftIdAndDetails(){
         synchronized (shiftLock) {
             return this.shiftIdAndDetails;
         }

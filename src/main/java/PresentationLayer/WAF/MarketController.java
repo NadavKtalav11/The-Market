@@ -10,10 +10,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @RestController
 @RequestMapping("/api/market")
@@ -73,14 +70,22 @@ public class MarketController {
         }
     }
 
-    @PostMapping("/init")
+    @GetMapping("/init")
     public ResponseEntity<APIResponse<String>> init(@RequestParam Map<String,String> params) {
         try {
             String userDTO = params.get("userDTO");
             String password = params.get("password");
             String paymentServiceDTO = params.get("paymentServiceDTO");
-            String supplyServiceDTO = params.get("supplyServiceDTO");
-            Response<String> response = serviceLayer.init(objectMapper.readValue(userDTO,UserDTO.class), password, objectMapper.readValue(paymentServiceDTO, PaymentServiceDTO.class), objectMapper.readValue(supplyServiceDTO,SupplyServiceDTO.class));
+            //String supplyServiceDTO = params.get("supplyServiceDTO");
+            String supplyDealerNumberField = params.get("supplyDealerNumberField");
+            String supplyServiceName = params.get("supplyServiceName");
+            String countriesSet = params.get("countries");
+            String citiesSet = params.get("cities");
+            Set<String> coutries = new HashSet();
+            coutries.add(countriesSet);
+            Set<String> cities = new HashSet();
+            cities.add(citiesSet);
+            Response<String> response = serviceLayer.init(objectMapper.readValue(userDTO,UserDTO.class), password, objectMapper.readValue(paymentServiceDTO, PaymentServiceDTO.class), new SupplyServiceDTO(supplyDealerNumberField, supplyServiceName, coutries ,cities ));
             if (response.isSuccess()) {
                 String userId = response.getData();
                 HttpHeaders headers = new HttpHeaders();
@@ -854,7 +859,7 @@ public class MarketController {
         }
     }
 
-    @PostMapping("/getAllCondDiscountRules/{userId}/{storeId}}")
+    @PostMapping("/getAllCondDiscountRules/{userId}/{storeId}")
     public ResponseEntity<APIResponse<Map<Integer, String>>> getAllCondDiscountRules(@PathVariable String userId, @PathVariable String storeId)
     {
         try {
