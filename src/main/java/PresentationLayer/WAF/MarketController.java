@@ -796,7 +796,7 @@ public class MarketController {
         }
     }
 
-    @PostMapping("/getAllPurchaseRules/{userId}/{storeId}")
+    @GetMapping("/getAllPurchaseRules/{userId}/{storeId}")
     public ResponseEntity<APIResponse<Map<Integer, String>>> getAllPurchaseRules(@PathVariable String userId, @PathVariable String storeId) {
         try {
             Response<Map<Integer, String>> response = serviceLayer.getAllPurchaseRules(userId, storeId);
@@ -825,14 +825,14 @@ public class MarketController {
     }
 
 
-    @PostMapping("/removePurchaseRuleFromStore/{ruleNums}/{userId}/{storeId}")
+    @DeleteMapping("/removePurchaseRuleFromStore/{ruleNums}/{userId}/{storeId}")
     public ResponseEntity<APIResponse<String>> removePurchaseRuleFromStore(@PathVariable int ruleNum,  @PathVariable String userId, @PathVariable String storeId ) {
 
         Response<String> response = serviceLayer.removePurchaseRuleFromStore(ruleNum,userId, storeId);
         return checkIfResponseIsGood(response);
     }
 
-    @PostMapping("/getStoreCurrentPurchaseRules/{userId}/{storeId}}")
+    @GetMapping("/getStoreCurrentPurchaseRules/{userId}/{storeId}")
     public ResponseEntity<APIResponse<List<String>>> getStoreCurrentPurchaseRules(@PathVariable String userId, @PathVariable String storeId) {
         try {
             Response<List<String>> response = serviceLayer.getStoreCurrentPurchaseRules(userId, storeId);
