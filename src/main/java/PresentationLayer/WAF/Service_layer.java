@@ -133,7 +133,16 @@ public class Service_layer {
         }
     }
 
-
+    public Response<Boolean> checkInitializedMarket() {
+        logger.info("Checking if the market has been already initialized");
+        try {
+            Boolean res = market.checkInitializedMarket();
+            return new Response<Boolean>(res, "Checked if the market has already initialized, res is the answer");
+        } catch (Exception e) {
+            logger.error("Error occurred during Checking if the market has been already initialized {}", e.getMessage());
+            return new Response<>(null, e.getMessage());
+        }
+    }
 
 
     public Response<String> exitMarketSystem(String userID) {
@@ -696,8 +705,10 @@ public class Service_layer {
         logger.info("Getting store current rules");
 
         try {
+
             List<String> storeRules = market.getStoreCurrentDiscountRules(userId, storeId);
             return new Response<>(storeRules, "Store current rules retrieved successfully.");
+
         } catch (Exception e) {
             logger.error("Error occurred during getting store current rules: {}", e.getMessage(), e);
             return new Response<>(null, e.getMessage());

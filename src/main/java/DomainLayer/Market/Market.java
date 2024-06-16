@@ -148,6 +148,10 @@ public class Market {
         return firstUserID;
     }
 
+    public boolean checkInitializedMarket(){
+        return initialized;
+    }
+
     public void addExternalPaymentService(PaymentServiceDTO paymentServiceDTO, String systemMangerId) throws Exception {
         try {
             synchronized (managersLock) {

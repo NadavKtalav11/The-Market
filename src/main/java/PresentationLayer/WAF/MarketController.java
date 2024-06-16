@@ -30,6 +30,27 @@ public class MarketController {
         this.objectMapper =new ObjectMapper();
     }
 
+    @GetMapping("/checkInitializedMarket")
+    public ResponseEntity<APIResponse<Boolean>> checkInitializedMarket() {
+        try {
+            Response<Boolean> response = serviceLayer.checkInitializedMarket();
+            if (response.isSuccess()) {
+                Boolean res = response.getResult();
+                HttpHeaders headers = new HttpHeaders();
+                headers.add("accept", "*/*");
+                return ResponseEntity.status(HttpStatus.OK).headers(headers)
+                        .body(new APIResponse<Boolean>(res, null));
+            } else {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                        .body(new APIResponse<Boolean>(null, response.getDescription()));
+            }
+
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new APIResponse<>(null, e.getMessage()));
+        }
+    }
+
 
     @GetMapping("/enterSystem")
     public ResponseEntity<APIResponse<String>> enterMarket() {
@@ -775,7 +796,7 @@ public class MarketController {
         }
     }
 
-    @PostMapping("/getAllPurchaseRules/{userId}/{storeId}")
+    @GetMapping("/getAllPurchaseRules/{userId}/{storeId}")
     public ResponseEntity<APIResponse<Map<Integer, String>>> getAllPurchaseRules(@PathVariable String userId, @PathVariable String storeId) {
         try {
             Response<Map<Integer, String>> response = serviceLayer.getAllPurchaseRules(userId, storeId);
@@ -804,14 +825,14 @@ public class MarketController {
     }
 
 
-    @PostMapping("/removePurchaseRuleFromStore/{ruleNums}/{userId}/{storeId}")
+    @DeleteMapping("/removePurchaseRuleFromStore/{ruleNums}/{userId}/{storeId}")
     public ResponseEntity<APIResponse<String>> removePurchaseRuleFromStore(@PathVariable int ruleNum,  @PathVariable String userId, @PathVariable String storeId ) {
 
         Response<String> response = serviceLayer.removePurchaseRuleFromStore(ruleNum,userId, storeId);
         return checkIfResponseIsGood(response);
     }
 
-    @PostMapping("/getStoreCurrentPurchaseRules/{userId}/{storeId}}")
+    @GetMapping("/getStoreCurrentPurchaseRules/{userId}/{storeId}")
     public ResponseEntity<APIResponse<List<String>>> getStoreCurrentPurchaseRules(@PathVariable String userId, @PathVariable String storeId) {
         try {
             Response<List<String>> response = serviceLayer.getStoreCurrentPurchaseRules(userId, storeId);
