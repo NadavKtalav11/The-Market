@@ -5,7 +5,6 @@ import DomainLayer.Notifications.Notification;
 import DomainLayer.Notifications.StoreNotification;
 import DomainLayer.PaymentServices.PaymentServicesFacade;
 import DomainLayer.Role.RoleFacade;
-import DomainLayer.Store.Product;
 import Util.ExceptionsEnum;
 
 import DomainLayer.Store.StoreFacade;
@@ -14,6 +13,7 @@ import DomainLayer.SupplyServices.SupplyServicesFacade;
 import Util.*;
 
 import java.util.*;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.regex.Pattern;
 import java.util.concurrent.*;
 
@@ -189,41 +189,46 @@ public class Market {
 
     public void purchase(PaymentDTO paymentDTO, UserDTO userDTO) throws Exception {
         CartDTO cartDTO = null;
-        ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
         ScheduledFuture<?> timeoutHandle = null;
+        ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
+        AtomicBoolean timeoutExpired = new AtomicBoolean(false);
 
         try {
             cartDTO = checkingCartValidationBeforePurchase(userDTO.getUserId(), userDTO);
 
-            // Create a CompletableFuture for user input
-//            CompletableFuture<Void> userInputFuture = new CompletableFuture<>();
-//
-//            // Schedule a task to complete the future with an exception if the user does not respond in time
-//            timeoutHandle = scheduler.schedule(() -> {
-//                userInputFuture.completeExceptionally(new TimeoutException("User input time expired"));
-//            }, 5, TimeUnit.SECONDS);
-//
-//            // Here you should integrate your actual user input mechanism
-//            // For this example, we simulate user input with a manual completion
-//            // In a real application, replace this line with actual user input handling
-//            // userInputFuture.complete(null);  // Uncomment this to simulate user input completion
-//
-//            // Wait for user input or timeout
-//            userInputFuture.get();
-
-            // Proceed with payment if user input is received
-            payWithExternalPaymentService(cartDTO, paymentDTO, userDTO.getUserId());
+            timeoutHandle = scheduler.schedule(() -> {
+                timeoutExpired.set(true);
+            }, 15, TimeUnit.SECONDS);
+            boolean userReadyToPay = false;
+            while (!userReadyToPay && !timeoutExpired.get()) {
+                userReadyToPay = getUserConfirmationPurchase(userDTO.getUserId());
+            }
+            if (userReadyToPay && !timeoutExpired.get()) {
+                payWithExternalPaymentService(cartDTO, paymentDTO, userDTO.getUserId());
+            } else {
+                throw new RuntimeException(ExceptionsEnum.TimeExpired.toString());
+            }
         } catch (Exception e) {
             if (cartDTO != null) {
                 returnCartToStock(cartDTO.getStoreToProducts());
             }
             throw e;
         } finally {
+            // Cancel the timeoutHandle if it's not done
             if (timeoutHandle != null && !timeoutHandle.isDone()) {
                 timeoutHandle.cancel(true);
             }
+            // Shutdown the scheduler
             scheduler.shutdown();
         }
+    }
+
+    public void setUserConfirmationPurchase(String userID) {
+        userFacade.getUserByID(userID).setReadyToPay(true);
+    }
+
+    public boolean getUserConfirmationPurchase(String userID) {
+        return userFacade.getUserByID(userID).isReadyToPay();
     }
 
 

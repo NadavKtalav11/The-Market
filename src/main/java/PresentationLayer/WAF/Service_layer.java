@@ -640,6 +640,19 @@ public class Service_layer {
     }
 
 
+
+    public Response<String> setUserConfirmationPurchase (String userID) {
+        logger.info("set user is ready to pay");
+        try {
+            market.setUserConfirmationPurchase(userID);
+            return new Response<>("user's answer get successfully", "user's answer get successfully.");
+        } catch (Exception e) {
+            logger.error("Error occurred during setting answer from user: {}", e.getMessage(), e);
+            return new Response<>(null, e.getMessage());
+        }
+    }
+
+
     //    public Response<String> payWithExternalPaymentService(int price, String holderId, String creditCardNumber, int cvv, int month, int year, String userID) {
 //        logger.info("Reaching for the payment service in order to complete the purchase.");
 //        try {
