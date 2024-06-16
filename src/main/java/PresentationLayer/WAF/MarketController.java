@@ -70,8 +70,8 @@ public class MarketController {
         }
     }
 
-    @GetMapping("/init")
-    public ResponseEntity<APIResponse<String>> init(@RequestParam Map<String,String> params) {
+    @PostMapping("/initiate")
+    public ResponseEntity<APIResponse<String>> initiate(@RequestParam Map<String,String> params) {
         try {
             String userDTO = params.get("userDTO");
             String password = params.get("password");
@@ -79,8 +79,8 @@ public class MarketController {
             //String supplyServiceDTO = params.get("supplyServiceDTO");
             String supplyDealerNumberField = params.get("supplyDealerNumberField");
             String supplyServiceName = params.get("supplyServiceName");
-            String countriesSet = params.get("countries");
-            String citiesSet = params.get("cities");
+            String countriesSet = params.get("countriesSet");
+            String citiesSet = params.get("citiesSet");
             Set<String> coutries = new HashSet();
             coutries.add(countriesSet);
             Set<String> cities = new HashSet();
@@ -103,6 +103,69 @@ public class MarketController {
                     .body(new APIResponse<>(null, e.getMessage()));
         }
     }
+
+
+    @PostMapping("/addDiscountCondRuleToStore")
+    public ResponseEntity<APIResponse<String>> addDiscountCondRuleToStore(@RequestParam Map<String,String> params) {
+        try {
+
+            String ruleNums = params.get("ruleNums");
+            String logicOperators = params.get("logicOperators");
+            String discDetails = params.get("discDetails");
+            String numericalOperators = params.get("numericalOperators");
+            String userId = params.get("userId");
+            String storeId = params.get("storeId");
+            List<Integer> ruleNumsList = objectMapper.readValue(ruleNums, objectMapper.getTypeFactory().constructCollectionType(List.class, Integer.class));
+            List<String> logicOperatorsList = objectMapper.readValue(logicOperators, objectMapper.getTypeFactory().constructCollectionType(List.class, String.class));
+            List<DiscountValueDTO> discDetailsList = objectMapper.readValue(discDetails, objectMapper.getTypeFactory().constructCollectionType(List.class, DiscountValueDTO.class));
+            List<String> numericalOperatorsList = objectMapper.readValue(numericalOperators, objectMapper.getTypeFactory().constructCollectionType(List.class, String.class));
+            Response<String> response = serviceLayer.addDiscountCondRuleToStore(ruleNumsList, logicOperatorsList, discDetailsList, numericalOperatorsList, userId, storeId);
+            if (response.isSuccess()) {
+                String data = response.getData();
+                HttpHeaders headers = new HttpHeaders();
+                headers.add("accept", "*/*");
+
+                return ResponseEntity.status(HttpStatus.OK).headers(headers)
+                        .body(new APIResponse<String>(data, null));
+            } else {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                        .body(new APIResponse<String>(null, response.getDescription()));
+            }
+
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new APIResponse<>(null, e.getMessage()));
+        }
+    }
+
+    @PostMapping("/addDiscountSimpleRuleToStore")
+    public ResponseEntity<APIResponse<String>> addDiscountSimpleRuleToStore(@RequestParam Map<String,String> params) {
+        try {
+            String discs = params.get("discs");
+            String numericalOperators = params.get("numericalOperators");
+            String userId = params.get("userId");
+            String storeId = params.get("storeId");
+            List<DiscountValueDTO> discDetailsList = objectMapper.readValue(discs, objectMapper.getTypeFactory().constructCollectionType(List.class, DiscountValueDTO.class));
+            List<String> numericalOperatorsList = objectMapper.readValue(numericalOperators, objectMapper.getTypeFactory().constructCollectionType(List.class, String.class));
+            Response<String> response = serviceLayer.addDiscountSimpleRuleToStore(discDetailsList, numericalOperatorsList, userId, storeId);
+            if (response.isSuccess()) {
+                String data = response.getData();
+                HttpHeaders headers = new HttpHeaders();
+                headers.add("accept", "*/*");
+
+                return ResponseEntity.status(HttpStatus.OK).headers(headers)
+                        .body(new APIResponse<String>(data, null));
+            } else {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                        .body(new APIResponse<String>(null, response.getDescription()));
+            }
+
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new APIResponse<>(null, e.getMessage()));
+        }
+    }
+
 
     @PostMapping("/addExternalPaymentService")
     public ResponseEntity<APIResponse<String>> addExternalPaymentService(@RequestParam Map<String,String> params) {
