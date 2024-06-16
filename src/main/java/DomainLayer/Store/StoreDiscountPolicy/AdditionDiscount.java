@@ -20,4 +20,9 @@ public class AdditionDiscount extends CompositeNumericalDiscount {
         return discount1 + discount2;
     }
 
+    @Override
+    public String getDescription() {
+        return " (Addition between " + discountValue1.getDescription() + " and " + discountValue2.getDescription() + ") ";
+    }
+
 }

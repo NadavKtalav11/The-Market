@@ -19,6 +19,6 @@ public class CondRule<T, U> extends CompositeRule<T, U> {
 
     @Override
     public String getDescription() {
-        return rule2.getDescription() + " only if " + rule1.getDescription();
+        return " (" + rule2.getDescription() + " only if " + rule1.getDescription() + ") ";
     }
 }

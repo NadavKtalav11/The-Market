@@ -15,6 +15,6 @@ public class AndRule<T, U> extends CompositeRule<T, U> {
 
     @Override
     public String getDescription() {
-        return rule1.getDescription() + " and " + rule2.getDescription();
+         return " (" + rule1.getDescription() + " and " + rule2.getDescription() + ") ";
     }
 }

@@ -15,6 +15,6 @@ public class OrRule<T, U> extends CompositeRule<T, U>{
 
     @Override
     public String getDescription() {
-        return rule1.getDescription() + " or " + rule2.getDescription();
+        return " (" + rule1.getDescription() + " or " + rule2.getDescription() + ") ";
     }
 }
