@@ -30,6 +30,27 @@ public class MarketController {
         this.objectMapper =new ObjectMapper();
     }
 
+    @GetMapping("/checkInitializedMarket")
+    public ResponseEntity<APIResponse<Boolean>> checkInitializedMarket() {
+        try {
+            Response<Boolean> response = serviceLayer.checkInitializedMarket();
+            if (response.isSuccess()) {
+                Boolean res = response.getResult();
+                HttpHeaders headers = new HttpHeaders();
+                headers.add("accept", "*/*");
+                return ResponseEntity.status(HttpStatus.OK).headers(headers)
+                        .body(new APIResponse<Boolean>(res, null));
+            } else {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                        .body(new APIResponse<Boolean>(null, response.getDescription()));
+            }
+
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new APIResponse<>(null, e.getMessage()));
+        }
+    }
+
 
     @GetMapping("/enterSystem")
     public ResponseEntity<APIResponse<String>> enterMarket() {
