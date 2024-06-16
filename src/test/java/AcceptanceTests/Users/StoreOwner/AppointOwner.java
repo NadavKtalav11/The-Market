@@ -68,52 +68,55 @@ public class AppointOwner {
         AtomicBoolean appointmentSucceeded = new AtomicBoolean(false);
         AtomicBoolean appointmentFailed = new AtomicBoolean(false);
 
-        // Define the first thread (Saar appointing Jalal)
-        Thread thread1 = new Thread(() -> {
-            try {
-                latch.await(); // Wait for the latch to be released
-                Response<String> response = impl.appointStoreOwner(saarUserID, JALAL_USERNAME, storeID);
-                if (response.isSuccess()) {
-                    appointmentSucceeded.set(true);
-                } else {
-                    appointmentFailed.set(true);
-                    assertEquals(ExceptionsEnum.memberIsAlreadyStoreOwner.toString(), response.getDescription());
+        for (int i=0; i<1000 ; i++) {
+            // Define the first thread (Saar appointing Jalal)
+            setUp();
+            Thread thread1 = new Thread(() -> {
+                try {
+                    latch.await(); // Wait for the latch to be released
+                    Response<String> response = impl.appointStoreOwner(saarUserID, JALAL_USERNAME, storeID);
+                    if (response.isSuccess()) {
+                        appointmentSucceeded.set(true);
+                    } else {
+                        appointmentFailed.set(true);
+                        assertEquals(ExceptionsEnum.memberIsAlreadyStoreOwner.toString(), response.getDescription());
+                    }
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
                 }
-            } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
-            }
-        });
+            });
 
-        // Define the second thread (SecondOwner appointing Jalal)
-        Thread thread2 = new Thread(() -> {
-            try {
-                latch.await(); // Wait for the latch to be released
-                Response<String> response = impl.appointStoreOwner(secondOwnerID, JALAL_USERNAME, storeID);
-                if (response.isSuccess()) {
-                    appointmentSucceeded.set(true);
-                } else {
-                    appointmentFailed.set(true);
-                    assertEquals(ExceptionsEnum.memberIsAlreadyStoreOwner.toString(), response.getDescription());
+            // Define the second thread (SecondOwner appointing Jalal)
+            Thread thread2 = new Thread(() -> {
+                try {
+                    latch.await(); // Wait for the latch to be released
+                    Response<String> response = impl.appointStoreOwner(secondOwnerID, JALAL_USERNAME, storeID);
+                    if (response.isSuccess()) {
+                        appointmentSucceeded.set(true);
+                    } else {
+                        appointmentFailed.set(true);
+                        assertEquals(ExceptionsEnum.memberIsAlreadyStoreOwner.toString(), response.getDescription());
+                    }
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
                 }
-            } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
-            }
-        });
+            });
 
-        // Start both threads
-        thread1.start();
-        thread2.start();
+            // Start both threads
+            thread1.start();
+            thread2.start();
 
-        // Release the latch, allowing both threads to proceed
-        latch.countDown();
+            // Release the latch, allowing both threads to proceed
+            latch.countDown();
 
-        // Wait for both threads to finish
-        thread1.join();
-        thread2.join();
+            // Wait for both threads to finish
+            thread1.join();
+            thread2.join();
 
-        // Verify that exactly one appointment succeeded and one failed
-        assertTrue(appointmentSucceeded.get(), "One of the appointments should have succeeded");
-        assertTrue(appointmentFailed.get(), "One of the appointments should have failed");
+            // Verify that exactly one appointment succeeded and one failed
+            assertTrue(appointmentSucceeded.get(), "One of the appointments should have succeeded");
+            assertTrue(appointmentFailed.get(), "One of the appointments should have failed");
+        }
     }
 }
 

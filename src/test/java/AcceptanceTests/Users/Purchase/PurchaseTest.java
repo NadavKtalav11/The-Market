@@ -11,7 +11,7 @@ import org.junit.jupiter.api.Test;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
-import java.util.concurrent.TimeoutException;
+import java.util.concurrent.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -133,4 +133,54 @@ public class PurchaseTest {
 
          assertEquals(ExceptionsEnum.ExternalSupplyServiceIsNotAvailable.toString(), response.getDescription());
      }
+
+
+    @Test
+    public void concurrentPurchaseTest() throws InterruptedException, ExecutionException {
+
+        final int NUM_ITERATIONS = 100;
+        final String productName = "water";
+        boolean allPassed = true;
+
+        ExecutorService executor = Executors.newFixedThreadPool(2);
+        ArrayList<Callable<Boolean>> tasks = new ArrayList<>();
+
+        for (int i = 0; i < NUM_ITERATIONS; i++) {
+            setUp();
+            impl.addProductToStore(userID1, storeID, productName, 1, 1, "Milk 12%", "food");
+            impl.addProductToBasket(productName, 1, storeID, userID2);
+            impl.addProductToBasket(productName, 1, storeID, userID1);
+
+            Callable<Boolean> user1Task = () -> {
+                Response<String> response = impl.purchase(userID2, userDTO.getCountry(), userDTO.getCity(), userDTO.getAddress(),
+                        paymentDTO.getCreditCardNumber(), paymentDTO.getCvv(), paymentDTO.getMonth(), paymentDTO.getYear(), paymentDTO.getHolderId());
+                return response.isSuccess();
+            };
+
+            Callable<Boolean> user2Task = () -> {
+                Response<String> response = impl.purchase(userID1, userDTO.getCountry(), userDTO.getCity(), userDTO.getAddress(),
+                        paymentDTO.getCreditCardNumber(), paymentDTO.getCvv(), paymentDTO.getMonth(), paymentDTO.getYear(), paymentDTO.getHolderId());
+                return response.isSuccess();
+            };
+
+            tasks.add(user1Task);
+            tasks.add(user2Task);
+            Future<Boolean> user1Future = executor.submit(tasks.get(0));
+            Future<Boolean> user2Future = executor.submit(tasks.get(1));
+
+            tasks.remove(0);
+            tasks.remove(0);
+            boolean user1Success = user1Future.get();
+            boolean user2Success = user2Future.get();
+            if (user1Success && user2Success || !user1Success && !user2Success) {
+                System.out.println(i);
+                allPassed = false;
+                break;
+            }
+        }
+
+        executor.shutdown();
+        assertTrue(allPassed, "Concurrent purchase test failed.");
+    }
 }
+
