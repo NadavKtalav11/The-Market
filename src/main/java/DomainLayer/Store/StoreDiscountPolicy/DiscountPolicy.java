@@ -55,4 +55,14 @@ public class DiscountPolicy {
     public List<Discount> getDiscountRules() {
         return discountRules;
     }
+
+    public List<String> getRulesDescriptions() {
+        List<String> rulesDescriptions = new ArrayList<>();
+        for (Discount discount : discountRules) {
+            rulesDescriptions.add(discount.getDescription());
+        }
+        return rulesDescriptions;
+    }
+
+
 }

@@ -148,7 +148,7 @@ public class Store {
     public void removeProductQuantity(String productName,int quantity){
         synchronized (storeProductLock) {
             Product product = storeProducts.get(productName);
-            if (product.getQuantity() > quantity){
+            if (product.getQuantity() >= quantity){
                 product.setQuantity(product.getQuantity()-quantity);
             }
         }
@@ -310,5 +310,13 @@ public class Store {
 
     public void setPurchasePolicy(PurchasePolicy purchasePolicy) {
         this.purchasePolicy = purchasePolicy;
+    }
+
+    public List<String> getStoreCurrentPurchaseRules() {
+        return purchasePolicy.getRulesDescriptions();
+    }
+
+    public List<String> getStoreCurrentDiscountRules() {
+        return discountPolicy.getRulesDescriptions();
     }
 }

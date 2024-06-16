@@ -36,4 +36,8 @@ public class Discount {
     public DiscountValue getDiscountValue() {
         return discountValue;
     }
+
+    public String getDescription() {
+        return discountValue.getDescription();
+    }
 }

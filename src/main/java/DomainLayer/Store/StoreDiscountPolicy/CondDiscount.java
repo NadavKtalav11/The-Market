@@ -42,4 +42,9 @@ public class CondDiscount extends Discount{
             return super.calcDiscount(basketProducts, userDTO);
         return 0;
     }
+
+    @Override
+    public String getDescription() {
+        return " (" + super.getDescription() + " only if " + discountRule.getDescription() + ") ";
+    }
 }
