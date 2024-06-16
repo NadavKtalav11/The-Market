@@ -364,4 +364,11 @@ public class UserFacade {
         return getUserByID(userId).getCartDTO();
     }
 
+    public MemberRepository getMembers() {
+        return members;
+    }
+
+    public UserRepository<User> getUserRepository() {
+        return userRepository;
+    }
 }

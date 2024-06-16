@@ -70,7 +70,7 @@ public abstract class State {
     protected abstract void exitMarketSystem();
     //void Register(User user, String username, String password, String birthday, String address) throws Exception;
     protected abstract void Login() throws Exception;
-    protected abstract boolean isMember();
+    public abstract boolean isMember();
     protected abstract void addReceipt(Map<String, String> receiptIdAndStoreId);
     public abstract String getUsername();
 }
