@@ -11,7 +11,7 @@ import org.junit.jupiter.api.Test;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class MaxDiscountTest {
 
@@ -40,7 +40,7 @@ public class MaxDiscountTest {
         // TOYS category discount: (100 + 300) * 0.5 = 200
         // BOOKS category discount: 200 * 0.2 = 40
         // Maximum discount: max(200, 40) = 200
-        assertEquals("Total discount calculated", 200, totalDiscount);
+        assertEquals(200, totalDiscount);
     }
 
     @Test
@@ -55,6 +55,6 @@ public class MaxDiscountTest {
 
         // Expected discount calculation:
         // No products match 'ELECTRONICS' or 'FOOD', so total discount should be 0
-        assertEquals("Total discount calculated", 0, totalDiscount);
+        assertEquals(0, totalDiscount);
     }
 }
