@@ -1,10 +1,15 @@
 package DomainLayer.Role;
 
-import org.junit.jupiter.api.AfterEach;
+import DomainLayer.Role.*;
+import Util.ExceptionsEnum;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 
-import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -13,120 +18,129 @@ import static org.mockito.Mockito.*;
 
 public class RoleFacadeTest {
 
+    @InjectMocks
     private RoleFacade roleFacade;
+
+    @Mock
     private StoreOwner mockStoreOwner;
 
+    @Mock
+    private StoreManager mockStoreManager;
 
+    @Mock
+    private SystemManager mockSystemManager;
 
     @BeforeEach
     public void setUp() {
-        roleFacade.resetInstanceForTests();
+        MockitoAnnotations.openMocks(this);
+        RoleFacade.resetInstanceForTests();
         roleFacade = RoleFacade.getInstance();
-        mockStoreOwner = mock(StoreOwner.class);
-        when(mockStoreOwner.getStore_ID()).thenReturn("1");
     }
 
     @Test
-    void testVerifyStoreOwner() throws Exception {
-        roleFacade.createStoreOwner("1", "1", true, "2");
-        assertTrue(roleFacade.verifyStoreOwner("1", "1"));
-        assertFalse(roleFacade.verifyStoreOwner("2", "1"));
+    public void testGetInstance() {
+        RoleFacade instance = RoleFacade.getInstance();
+        assertNotNull(instance);
+        assertEquals(instance, roleFacade);
     }
 
     @Test
-    void testVerifyStoreManager() throws Exception {
-        roleFacade.createStoreManager("1", "1", true, true, "2");
-        assertTrue(roleFacade.verifyStoreManager("1", "1"));
-        assertFalse(roleFacade.verifyStoreManager("2", "1"));
+    public void testVerifyStoreOwner() throws Exception {
+        when(mockStoreOwner.getStore_ID()).thenReturn("store1");
+        when(mockStoreOwner.getMember_ID()).thenReturn("member1");
+
+        roleFacade.addNewStoreOwnerToTheMarketForTests(mockStoreOwner);
+
+        assertTrue(roleFacade.verifyStoreOwner("store1", "member1"));
+        assertFalse(roleFacade.verifyStoreOwner("store2", "member1"));
     }
 
     @Test
-    void testVerifyStoreOwnerIsFounder() throws Exception {
-        roleFacade.createStoreOwner("1", "1", true, "2");
-        assertTrue(roleFacade.verifyStoreOwnerIsFounder("1", "1"));
-        assertFalse(roleFacade.verifyStoreOwnerIsFounder("1", "2"));
+    public void testVerifyStoreManager() throws Exception {
+        when(mockStoreManager.getStore_ID()).thenReturn("store2");
+        when(mockStoreManager.getMember_ID()).thenReturn("member2");
+
+        roleFacade.addNewStoreManagerToTheMarketForTests(mockStoreManager);
+
+        assertTrue(roleFacade.verifyStoreManager("store2", "member2"));
+        assertFalse(roleFacade.verifyStoreManager("store1", "member2"));
     }
 
     @Test
-    void testManagerHasInventoryPermissions() throws Exception {
-        roleFacade.createStoreManager("1", "1", true, false, "2");
-        assertTrue(roleFacade.managerHasInventoryPermissions("1", "1"));
-        assertFalse(roleFacade.managerHasInventoryPermissions("2", "1"));
+    public void testVerifyStoreOwnerError() {
+        Exception exception = assertThrows(Exception.class, () -> {
+            roleFacade.verifyStoreOwnerError("store1", "member1");
+        });
+        assertEquals(ExceptionsEnum.userIsNotStoreOwner.toString(), exception.getMessage());
     }
 
     @Test
-    void testManagerHasPurchasePermissions() throws Exception {
-        roleFacade.createStoreManager("1", "1", false, true, "2");
-        assertTrue(roleFacade.managerHasPurchasePermissions("1", "1"));
-        assertFalse(roleFacade.managerHasPurchasePermissions("2", "1"));
+    public void testCreateStoreOwner() throws Exception {
+        when(mockStoreOwner.getMember_ID()).thenReturn("member3");
+        when(mockStoreOwner.getStore_ID()).thenReturn("store3");
+        when(mockStoreOwner.verifyStoreOwnerIsFounder()).thenReturn(true);
+
+        roleFacade.addNewStoreOwnerToTheMarketForTests(mockStoreOwner);
+
+        assertTrue(roleFacade.verifyStoreOwner("store3", "member3"));
     }
 
     @Test
-    void testUpdateStoreManagerPermissions() throws Exception {
-        roleFacade.createStoreManager("1", "1", false, false, "2");
-        roleFacade.updateStoreManagerPermissions("1", "1", true, true, "2");
-        StoreManager storeManager = roleFacade.getStoreManager("1", "1");
-        assertTrue(storeManager.hasInventoryPermissions());
-        assertTrue(storeManager.hasPurchasePermissions());
+    public void testCreateStoreManager() throws Exception {
+        when(mockStoreManager.getMember_ID()).thenReturn("member4");
+        when(mockStoreManager.getStore_ID()).thenReturn("store4");
+
+        roleFacade.addNewStoreManagerToTheMarketForTests(mockStoreManager);
+
+        assertTrue(roleFacade.verifyStoreManager("store4", "member4"));
     }
 
     @Test
-    void testGetInformationAboutStoreRoles() throws Exception {
-        roleFacade.createStoreOwner("1", "1", true, "2");
-        roleFacade.createStoreManager("2", "1", true, true, "3");
+    public void testUpdateStoreManagerPermissions() throws Exception {
+        when(mockStoreManager.getStore_ID()).thenReturn("store5");
+        when(mockStoreManager.getMember_ID()).thenReturn("member5");
+        when(mockStoreManager.getNominatorMemberId()).thenReturn("nominator5");
+        doNothing().when(mockStoreManager).setPermissions(anyBoolean(), anyBoolean());
 
-        Map<String, String> roles = roleFacade.getInformationAboutStoreRoles("1");
-        assertEquals(2, roles.size());
-        assertEquals("owner", roles.get("1"));
-        assertEquals("manager", roles.get("2"));
+        roleFacade.addNewStoreManagerToTheMarketForTests(mockStoreManager);
+
+        roleFacade.updateStoreManagerPermissions("member5", "store5", false, true, "nominator5");
+        verify(mockStoreManager).setPermissions(false, true);
     }
 
     @Test
-    void testGetStoreManagersAuthorizations() throws Exception {
-        roleFacade.createStoreManager("1", "1", true, false, "2");
-        roleFacade.createStoreManager("2", "1", false, true, "3");
+    public void testGetInformationAboutStoreRoles() throws Exception {
+        when(mockStoreOwner.getMember_ID()).thenReturn("member6");
+        when(mockStoreOwner.getStore_ID()).thenReturn("store6");
+        when(mockStoreManager.getMember_ID()).thenReturn("member7");
+        when(mockStoreManager.getStore_ID()).thenReturn("store6");
 
-        Map<String, List<Integer>> authorizations = roleFacade.getStoreManagersAuthorizations("1");
-        assertEquals(2, authorizations.size());
-        assertTrue(authorizations.containsKey("1"));
-        assertTrue(authorizations.containsKey("2"));
+        roleFacade.addNewStoreOwnerToTheMarketForTests(mockStoreOwner);
+        roleFacade.addNewStoreManagerToTheMarketForTests(mockStoreManager);
+
+        Map<String, String> roles = roleFacade.getInformationAboutStoreRoles("store6");
+        assertEquals("owner", roles.get("member6"));
+        assertEquals("manager", roles.get("member7"));
     }
 
     @Test
-    void testGetAllStoreManagers() throws Exception {
-        roleFacade.createStoreManager("1", "1", true, false, "2");
-        roleFacade.createStoreManager("2", "1", false, true, "3");
+    public void testGetStoresByOwner() throws Exception {
+        when(mockStoreOwner.getMember_ID()).thenReturn("member8");
+        when(mockStoreOwner.getStore_ID()).thenReturn("store8");
 
-        List<String> managers = roleFacade.getAllStoreManagers("1");
-        assertEquals(2, managers.size());
-        assertTrue(managers.contains("1"));
-        assertTrue(managers.contains("2"));
+        roleFacade.addNewStoreOwnerToTheMarketForTests(mockStoreOwner);
+
+        List<String> stores = Arrays.asList("store8", "store9");
+        List<String> ownedStores = roleFacade.getStoresByOwner(stores, "member8");
+        assertTrue(ownedStores.contains("store8"));
+        assertFalse(ownedStores.contains("store9"));
     }
 
     @Test
-    void testGetAllStoreOwners() throws Exception {
-        roleFacade.createStoreOwner("1", "1", true, "2");
-        roleFacade.createStoreOwner("2", "1", false, "3");
-
-        List<String> owners = roleFacade.getAllStoreOwners("1");
-        assertEquals(2, owners.size());
-        assertTrue(owners.contains("1"));
-        assertTrue(owners.contains("2"));
+    public void testVerifyMemberIsSystemManagerError() {
+        Exception exception = assertThrows(Exception.class, () -> {
+            roleFacade.verifyMemberIsSystemManagerError("system1");
+        });
+        assertEquals(ExceptionsEnum.notSystemManager.toString(), exception.getMessage());
     }
-
-    @Test
-    void testGetStoresByOwner() throws Exception {
-        List<String> stores = new ArrayList<>();
-        stores.add("1");
-        stores.add("2");
-
-        roleFacade.createStoreOwner("1", "1", true, "2");
-        roleFacade.createStoreOwner("1", "2", false, "3");
-
-        List<String> storesByOwner = roleFacade.getStoresByOwner(stores, "1");
-        assertEquals(2, storesByOwner.size());
-        assertTrue(storesByOwner.contains("1"));
-        assertTrue(storesByOwner.contains("2"));
-    }
-
 }
