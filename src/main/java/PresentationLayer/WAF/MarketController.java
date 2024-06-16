@@ -875,7 +875,7 @@ public class MarketController {
                     .body(new APIResponse<>(null, e.getMessage()));
         }
     }
-    
+
     @GetMapping("/getStoreCurrentDiscountRules/{userId}/{storeId}")
     public ResponseEntity<APIResponse<List<String>>> getStoreCurrentDiscountRules(@PathVariable String userId, @PathVariable String storeId) {
         try {
@@ -898,6 +898,13 @@ public class MarketController {
         }
     }
 
+    @DeleteMapping("/removeDiscountRuleFromStore/{ruleIndex}/{userId}/{storeId}")
+    public ResponseEntity<APIResponse<String>> removeDiscountRuleFromStore(@PathVariable int ruleIndex, @PathVariable String userId, @PathVariable String storeId)
+    {
+        Response<String> response = serviceLayer.removeDiscountRuleFromStore(ruleIndex, userId, storeId);
+        return checkIfResponseIsGood(response);
+    }
+
     private ResponseEntity<APIResponse<String>> checkIfResponseIsGood(Response<String> response) {
         try {
             if (response.isSuccess()) {
@@ -917,8 +924,6 @@ public class MarketController {
 
         }
     }
-
-
 
 }
 
