@@ -776,7 +776,7 @@ public class MarketController {
     }
 
     @PostMapping("/getAllPurchaseRules/{userId}/{storeId}")
-    public ResponseEntity<APIResponse<Map<Integer, String>>> getAllPurchaseRules(String userId, String storeId) {
+    public ResponseEntity<APIResponse<Map<Integer, String>>> getAllPurchaseRules(@PathVariable String userId, @PathVariable String storeId) {
         try {
             Response<Map<Integer, String>> response = serviceLayer.getAllPurchaseRules(userId, storeId);
             if (response.isSuccess()) {
@@ -793,7 +793,6 @@ public class MarketController {
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(new APIResponse<>(null, e.getMessage()));
-
         }
     }
 
@@ -813,7 +812,7 @@ public class MarketController {
     }
 
     @PostMapping("/getStoreCurrentPurchaseRules/{userId}/{storeId}}")
-    public ResponseEntity<APIResponse<List<String>>> getStoreCurrentPurchaseRules(String userId, String storeId) {
+    public ResponseEntity<APIResponse<List<String>>> getStoreCurrentPurchaseRules(@PathVariable String userId, @PathVariable String storeId) {
         try {
             Response<List<String>> response = serviceLayer.getStoreCurrentPurchaseRules(userId, storeId);
             if (response.isSuccess()) {
@@ -831,6 +830,28 @@ public class MarketController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(new APIResponse<>(null, e.getMessage()));
 
+        }
+    }
+
+    @PostMapping("/getAllCondDiscountRules/{userId}/{storeId}}")
+    public ResponseEntity<APIResponse<Map<Integer, String>>> getAllCondDiscountRules(@PathVariable String userId, @PathVariable String storeId)
+    {
+        try {
+            Response<Map<Integer, String>> response = serviceLayer.getAllCondDiscountRules(userId, storeId);
+            if (response.isSuccess()) {
+                Map<Integer, String> result = response.getResult();
+                HttpHeaders headers = new HttpHeaders();
+                headers.add("accept", "*/*");
+
+                return ResponseEntity.status(HttpStatus.OK).headers(headers)
+                        .body(new APIResponse<>(result, null));
+            } else {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                        .body(new APIResponse<>(null, response.getDescription()));
+            }
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new APIResponse<>(null, e.getMessage()));
         }
     }
 
