@@ -377,12 +377,12 @@ public class Service_layer {
 
 
 
-    public Response<List<ProductDTO>> generalProductSearchDTO(String userId, String productName, String categoryStr, List<String> keywords)
+    public Response<Map<String, List<ProductDTO>>> generalProductSearchDTO(String userId, String productName, String categoryStr, List<String> keywords)
     {
         logger.info("Starting general product search in the system.");
 
         try {
-            List<ProductDTO> filteredProductNames = market.generalProductSearchDTO(userId, productName, categoryStr, keywords);
+            Map<String, List<ProductDTO>> filteredProductNames = market.generalProductSearchDTO(userId, productName, categoryStr, keywords);
             return new Response<>(filteredProductNames, "Product search completed successfully.");
         } catch (Exception e) {
             logger.error("Error occurred during the general product search: {}", e.getMessage(), e);
