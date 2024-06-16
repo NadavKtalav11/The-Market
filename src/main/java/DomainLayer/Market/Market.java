@@ -6,6 +6,8 @@ import DomainLayer.Notifications.StoreNotification;
 import DomainLayer.PaymentServices.PaymentServicesFacade;
 import DomainLayer.Role.RoleFacade;
 import DomainLayer.Store.Product;
+import DomainLayer.Store.StoreDiscountPolicy.DiscountRulesRepository;
+import DomainLayer.Store.StorePurchasePolicy.PurchaseRulesRepository;
 import Util.ExceptionsEnum;
 
 import DomainLayer.Store.StoreFacade;
@@ -32,6 +34,8 @@ public class Market {
     private final Object initializedLock;
     private final Object managersLock;
 
+    private final Object validationLock;
+
     public synchronized static Market getInstance() {
         if (MarketInstance == null) {
             MarketInstance = new Market();
@@ -49,6 +53,7 @@ public class Market {
         initializedLock= new Object();
         this.systemManagerIds = new HashSet<>();
         managersLock = new Object();
+        validationLock = new Object();
     }
 
 
@@ -63,6 +68,7 @@ public class Market {
         initializedLock= new Object();
         this.systemManagerIds = new HashSet<>();
         managersLock = new Object();
+        validationLock = new Object();
 
     }
 
@@ -77,11 +83,12 @@ public class Market {
         initializedLock= new Object();
         this.systemManagerIds = new HashSet<>();
         managersLock = new Object();
+        validationLock = new Object();
 
     }
 
 
-    public Market newForTests(){
+    public synchronized Market newForTests(){
         MarketInstance = new Market();
         StoreFacade storeFacade1 =  storeFacade.newForTest();
         UserFacade userFacade1 =  userFacade.newForTest();
@@ -831,41 +838,43 @@ public class Market {
         return storeReceiptsAndTotalAmount;
     }
 
-    public CartDTO checkingCartValidationBeforePurchase(String user_ID,UserDTO userDTO) throws Exception {
-        if (userFacade.isMember(user_ID)) {
-            String memberId = userFacade.getMemberIdByUserId(user_ID);
-            boolean succeeded = authenticationAndSecurityFacade.validateToken(authenticationAndSecurityFacade.getToken(memberId));if (!succeeded) {
-                logout(user_ID);
-                throw new Exception(ExceptionsEnum.sessionOver.toString());
+    public synchronized CartDTO checkingCartValidationBeforePurchase(String user_ID,UserDTO userDTO) throws Exception {
+        synchronized (validationLock) {
+            if (userFacade.isMember(user_ID)) {
+                String memberId = userFacade.getMemberIdByUserId(user_ID);
+                boolean succeeded = authenticationAndSecurityFacade.validateToken(authenticationAndSecurityFacade.getToken(memberId));
+                if (!succeeded) {
+                    logout(user_ID);
+                    throw new Exception(ExceptionsEnum.sessionOver.toString());
+                }
             }
-        }
-        int totalPrice = 0;
-        this.userFacade.isUserCartEmpty(user_ID);
+            int totalPrice = 0;
+            this.userFacade.isUserCartEmpty(user_ID);
 
-        List<String> stores = this.userFacade.getCartStoresByUser(user_ID);
-        for(String store_ID: stores)
-        {
-            Map<String, List<Integer>> products = this.userFacade.getCartProductsByStoreAndUser(store_ID, user_ID);
-            int quantity;
-            List<ProductDTO> productDTOS = this.storeFacade.getProductsDTOSByProductsNames(products, store_ID);
-            for(String productName: products.keySet()) {
-                quantity = products.get(productName).get(0);
-                this.storeFacade.checkQuantity(productName, quantity, store_ID);
+            List<String> stores = this.userFacade.getCartStoresByUser(user_ID);
+            for (String store_ID : stores) {
+                Map<String, List<Integer>> products = this.userFacade.getCartProductsByStoreAndUser(store_ID, user_ID);
+                int quantity;
+                List<ProductDTO> productDTOS = this.storeFacade.getProductsDTOSByProductsNames(products, store_ID);
+                for (String productName : products.keySet()) {
+                    quantity = products.get(productName).get(0);
+                    this.storeFacade.checkQuantity(productName, quantity, store_ID);
+                }
+
+                storeFacade.checkPurchasePolicy(userDTO, productDTOS, store_ID);
+                int priceToReduce = storeFacade.calcDiscountPolicy(userDTO, productDTOS, store_ID);
+
+                String availableExternalSupplyService = this.checkAvailableExternalSupplyService(userDTO.getCountry(), userDTO.getCity());
+                this.createShiftingDetails(userDTO.getCountry(), userDTO.getCity(), availableExternalSupplyService, userDTO.getAddress(), user_ID);
+
+                int storeTotalPriceBeforeDiscount = this.userFacade.getCartPriceByUser(user_ID);
+                int storeTotalPrice = storeTotalPriceBeforeDiscount - priceToReduce;
+                totalPrice += storeTotalPrice;
             }
-
-            storeFacade.checkPurchasePolicy(userDTO, productDTOS, store_ID);
-            int priceToReduce = storeFacade.calcDiscountPolicy(userDTO, productDTOS, store_ID);
-
-            String availableExternalSupplyService = this.checkAvailableExternalSupplyService(userDTO.getCountry(), userDTO.getCity());
-            this.createShiftingDetails(userDTO.getCountry(), userDTO.getCity(), availableExternalSupplyService, userDTO.getAddress(), user_ID);
-
-            int storeTotalPriceBeforeDiscount = this.userFacade.getCartPriceByUser(user_ID);
-            int storeTotalPrice = storeTotalPriceBeforeDiscount - priceToReduce;
-            totalPrice += storeTotalPrice;
+            //remove items from stock
+            removeUserCartFromStock(user_ID);
+            return new CartDTO(user_ID, totalPrice, getPurchaseList(user_ID));
         }
-        //remove items from stock
-        removeUserCartFromStock(user_ID);
-        return new CartDTO(user_ID,totalPrice,getPurchaseList(user_ID));
     }
 
     public String checkAvailableExternalSupplyService(String country, String city) throws Exception {
@@ -1073,6 +1082,21 @@ public class Market {
             throw new IllegalArgumentException(ExceptionsEnum.storeRateInvalid.toString());
     }
 
+    public Map<Integer,String> getAllPurchaseRules(String userId, String storeId) throws Exception {
+        if (userFacade.isMember(userId)){
+            String memberId = userFacade.getMemberIdByUserId(userId);
+            boolean succeeded = authenticationAndSecurityFacade.validateToken(authenticationAndSecurityFacade.getToken(memberId));
+            if (!succeeded) {
+                logout(userId);
+                throw new IllegalArgumentException(ExceptionsEnum.sessionOver.toString());
+            }
+        }
+        String member_ID = this.userFacade.getMemberIdByUserId(userId);
+        storeFacade.verifyStoreExistError(storeId);
+        roleFacade.verifyStoreOwnerError(storeId, member_ID);
+        return PurchaseRulesRepository.getAllRules();
+    }
+
     public void addPurchaseRuleToStore(List<Integer> ruleNums, List<String> operators, String userId, String storeId) throws Exception {
         if (userFacade.isMember(userId)){
             String memberId = userFacade.getMemberIdByUserId(userId);
@@ -1104,6 +1128,22 @@ public class Market {
         storeFacade.verifyStoreExistError(storeId);
         roleFacade.verifyStoreOwnerError(storeId, member_ID);
         storeFacade.removePurchaseRuleFromStore(ruleNum, storeId);
+    }
+
+    public Map<Integer,String> getAllCondDiscountRules(String userId, String storeId) throws Exception {
+        if (userFacade.isMember(userId)){
+            String memberId = userFacade.getMemberIdByUserId(userId);
+            boolean succeeded = authenticationAndSecurityFacade.validateToken(authenticationAndSecurityFacade.getToken(memberId));
+            if (!succeeded) {
+                logout(userId);
+                throw new IllegalArgumentException(ExceptionsEnum.sessionOver.toString());
+            }
+        }
+
+        String member_ID = this.userFacade.getMemberIdByUserId(userId);
+        storeFacade.verifyStoreExistError(storeId);
+        roleFacade.verifyStoreOwnerError(storeId, member_ID);
+        return DiscountRulesRepository.getAllRules();
     }
 
     public void addDiscountCondRuleToStore(List<Integer> ruleNums, List<String> logicOperators, List<DiscountValueDTO> discDetails, List<String> numericalOperators, String userId ,String storeId) throws Exception {

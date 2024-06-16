@@ -8,6 +8,9 @@ import Util.UserDTO;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.atomic.AtomicBoolean;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 public class AppointManager {
@@ -17,6 +20,9 @@ public class AppointManager {
     static String jalalUserID;
     static String ovadUserID;
     static String storeId;
+
+    private static final String JALAL_USERNAME = "jalal";
+    private static final String JALAL_PASSWORD = "Kasoomm3";
 
     @BeforeAll
     public static void setUp() {
@@ -37,6 +43,7 @@ public class AppointManager {
 
     @Test
     public void successfulAppointmentTest() {
+        setUp();
         assertTrue(impl.appointStoreManager(saarUserID, "ovad",
                 storeId, true, false).isSuccess());
     }
@@ -53,5 +60,65 @@ public class AppointManager {
         assertFalse(response2.isSuccess());
         assertEquals(ExceptionsEnum.memberAlreadyHasRoleInThisStore.toString(), response2.getDescription());
 
+    }
+
+    @Test
+    public void concurrentAppointManagerTest() throws InterruptedException {
+        // Create a latch to synchronize the start of both threads
+        CountDownLatch latch = new CountDownLatch(1);
+
+        // Atomic booleans to track appointment results
+        AtomicBoolean appointmentSucceeded = new AtomicBoolean(false);
+        AtomicBoolean appointmentFailed = new AtomicBoolean(false);
+
+        for (int i=0; i<1000 ; i++) {
+            // Define the first thread (Saar appointing Jalal)
+            setUp();
+            Thread thread1 = new Thread(() -> {
+                try {
+                    latch.await(); // Wait for the latch to be released
+                    Response<String> response = impl.appointStoreManager(saarUserID, "ovad", storeId, true ,true);
+                    if (response.isSuccess()) {
+                        appointmentSucceeded.set(true);
+                    } else {
+                        appointmentFailed.set(true);
+                        assertEquals(ExceptionsEnum.memberIsAlreadyStoreOwner.toString(), response.getDescription());
+                    }
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                }
+            });
+
+            // Define the second thread (SecondOwner appointing Jalal)
+            Thread thread2 = new Thread(() -> {
+                try {
+                    latch.await(); // Wait for the latch to be released
+                    Response<String> response = impl.appointStoreManager(tomUserID, "ovad", storeId, false, false);
+                    if (response.isSuccess()) {
+                        appointmentSucceeded.set(true);
+                    } else {
+                        appointmentFailed.set(true);
+                        assertEquals(ExceptionsEnum.memberIsAlreadyStoreOwner.toString(), response.getDescription());
+                    }
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                }
+            });
+
+            // Start both threads
+            thread1.start();
+            thread2.start();
+
+            // Release the latch, allowing both threads to proceed
+            latch.countDown();
+
+            // Wait for both threads to finish
+            thread1.join();
+            thread2.join();
+
+            // Verify that exactly one appointment succeeded and one failed
+            assertTrue(appointmentSucceeded.get(), "One of the appointments should have succeeded");
+            assertTrue(appointmentFailed.get(), "One of the appointments should have failed");
+        }
     }
 }

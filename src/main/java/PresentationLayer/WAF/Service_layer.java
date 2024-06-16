@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.client.RestTemplate;
 
+import javax.persistence.criteria.CriteriaBuilder;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -577,6 +578,19 @@ public class Service_layer {
     }
 
 
+    public Response<Map<Integer, String>> getAllPurchaseRules(String userId, String storeId)
+    {
+        logger.info("returns all possible purchase rules descriptions to the store owner");
+
+        try {
+            Map<Integer, String> rules = market.getAllPurchaseRules(userId, storeId);
+            return new Response<>(rules, "All purchase rules descriptions returned successfully.");
+        } catch (Exception e) {
+            logger.error("Error occurred during getting purchase rules description: {}", e.getMessage(), e);
+            return new Response<>(null, e.getMessage());
+        }
+    }
+
     public Response<String> addPurchaseRuleToStore(List<Integer> ruleNums, List<String> operators, String userId, String storeId) {
         logger.info("Adding purchase rule to store");
 
@@ -598,6 +612,20 @@ public class Service_layer {
             return new Response<>("Removing purchase rule removed successfully", "Removing purchase rule removed from store successfully.");
         } catch (Exception e) {
             logger.error("Error occurred during removing purchase rule from store: {}", e.getMessage(), e);
+            return new Response<>(null, e.getMessage());
+        }
+    }
+
+
+    public Response<Map<Integer, String>> getAllCondDiscountRules(String userId, String storeId)
+    {
+        logger.info("returns all possible conditional discount rules descriptions to the store owner");
+
+        try {
+            Map<Integer, String> rules = market.getAllCondDiscountRules(userId, storeId);
+            return new Response<>(rules, "All conditional discount rules descriptions returned successfully.");
+        } catch (Exception e) {
+            logger.error("Error occurred during getting conditional discount rules description: {}", e.getMessage(), e);
             return new Response<>(null, e.getMessage());
         }
     }

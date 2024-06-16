@@ -775,29 +775,64 @@ public class MarketController {
         }
     }
 
+    @PostMapping("/getAllPurchaseRules/{userId}/{storeId}")
+    public ResponseEntity<APIResponse<Map<Integer, String>>> getAllPurchaseRules(String userId, String storeId) {
+        try {
+            Response<Map<Integer, String>> response = serviceLayer.getAllPurchaseRules(userId, storeId);
+            if (response.isSuccess()) {
+                Map<Integer, String> result = response.getResult();
+                HttpHeaders headers = new HttpHeaders();
+                headers.add("accept", "*/*");
 
-    @PostMapping("/addRuleToStore/{ruleNums}/{operators}/{storeId}/{userId}")
-    public ResponseEntity<APIResponse<String>> addRuleToStore(@PathVariable List<Integer> ruleNums,  @PathVariable List<String> operators,  @PathVariable String storeId, @PathVariable String userId ) {
+                return ResponseEntity.status(HttpStatus.OK).headers(headers)
+                        .body(new APIResponse<>(result, null));
+            } else {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                        .body(new APIResponse<>(null, response.getDescription()));
+            }
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new APIResponse<>(null, e.getMessage()));
 
-        Response<String> response = serviceLayer.addPurchaseRuleToStore(ruleNums,operators,storeId,userId);
+        }
+    }
+
+    @PostMapping("/addPurchaseRuleToStore/{ruleNums}/{operators}/{userId}/{storeId}")
+    public ResponseEntity<APIResponse<String>> addPurchaseRuleToStore(@PathVariable List<Integer> ruleNums,  @PathVariable List<String> operators,  @PathVariable String userId, @PathVariable String storeId ) {
+
+        Response<String> response = serviceLayer.addPurchaseRuleToStore(ruleNums,operators,userId,storeId);
         return checkIfResponseIsGood(response);
     }
 
 
-    @PostMapping("/removeRuleFromStore/{ruleNums}/{storeId}/{userId}")
-    public ResponseEntity<APIResponse<String>> removeRuleFromStore(@PathVariable int ruleNum,  @PathVariable String storeId, @PathVariable String userId ) {
+    @PostMapping("/removePurchaseRuleFromStore/{ruleNums}/{userId}/{storeId}")
+    public ResponseEntity<APIResponse<String>> removePurchaseRuleFromStore(@PathVariable int ruleNum,  @PathVariable String userId, @PathVariable String storeId ) {
 
-        Response<String> response = serviceLayer.removePurchaseRuleFromStore(ruleNum,storeId,userId);
+        Response<String> response = serviceLayer.removePurchaseRuleFromStore(ruleNum,userId, storeId);
         return checkIfResponseIsGood(response);
     }
 
+    @PostMapping("/getStoreCurrentPurchaseRules/{userId}/{storeId}}")
+    public ResponseEntity<APIResponse<List<String>>> getStoreCurrentPurchaseRules(String userId, String storeId) {
+        try {
+            Response<List<String>> response = serviceLayer.getStoreCurrentPurchaseRules(userId, storeId);
+            if (response.isSuccess()) {
+                List<String> result = response.getResult();
+                HttpHeaders headers = new HttpHeaders();
+                headers.add("accept", "*/*");
 
+                return ResponseEntity.status(HttpStatus.OK).headers(headers)
+                        .body(new APIResponse<List<String>>(result, null));
+            } else {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                        .body(new APIResponse<>(null, response.getDescription()));
+            }
+        }  catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new APIResponse<>(null, e.getMessage()));
 
-
-
-
-
-
+        }
+    }
 
     private ResponseEntity<APIResponse<String>> checkIfResponseIsGood(Response<String> response) {
         try {
