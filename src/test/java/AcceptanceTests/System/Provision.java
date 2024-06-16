@@ -113,9 +113,9 @@ public class Provision {
         Mockito.when(userFacade.getCartProductsByStoreAndUser("store1", userId)).thenReturn(Map.of("product1", List.of(1)));
         Mockito.when(storeFacade.getProductsDTOSByProductsNames(anyMap(), eq("store1"))).thenReturn(List.of(new ProductDTO()));
         Mockito.doNothing().when(storeFacade).checkQuantity(anyString(), anyInt(), anyString());
-        Mockito.when(storeFacade.checkPolicies(any(UserDTO.class), anyList(), eq("store1"))).thenReturn(true);
+//        Mockito.when(storeFacade.checkPolicies(any(UserDTO.class), anyList(), eq("store1"))).thenReturn(true);
         Mockito.when(userFacade.getCartPriceByUser(userId)).thenReturn(100);
-        Mockito.when(storeFacade.calculateTotalCartPriceAfterDiscount(eq("store1"), anyMap(), eq(100))).thenReturn(90);
+//        Mockito.when(storeFacade.calculateTotalCartPriceAfterDiscount(eq("store1"), anyMap(), eq(100))).thenReturn(90);
         assertEquals(0, supplyServicesFacade1.getAllSupplyServices().size());
         HashSet<String> countries = new HashSet<>();
         HashSet<String> cities = new HashSet<>();
@@ -134,6 +134,10 @@ public class Provision {
 //
     @Test
     public void noExternalSupplyServiceForCityTest() throws Exception {
+        PaymentDTO paymentDTO = new PaymentDTO("holder", "12334", 334, 11, 2027);
+        UserDTO userDTO = new UserDTO("testUser", "birth", "srael", "Israel", "bash", "David", "testUser");
+
+
         // Mock the necessary methods
         UserFacade userFacade = Mockito.mock(UserFacade.class);
         //SupplyServicesFacade supplyServicesFacade1 = Mockito.mock(SupplyServicesFacade.class);
@@ -155,9 +159,9 @@ public class Provision {
         Mockito.when(userFacade.getCartProductsByStoreAndUser("store1", userId)).thenReturn(Map.of("product1", List.of(1)));
         Mockito.when(storeFacade.getProductsDTOSByProductsNames(anyMap(), eq("store1"))).thenReturn(List.of(new ProductDTO()));
         Mockito.doNothing().when(storeFacade).checkQuantity(anyString(), anyInt(), anyString());
-        Mockito.when(storeFacade.checkPolicies(any(UserDTO.class), anyList(), eq("store1"))).thenReturn(true);
+//        Mockito.doNothing().when(storeFacade).checkPurchasePolicy(userDTO, anyList(), "store1");
         Mockito.when(userFacade.getCartPriceByUser(userId)).thenReturn(100);
-        Mockito.when(storeFacade.calculateTotalCartPriceAfterDiscount(eq("store1"), anyMap(), eq(100))).thenReturn(90);
+//        Mockito.when(storeFacade.calcDiscountPolicy(userDTO, anyList(), "store1")).thenReturn(90);
         assertEquals(0, supplyServicesFacade1.getAllSupplyServices().size());
         HashSet<String> countries = new HashSet<>();
         HashSet<String> cities = new HashSet<>();
@@ -167,9 +171,8 @@ public class Provision {
         supplyServicesFacade1.addExternalService(new SupplyServiceDTO("123","supply", countries,cities));
         assertEquals(1, supplyServicesFacade1.getAllSupplyServices().size());
 
-        PaymentDTO paymentDTO = new PaymentDTO("holder", "12334", 334, 11, 2027);
-        UserDTO userDTO = new UserDTO("testUser", "birth", "srael", "Israel", "bash", "David", "testUser");
-        Exception exception = assertThrows(Exception.class, () -> {market1.purchase(paymentDTO, userDTO);
+
+        Exception exception = assertThrows(Exception.class, () -> {market1.purchaseForTest(paymentDTO, userDTO);
         });
 
         assertEquals( ExceptionsEnum.ExternalSupplyServiceIsNotAvailableForArea.toString(), exception.getMessage());
@@ -177,6 +180,9 @@ public class Provision {
 
     @Test
     public void noExternalSupplyServiceForCountryTest() throws Exception {
+        PaymentDTO paymentDTO = new PaymentDTO("holder", "12334", 334, 11, 2027);
+        UserDTO userDTO = new UserDTO("testUser", "birth", "srael", "Israel", "bash", "David", "testUser");
+
         // Mock the necessary methods
         UserFacade userFacade = Mockito.mock(UserFacade.class);
         //SupplyServicesFacade supplyServicesFacade1 = Mockito.mock(SupplyServicesFacade.class);
@@ -198,9 +204,9 @@ public class Provision {
         Mockito.when(userFacade.getCartProductsByStoreAndUser("store1", userId)).thenReturn(Map.of("product1", List.of(1)));
         Mockito.when(storeFacade.getProductsDTOSByProductsNames(anyMap(), eq("store1"))).thenReturn(List.of(new ProductDTO()));
         Mockito.doNothing().when(storeFacade).checkQuantity(anyString(), anyInt(), anyString());
-        Mockito.when(storeFacade.checkPolicies(any(UserDTO.class), anyList(), eq("store1"))).thenReturn(true);
+//        Mockito.doNothing().when(storeFacade).checkPurchasePolicy(userDTO, anyList() , eq("store1"));
         Mockito.when(userFacade.getCartPriceByUser(userId)).thenReturn(100);
-        Mockito.when(storeFacade.calculateTotalCartPriceAfterDiscount(eq("store1"), anyMap(), eq(100))).thenReturn(90);
+//        Mockito.when(storeFacade.calcDiscountPolicy(userDTO, anyList(), "store1")).thenReturn(90);
         assertEquals(0, supplyServicesFacade1.getAllSupplyServices().size());
         HashSet<String> countries = new HashSet<>();
         HashSet<String> cities = new HashSet<>();
@@ -210,9 +216,8 @@ public class Provision {
         supplyServicesFacade1.addExternalService(new SupplyServiceDTO("123","supply", countries,cities));
         assertEquals(1, supplyServicesFacade1.getAllSupplyServices().size());
 
-        PaymentDTO paymentDTO = new PaymentDTO("holder", "12334", 334, 11, 2027);
-        UserDTO userDTO = new UserDTO("testUser", "birth", "srael", "Israel", "bash", "David", "testUser");
-        Exception exception = assertThrows(Exception.class, () -> {market1.purchase(paymentDTO, userDTO);
+
+        Exception exception = assertThrows(Exception.class, () -> {market1.purchaseForTest(paymentDTO, userDTO);
         });
 
         assertEquals( ExceptionsEnum.ExternalSupplyServiceIsNotAvailableForArea.toString(), exception.getMessage());
@@ -222,6 +227,8 @@ public class Provision {
 
     @Test
     public void notExitingSupplyServiceTest() throws Exception {
+        PaymentDTO paymentDTO = new PaymentDTO("holder", "12334", 334, 11, 2027);
+        UserDTO userDTO = new UserDTO("testUser", "birth", "israel", "bash", "bash", "David", "testUser");
         // Mock the necessary methods
         UserFacade userFacade = Mockito.mock(UserFacade.class);
         StoreFacade storeFacade = Mockito.mock(StoreFacade.class);
@@ -241,17 +248,16 @@ public class Provision {
         Mockito.when(userFacade.getCartProductsByStoreAndUser("store1", userId)).thenReturn(Map.of("product1", List.of(1)));
         Mockito.when(storeFacade.getProductsDTOSByProductsNames(anyMap(), eq("store1"))).thenReturn(List.of(new ProductDTO()));
         Mockito.doNothing().when(storeFacade).checkQuantity(anyString(), anyInt(), anyString());
-        Mockito.when(storeFacade.checkPolicies(any(UserDTO.class), anyList(), eq("store1"))).thenReturn(true);
+//        Mockito.doNothing().when(storeFacade).checkPurchasePolicy(userDTO, anyList(), "store1");
         Mockito.when(userFacade.getCartPriceByUser(userId)).thenReturn(100);
-        Mockito.when(storeFacade.calculateTotalCartPriceAfterDiscount(eq("store1"), anyMap(), eq(100))).thenReturn(90);
+//        Mockito.when(storeFacade.calcDiscountPolicy(userDTO, anyList(), "store1")).thenReturn(90);
 
 
         assertEquals(0, supplyServicesFacade.getAllSupplyServices().size());
         String systemManagerId = "77";
         market.getSystemManagerIds().add(systemManagerId);
-        PaymentDTO paymentDTO = new PaymentDTO("holder", "12334", 334, 11, 2027);
-        UserDTO userDTO = new UserDTO("testUser", "birth", "israel", "bash", "bash", "David", "testUser");
-        Exception exception = assertThrows(Exception.class, () -> {market1.purchase(paymentDTO, userDTO);
+
+        Exception exception = assertThrows(Exception.class, () -> {market1.purchaseForTest(paymentDTO, userDTO);
         });
 
         assertEquals( ExceptionsEnum.NoExternalSupplyService.toString(), exception.getMessage());

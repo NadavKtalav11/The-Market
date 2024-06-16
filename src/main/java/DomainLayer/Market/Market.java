@@ -808,12 +808,16 @@ public class Market {
                 this.storeFacade.checkQuantity(productName, quantity, store_ID);
             }
 
-            this.storeFacade.checkPolicies(userDTO, productDTOS, store_ID);
+//            this.storeFacade.checkPurchasePolicy(userDTO, productDTOS, store_ID);
+//            int priceToReduce = storeFacade.calcDiscountPolicy(userDTO, productDTOS, store_ID);
+
             String availableExternalSupplyService = this.checkAvailableExternalSupplyService(userDTO.getCountry(), userDTO.getCity());
             this.createShiftingDetails1(userDTO.getCountry(), userDTO.getCity(), availableExternalSupplyService, userDTO.getAddress(), user_ID);
 
             int storeTotalPriceBeforeDiscount = this.userFacade.getCartPriceByUser(user_ID);
-            int storeTotalPrice = this.storeFacade.calculateTotalCartPriceAfterDiscount(store_ID, products, storeTotalPriceBeforeDiscount);
+            int storeTotalPrice = storeTotalPriceBeforeDiscount - 100;
+
+//            int storeTotalPrice = storeTotalPriceBeforeDiscount - priceToReduce;
             totalPrice += storeTotalPrice;
         }
         //remove items from stock
@@ -861,14 +865,11 @@ public class Market {
     public String checkAvailableExternalSupplyService(String country, String city) throws Exception {
         String availibleExteranlSupplyService =this.supplyServicesFacade.checkAvailableExternalSupplyService(country,city);
         if("-1".equals(availibleExteranlSupplyService)) {
-<<<<<<< HEAD
+
             throw new Exception(ExceptionsEnum.NoExternalSupplyService.toString());
         }
         if("-2".equals(availibleExteranlSupplyService)) {
             throw new Exception(ExceptionsEnum.ExternalSupplyServiceIsNotAvailableForArea.toString());
-=======
-            throw new Exception(ExceptionsEnum.ExternalSupplyServiceIsNotAvailable.toString());
->>>>>>> 022897b812a95ea336d0bf8d7ec8846b1b69cfd7
         }
         return availibleExteranlSupplyService;
     }
