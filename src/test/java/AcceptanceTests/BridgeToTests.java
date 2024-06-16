@@ -81,5 +81,7 @@ public interface BridgeToTests {
 
     Response<String> removeDiscountRuleFromStore(int ruleNum, String userId, String storeId);
 
+    Response<String> setUserConfirmationPurchase(String userID);
+
 
 }

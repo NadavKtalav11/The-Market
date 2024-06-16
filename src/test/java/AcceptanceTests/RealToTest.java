@@ -199,4 +199,8 @@ public class RealToTest implements BridgeToTests {
         return service.removeDiscountRuleFromStore(ruleNum, userId, storeId);
     }
 
+    public Response<String> setUserConfirmationPurchase(String userID) {
+        return service.setUserConfirmationPurchase(userID);
+    }
+
 }

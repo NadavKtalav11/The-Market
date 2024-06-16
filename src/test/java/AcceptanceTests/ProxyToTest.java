@@ -293,4 +293,12 @@ public class ProxyToTest implements BridgeToTests {
         else
             return new Response<>(null, "Not Implemented yet");
     }
+
+    @Override
+    public Response<String> setUserConfirmationPurchase(String userID) {
+        if (realServiceAdaptor != null)
+            return realServiceAdaptor.setUserConfirmationPurchase(userID);
+        else
+            return new Response<>(null, "Not Implemented yet");
+    }
 }
