@@ -3,13 +3,13 @@ package AcceptanceTests.Users.Purchase;
 import AcceptanceTests.BridgeToTests;
 import AcceptanceTests.ProxyToTest;
 import ServiceLayer.Response;
-import Util.ExceptionsEnum;
-import Util.PaymentDTO;
-import Util.UserDTO;
+import Util.*;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.concurrent.TimeoutException;
 
@@ -32,9 +32,9 @@ public class PurchaseTest {
          countries.add("Israel");
          HashSet<String> cities = new HashSet<>();
          cities.add("BeerSheva");
-         impl.init("KobiM", "27/4/95", "Israel","Beer Sheva","Mesada","kobi Menashe", "Password123",
+         impl.init(new UserDTO("0", "KobiM", "27/4/95", "Israel","Beer Sheva","Mesada","kobi Menashe"), "Password123",
 
-                 "1", "payementService", "kobi@gmail.com", "2", "supplyService", countries, cities);
+                 new PaymentServiceDTO("1", "payementService", "kobi@gmail.com"),new SupplyServiceDTO("2", "supplyService", countries, cities));
 
 
         userID1 = impl.enterMarketSystem().getData();
@@ -51,10 +51,9 @@ public class PurchaseTest {
         impl.addProductToBasket("Milk", 2, storeID, userID2);
         impl.addProductToBasket("Cheese", 4, storeID, userID2);
         impl.addProductToBasket("Yogurt", 5, storeID, userID2);
-
         // Initialize paymentDTO and userDTO
         paymentDTO = new PaymentDTO("holderName", "1111222233334444", 1, 12, 2025);
-        userDTO = new UserDTO(userID1, "newUser1", "12/12/2000", "Israel", "BeerSheva", "bialik", "noa");
+        userDTO = new UserDTO(userID2, "newUser2", "12/12/2000", "Israel", "BeerSheva", "bialik", "noa");
     }
 
     @Test
@@ -73,18 +72,17 @@ public class PurchaseTest {
 //        });
 //    }
 
-    //todo David implement this already
-//    @Test
-//    public void purchaseWithInvalidPaymentDetailsTest() {
-//        // Invalid payment details
-//        PaymentDTO invalidPaymentDTO = new PaymentDTO("holderName", "1111222233334444", 13, 2025, "123", "holderID");
-//
-//        Exception exception = assertThrows(Exception.class, () -> {
-//            impl.purchase(userID1, invalidPaymentDTO, userDTO);
-//        });
-//
-//        assertEquals("There is a problem with the provided payment measure or details of the order.\n", exception.getMessage());
-//    }
+//    //todo David implement this already
+    @Test
+    public void purchaseWithInvalidPaymentDetailsTest() throws Exception {
+        // Invalid payment details
+        PaymentDTO invalidPaymentDTO = new PaymentDTO("holderName", "1111222233334444", 13, 12, 1990);
+        Response<String> response = impl.purchase(userID2, userDTO.getCountry(), userDTO.getCity(),userDTO.getAddress(),
+                    invalidPaymentDTO.getCreditCardNumber(), invalidPaymentDTO.getCvv(), invalidPaymentDTO.getMonth(), invalidPaymentDTO.getYear(), invalidPaymentDTO.getHolderId());
+
+
+        assertEquals( ExceptionsEnum.InvalidCreditCardParameters.toString(), response.getDescription());
+    }
 
     @Test
     public void purchaseWithEmptyCartTest() {
@@ -119,8 +117,7 @@ public class PurchaseTest {
 
      @Test
      public void purchasePolicyInvalidTest() {
-         // TODO: 31/05/2024 change this test to use mock
-         // TODO: 31/05/2024 maybe need to add also test for discount policy
+         impl.addPurchaseRuleToStore(new ArrayList<>(Arrays.asList(5)), new ArrayList<>(), userID1, storeID);
 
          Response<String> response =impl.purchase(userID2, userDTO.getCountry(), userDTO.getCity(), userDTO.getAddress(), paymentDTO.getCreditCardNumber(),paymentDTO.getCvv(),paymentDTO.getMonth(), paymentDTO.getYear(),paymentDTO.getHolderId());
          assertFalse(response.isSuccess());
@@ -133,6 +130,6 @@ public class PurchaseTest {
          Response<String> response =impl.purchase(userID2, "Israel", "Tel Aviv", "Rothschild", paymentDTO.getCreditCardNumber(),paymentDTO.getCvv(),paymentDTO.getMonth(), paymentDTO.getYear(),paymentDTO.getHolderId());
          assertFalse(response.isSuccess());
 
-         assertEquals(ExceptionsEnum.ExternalSupplyServiceIsNotAvailable.toString(), response.getDescription());
+         assertEquals(ExceptionsEnum.ExternalSupplyServiceIsNotAvailableForArea.toString(), response.getDescription());
      }
 }

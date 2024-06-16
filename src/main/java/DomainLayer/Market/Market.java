@@ -6,14 +6,12 @@ import DomainLayer.Notifications.StoreNotification;
 import DomainLayer.PaymentServices.PaymentServicesFacade;
 import DomainLayer.Role.RoleFacade;
 import DomainLayer.Store.Product;
+import Util.ExceptionsEnum;
+
 import DomainLayer.Store.StoreFacade;
 import DomainLayer.User.UserFacade;
 import DomainLayer.SupplyServices.SupplyServicesFacade;
-import Util.CartDTO;
-import Util.ExceptionsEnum;
-import Util.PaymentDTO;
-import Util.ProductDTO;
-import Util.UserDTO;
+import Util.*;
 
 import java.util.*;
 import java.util.regex.Pattern;
@@ -53,6 +51,36 @@ public class Market {
         managersLock = new Object();
     }
 
+
+    public Market(UserFacade userFacade, AuthenticationAndSecurityFacade authenticationAndSecurityFacade,
+                  StoreFacade storeFacade){
+        this.storeFacade = storeFacade;
+        this.userFacade = userFacade;
+        this.roleFacade = RoleFacade.getInstance();
+        this.paymentServicesFacade = PaymentServicesFacade.getInstance();
+        this.authenticationAndSecurityFacade = authenticationAndSecurityFacade;
+        supplyServicesFacade= SupplyServicesFacade.getInstance();
+        initializedLock= new Object();
+        this.systemManagerIds = new HashSet<>();
+        managersLock = new Object();
+
+    }
+
+    public Market(UserFacade userFacade, AuthenticationAndSecurityFacade authenticationAndSecurityFacade,
+                  StoreFacade storeFacade, SupplyServicesFacade supplyServicesFacade){
+        this.storeFacade = storeFacade;
+        this.userFacade = userFacade;
+        this.roleFacade = RoleFacade.getInstance();
+        this.paymentServicesFacade = PaymentServicesFacade.getInstance();
+        this.authenticationAndSecurityFacade = authenticationAndSecurityFacade;
+        this.supplyServicesFacade= supplyServicesFacade;
+        initializedLock= new Object();
+        this.systemManagerIds = new HashSet<>();
+        managersLock = new Object();
+
+    }
+
+
     public Market newForTests(){
         MarketInstance = new Market();
         StoreFacade storeFacade1 =  storeFacade.newForTest();
@@ -74,22 +102,20 @@ public class Market {
 
 
 
-    public void init(UserDTO user, String password, String licensedDealerNumber,
-                     String paymentServiceName, String url,
-                     String licensedDealerNumber1, String supplyServiceName, HashSet<String> countries, HashSet<String> cities) throws Exception {
+    public String init(UserDTO user, String password, PaymentServiceDTO paymentServiceDTO,  SupplyServiceDTO supplyServiceDTO) throws Exception {
         synchronized (initializedLock) {
             if (initialized == true) {
-                return;
+                return null;
             }
         }
         try {
             // Check for supply service
-            if (supplyServiceName == null || licensedDealerNumber1.length()<0 || countries==null || cities==null ) {
-                throw new Exception("The system has not been able to be launched since there is a problem with the supply service details");
+            if (supplyServiceDTO.getSupplyServiceName() == null || supplyServiceDTO.getLicensedDealerNumber().length()<0 || supplyServiceDTO.getCountries()==null || supplyServiceDTO.getCities()==null ) {
+                throw new IllegalArgumentException(ExceptionsEnum.InvalidSupplyServiceDetails.toString());
             }
             // Check for payment service
-            if (paymentServiceName == null || url==null || licensedDealerNumber ==null) {
-                throw new Exception("The system has not been able to be launched since there is a problem with the payment service details");
+            if (paymentServiceDTO.getPaymentServiceName() == null || paymentServiceDTO.getUrl()==null || paymentServiceDTO.getLicensedDealerNumber() ==null) {
+                throw new IllegalArgumentException(ExceptionsEnum.InvalidPaymentServiceDetails.toString());
             }
             // Initialization logic here
             synchronized (initializedLock) {
@@ -105,40 +131,42 @@ public class Market {
         String systemMangerId = userFacade.register(firstUserID, user, encrypted);
         synchronized (managersLock) {
             systemManagerIds.add(systemMangerId);
+
         }
-        paymentServicesFacade.addExternalService(licensedDealerNumber,paymentServiceName,url);
-        supplyServicesFacade.addExternalService(licensedDealerNumber1,supplyServiceName, countries, cities);
+        paymentServicesFacade.addExternalService(paymentServiceDTO);
+        supplyServicesFacade.addExternalService(supplyServiceDTO);
         synchronized (initializedLock) {
             initialized = true;
         }
+        return firstUserID;
     }
 
-    public void addExternalPaymentService(String licensedDealerNumber,String paymentServiceName, String url, String systemMangerId) throws Exception {
+    public void addExternalPaymentService(PaymentServiceDTO paymentServiceDTO, String systemMangerId) throws Exception {
         try {
             synchronized (managersLock) {
                 if (!systemManagerIds.contains(systemMangerId)) {
-                    throw new Exception("Only system manager is allowed to add new external payment service");
+                    throw new Exception(ExceptionsEnum.SystemManagerPaymentAuthorization.toString());
                 }
             }
-            if (paymentServiceName == null || licensedDealerNumber==null || url==null ) {
-                throw new Exception("The system has not been able to add the payment service due to invalid details");
+            if (paymentServiceDTO.getPaymentServiceName() == null || paymentServiceDTO.getLicensedDealerNumber()==null || paymentServiceDTO.getUrl()==null ) {
+                throw new IllegalArgumentException(ExceptionsEnum.InvalidPaymentServiceParameters.toString());
             }
         } catch (Exception e) {
             // Log the error or handle it as needed
             throw e;  // Re-throwing the exception to be handled by the caller
         }
-        paymentServicesFacade.addExternalService(licensedDealerNumber, paymentServiceName, url);
+        paymentServicesFacade.addExternalService(paymentServiceDTO);
     }
 
     public void removeExternalPaymentService(String licensedDealerNumber, String systemMangerId) throws Exception {
         try {
             synchronized (managersLock) {
                 if (!systemManagerIds.contains(systemMangerId)) {
-                    throw new Exception("Only system manager is allowed to remove external payment services");
+                    throw new Exception(ExceptionsEnum.SystemManagerPaymentAuthorizationRemove.toString());
                 }
             }
             if (paymentServicesFacade.getAllPaymentServices().size() <= 1) {
-                throw new Exception("There must remain at least one external payment service in the system");
+                throw new Exception(ExceptionsEnum.OnlyPaymentService.toString());
             }
         }
         catch (Exception e) {
@@ -149,33 +177,33 @@ public class Market {
 
     }
 
-    public void addExternalSupplyService(String licensedDealerNumber, String supplyServiceName, HashSet<String> countries, HashSet<String> cities, String systemManagerId) throws Exception {
+    public void addExternalSupplyService(SupplyServiceDTO supplyServiceDTO, String systemManagerId) throws Exception {
         try {
             synchronized (managersLock) {
                 if (!systemManagerIds.contains(systemManagerId)) {
-                    throw new Exception("Only system manager is allowed to add new external supply service");
+                    throw new Exception(ExceptionsEnum.SystemManagerSupplyAuthorization.toString());
                 }
             }
-            if (supplyServiceName == null || countries ==null || cities ==null || licensedDealerNumber.length() == 0 || supplyServiceName == null ) {
-                throw new Exception("The system has not been able to add the supply service due to invalid details");
+            if (supplyServiceDTO.getSupplyServiceName() == null || supplyServiceDTO.getCountries() ==null || supplyServiceDTO.getCities() ==null || Integer.parseInt(supplyServiceDTO.getLicensedDealerNumber())< 0  ) {
+                throw new IllegalArgumentException(ExceptionsEnum.InvalidSupplyServiceParameters.toString());
             }
         } catch (Exception e) {
             throw e;  // Re-throwing the exception to be handled by the caller
         }
-        supplyServicesFacade.addExternalService(licensedDealerNumber, supplyServiceName, countries, cities);
+        supplyServicesFacade.addExternalService(supplyServiceDTO);
 
     }
 
-    public void removeExternalSupplyService(int licensedDealerNumber, String systemManagerId) throws Exception {
+    public void removeExternalSupplyService(String licensedDealerNumber, String systemManagerId) throws Exception {
 
             try {
                 synchronized (managersLock) {
                     if (!systemManagerIds.contains(systemManagerId)) {
-                        throw new Exception("Only system manager is allowed to remove external supply service");
+                        throw new Exception(ExceptionsEnum.SystemManagerSupplyAuthorizationRemove.toString());
                     }
                 }
                 if (supplyServicesFacade.getAllSupplyServices().size() <= 1) {
-                    throw new Exception("There must remain at least one external supply service in the system");
+                    throw new Exception(ExceptionsEnum.OnlySupplyService.toString());
                 }
                 supplyServicesFacade.removeExternalService(licensedDealerNumber);
             } catch (Exception e) {
@@ -189,13 +217,13 @@ public class Market {
         }
     }
 
-    public void purchase(String userID, PaymentDTO paymentDTO, UserDTO userDTO) throws Exception {
+    public void purchase(PaymentDTO paymentDTO, UserDTO userDTO) throws Exception {
         CartDTO cartDTO = null;
         ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
         ScheduledFuture<?> timeoutHandle = null;
 
         try {
-            cartDTO = checkingCartValidationBeforePurchase(userID, userDTO);
+            cartDTO = checkingCartValidationBeforePurchase(userDTO.getUserId(), userDTO);
 
             // Create a CompletableFuture for user input
 //            CompletableFuture<Void> userInputFuture = new CompletableFuture<>();
@@ -214,7 +242,7 @@ public class Market {
 //            userInputFuture.get();
 
             // Proceed with payment if user input is received
-            payWithExternalPaymentService(cartDTO, paymentDTO, userID);
+            payWithExternalPaymentService(cartDTO, paymentDTO, userDTO.getUserId());
         } catch (Exception e) {
             if (cartDTO != null) {
                 returnCartToStock(cartDTO.getStoreToProducts());
@@ -228,13 +256,92 @@ public class Market {
         }
     }
 
+    public void purchaseForTest(PaymentDTO paymentDTO, UserDTO userDTO) throws Exception {
+        CartDTO cartDTO = null;
+        ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
+        ScheduledFuture<?> timeoutHandle = null;
+
+        try {
+            cartDTO = checkingCartValidationBeforePurchase1(userDTO.getUserId(), userDTO);
+
+            // Create a CompletableFuture for user input
+//            CompletableFuture<Void> userInputFuture = new CompletableFuture<>();
+//
+//            // Schedule a task to complete the future with an exception if the user does not respond in time
+//            timeoutHandle = scheduler.schedule(() -> {
+//                userInputFuture.completeExceptionally(new TimeoutException("User input time expired"));
+//            }, 5, TimeUnit.SECONDS);
+//
+//            // Here you should integrate your actual user input mechanism
+//            // For this example, we simulate user input with a manual completion
+//            // In a real application, replace this line with actual user input handling
+//            // userInputFuture.complete(null);  // Uncomment this to simulate user input completion
+//
+//            // Wait for user input or timeout
+//            userInputFuture.get();
+
+            // Proceed with payment if user input is received
+            //payWithExternalPaymentService(cartDTO, paymentDTO, userDTO.getUserId());
+        } catch (Exception e) {
+            if (cartDTO != null) {
+                returnCartToStock(cartDTO.getStoreToProducts());
+            }
+            throw e;
+        } finally {
+            if (timeoutHandle != null && !timeoutHandle.isDone()) {
+                timeoutHandle.cancel(true);
+            }
+            scheduler.shutdown();
+        }
+    }
+
+    public CartDTO checkingCartValidationBeforePurchase1(String user_ID,UserDTO userDTO) throws Exception {
+        if (userFacade.isMember(user_ID)) {
+            String memberId = userFacade.getMemberIdByUserId(user_ID);
+            boolean succeeded = authenticationAndSecurityFacade.validateToken(authenticationAndSecurityFacade.getToken(memberId));if (!succeeded) {
+                logout(user_ID);
+                throw new Exception(ExceptionsEnum.sessionOver.toString());
+            }
+        }
+        int totalPrice = 0;
+        this.userFacade.isUserCartEmpty(user_ID);
+
+        List<String> stores = this.userFacade.getCartStoresByUser(user_ID);
+        for(String store_ID: stores)
+        {
+            Map<String, List<Integer>> products = this.userFacade.getCartProductsByStoreAndUser(store_ID, user_ID);
+            int quantity;
+            List<ProductDTO> productDTOS = this.storeFacade.getProductsDTOSByProductsNames(products, store_ID);
+            for(String productName: products.keySet()) {
+                quantity = products.get(productName).get(0);
+                this.storeFacade.checkQuantity(productName, quantity, store_ID);
+            }
+
+//            this.storeFacade.checkPurchasePolicy(userDTO, productDTOS, store_ID);
+//            int priceToReduce = storeFacade.calcDiscountPolicy(userDTO, productDTOS, store_ID);
+
+            String availableExternalSupplyService = this.checkAvailableExternalSupplyService(userDTO.getCountry(), userDTO.getCity());
+           // this.createShiftingDetails(userDTO.getCountry(), userDTO.getCity(), availableExternalSupplyService, userDTO.getAddress(), user_ID);
+
+            int storeTotalPriceBeforeDiscount = this.userFacade.getCartPriceByUser(user_ID);
+            int storeTotalPrice = storeTotalPriceBeforeDiscount - 100;
+
+//            int storeTotalPrice = storeTotalPriceBeforeDiscount - priceToReduce;
+            totalPrice += storeTotalPrice;
+        }
+        //remove items from stock
+        //removeUserCartFromStock(user_ID);
+        return new CartDTO(user_ID,totalPrice,getPurchaseList(user_ID));
+    }
+
+
 
     public void payWithExternalPaymentService(CartDTO cartDTO,PaymentDTO payment, String userId) throws Exception{
         if(cartDTO.getCartPrice()<= 0 || payment.getMonth()> 12 || payment.getMonth()<1 || payment.getYear() < 2020 ||payment.getHolderId()==null ||cartDTO.getStoreToProducts()==null) {
-            throw new Exception("There is a problem with the provided payment measure or details of the order.\n");
+            throw new IllegalArgumentException(ExceptionsEnum.InvalidCreditCardParameters.toString());
         }
         if(paymentServicesFacade.getAllPaymentServices().size()<1){
-            throw new Exception("There is no available external payment system.\n");
+            throw new Exception(ExceptionsEnum.noAvailableExternalPaymentService.toString());
         }
         Map<String,String> receiptIdStoreId = paymentServicesFacade.pay(cartDTO.getCartPrice(), payment, userId, cartDTO.getStoreToProducts()); //<receiptId, storeId>
         //print when implement notifications (purchase successes)
@@ -287,9 +394,11 @@ public class Market {
         }
         String encryptedPassword = authenticationAndSecurityFacade.encodePassword(password);
         String memberId = userFacade.register(userId, user, encryptedPassword);
-        authenticationAndSecurityFacade.generateToken(memberId);
+        //authenticationAndSecurityFacade.generateToken(memberId);
         return memberId;
     }
+
+
 
     public boolean checkPasswordValidation(String password){
         String PASSWORD_PATTERN =
@@ -301,10 +410,11 @@ public class Market {
 
     }
 
-    public void Login(String userId,String username, String password) throws Exception {
+    public String Login(String userId,String username, String password) throws Exception {
         String encryptedPassword = authenticationAndSecurityFacade.encodePassword(password);
-        userFacade.Login(userId, username,encryptedPassword);
-        authenticationAndSecurityFacade.generateToken(userId);
+        String memberId = userFacade.Login(userId, username,encryptedPassword);
+        authenticationAndSecurityFacade.generateToken(memberId);
+        return memberId;
     }
 
     public void addProductToBasket(String productName, int quantity, String storeId, String userId) throws Exception {
@@ -321,7 +431,9 @@ public class Market {
         Map<String, List<Integer>> products = this.userFacade.getCartProductsByStoreAndUser(storeId, userId);
         products.put(productName, new ArrayList<>(Arrays.asList(quantity)));
         List<ProductDTO> productDTOS = storeFacade.getProductsDTOSByProductsNames(products, storeId);
-        storeFacade.checkPolicies(new UserDTO(userFacade.getUserByID(userId)), productDTOS, storeId);
+        UserDTO user = new UserDTO(userFacade.getUserByID(userId));
+        storeFacade.checkPurchasePolicy(user, productDTOS, storeId);
+        int priceToReduce = storeFacade.calcDiscountPolicy(user, productDTOS, storeId);
         int totalPrice = storeFacade.calcPrice(productName, quantity, storeId, userId);
         userFacade.addItemsToBasket(productName, quantity, storeId, userId, totalPrice);
 
@@ -365,12 +477,12 @@ public class Market {
     public void addProductToStore(String userId, String storeId, ProductDTO product) throws Exception {
         userFacade.errorIfUserNotExist(userId);
         userFacade.errorIfUserNotMember(userId);
-        boolean succeeded = authenticationAndSecurityFacade.validateToken(authenticationAndSecurityFacade.getToken(userId));
+        String memberId = userFacade.getMemberIdByUserId(userId);
+        boolean succeeded = authenticationAndSecurityFacade.validateToken(authenticationAndSecurityFacade.getToken(memberId));
         if (!succeeded) {
             logout(userId);
             throw new Exception(ExceptionsEnum.sessionOver.toString());
         }
-        String memberId = userFacade.getMemberIdByUserId(userId);
         storeFacade.errorIfStoreNotExist(storeId);
         if (roleFacade.verifyStoreOwner(storeId, memberId) ||
                 (roleFacade.verifyStoreManager(storeId, memberId) &&
@@ -384,12 +496,13 @@ public class Market {
     public void removeProductFromStore(String userId, String storeId, String productName) throws Exception {
         userFacade.errorIfUserNotExist(userId);
         userFacade.errorIfUserNotMember(userId);
-        boolean succeeded = authenticationAndSecurityFacade.validateToken(authenticationAndSecurityFacade.getToken(userId));
+        String memberId = userFacade.getMemberIdByUserId(userId);
+        boolean succeeded = authenticationAndSecurityFacade.validateToken(authenticationAndSecurityFacade.getToken(memberId));
         if (!succeeded) {
             logout(userId);
             throw new Exception(ExceptionsEnum.sessionOver.toString());
         }
-        String memberId = userFacade.getMemberIdByUserId(userId);
+
         storeFacade.errorIfStoreNotExist(storeId);
         if (roleFacade.verifyStoreOwner(storeId, memberId) ||
                 (roleFacade.verifyStoreManager(storeId, memberId) &&
@@ -403,12 +516,13 @@ public class Market {
     public void updateProductInStore(String userId, String storeId, ProductDTO product) throws Exception {
         userFacade.errorIfUserNotExist(userId);
         userFacade.errorIfUserNotMember(userId);
-        boolean succeeded = authenticationAndSecurityFacade.validateToken(authenticationAndSecurityFacade.getToken(userId));
+        String memberId = userFacade.getMemberIdByUserId(userId);
+        boolean succeeded = authenticationAndSecurityFacade.validateToken(authenticationAndSecurityFacade.getToken(memberId));
         if (!succeeded) {
             logout(userId);
             throw new Exception(ExceptionsEnum.sessionOver.toString());
         }
-        String memberId = userFacade.getMemberIdByUserId(userId);
+
         storeFacade.errorIfStoreNotExist(storeId);
         if (roleFacade.verifyStoreOwner(storeId, memberId) ||
                 (roleFacade.verifyStoreManager(storeId, memberId) &&
@@ -422,12 +536,12 @@ public class Market {
     public void appointStoreOwner(String nominatorUserId, String nominatedUsername, String storeId) throws Exception {
         userFacade.errorIfUserNotExist(nominatorUserId);
         userFacade.errorIfUserNotMember(nominatorUserId);
-        boolean succeeded = authenticationAndSecurityFacade.validateToken(authenticationAndSecurityFacade.getToken(nominatorUserId));
+        String nominatorMemberID = userFacade.getMemberIdByUserId(nominatorUserId);
+        boolean succeeded = authenticationAndSecurityFacade.validateToken(authenticationAndSecurityFacade.getToken(nominatorMemberID));
         if (!succeeded) {
             logout(nominatorUserId);
             throw new Exception(ExceptionsEnum.sessionOver.toString());
         }
-        String nominatorMemberID = userFacade.getMemberIdByUserId(nominatorUserId);
         storeFacade.errorIfStoreNotExist(storeId);
         roleFacade.verifyStoreOwnerError(storeId, nominatorMemberID);
         userFacade.errorIfUsernameNotFound(nominatedUsername);
@@ -438,13 +552,13 @@ public class Market {
     public void appointStoreManager(String nominatorUserId, String nominatedUsername, String storeId,
                                     boolean inventoryPermissions, boolean purchasePermissions) throws Exception {
         userFacade.errorIfUserNotExist(nominatorUserId);
+        String nominatorMemberID = userFacade.getMemberIdByUserId(nominatorUserId);
         userFacade.errorIfUserNotMember(nominatorUserId);
-        boolean succeeded = authenticationAndSecurityFacade.validateToken(authenticationAndSecurityFacade.getToken(nominatorUserId));
+        boolean succeeded = authenticationAndSecurityFacade.validateToken(authenticationAndSecurityFacade.getToken(nominatorMemberID));
         if (!succeeded) {
             logout(nominatorUserId);
             throw new Exception(ExceptionsEnum.sessionOver.toString());
         }
-        String nominatorMemberID = userFacade.getMemberIdByUserId(nominatorUserId);
         storeFacade.errorIfStoreNotExist(storeId);
         roleFacade.verifyStoreOwnerError(storeId, nominatorMemberID);
         userFacade.errorIfUsernameNotFound(nominatedUsername);
@@ -456,17 +570,61 @@ public class Market {
                                     boolean inventoryPermissions, boolean purchasePermissions) throws Exception {
         userFacade.errorIfUserNotExist(nominatorUserId);
         userFacade.errorIfUserNotMember(nominatorUserId);
-        boolean succeeded = authenticationAndSecurityFacade.validateToken(authenticationAndSecurityFacade.getToken(nominatorUserId));
+        String nominatorMemberID = userFacade.getMemberIdByUserId(nominatorUserId);
+        boolean succeeded = authenticationAndSecurityFacade.validateToken(authenticationAndSecurityFacade.getToken(nominatorMemberID));
         if (!succeeded) {
             logout(nominatorUserId);
             throw new Exception(ExceptionsEnum.sessionOver.toString());
         }
-        String nominatorMemberID = userFacade.getMemberIdByUserId(nominatorUserId);
+
         storeFacade.errorIfStoreNotExist(storeId);
         roleFacade.verifyStoreOwnerError(storeId, nominatorMemberID);
         userFacade.errorIfUsernameNotFound(nominatedUsername);
         String nominatedMemberID = userFacade.getMemberByUsername(nominatedUsername).getMemberID();
         roleFacade.updateStoreManagerPermissions(nominatedMemberID, storeId, inventoryPermissions, purchasePermissions, nominatorMemberID);
+    }
+
+    public List<ProductDTO> getStoreProducts(String storeId){
+        return storeFacade.getStoreProductsDTO(storeId);
+    }
+
+    public List<UserDTO> getStoreWorkers(String storeId){
+        List<UserDTO> workers = new ArrayList<>();
+        List<String> managersIdList = roleFacade.getAllStoreManagers(storeId);
+        workers.addAll(userFacade.getUserDTOByMemberId(managersIdList));
+        List<String> ownersIdList2 = roleFacade.getAllStoreOwners(storeId);
+        workers.addAll(userFacade.getUserDTOByMemberId(ownersIdList2));
+        return workers;
+
+    }
+
+    public List<UserDTO> getStoreManagersDTO(String storeId){
+        List<UserDTO> managers = new ArrayList<>();
+        List<String> managersIdList = roleFacade.getAllStoreManagers(storeId);
+        managers.addAll(userFacade.getUserDTOByMemberId(managersIdList));
+
+        return managers;
+
+    }
+
+    public List<UserDTO> getStoreOwnersDTO(String storeId){
+        List<UserDTO> owners = new ArrayList<>();
+        List<String> ownersIdList = roleFacade.getAllStoreOwners(storeId);
+        owners.addAll(userFacade.getUserDTOByMemberId(ownersIdList));
+        return owners;
+
+    }
+
+    public List<String> getStoreManagers(String storeId){
+
+        return roleFacade.getAllStoreManagers(storeId);
+
+
+    }
+    public List<String> getStoreOwners(String storeId){
+
+        return roleFacade.getAllStoreOwners(storeId);
+
     }
 
     public void closeStore(String user_ID, String store_ID) throws Exception
@@ -552,9 +710,6 @@ public class Market {
         return managersAuthorizations;
     }
 
-
-   // public List<Integer> getInformationAboutStores(String user_ID)throws Exception
-
     public Map<String, Map<String, List<Integer>>> getPurchaseList(String userId)throws Exception{
         if (userFacade.isMember(userId)) {
             String memberId = userFacade.getMemberIdByUserId(userId);
@@ -591,12 +746,13 @@ public class Market {
         List<String> closedStores = storeFacade.getInformationAboutClosedStores(); //closed stores available only for owners/ system managers
         List<String> closedStoreAvailable = null;
 
-        userFacade.isUserLoggedInError(user_ID);
-        String member_ID = this.userFacade.getMemberIdByUserId(user_ID);
-        if (!this.roleFacade.verifyMemberIsSystemManager(user_ID))
-            closedStoreAvailable = roleFacade.getStoresByOwner(closedStores, member_ID);
-        else
-            closedStoreAvailable = closedStores;
+        if(userFacade.isMember(user_ID)) {
+            String member_ID = this.userFacade.getMemberIdByUserId(user_ID);
+            if (!this.roleFacade.verifyMemberIsSystemManager(user_ID))
+                closedStoreAvailable = roleFacade.getStoresByOwner(closedStores, member_ID);
+            else
+                closedStoreAvailable = closedStores; //all stores are available for system managers
+        }
 
         List<String> allAvailableStores = new ArrayList<>(openedStores);
         if (closedStoreAvailable != null) {
@@ -604,6 +760,10 @@ public class Market {
         }
 
         return allAvailableStores;
+    }
+
+    public List<String> getStoreCategories(){
+        return storeFacade.getStoreCategories();
     }
 
     public void modifyShoppingCart(String productName, int quantity, String storeId, String userId)throws Exception
@@ -623,10 +783,11 @@ public class Market {
             userFacade.checkIfCanRemove(productName, storeId, userId);
             storeFacade.checkQuantity(productName, quantity, storeId);
             Map<String, List<Integer>> products = this.userFacade.getCartProductsByStoreAndUser(storeId, userId);
-            products.put(productName, new ArrayList<>(Arrays.asList(quantity)));
-            List<ProductDTO> productDTOS = storeFacade.getProductsDTOSByProductsNames(products, storeId);
-            storeFacade.checkPolicies(new UserDTO(userFacade.getUserByID(userId)), productDTOS, storeId);
             int totalPrice = storeFacade.calcPrice(productName, quantity, storeId, userId);
+            products.put(productName, new ArrayList<>(Arrays.asList(quantity, totalPrice)));
+            List<ProductDTO> productDTOS = storeFacade.getProductsDTOSByProductsNames(products, storeId);
+            UserDTO user = new UserDTO(userFacade.getUserByID(userId));
+            storeFacade.checkPurchasePolicy(user, productDTOS, storeId);
             userFacade.modifyBasketProduct(productName, quantity, storeId, userId, totalPrice);
         }
     }
@@ -642,7 +803,8 @@ public class Market {
             }
         }
         userFacade.isUserLoggedInError(user_ID);
-        roleFacade.verifyMemberIsSystemManagerError(user_ID);
+        if (!systemManagerIds.contains(userFacade.getMemberIdByUserId(user_ID)))
+            throw new IllegalArgumentException(ExceptionsEnum.notSystemManager.toString());
         return paymentServicesFacade.getStorePurchaseInfo();
     }
 
@@ -691,12 +853,14 @@ public class Market {
                 this.storeFacade.checkQuantity(productName, quantity, store_ID);
             }
 
-            this.storeFacade.checkPolicies(userDTO, productDTOS, store_ID);
+            storeFacade.checkPurchasePolicy(userDTO, productDTOS, store_ID);
+            int priceToReduce = storeFacade.calcDiscountPolicy(userDTO, productDTOS, store_ID);
+
             String availableExternalSupplyService = this.checkAvailableExternalSupplyService(userDTO.getCountry(), userDTO.getCity());
             this.createShiftingDetails(userDTO.getCountry(), userDTO.getCity(), availableExternalSupplyService, userDTO.getAddress(), user_ID);
 
             int storeTotalPriceBeforeDiscount = this.userFacade.getCartPriceByUser(user_ID);
-            int storeTotalPrice = this.storeFacade.calculateTotalCartPriceAfterDiscount(store_ID, products, storeTotalPriceBeforeDiscount);
+            int storeTotalPrice = storeTotalPriceBeforeDiscount - priceToReduce;
             totalPrice += storeTotalPrice;
         }
         //remove items from stock
@@ -706,8 +870,11 @@ public class Market {
 
     public String checkAvailableExternalSupplyService(String country, String city) throws Exception {
         String availibleExteranlSupplyService =this.supplyServicesFacade.checkAvailableExternalSupplyService(country,city);
-        if("".equals(availibleExteranlSupplyService)) {
-            throw new Exception(ExceptionsEnum.ExternalSupplyServiceIsNotAvailable.toString());
+        if("-1".equals(availibleExteranlSupplyService)) {
+            throw new Exception(ExceptionsEnum.NoExternalSupplyService.toString());
+        }
+        if("-2".equals(availibleExteranlSupplyService)) {
+            throw new Exception(ExceptionsEnum.ExternalSupplyServiceIsNotAvailableForArea.toString());
         }
         return availibleExteranlSupplyService;
     }
@@ -753,6 +920,20 @@ public class Market {
         return storeFacade.inStoreProductSearch(productName, categoryStr, keywords, storeId);
     }
 
+    public List<ProductDTO> inStoreProductSearchDTO(String userId, String productName, String categoryStr, List<String> keywords, String storeId) throws Exception {
+        if (userFacade.isMember(userId)) {
+            String memberId = userFacade.getMemberIdByUserId(userId);
+            boolean succeeded = authenticationAndSecurityFacade.validateToken(authenticationAndSecurityFacade.getToken(memberId));
+            if (!succeeded) {
+                logout(userId);
+                throw new Exception(ExceptionsEnum.sessionOver.toString());
+            }
+        }
+        storeFacade.checkCategory(categoryStr);
+        storeFacade.verifyStoreExistError(storeId);
+        return storeFacade.inStoreProductSearchDTO(productName, categoryStr, keywords, storeId);
+    }
+
     public List<String> generalProductSearch(String userId, String productName, String categoryStr, List<String> keywords) throws Exception {
         if (userFacade.isMember(userId)) {
             String memberId = userFacade.getMemberIdByUserId(userId);
@@ -771,6 +952,34 @@ public class Market {
         {
             try {
                 filteredProductNames.addAll(inStoreProductSearch(userId, productName, categoryStr, keywords,store_ID));
+            }
+            catch (Exception e)
+            {
+                continue;
+            }
+        }
+        return filteredProductNames;
+    }
+
+    public Map<String, List<ProductDTO>> generalProductSearchDTO(String userId, String productName, String categoryStr, List<String> keywords) throws Exception {
+        if (userFacade.isMember(userId)) {
+            String memberId = userFacade.getMemberIdByUserId(userId);
+            boolean succeeded = authenticationAndSecurityFacade.validateToken(authenticationAndSecurityFacade.getToken(memberId));
+            if (!succeeded) {
+                logout(userId);
+                throw new Exception(ExceptionsEnum.sessionOver.toString());
+            }
+        }
+
+        storeFacade.checkCategory(categoryStr);
+
+        Map<String, List<ProductDTO>> filteredProductNames = new HashMap<>();
+        List<String> stores = this.storeFacade.getStores();
+        for(String store_ID: stores)
+        {
+            try {
+
+                filteredProductNames.put(store_ID, inStoreProductSearchDTO(userId, productName, categoryStr, keywords,store_ID));
             }
             catch (Exception e)
             {
@@ -864,7 +1073,7 @@ public class Market {
             throw new IllegalArgumentException(ExceptionsEnum.storeRateInvalid.toString());
     }
 
-    public void addRuleToStore(List<Integer> ruleNums, List<String> operators, String userId, String storeId) throws Exception {
+    public void addPurchaseRuleToStore(List<Integer> ruleNums, List<String> operators, String userId, String storeId) throws Exception {
         if (userFacade.isMember(userId)){
             String memberId = userFacade.getMemberIdByUserId(userId);
             boolean succeeded = authenticationAndSecurityFacade.validateToken(authenticationAndSecurityFacade.getToken(memberId));
@@ -874,14 +1083,14 @@ public class Market {
             }
         }
 
-        checkRulesAndOperators(ruleNums, operators);
+        checkLogicalRulesAndOperators(ruleNums, operators);
         String member_ID = this.userFacade.getMemberIdByUserId(userId);
         storeFacade.verifyStoreExistError(storeId);
         roleFacade.verifyStoreOwnerError(storeId, member_ID);
-        storeFacade.addRuleToStore(ruleNums, operators, storeId);
+        storeFacade.addPurchaseRuleToStore(ruleNums, operators, storeId);
     }
 
-    public void removeRuleFromStore(int ruleNum,  String userId, String storeId) throws Exception {
+    public void removePurchaseRuleFromStore(int ruleNum,  String userId, String storeId) throws Exception {
         if (userFacade.isMember(userId)){
             String memberId = userFacade.getMemberIdByUserId(userId);
             boolean succeeded = authenticationAndSecurityFacade.validateToken(authenticationAndSecurityFacade.getToken(memberId));
@@ -894,15 +1103,98 @@ public class Market {
         String member_ID = this.userFacade.getMemberIdByUserId(userId);
         storeFacade.verifyStoreExistError(storeId);
         roleFacade.verifyStoreOwnerError(storeId, member_ID);
-        storeFacade.removeRuleFromStore(ruleNum, storeId);
+        storeFacade.removePurchaseRuleFromStore(ruleNum, storeId);
     }
 
-    public void checkRulesAndOperators(List<Integer> ruleNums, List<String> operators) throws Exception {
+    public void addDiscountCondRuleToStore(List<Integer> ruleNums, List<String> logicOperators, List<DiscountValueDTO> discDetails, List<String> numericalOperators, String userId ,String storeId) throws Exception {
+        if (userFacade.isMember(userId)){
+            String memberId = userFacade.getMemberIdByUserId(userId);
+            boolean succeeded = authenticationAndSecurityFacade.validateToken(authenticationAndSecurityFacade.getToken(memberId));
+            if (!succeeded) {
+                logout(userId);
+                throw new IllegalArgumentException(ExceptionsEnum.sessionOver.toString());
+            }
+        }
+
+        checkLogicalRulesAndOperators(ruleNums, logicOperators);
+        checkNumericalRulesAndOperators(discDetails, numericalOperators);
+        checkProductDiscountDetails(discDetails);
+        String member_ID = this.userFacade.getMemberIdByUserId(userId);
+        storeFacade.verifyStoreExistError(storeId);
+        roleFacade.verifyStoreOwnerError(storeId, member_ID);
+        storeFacade.addDiscountCondRuleToStore(ruleNums, logicOperators, discDetails, numericalOperators, storeId);
+    }
+
+
+    public void addDiscountSimpleRuleToStore(List<DiscountValueDTO> discDetails, List<String> numericalOperators, String userId ,String storeId) throws Exception {
+        if (userFacade.isMember(userId)){
+            String memberId = userFacade.getMemberIdByUserId(userId);
+            boolean succeeded = authenticationAndSecurityFacade.validateToken(authenticationAndSecurityFacade.getToken(memberId));
+            if (!succeeded) {
+                logout(userId);
+                throw new IllegalArgumentException(ExceptionsEnum.sessionOver.toString());
+            }
+        }
+
+        checkNumericalRulesAndOperators(discDetails, numericalOperators);
+        checkProductDiscountDetails(discDetails);
+        String member_ID = this.userFacade.getMemberIdByUserId(userId);
+        storeFacade.verifyStoreExistError(storeId);
+        roleFacade.verifyStoreOwnerError(storeId, member_ID);
+        storeFacade.addDiscountSimpleRuleToStore(discDetails, numericalOperators, storeId);
+    }
+
+    public void removeDiscountRuleFromStore(int ruleNum, String userId ,String storeId) throws Exception {
+        if (userFacade.isMember(userId)){
+            String memberId = userFacade.getMemberIdByUserId(userId);
+            boolean succeeded = authenticationAndSecurityFacade.validateToken(authenticationAndSecurityFacade.getToken(memberId));
+            if (!succeeded) {
+                logout(userId);
+                throw new IllegalArgumentException(ExceptionsEnum.sessionOver.toString());
+            }
+        }
+
+        String member_ID = this.userFacade.getMemberIdByUserId(userId);
+        storeFacade.verifyStoreExistError(storeId);
+        roleFacade.verifyStoreOwnerError(storeId, member_ID);
+        storeFacade.removeDiscountRuleFromStore(ruleNum, storeId);
+    }
+
+    private void checkProductDiscountDetails(List<DiscountValueDTO> discDetails) {
+        for (DiscountValueDTO discountValueDTO : discDetails) {
+            int count = 0;
+            if (discountValueDTO.getCategory() != null) {
+                count++;
+            }
+            if (discountValueDTO.getIsStoreDiscount()) {
+                count++;
+            }
+            if (discountValueDTO.getProductsNames() != null) {
+                count++;
+            }
+            if (count != 1) {
+                throw new IllegalArgumentException(ExceptionsEnum.InvalidDiscountValueParameters.toString());
+            }
+        }
+    }
+
+    public void checkLogicalRulesAndOperators(List<Integer> ruleNums, List<String> operators) throws Exception {
         if (ruleNums.size() != operators.size() + 1) {
             throw new IllegalArgumentException(ExceptionsEnum.rulesNotMatchOpeators.toString());
         }
         for (int i = 0; i < operators.size(); i++) {
-            if (!operators.get(i).equals("AND") && !operators.get(i).equals("OR") && !operators.get(i).equals("COND")) {
+            if (!operators.get(i).equals("AND") && !operators.get(i).equals("OR") && !operators.get(i).equals("COND") && !operators.get(i).equals("XOR")) {
+                throw new IllegalArgumentException(ExceptionsEnum.InvalidOperator.toString());
+            }
+        }
+    }
+
+    public void checkNumericalRulesAndOperators(List<DiscountValueDTO> discDetails, List<String> numericalOperators) throws Exception {
+        if (discDetails.size() != numericalOperators.size() + 1) {
+            throw new IllegalArgumentException(ExceptionsEnum.rulesNotMatchOpeators.toString());
+        }
+        for (int i = 0; i < numericalOperators.size(); i++) {
+            if (!numericalOperators.get(i).equals("MAX") && !numericalOperators.get(i).equals("ADD")) {
                 throw new IllegalArgumentException(ExceptionsEnum.InvalidOperator.toString());
             }
         }

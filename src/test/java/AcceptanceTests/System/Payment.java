@@ -4,13 +4,12 @@ import AcceptanceTests.BridgeToTests;
 import AcceptanceTests.ProxyToTest;
 import DomainLayer.Market.Market;
 import DomainLayer.PaymentServices.ExternalPaymentService;
+import DomainLayer.PaymentServices.HttpClient;
 import DomainLayer.PaymentServices.PaymentServicesFacade;
 import DomainLayer.Store.StoreFacade;
 import DomainLayer.User.User;
 import DomainLayer.User.UserFacade;
-import Util.CartDTO;
-import Util.PaymentDTO;
-import Util.UserDTO;
+import Util.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
@@ -81,7 +80,7 @@ public class Payment {
         int year = 2024;
         String holderID = "123456789";
         String userID = "77";
-        userFacade.register(userID,  new UserDTO(userID, "username", "birthday", "country",  "city", "address",  "name"), "password");
+        userFacade.register(userID,  new UserDTO(userID, "username", "19/09/1996", "country",  "city", "address",  "name"), "password");
 
         String systemMangerId = "77";
 
@@ -90,7 +89,7 @@ public class Payment {
         String licensedDealerNumber = "12345";
         String paymentServiceName = "PayPal";
         String url = "http://paypal.com";
-        market.addExternalPaymentService(licensedDealerNumber, paymentServiceName, url, systemMangerId);
+        paymentServicesFacade.addExternalService(new PaymentServiceDTO(licensedDealerNumber, paymentServiceName, url));
         ExternalPaymentService externalPaymentService = paymentServicesFacade.getAllPaymentServices().get(licensedDealerNumber);
 
         int result = externalPaymentService.getIdAndAcquisition().size();
@@ -99,7 +98,7 @@ public class Payment {
         Map<Integer, Map<String, Integer>> productList = new HashMap<>();
 
         // Act and Assert
-        assertDoesNotThrow(() -> {market.payWithExternalPaymentService(cartDTO, new PaymentDTO(holderID, cardNumber, cvv, month, year), systemMangerId);
+        assertDoesNotThrow(() -> {paymentServicesFacade.pay(cartDTO.getCartPrice(), new PaymentDTO(holderID, cardNumber, cvv, month, year), cartDTO.getUserID(),cartDTO.getStoreToProducts());
         });
         int result1 = externalPaymentService.getIdAndAcquisition().size();
         assertEquals(1, result1);
@@ -118,13 +117,12 @@ public class Payment {
         String userID = "77";
 
 
-
         String systemManagerId = "77";
         market.getSystemManagerIds().add(systemManagerId);
         String licensedDealerNumber = "12345";
         String paymentServiceName = "PayPal";
         String url = "http://paypal.com";
-        market.addExternalPaymentService(licensedDealerNumber, paymentServiceName, url, systemManagerId);
+        paymentServicesFacade.addExternalService(new PaymentServiceDTO(licensedDealerNumber, paymentServiceName, url));
         ExternalPaymentService externalPaymentService = paymentServicesFacade.getAllPaymentServices().get(licensedDealerNumber);
         int result = externalPaymentService.getIdAndAcquisition().size();
         assertEquals(0, result);
@@ -138,7 +136,7 @@ public class Payment {
         });
         int result1 = externalPaymentService.getIdAndAcquisition().size();
         assertEquals(0, result1);
-        assertEquals("There is a problem with the provided payment measure or details of the order.\n", exception.getMessage());
+        assertEquals( ExceptionsEnum.InvalidCreditCardParameters.toString(), exception.getMessage());
 
     }
 
@@ -166,7 +164,52 @@ public class Payment {
             market.payWithExternalPaymentService(new CartDTO(userID,price,productList), new PaymentDTO(holderID, cardNumber, cvv, month, year), userID);
         });
 
-        assertEquals("There is no available external payment system.\n", exception.getMessage());
+        assertEquals(ExceptionsEnum.noAvailableExternalPaymentService.toString(), exception.getMessage());
+
+
+    }
+
+    @Test
+    public void CreditCardNotPassingTest() throws Exception {
+
+        CartDTO cartDTO = Mockito.mock(CartDTO.class);
+        // Stub the methods as needed
+        Mockito.when(cartDTO.getUserID()).thenReturn("77");
+        Mockito.when(cartDTO.getCartPrice()).thenReturn(100);
+        int price = 100;
+        String cardNumber = "12345678";
+        int cvv = 123;
+        int month = 12;
+        int year = 2024;
+        String holderID = "123456789";
+        String userID = "77";
+        userFacade.register(userID,  new UserDTO(userID, "username", "19/09/1996", "country",  "city", "address",  "name"), "password");
+
+        String systemMangerId = "77";
+
+        //  int systemMangerId1 = userFacade.registerSystemAdmin("david", "password", "birthday","country","city","address","name");
+        market.getSystemManagerIds().add(systemMangerId);
+        String licensedDealerNumber = "12345";
+        String paymentServiceName = "PayPal";
+        String url = "http://paypal.com";
+        HttpClient mockHttpClient = Mockito.mock(HttpClient.class);
+        Mockito.when(mockHttpClient.checkCreditCard(Mockito.eq(url), Mockito.any(PaymentDTO.class))).thenReturn(false);
+
+        paymentServicesFacade.addExternalService(new PaymentServiceDTO(licensedDealerNumber, paymentServiceName, url),mockHttpClient);
+        ExternalPaymentService externalPaymentService = paymentServicesFacade.getAllPaymentServices().get(licensedDealerNumber);
+
+        int result = externalPaymentService.getIdAndAcquisition().size();
+        assertEquals(0, result);
+
+        Map<String, Map<String, List<Integer>>> productList = new HashMap<>();
+
+
+
+        Exception exception = assertThrows(Exception.class, () -> {
+            paymentServicesFacade.pay(cartDTO.getCartPrice(), new PaymentDTO(holderID, cardNumber, cvv, month, year), cartDTO.getUserID(),cartDTO.getStoreToProducts());
+        });
+
+        assertEquals(ExceptionsEnum.CreditCardIssue.toString(), exception.getMessage());
 
 
     }

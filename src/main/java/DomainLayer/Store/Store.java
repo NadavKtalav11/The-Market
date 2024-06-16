@@ -1,8 +1,12 @@
 package DomainLayer.Store;
 
 import DomainLayer.Store.StoreDiscountPolicy.DiscountPolicy;
+import DomainLayer.Store.StoreDiscountPolicy.DiscountValue;
 import DomainLayer.Store.StorePurchasePolicy.PurchasePolicy;
 import DomainLayer.Store.PoliciesRulesLogicalConditions.Rule;
+//import Util.DiscountValueDTO;
+import Util.DiscountValueDTO;
+import Util.ExceptionsEnum;
 import Util.ProductDTO;
 
 import java.util.*;
@@ -29,7 +33,7 @@ public class Store {
     private final Object isOpenedLock;
     private final Object receiptsLock;
 
-    Store(String store_ID, String storeName, String description)
+    public Store(String store_ID, String storeName, String description)
     {
         this.store_ID = store_ID;
         this.isOpened = true;
@@ -72,6 +76,12 @@ public class Store {
         }
     }
 
+    public void addProduct(Product product) {
+        synchronized (storeProductLock) {
+            storeProducts.put(product.getProductName(),product);
+        }
+    }
+
     public Product getProductByName(String productName)
     {
         synchronized (storeProductLock) {
@@ -86,11 +96,23 @@ public class Store {
         }
     }
 
-    public ProductDTO getProductDTOByName(String productName, int quantity)
-    {
+
+    public List<ProductDTO> getProductsDTO(){
+        List<ProductDTO> productDTOList = new ArrayList<>();
+        synchronized (storeProductLock){
+            for (Product product: storeProducts.values()){
+                productDTOList.add(new ProductDTO(product));
+            }
+        }
+        return productDTOList;
+    }
+
+    public ProductDTO getProductDTOByName(String productName, int quantity) throws Exception {
         /*this function receives product from a user basket, with the quantity of this product in the basket and it's total price*/
         synchronized (storeProductLock) {
             Product product = storeProducts.get(productName);
+            if(product == null)
+                throw new Exception(ExceptionsEnum.productNotExistInStore.toString());
             return new ProductDTO(productName, product.getPrice(), quantity, product.getDescription(), product.getCategoryName());
         }
     }
@@ -168,9 +190,9 @@ public class Store {
         }
     }
 
-    public boolean checkDiscountPolicy(String userId, String productName)
+    public int calcDiscountPolicy(UserDTO userDTO, List<ProductDTO> products)
     {
-        return this.discountPolicy.checkDiscountPolicy(userId, productName);
+        return this.discountPolicy.calcDiscountPolicy(userDTO, products);
     }
 
     public boolean checkPurchasePolicy(UserDTO userDTO, List<ProductDTO> products)
@@ -187,6 +209,28 @@ public class Store {
                     .filter(product -> categoryStr == null || product.getCategoryName().equalsIgnoreCase(categoryStr))
                     .filter(product -> keywords == null || keywords.stream().anyMatch(keyword -> product.getDescription().toLowerCase().contains(keyword.toLowerCase())))
                     .map(Product::getProductName)
+                    .collect(Collectors.toList());
+        }
+    }
+
+
+    public List<ProductDTO> matchProductsDTO(String productName, String categoryStr, List<String> keywords)
+    {
+        //if keyword looks like ["food"]
+        if (keywords.get(0).contains("[")) {
+            keywords.set(0, keywords.get(0).replace("[", ""));
+        }
+        if (keywords.get(keywords.size() - 1).contains("]")) {
+            keywords.set(keywords.size() - 1, keywords.get(keywords.size() - 1).replace("]", ""));
+        }
+
+        synchronized (storeProductLock) {
+            List<Product> products = storeProducts.values().stream().toList();
+            return products.stream()
+                    .filter(product -> productName == null || product.getProductName().toLowerCase().contains(productName.toLowerCase()))
+                    .filter(product -> categoryStr == null || product.getCategoryName().equalsIgnoreCase(categoryStr))
+                    .filter(product -> keywords == null || keywords.stream().anyMatch(keyword -> product.getDescription().toLowerCase().contains(keyword.toLowerCase())))
+                    .map(Product::getProductDTO)
                     .collect(Collectors.toList());
         }
     }
@@ -219,14 +263,6 @@ public class Store {
         }
     }
 
-
-    public void addRule(List<Rule<UserDTO, List<ProductDTO>>> rules, List<String> operators) {
-        purchasePolicy.addRule(rules, operators);
-    }
-
-    public void removeRule(int ruleNum) {
-        purchasePolicy.removeRule(ruleNum);
-    }
   
     public String getStore_ID() {
         return store_ID;
@@ -246,5 +282,33 @@ public class Store {
 
     public String getDescription(){
         return description;
+    }
+
+    public void addPurchaseRule(List<Rule<UserDTO, List<ProductDTO>>> rules, List<String> operators) {
+        purchasePolicy.addRule(rules, operators);
+    }
+
+    public void removePurchaseRule(int ruleNum) {
+        purchasePolicy.removeRule(ruleNum);
+    }
+
+    public void addDiscountCondRule(List<Rule<UserDTO, List<ProductDTO>>> rules, List<String> logicalOperators, List<DiscountValue> discDetails, List<String> numericalOperators) {
+        discountPolicy.addCondRule(rules, logicalOperators, discDetails, numericalOperators);
+    }
+
+    public void addDiscountSimple(List<DiscountValue> discDetails, List<String> numericalOperators) {
+        discountPolicy.addSimple(discDetails, numericalOperators);
+    }
+
+    public void removeDiscountRule(int ruleNum) {
+        discountPolicy.removeRule(ruleNum);
+    }
+
+    public void setDiscountPolicy(DiscountPolicy discountPolicy) {
+        this.discountPolicy = discountPolicy;
+    }
+
+    public void setPurchasePolicy(PurchasePolicy purchasePolicy) {
+        this.purchasePolicy = purchasePolicy;
     }
 }

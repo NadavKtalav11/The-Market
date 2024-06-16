@@ -2,6 +2,7 @@ package DomainLayer.SupplyServices;
 
 
 import DomainLayer.Role.RoleFacade;
+import Util.SupplyServiceDTO;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -35,7 +36,7 @@ public class SupplyServicesFacade {
         return this.externalSupplyService;
     }
 
-    public void removeExternalService(int licensedDealerNumber){
+    public void removeExternalService(String licensedDealerNumber){
         synchronized (externalSupplyServiceLock) {
             externalSupplyService.remove(licensedDealerNumber);
         }
@@ -50,8 +51,21 @@ public class SupplyServicesFacade {
         }
     }
 
+    public boolean addExternalService(SupplyServiceDTO supplyServiceDTO){
+        synchronized (externalSupplyServiceLock) {
+            int size_before = externalSupplyService.size();
+            ExternalSupplyService externalPaymentService = new ExternalSupplyService(supplyServiceDTO);
+            externalSupplyService.put(supplyServiceDTO.getLicensedDealerNumber(), externalPaymentService);
+            return externalSupplyService.size() == size_before + 1;
+        }
+    }
+
+
     public String checkAvailableExternalSupplyService(String country, String city) {
         //   (private Map<Integer, ExternalSupplyService>  ExternalSupplyService)
+        if(externalSupplyService.size()<=0){
+            return "-1";
+        }
         synchronized (externalSupplyServiceLock) {
             for (Map.Entry<String, ExternalSupplyService> entry : externalSupplyService.entrySet()) {
                 ExternalSupplyService externalSupplyService1 = entry.getValue();
@@ -60,7 +74,7 @@ public class SupplyServicesFacade {
                     }
             }
         }
-        return "";
+        return "-2";
     }
 
     public ExternalSupplyService getExternalSupplyServiceById(String externalSupplyServiceId){

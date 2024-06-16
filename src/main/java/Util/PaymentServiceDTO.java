@@ -8,10 +8,28 @@ public class PaymentServiceDTO {
     private String paymentServiceName;
     private String url;
 
-    public PaymentServiceDTO (ExternalPaymentService externalPaymentService){
-        this.licensedDealerNumber = externalPaymentService.getLicensedDealerNumber();
-        this.paymentServiceName = externalPaymentService.getPaymentServiceName();
-        this.url = externalPaymentService.getUrl();
+    public PaymentServiceDTO ( String licensedDealerNumber, String paymentServiceName,String url){
+        this.licensedDealerNumber = licensedDealerNumber;
+        this.paymentServiceName = paymentServiceName;
+        this.url = url;
 
     }
+
+    public String getLicensedDealerNumber() {
+        return licensedDealerNumber;
+    }
+
+    public String getPaymentServiceName() {
+        return paymentServiceName;
+    }
+
+
+    public String getUrl() {
+        return url;
+    }
+
+    public PaymentServiceDTO(){
+
+    }
+
 }

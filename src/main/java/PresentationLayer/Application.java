@@ -6,7 +6,11 @@ import com.vaadin.flow.server.PWA;
 import com.vaadin.flow.theme.Theme;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.scheduling.annotation.EnableScheduling;
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+
 
 /**
  * The entry point of the Spring Boot application.
@@ -22,11 +26,16 @@ import com.vaadin.flow.server.PWA;
 import com.vaadin.flow.theme.Theme;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.stereotype.Component;
 
-@SpringBootApplication(scanBasePackages = {"PresentationLayer.WAF", "ServiceLayer"})
+
+
+@SpringBootApplication(scanBasePackages = {"PresentationLayer.Vaadin", "PresentationLayer.WAF"})
+
 @Theme(value = "webpush")
 @PWA(name = "Web Push", shortName = "Push")
 @EnableScheduling
+@Component
 public class Application implements AppShellConfigurator {
 
     public static void main(String[] args) {

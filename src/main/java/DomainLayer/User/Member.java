@@ -11,6 +11,7 @@ import java.util.zip.CheckedOutputStream;
 
 public class Member extends State{
 
+    private String userId;
     private String member_ID;
     private String name;
     private String username;
@@ -37,8 +38,9 @@ public class Member extends State{
         this.receiptIdsAndStoreId = new HashMap<>();
     }*/
 
-    Member(String member_ID, String username,String address, String name, String password , String birthday, String country, String city )
+    public Member(String userId , String member_ID, String username,String address, String name, String password , String birthday, String country, String city )
     {
+        this.userId = userId;
         this.member_ID = member_ID;
         this.username =username;
         this.password = password;
@@ -120,4 +122,11 @@ public class Member extends State{
         receiptIdsAndStoreId.putAll(receiptIdAndStoreId);
     }
 
+    public String getMember_ID() {
+        return member_ID;
+    }
+
+    public String getUserId() {
+        return userId;
+    }
 }

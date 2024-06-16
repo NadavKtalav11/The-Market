@@ -34,6 +34,10 @@ public class CartDTO {
         this.storeToProducts = products;
     }
 
+    public CartDTO(){
+    }
+
+
 
 
 

@@ -46,6 +46,10 @@ public class UserFacade {
         //memberIdPrefix = "user";
     }
 
+    public String getMemberName(String memberId){
+        return members.get(memberId).getUsername();
+    }
+
     public synchronized static UserFacade getInstance() {
         if (userFacadeInstance == null) {
             userFacadeInstance = new UserFacade();
@@ -94,6 +98,14 @@ public class UserFacade {
         User user = getUserByID(userID);
         return ((Member)user.getState()).getMemberID();
     }*/
+
+    public List<UserDTO> getUserDTOByMemberId(List<String> memberIdList){
+        List<UserDTO> userDTOList = new ArrayList<>();
+        for (String memberID : memberIdList){
+            userDTOList.add(getUserDTOById(members.get(memberID).getUserId()));
+        }
+        return userDTOList;
+    }
 
     public boolean isMember(String userId){
         if(getUserByID(userId) == null){
@@ -172,24 +184,24 @@ public class UserFacade {
             String memberId = getCurrentMemberID();
 
 
-            Member newMember = new Member(memberId,user.getUserName(), user.getAddress(), user.getName(), password, user.getBirthday(), user.getCountry(), user.getCity());
+            Member newMember = new Member(userID, memberId,user.getUserName(), user.getAddress(), user.getName(), password, user.getBirthday(), user.getCountry(), user.getCity());
             members.add(memberId, newMember);
             //todo pass the user to login page.
             return memberId;
         }
     }
 
-    public String registerSystemAdmin(UserDTO user, String password) throws Exception {
+    /*public String registerSystemAdmin(UserDTO user, String password) throws Exception {
 
         validateRegistrationDetails(user,password);
         String memberId = getCurrentMemberID();
 
-        Member newMember = new Member(memberId,user.getUserName(), user.getAddress(), user.getName(), password, user.getBirthday(), user.getCountry(), user.getCity());
+        Member newMember = new Member(user.getUserId(), memberId,user.getUserName(), user.getAddress(), user.getName(), password, user.getBirthday(), user.getCountry(), user.getCity());
             members.add(memberId, newMember);
 
         return memberId;
         //todo pass the user to login page.
-    }
+    }*/
 
 
 
@@ -261,7 +273,7 @@ public class UserFacade {
     }
 
 
-    public void Login(String userID, String username, String password) throws Exception {
+    public String Login(String userID, String username, String password) throws Exception {
         Member loginMember = getMemberByUsername(username);
         if (loginMember == null){
             throw new Exception(ExceptionsEnum.usernameOrPasswordIncorrect.toString());
@@ -271,6 +283,7 @@ public class UserFacade {
         }*/
         loginMember.validatePassword(password);
         getUserByID(userID).Login(loginMember);
+        return loginMember.getMemberID();
     }
 
     public Member getMemberByUsername(String userName) {
@@ -351,4 +364,11 @@ public class UserFacade {
         return getUserByID(userId).getCartDTO();
     }
 
+    public MemberRepository getMembers() {
+        return members;
+    }
+
+    public UserRepository<User> getUserRepository() {
+        return userRepository;
+    }
 }

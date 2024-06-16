@@ -1,13 +1,12 @@
 package DomainLayer.Store;
 
-import DomainLayer.User.Member;
-import DomainLayer.User.User;
-import DomainLayer.User.UserFacade;
-import ServiceLayer.Response;
-import Util.ExceptionsEnum;
-import Util.ProductDTO;
+import DomainLayer.Store.StoreDiscountPolicy.DiscountValue;
+import Util.*;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 
 import java.util.Arrays;
 import java.util.List;
@@ -17,68 +16,69 @@ import static org.mockito.Mockito.*;
 
 public class StoreFacadeTest {
 
-    private StoreFacade storeFacade;
-    private Store mockStore;
-    private ProductDTO mockProduct;
-    private final String userId = "1";
-    private final String storeId = "0";
+    //private final String userId = "1";
+    private  String storeId ;
     private final String productName = "Product1";
     private final int quantity = 2;
     private final int totalPrice = 100;
 
+    private StoreFacade storeFacade;
+
+    @Mock
+    private StoreRepository storeRepository;
+
+    @Mock
+    private Store mockStore;
+
+    @Mock
+    private ProductDTO mockProduct;
+
     @BeforeEach
     public void setUp() {
-        storeFacade = StoreFacade.getInstance();
-        mockProduct = mock(ProductDTO.class);
+        MockitoAnnotations.openMocks(this);
+        storeRepository = mock(StoreRepository.class);
         mockStore = mock(Store.class);
-        storeFacade.openStore("Grocery", "");
+        mockProduct = mock(ProductDTO.class);
+
+        storeFacade = new StoreFacade(storeRepository); // Use constructor injection for testing
     }
 
     @Test
     void testOpenStore() {
-        String storeId = storeFacade.openStore("Grocery", "");
-        assertNotNull(storeFacade.getStoreByID(storeId));
+        doNothing().when(storeRepository).add(anyString(), any(Store.class)); // Mock add method
+        String returnedStoreId = storeFacade.openStore("Grocery", "");
+        verify(storeRepository).add(anyString(), any(Store.class)); // Verify add method was called
+        assertNotNull(returnedStoreId);
     }
 
     @Test
     void testAddProductToStoreSuccessfully() throws Exception {
+        String storeId = "store1";
         when(mockProduct.getName()).thenReturn("product1");
         when(mockProduct.getQuantity()).thenReturn(10);
-        when(storeFacade.checkProductExistInStore("product1", "store1")).thenReturn(false);
+        when(storeRepository.get(storeId)).thenReturn(mockStore);
+        when(mockStore.checkProductExists("product1")).thenReturn(false);
 
-        storeFacade.addProductToStore("store1", mockProduct);
+        storeFacade.addProductToStore(storeId, mockProduct);
 
         verify(mockStore).addProduct(mockProduct);
     }
 
     @Test
-    void testAddProductToStore() throws Exception {
-        storeFacade.addProductToStore(storeId, new ProductDTO("Product1", 100, 10, "Description1", "Category1"));
-        verify(mockStore).addProduct(new ProductDTO("Product1", 100, 10, "Description1", "Category1"));
-
-        storeFacade.addProductToStore(storeId, new ProductDTO("Product2", 100, 10, "Description1", "Category1"));
-        verify(mockStore).addProduct(new ProductDTO("Product2", 100, 10, "Description1", "Category1"));
-
-        storeFacade.addProductToStore(storeId, new ProductDTO("Product3", 100, 10, "Description1", "Category1"));
-        verify(mockStore).addProduct(new ProductDTO("Product3", 100, 10, "Description1", "Category1"));
-    }
-
-    @Test
     void testRemoveProductFromStore() throws Exception {
+        String storeId = "store1";
+        when(storeRepository.get(storeId)).thenReturn(mockStore);
         when(mockStore.checkProductExists(anyString())).thenReturn(true);
+
         storeFacade.removeProductFromStore(storeId, "Product1");
         verify(mockStore).removeProduct("Product1");
-
-        storeFacade.removeProductFromStore(storeId, "Product2");
-        verify(mockStore).removeProduct("Product2");
-
-        storeFacade.removeProductFromStore(storeId, "Product3");
-        verify(mockStore).removeProduct("Product3");
     }
 
     @Test
     void testInStoreProductSearch() {
+        String storeId = "store1";
         List<String> expectedProducts = Arrays.asList("Milk", "Cheese");
+        when(storeRepository.get(storeId)).thenReturn(mockStore);
         when(mockStore.matchProducts(anyString(), anyString(), anyList())).thenReturn(expectedProducts);
 
         List<String> result = storeFacade.inStoreProductSearch("Milk", "Dairy", Arrays.asList("Fresh"), storeId);
@@ -111,9 +111,11 @@ public class StoreFacadeTest {
 */
     @Test
     void testCalcPrice() {
+        String storeId = "store1";
+        when(storeRepository.get(storeId)).thenReturn(mockStore);
         when(mockStore.calcPriceInStore("Milk", 5, "1")).thenReturn(100);
 
-        int price = storeFacade.calcPrice("Milk", 5, "0", "1");
+        int price = storeFacade.calcPrice("Milk", 5, storeId, "1");
 
         assertEquals(100, price);
         verify(mockStore).calcPriceInStore("Milk", 5, "1");
@@ -121,59 +123,79 @@ public class StoreFacadeTest {
 
     @Test
     void testUpdateProductInStore() throws Exception {
+        String storeId = "store1";
+        ProductDTO productDTO = new ProductDTO("Milk", 100, 10, "Fresh Milk", "Dairy");
+        when(storeRepository.get(storeId)).thenReturn(mockStore);
         when(mockStore.checkProductExists(anyString())).thenReturn(true);
-        storeFacade.updateProductInStore("0", new ProductDTO("Milk", 100, 10, "Fresh Milk", "Dairy"));
-        verify(mockStore).updateProduct(new ProductDTO("Milk", 100, 10, "Fresh Milk", "Dairy"));
+
+        storeFacade.updateProductInStore(storeId, productDTO);
+        verify(mockStore).updateProduct(productDTO);
     }
 
     @Test
     void testVerifyStoreExist() {
-        boolean exists = storeFacade.verifyStoreExist("0");
+        String storeId = "store1";
+        when(storeRepository.get(storeId)).thenReturn(mockStore);
+        boolean exists = storeFacade.verifyStoreExist(storeId);
 
         assertTrue(exists);
     }
 
     @Test
     void testCloseStore() throws Exception {
-        storeFacade.closeStore("0");
+        String storeId = "store1";
+        when(storeRepository.get(storeId)).thenReturn(mockStore);
+        when(mockStore.getIsOpened()).thenReturn(true);
+
+        storeFacade.closeStore(storeId);
 
         verify(mockStore).closeStore();
     }
 
     @Test
     void testGetInformationAboutOpenStores() {
+        String storeId = "store1";
+        when(storeRepository.getAll()).thenReturn(Arrays.asList(mockStore));
         when(mockStore.getIsOpened()).thenReturn(true);
+        when(mockStore.getStoreID()).thenReturn("store1");
 
         List<String> openStores = storeFacade.getInformationAboutOpenStores();
 
-        assertTrue(openStores.contains("0"));
+        assertTrue(openStores.contains(storeId));
     }
 
     @Test
     void testGetInformationAboutClosedStores() {
+        String storeId = "store1";
+        when(storeRepository.getAll()).thenReturn(Arrays.asList(mockStore));
         when(mockStore.getIsOpened()).thenReturn(false);
+        when(mockStore.getStoreID()).thenReturn("store1");
 
         List<String> closedStores = storeFacade.getInformationAboutClosedStores();
 
-        assertTrue(closedStores.contains("0"));
+        assertTrue(closedStores.contains(storeId));
     }
 
     @Test
     void testGetStoreProducts() {
+        String storeId = "store1";
         List<String> products = Arrays.asList("Milk", "Cheese");
+        when(storeRepository.get(storeId)).thenReturn(mockStore);
         when(mockStore.getProducts()).thenReturn(products);
 
-        List<String> result = storeFacade.getStoreProducts("0");
+        List<String> result = storeFacade.getStoreProducts(storeId);
 
         assertEquals(products, result);
     }
 
     @Test
     void testInStoreProductFilter() {
+        String storeId = "store1";
         List<String> expectedProducts = Arrays.asList("Milk", "Cheese");
-        when(mockStore.filterProducts("Dairy", Arrays.asList("Fresh"), 10, 100, 4.5, Arrays.asList("Milk", "Cheese"), 4.0)).thenReturn(expectedProducts);
+        when(storeRepository.get(storeId)).thenReturn(mockStore);
+        when(mockStore.filterProducts(anyString(), anyList(), anyInt(), anyInt(), anyDouble(), anyList(), anyDouble())).thenReturn(expectedProducts);
 
-        List<String> result = storeFacade.inStoreProductFilter("Dairy", Arrays.asList("Fresh"), 10, 100, 4.5, "0", Arrays.asList("Milk", "Cheese"), 4.0);
+        List<String> result = storeFacade.inStoreProductFilter("Dairy", Arrays.asList("Fresh"), 10, 100, 4.5, storeId, Arrays.asList("Milk", "Cheese"), 4.0);
 
         assertEquals(expectedProducts, result);
         verify(mockStore).filterProducts("Dairy", Arrays.asList("Fresh"), 10, 100, 4.5, Arrays.asList("Milk", "Cheese"), 4.0);
@@ -181,8 +203,8 @@ public class StoreFacadeTest {
 
     @Test
     void testCheckCategory() {
-        Exception exception = assertThrows(IllegalArgumentException.class, () -> {
-            storeFacade.checkCategory("invalidCategory");
+        Exception exception = assertThrows(RuntimeException.class, () -> {
+            storeFacade.checkCategory(ExceptionsEnum.categoryNotExist.toString());
         });
 
         assertEquals(ExceptionsEnum.categoryNotExist.toString(), exception.getMessage());
@@ -190,22 +212,186 @@ public class StoreFacadeTest {
 
     @Test
     void testCheckProductExistInStore() {
+        String storeId = "store1";
+        when(storeRepository.get(storeId)).thenReturn(mockStore);
         when(mockStore.checkProductExists("NonExistentProduct")).thenReturn(false);
-        assertFalse(storeFacade.checkProductExistInStore("NonExistentProduct", "0"));
+
+        assertFalse(storeFacade.checkProductExistInStore("NonExistentProduct", storeId));
     }
 
     @Test
     void testGetStores() {
+        List<String> storeIds = Arrays.asList("store1", "store2");
+        when(storeRepository.getAllIds()).thenReturn(storeIds);
+
         List<String> stores = storeFacade.getStores();
 
-        assertTrue(stores.contains(0));
+        assertTrue(stores.contains("store1"));
+        assertTrue(stores.contains("store2"));
     }
 
     @Test
     void testAddReceiptToStore() {
-        storeFacade.addReceiptToStore("0", "1", "1");
+        String storeId = "store1";
+        when(storeRepository.get(storeId)).thenReturn(mockStore);
 
-        verify(mockStore).addReceipt("1", "1");
+        storeFacade.addReceiptToStore(storeId, "receipt1", "user1");
+
+        verify(mockStore).addReceipt("receipt1", "user1");
+    }
+
+    @Test
+    void testCheckQuantity() {
+        String storeId = "store1";
+        String productName = "Milk";
+        int quantity = 5;
+
+        when(storeRepository.get(storeId)).thenReturn(mockStore);
+        when(mockStore.checkProductExists(productName)).thenReturn(true);
+        when(mockStore.checkProductQuantity(productName, quantity)).thenReturn(true);
+
+        storeFacade.checkQuantity(productName, quantity, storeId);
+
+        verify(mockStore).checkProductExists(productName);
+        verify(mockStore).checkProductQuantity(productName, quantity);
+    }
+
+    @Test
+    void testCheckIfProductExists() {
+        String storeId = "store1";
+        String productName = "Milk";
+
+        when(storeRepository.get(storeId)).thenReturn(mockStore);
+        when(mockStore.checkProductExists(productName)).thenReturn(true);
+
+        storeFacade.checkIfProductExists(productName, storeId);
+
+        verify(mockStore).checkProductExists(productName);
+    }
+
+    @Test
+    void testCheckProductQuantityAvailability() {
+        String storeId = "store1";
+        String productName = "Milk";
+        int quantity = 5;
+
+        when(storeRepository.get(storeId)).thenReturn(mockStore);
+        when(mockStore.checkProductQuantity(productName, quantity)).thenReturn(true);
+
+        storeFacade.checkProductQuantityAvailability(productName, storeId, quantity);
+
+        verify(mockStore).checkProductQuantity(productName, quantity);
+    }
+
+    @Test
+    void testCheckIfProductQuantityIsPositive() {
+        int quantity = 5;
+
+        storeFacade.checkIfProductQuantityIsPositive(quantity);
+    }
+
+    @Test
+    void testCheckPurchasePolicy() {
+        String storeId = "store1";
+        UserDTO userDTO = mock(UserDTO.class);
+        List<ProductDTO> products = Arrays.asList(mock(ProductDTO.class));
+
+        when(storeRepository.get(storeId)).thenReturn(mockStore);
+        when(mockStore.checkPurchasePolicy(userDTO, products)).thenReturn(true);
+
+        storeFacade.checkPurchasePolicy(userDTO, products, storeId);
+
+        verify(mockStore).checkPurchasePolicy(userDTO, products);
+    }
+
+    @Test
+    void testCalcDiscountPolicy() {
+        String storeId = "store1";
+        UserDTO userDTO = mock(UserDTO.class);
+        List<ProductDTO> products = Arrays.asList(mock(ProductDTO.class));
+        int expectedDiscount = 10;
+
+        when(storeRepository.get(storeId)).thenReturn(mockStore);
+        when(mockStore.calcDiscountPolicy(userDTO, products)).thenReturn(expectedDiscount);
+
+        int discount = storeFacade.calcDiscountPolicy(userDTO, products, storeId);
+
+        assertEquals(expectedDiscount, discount);
+    }
+
+    @Test
+    void testAddPurchaseRuleToStore() {
+        String storeId = "store1";
+        List<Integer> ruleNums = Arrays.asList(1, 2);
+        List<String> operators = Arrays.asList("AND");
+
+        when(storeRepository.get(storeId)).thenReturn(mockStore);
+
+        storeFacade.addPurchaseRuleToStore(ruleNums, operators, storeId);
+
+        verify(mockStore).addPurchaseRule(anyList(), eq(operators));
+    }
+
+    @Test
+    void testRemovePurchaseRuleFromStore() {
+        String storeId = "store1";
+        int ruleNum = 1;
+
+        when(storeRepository.get(storeId)).thenReturn(mockStore);
+
+        storeFacade.removePurchaseRuleFromStore(ruleNum, storeId);
+
+        verify(mockStore).removePurchaseRule(ruleNum);
+    }
+
+    @Test
+    void testAddDiscountCondRuleToStore() {
+        String storeId = "store1";
+        List<Integer> ruleNums = Arrays.asList(1, 2);
+        List<String> operators = Arrays.asList("AND");
+        List<DiscountValueDTO> discDetails = Arrays.asList(mock(DiscountValueDTO.class));
+        List<String> numericalOperators = Arrays.asList("GT");
+
+        when(storeRepository.get(storeId)).thenReturn(mockStore);
+
+        storeFacade.addDiscountCondRuleToStore(ruleNums, operators, discDetails, numericalOperators, storeId);
+
+        verify(mockStore).addDiscountCondRule(anyList(), eq(operators), anyList(), eq(numericalOperators));
+    }
+
+    @Test
+    void testAddDiscountSimpleRuleToStore() {
+        String storeId = "store1";
+        List<DiscountValueDTO> discDetails = Arrays.asList(mock(DiscountValueDTO.class));
+        List<String> numericalOperators = Arrays.asList("GT");
+
+        when(storeRepository.get(storeId)).thenReturn(mockStore);
+
+        storeFacade.addDiscountSimpleRuleToStore(discDetails, numericalOperators, storeId);
+
+        verify(mockStore).addDiscountSimple(anyList(), eq(numericalOperators));
+    }
+
+    @Test
+    void testRemoveDiscountRuleFromStore() {
+        String storeId = "store1";
+        int ruleNum = 1;
+
+        when(storeRepository.get(storeId)).thenReturn(mockStore);
+
+        storeFacade.removeDiscountRuleFromStore(ruleNum, storeId);
+
+        verify(mockStore).removeDiscountRule(ruleNum);
+    }
+
+    @Test
+    void testGetDiscountValuesList() {
+        DiscountValueDTO discountValueDTO = new DiscountValueDTO(10, "Electronics", true, Arrays.asList("Product1"));
+        List<DiscountValueDTO> discDetails = Arrays.asList(discountValueDTO);
+        List<DiscountValue> discountValues = storeFacade.getDiscountValuesList(discDetails);
+
+        assertNotNull(discountValues);
+        assertEquals(1, discountValues.size());
     }
 
 }

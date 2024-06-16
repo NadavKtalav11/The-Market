@@ -23,20 +23,20 @@ public class AuthenticationAndSecurityFacade {
         return instance;
     }
 
-    public void generateToken(String userId){
-        tokensService.generateToken(userId);
+    public void generateToken(String memberId){
+        tokensService.generateToken(memberId);
     }
 
-    public String getToken(String userId){
-        return tokensService.getToken(userId);
+    public String getToken(String memberId){
+        return tokensService.getToken(memberId);
     }
 
     public String encodePassword(String password){
         return passwordEncryptor.encryptPassword(password);
     }
 
-    public void removeToken(String userId){
-        tokensService.removeToken(userId);
+    public void removeToken(String memberId){
+        tokensService.removeToken(memberId);
     }
 
 

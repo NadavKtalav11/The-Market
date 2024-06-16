@@ -62,6 +62,14 @@ package Util;
         ExternalSupplyServiceIsNotAvailable{
             public String toString() {return "Unfortunately, there is no shipping for the user address";}
         },
+
+        NoExternalSupplyService{
+            public String toString() {return "There is no external supply service in the system";}
+        },
+        ExternalSupplyServiceIsNotAvailableForArea{
+            public String toString() {return "There is no external supply service for this area";}
+        },
+
         createShiftingError{
             public String toString() {return "Unfortunately, there was problem in creating the shifting";}
         },
@@ -153,6 +161,97 @@ package Util;
         },
         InvalidOperator{
             public String toString(){ return "The operator must be 'AND' or 'OR' or 'COND'"; }
+        },
+        InvalidDiscountValueParameters{
+            public String toString(){ return "The discount must apply to the basket or some of store's the products or to a category"; }
+        },
+        SystemManagerPaymentAuthorization{
+            public String toString(){
+                return "Only system manager is allowed to add new external payment service";}
+        },
+        SystemManagerSupplyAuthorization{
+            public String toString(){
+                return "Only system manager is allowed to add new external supply service";}
+        },
+
+        SystemManagerSupplyAuthorizationRemove{
+            public String toString(){
+                return "Only system manager is allowed to remove external supply service";}
+        },
+
+        SystemManagerPaymentAuthorizationRemove{
+            public String toString(){
+                return "Only system manager is allowed to remove external payment service";}
+        },
+
+        InvalidPaymentServiceParameters{
+            public String toString(){
+                return "The system has not been able to add the payment service due to invalid details";}
+        },
+
+        InvalidSupplyServiceParameters{
+            public String toString(){
+                return "The system has not been able to add the supply service due to invalid details";}
+        },
+
+        OnlySupplyService{
+            public String toString(){
+                return "There must remain at least one external supply service in the system";}
+        },
+
+        OnlyPaymentService{
+            public String toString(){
+                return "There must remain at least one external payment service in the system";}
+        },
+
+        InvalidCreditCardParameters{
+            public String toString(){
+                return "There is a problem with the credit card provided details.";}
+        },
+
+        noAvailableExternalPaymentService{
+            public String toString(){
+                return "There is no available external payment system";}
+        },
+
+        CreditCardIssue{
+            public String toString(){
+                return "The external payment service detected a problem with your credit card";
+            }
+        },
+
+        InvalidSupplyServiceDetails{
+            public String toString(){
+                return "The system has not been able to be launched since there is a problem with the supply service details";
+            }
+        },
+
+        InvalidPaymentServiceDetails{
+            public String toString(){
+                return "The system has not been able to be launched since there is a problem with the payment service details";
+            }
+        },
+
+        InvalidRuleNumber{
+            public String toString(){
+                return "The rule number you entered is invalid";
+            }
+        },
+
+        InvalidRuleIndex{
+            public String toString(){
+                return "the index you entered is invalid";
+            }
+        },
+        TimeExpired{
+            public String toString(){
+                return "The time has been expired";
+            }
+        },
+        PaymentFailed{
+            public String toString(){
+                return "Payment failed";
+            }
         },
     }
 

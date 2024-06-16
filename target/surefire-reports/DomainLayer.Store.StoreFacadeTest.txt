@@ -1,0 +1,64 @@
+-------------------------------------------------------------------------------
+Test set: DomainLayer.Store.StoreFacadeTest
+-------------------------------------------------------------------------------
+Tests run: 17, Failures: 4, Errors: 11, Skipped: 0, Time elapsed: 0.116 s <<< FAILURE! - in DomainLayer.Store.StoreFacadeTest
+testInStoreProductFilter  Time elapsed: 0 s  <<< ERROR!
+java.lang.NullPointerException: Cannot invoke "DomainLayer.Store.Store.filterProducts(String, java.util.List, java.lang.Integer, java.lang.Integer, java.lang.Double, java.util.List, java.lang.Double)" because "storeToSearchIn" is null
+	at DomainLayer.Store.StoreFacadeTest.testInStoreProductFilter(StoreFacadeTest.java:176)
+
+testInStoreProductSearch  Time elapsed: 0 s  <<< ERROR!
+java.lang.NullPointerException: Cannot invoke "DomainLayer.Store.Store.matchProducts(String, String, java.util.List)" because "storeToSearchIn" is null
+	at DomainLayer.Store.StoreFacadeTest.testInStoreProductSearch(StoreFacadeTest.java:84)
+
+testAddReceiptToStore  Time elapsed: 0 s  <<< ERROR!
+java.lang.NullPointerException: Cannot invoke "DomainLayer.Store.Store.addReceipt(String, String)" because the return value of "DomainLayer.Store.StoreRepository.get(String)" is null
+	at DomainLayer.Store.StoreFacadeTest.testAddReceiptToStore(StoreFacadeTest.java:206)
+
+testUpdateProductInStore  Time elapsed: 0 s  <<< ERROR!
+java.lang.NullPointerException: Cannot invoke "DomainLayer.Store.Store.checkProductExists(String)" because "store" is null
+	at DomainLayer.Store.StoreFacadeTest.testUpdateProductInStore(StoreFacadeTest.java:125)
+
+testVerifyStoreExist  Time elapsed: 0 s  <<< FAILURE!
+org.opentest4j.AssertionFailedError: expected: <true> but was: <false>
+	at DomainLayer.Store.StoreFacadeTest.testVerifyStoreExist(StoreFacadeTest.java:133)
+
+testAddProductToStore  Time elapsed: 0 s  <<< ERROR!
+java.lang.NullPointerException: Cannot invoke "DomainLayer.Store.Store.checkProductExists(String)" because "store" is null
+	at DomainLayer.Store.StoreFacadeTest.testAddProductToStore(StoreFacadeTest.java:56)
+
+testGetStoreProducts  Time elapsed: 0 s  <<< ERROR!
+java.lang.NullPointerException: Cannot invoke "DomainLayer.Store.Store.getProducts()" because "store" is null
+	at DomainLayer.Store.StoreFacadeTest.testGetStoreProducts(StoreFacadeTest.java:166)
+
+testGetInformationAboutOpenStores  Time elapsed: 0 s  <<< FAILURE!
+org.opentest4j.AssertionFailedError: expected: <true> but was: <false>
+	at DomainLayer.Store.StoreFacadeTest.testGetInformationAboutOpenStores(StoreFacadeTest.java:149)
+
+testCalcPrice  Time elapsed: 0.015 s  <<< ERROR!
+java.lang.NullPointerException: Cannot invoke "DomainLayer.Store.Store.calcPriceInStore(String, int, String)" because "store" is null
+	at DomainLayer.Store.StoreFacadeTest.testCalcPrice(StoreFacadeTest.java:116)
+
+testGetInformationAboutClosedStores  Time elapsed: 0 s  <<< FAILURE!
+org.opentest4j.AssertionFailedError: expected: <true> but was: <false>
+	at DomainLayer.Store.StoreFacadeTest.testGetInformationAboutClosedStores(StoreFacadeTest.java:158)
+
+testRemoveProductFromStore  Time elapsed: 0 s  <<< ERROR!
+java.lang.NullPointerException: Cannot invoke "DomainLayer.Store.Store.checkProductExists(String)" because "store" is null
+	at DomainLayer.Store.StoreFacadeTest.testRemoveProductFromStore(StoreFacadeTest.java:69)
+
+testAddProductToStoreSuccessfully  Time elapsed: 0 s  <<< ERROR!
+java.lang.NullPointerException: Cannot invoke "DomainLayer.Store.Store.checkProductExists(String)" because "store" is null
+	at DomainLayer.Store.StoreFacadeTest.testAddProductToStoreSuccessfully(StoreFacadeTest.java:47)
+
+testCheckProductExistInStore  Time elapsed: 0 s  <<< ERROR!
+java.lang.NullPointerException: Cannot invoke "DomainLayer.Store.Store.checkProductExists(String)" because "store" is null
+	at DomainLayer.Store.StoreFacadeTest.testCheckProductExistInStore(StoreFacadeTest.java:194)
+
+testGetStores  Time elapsed: 0 s  <<< FAILURE!
+org.opentest4j.AssertionFailedError: expected: <true> but was: <false>
+	at DomainLayer.Store.StoreFacadeTest.testGetStores(StoreFacadeTest.java:201)
+
+testCloseStore  Time elapsed: 0 s  <<< ERROR!
+java.lang.NullPointerException: Cannot invoke "DomainLayer.Store.Store.getIsOpened()" because "storeToClose" is null
+	at DomainLayer.Store.StoreFacadeTest.testCloseStore(StoreFacadeTest.java:138)
+

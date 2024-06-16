@@ -29,25 +29,20 @@ public class MemberService {
         roleFacade= RoleFacade.getInstance();
     }
 
-        @Bean
-        public RestTemplate restTemplate() {
-            return new RestTemplate();
-        }
+    public String getMemberNane(String memberID){
+        return userFacade.getMemberName(memberID);
+    }
 
-        @Bean
-        public RestTemplate restTemplate(RestTemplateBuilder builder) {
-            return builder.build();
-        }
-        public boolean isMember(String userId){
+        public boolean isMember(String userId) {
             return userFacade.isMember(userId);
         }
 
-    public boolean isStoreOwner(String userId,String storeId){
-        return roleFacade.verifyStoreOwner(userId,storeId);
+    public boolean isStoreOwner(String memberId,String storeId){
+        return roleFacade.verifyStoreOwner(storeId, memberId);
     }
 
     public boolean isStoreManager(String memberId,String storeId){
-        return roleFacade.verifyStoreManager(memberId,storeId);
+        return roleFacade.verifyStoreManager(storeId, memberId);
     }
 
     public boolean hasInventoryPermission(String memberID, String storeId){

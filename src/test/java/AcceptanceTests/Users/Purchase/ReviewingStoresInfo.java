@@ -3,44 +3,95 @@ package AcceptanceTests.Users.Purchase;
 import AcceptanceTests.BridgeToTests;
 import AcceptanceTests.ProxyToTest;
 import ServiceLayer.Response;
+import Util.PaymentDTO;
 import Util.UserDTO;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
-import static org.junit.jupiter.api.Assertions.assertIterableEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class ReviewingStoresInfo {
     private static BridgeToTests impl;
+    private static String userID1;
+    private static String userID2;
+    private static String userID3;
+    private static String storeID1;
+    private static String storeID2;
+    private static String storeID3;
 
-
-    @BeforeAll
-    public static void setUp() {
+    @BeforeEach
+    public void setUp() {
         impl = new ProxyToTest("Real");
         //Do what you need
 
-        impl.enterMarketSystem();
-        impl.register("0","user1",  "12/12/00", "Israel", "Beer Sheva", "Mesada", "Toy", "fSijsd281");
-        impl.login("0", "user1", "fSijsd281");
-        impl.openStore("0", "Bershka", "clothing store");
-        impl.openStore("0", "Zara", "clothing store");
-        impl.openStore("0", "PullAndBear", "clothing store");
+        userID1 = impl.enterMarketSystem().getData();
+        userID2 = impl.enterMarketSystem().getData();
+        userID3 = impl.enterMarketSystem().getData();
+        impl.register(userID1,"user1",  "12/12/00", "Israel", "Beer Sheva", "Mesada", "Toy", "fSijsd281");
+        impl.register(userID2,"user2",  "12/12/99", "Israel", "Beer Sheva", "Mesada", "Nitzan", "fSijsd28cd1");
+
+        impl.login(userID1, "user1", "fSijsd281");
+        impl.login(userID2, "user2", "fSijsd28cd1");
+
+        storeID1 = impl.openStore(userID1, "Bershka", "clothing store").getData();
+        storeID2 = impl.openStore(userID1, "Zara", "clothing store").getData();
+        storeID3 = impl.openStore(userID1, "PullAndBear", "clothing store").getData();
     }
 
     @Test
-    public void successfulViewTest() {
-        impl.closeStore("0", "3");
+    public void successfulStoreOwnerViewTest() {
+        impl.closeStore(userID1, storeID3);
 
-        List<Integer> allAvailableStores = new ArrayList<>();
-        allAvailableStores.add(0);
-        allAvailableStores.add(1);
-        allAvailableStores.add(2);
+        List<String> allAvailableStores = new ArrayList<>();
+        allAvailableStores.add(storeID1);
+        allAvailableStores.add(storeID2);
+        allAvailableStores.add(storeID3);
 
-        Response<List<String>> res = impl.getInformationAboutStores("0");
+        Response<List<String>> res = impl.getInformationAboutStores(userID1);
         assertTrue(res.isSuccess());
-        assertIterableEquals(res.getResult(), allAvailableStores);
+
+        Set<String> expectedStoresSet = new HashSet<>(allAvailableStores);
+        Set<String> actualStoresSet = new HashSet<>(res.getResult());
+
+        assertEquals(expectedStoresSet, actualStoresSet);
+    }
+
+    @Test
+    public void successfulMemberViewTest() {
+        impl.closeStore(userID1, storeID3);
+
+        List<String> allAvailableStores = new ArrayList<>();
+        allAvailableStores.add(storeID1);
+        allAvailableStores.add(storeID2);
+
+        Response<List<String>> res = impl.getInformationAboutStores(userID2);
+        assertTrue(res.isSuccess());
+
+        Set<String> expectedStoresSet = new HashSet<>(allAvailableStores);
+        Set<String> actualStoresSet = new HashSet<>(res.getResult());
+
+        assertEquals(expectedStoresSet, actualStoresSet);    }
+
+    @Test
+    public void successfulUserViewTest() {
+        impl.closeStore(userID1, storeID3);
+
+        List<String> allAvailableStores = new ArrayList<>();
+        allAvailableStores.add(storeID1);
+        allAvailableStores.add(storeID2);
+
+        Response<List<String>> res = impl.getInformationAboutStores(userID3);
+        assertTrue(res.isSuccess());
+
+        Set<String> expectedStoresSet = new HashSet<>(allAvailableStores);
+        Set<String> actualStoresSet = new HashSet<>(res.getResult());
+
+        assertEquals(expectedStoresSet, actualStoresSet);
     }
 }

@@ -1,8 +1,7 @@
 package AcceptanceTests;
 
 import ServiceLayer.Response;
-import Util.ProductDTO;
-import Util.UserDTO;
+import Util.*;
 
 import java.util.HashSet;
 import java.util.List;
@@ -21,13 +20,11 @@ public class ProxyToTest implements BridgeToTests {
 
 
     @Override
-    public Response<String> init(String userName, String birthday, String country, String city, String address, String name, String password, String licensedDealerNumber,
-
-                                 String paymentServiceName, String url, String licensedDealerNumber1, String supplyServiceName, HashSet<String> countries, HashSet<String> cities)
+    public Response<String> init(UserDTO userDTO, String password, PaymentServiceDTO paymentServiceDTO, SupplyServiceDTO supplyServiceDTO)
 
     {
         if (realServiceAdaptor != null)
-            return realServiceAdaptor.init(userName,birthday, country ,city, address, name , password,licensedDealerNumber, paymentServiceName, url, licensedDealerNumber1, supplyServiceName, countries, cities);
+            return realServiceAdaptor.init(userDTO, password, paymentServiceDTO, supplyServiceDTO);
 
         else
             return new Response<>(null, "Not Implemented yet");
@@ -253,6 +250,54 @@ public class ProxyToTest implements BridgeToTests {
     public Response<String> purchase(String user_ID, String country, String city, String address, String cardNumber, int cvv, int month, int year, String holderID){
         if (realServiceAdaptor != null)
             return realServiceAdaptor.purchase(user_ID, country, city, address, cardNumber ,cvv,month,year,holderID);
+        else
+            return new Response<>(null, "Not Implemented yet");
+    }
+
+    @Override
+    public Response<String> addPurchaseRuleToStore(List<Integer> ruleNums, List<String> operators, String userId, String storeId) {
+        if (realServiceAdaptor != null)
+            return realServiceAdaptor.addPurchaseRuleToStore(ruleNums, operators, userId, storeId);
+        else
+            return new Response<>(null, "Not Implemented yet");
+    }
+
+    @Override
+    public Response<String> removePurchaseRuleFromStore(int ruleNum, String userId, String storeId) {
+        if (realServiceAdaptor != null)
+            return realServiceAdaptor.removePurchaseRuleFromStore(ruleNum, userId, storeId);
+        else
+            return new Response<>(null, "Not Implemented yet");
+    }
+
+    @Override
+    public Response<String> addDiscountCondRuleToStore(List<Integer> ruleNums, List<String> logicOperators, List<DiscountValueDTO> discDetails, List<String> numericalOperators, String userId, String storeId) {
+        if (realServiceAdaptor != null)
+            return realServiceAdaptor.addDiscountCondRuleToStore(ruleNums, logicOperators, discDetails, numericalOperators, userId, storeId);
+        else
+            return new Response<>(null, "Not Implemented yet");
+    }
+
+    @Override
+    public Response<String> addDiscountSimpleRuleToStore(List<DiscountValueDTO> discDetails, List<String> discountValueOperators, String userId, String storeId) {
+        if (realServiceAdaptor != null)
+            return realServiceAdaptor.addDiscountSimpleRuleToStore(discDetails, discountValueOperators, userId, storeId);
+        else
+            return new Response<>(null, "Not Implemented yet");
+    }
+
+    @Override
+    public Response<String> removeDiscountRuleFromStore(int ruleNum, String userId, String storeId) {
+        if (realServiceAdaptor != null)
+            return realServiceAdaptor.removeDiscountRuleFromStore(ruleNum, userId, storeId);
+        else
+            return new Response<>(null, "Not Implemented yet");
+    }
+
+    @Override
+    public Response<String> setUserConfirmationPurchase(String userID) {
+        if (realServiceAdaptor != null)
+            return realServiceAdaptor.setUserConfirmationPurchase(userID);
         else
             return new Response<>(null, "Not Implemented yet");
     }

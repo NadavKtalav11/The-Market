@@ -34,7 +34,7 @@ public class ExternalSupplyServicesTests {
 
     @Test
     public void testGetLicensedDealerNumber() {
-        assertEquals(12345, externalSupplyService.getLicensedDealerNumber());
+        assertEquals("12345", externalSupplyService.getLicensedDealerNumber());
     }
 
     @Test

@@ -1,10 +1,15 @@
 package DomainLayer.Store;
 
+import DomainLayer.Store.StoreDiscountPolicy.DiscountPolicy;
+import DomainLayer.Store.StoreDiscountPolicy.DiscountValue;
+import DomainLayer.Store.StorePurchasePolicy.PurchasePolicy;
+import DomainLayer.Store.PoliciesRulesLogicalConditions.Rule;
 import Util.ProductDTO;
+import Util.UserDTO;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.*;
 
-import javax.persistence.criteria.CriteriaBuilder;
 import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -12,149 +17,250 @@ import static org.mockito.Mockito.*;
 
 public class StoreTest {
 
+    @InjectMocks
     private Store store;
-    private final String storeId = "1";
-    private Product mockProduct;
-    private final String productName = "TestProduct";
-    private final int price = 100;
-    private final int quantity = 10;
 
+    @Mock
+    private DiscountPolicy mockDiscountPolicy;
+
+    @Mock
+    private PurchasePolicy mockPurchasePolicy;
+
+    @Mock
+    private Product mockProduct;
 
     @BeforeEach
     public void setUp() {
-        store = new Store(storeId, "Grocery", "");
-        mockProduct = mock(Product.class);
+        MockitoAnnotations.openMocks(this);
+        store = new Store("store1", "Test Store", "A store for testing");
+        store.setDiscountPolicy(mockDiscountPolicy);
+        store.setPurchasePolicy(mockPurchasePolicy);
     }
 
     @Test
-    void testGetProductByName() {
-        store.addProduct(new ProductDTO("Milk", 10, 100, "Dairy product", "Dairy"));
-        Product product = store.getProductByName("Milk");
-
-        assertNotNull(product);
-        assertEquals("Milk", product.getProductName());
+    public void testGetStoreName() {
+        assertEquals("Test Store", store.getStoreName());
     }
 
     @Test
-    void testAddProduct() {
-        store.addProduct(new ProductDTO("Milk", 10, 100, "Dairy product", "Dairy"));
-        Product product = store.getProductByName("Milk");
+    public void testReturnProductToStore() {
+        when(mockProduct.getProductName()).thenReturn("product1");
+        when(mockProduct.getQuantity()).thenReturn(10);
+        store.addProduct(mockProduct);
+        Map<String, List<Integer>> products = new HashMap<>();
+        products.put("product1", Collections.singletonList(5));
 
-        assertNotNull(product);
-        assertEquals("Milk", product.getProductName());
-        assertEquals(10, product.getPrice());
-        assertEquals(100, product.getQuantity());
-        assertEquals("Dairy product", product.getDescription());
-        assertEquals(Category.DAIRY.toString(), product.getCategoryName());
+        store.returnProductToStore(products);
+
+        verify(mockProduct).addToStock(5);
     }
 
     @Test
-    void testCheckProductExists() {
-        store.addProduct(new ProductDTO("Milk", 10, 100, "Dairy product", "Dairy"));
-        assertTrue(store.checkProductExists("Milk"));
-        assertFalse(store.checkProductExists("Cheese"));
+    public void testGetStoreID() {
+        assertEquals("store1", store.getStoreID());
     }
 
     @Test
-    void testCheckProductQuantity() {
-        store.addProduct(new ProductDTO("Milk", 10, 100, "Dairy product", "Dairy"));
-        assertTrue(store.checkProductQuantity("Milk", 50));
-        assertFalse(store.checkProductQuantity("Milk", 150));
+    public void testAddProduct() {
+        ProductDTO productDTO = new ProductDTO("product1", 10, 5, "A product", "TOYS");
+        store.addProduct(productDTO);
+
+        assertTrue(store.checkProductExists("product1"));
     }
 
     @Test
-    void testCalcPriceInStore() {
-        store.addProduct(new ProductDTO("Milk", 10, 100, "Dairy product", "Dairy"));
-        int price = store.calcPriceInStore("Milk", 5, "1");
+    public void testGetProductByName() {
+        when(mockProduct.getProductName()).thenReturn("product1");
+        store.addProduct(mockProduct);
 
-        assertEquals(50, price);
+        assertEquals(mockProduct, store.getProductByName("product1"));
     }
 
     @Test
-    void testRemoveProduct() {
-        store.addProduct(new ProductDTO("Milk", 10, 100, "Dairy product", "Dairy"));
-        store.removeProduct("Milk");
+    public void testCheckProductExists() {
+        when(mockProduct.getProductName()).thenReturn("product1");
+        store.addProduct(mockProduct);
 
-        assertFalse(store.checkProductExists("Milk"));
+        assertTrue(store.checkProductExists("product1"));
+        assertFalse(store.checkProductExists("product2"));
     }
 
     @Test
-    void testUpdateProduct() {
-        store.addProduct(new ProductDTO("Milk", 10, 100, "Dairy product", "Dairy"));
-        store.updateProduct(new ProductDTO("Milk", 15, 200, "Updated description", "food"));
+    public void testCheckProductQuantity() {
+        when(mockProduct.getProductName()).thenReturn("product1");
+        when(mockProduct.getQuantity()).thenReturn(10);
+        store.addProduct(mockProduct);
 
-        Product product = store.getProductByName("Milk");
-        assertEquals(15, product.getPrice());
-        assertEquals(200, product.getQuantity());
-        assertEquals("Updated description", product.getDescription());
-        assertEquals(Category.FOOD.toString(), product.getCategoryName());
+        assertTrue(store.checkProductQuantity("product1", 5));
+        assertFalse(store.checkProductQuantity("product1", 15));
     }
 
     @Test
-    void testCloseStore() {
+    public void testCalcPriceInStore() {
+        when(mockProduct.getProductName()).thenReturn("product1");
+        when(mockProduct.getPrice()).thenReturn(10);
+        store.addProduct(mockProduct);
+
+        assertEquals(50, store.calcPriceInStore("product1", 5, "user1"));
+    }
+
+    @Test
+    public void testRemoveProduct() {
+        store.addProduct(mockProduct);
+        store.removeProduct("product1");
+
+        assertFalse(store.checkProductExists("product1"));
+    }
+
+    @Test
+    public void testUpdateProduct() {
+        ProductDTO productDTO = new ProductDTO("product1", 20, 15, "Updated product", "BOOKS");
+        when(mockProduct.getProductName()).thenReturn("product1");
+        store.addProduct(mockProduct);
+
+        store.updateProduct(productDTO);
+
+        verify(mockProduct).setPrice(20);
+        verify(mockProduct).setQuantity(15);
+        verify(mockProduct).setDescription("Updated product");
+        verify(mockProduct).setCategory(any(Category.class));
+    }
+
+    @Test
+    public void testRemoveProductQuantity() {
+        when(mockProduct.getProductName()).thenReturn("product1");
+        when(mockProduct.getQuantity()).thenReturn(10);
+        store.addProduct(mockProduct);
+
+        store.removeProductQuantity("product1", 5);
+
+        verify(mockProduct).setQuantity(5);
+    }
+
+    @Test
+    public void testCloseStore() {
         store.closeStore();
         assertFalse(store.getIsOpened());
     }
 
     @Test
-    void testGetIsOpened() {
+    public void testGetIsOpened() {
         assertTrue(store.getIsOpened());
+        store.closeStore();
+        assertFalse(store.getIsOpened());
     }
 
     @Test
-    void testGetProducts() {
-        store.addProduct(new ProductDTO("Milk", 10, 100, "Dairy product", "Dairy"));
-        store.addProduct(new ProductDTO("Cheese", 20, 50, "Dairy product", "Dairy"));
+    public void testGetProducts() {
+        when(mockProduct.getProductName()).thenReturn("product1");
+        store.addProduct(mockProduct);
 
         List<String> products = store.getProducts();
 
-        assertEquals(2, products.size());
-        assertTrue(products.contains("Milk"));
-        assertTrue(products.contains("Cheese"));
+        assertEquals(1, products.size());
+        assertEquals("product1", products.get(0));
     }
 
     @Test
-    void testMatchProducts() {
-        store.addProduct(new ProductDTO("Milk", 10, 100, "Dairy product", "Dairy"));
-        store.addProduct(new ProductDTO("Cheese", 20, 50, "Dairy product", "Dairy"));
+    public void testCalcDiscountPolicy() {
+        UserDTO userDTO = new UserDTO("user1");
+        List<ProductDTO> products = Arrays.asList(new ProductDTO("product1", 10, 5, "A product", "TOYS"));
+        when(mockDiscountPolicy.calcDiscountPolicy(userDTO, products)).thenReturn(5);
 
-        List<String> matchedProducts1 = store.matchProducts("Milk", null, null);
-
-        assertEquals(1, matchedProducts1.size());
-        assertTrue(matchedProducts1.contains("Milk"));
-
-        List<String> matchedProducts2 = store.matchProducts(null, "Dairy", null);
-
-        assertEquals(2, matchedProducts2.size());
-        assertTrue(matchedProducts2.contains("Milk"));
-        assertTrue(matchedProducts2.contains("Cheese"));
+        assertEquals(5, store.calcDiscountPolicy(userDTO, products));
     }
 
     @Test
-    void testFilterProducts() {
-        store.addProduct(new ProductDTO("Milk", 10, 100, "Dairy product", "Dairy"));
-        store.addProduct(new ProductDTO("Cheese", 20, 50, "Dairy product", "Dairy"));
+    public void testCheckPurchasePolicy() {
+        UserDTO userDTO = new UserDTO("user1");
+        List<ProductDTO> products = Arrays.asList(new ProductDTO("product1", 10, 5, "A product", "TOYS"));
+        when(mockPurchasePolicy.checkPurchasePolicy(userDTO, products)).thenReturn(true);
 
-        List<String> productsFromSearch = Arrays.asList("Milk", "Cheese");
-        List<String> filteredProducts = store.filterProducts("Dairy", null, 5, 15, null, productsFromSearch, null);
+        assertTrue(store.checkPurchasePolicy(userDTO, products));
+    }
+
+    @Test
+    public void testMatchProducts() {
+        when(mockProduct.getProductName()).thenReturn("product1");
+        when(mockProduct.getCategoryName()).thenReturn("TOYS");
+        when(mockProduct.getDescription()).thenReturn("A product description");
+        store.addProduct(mockProduct);
+
+        List<String> matchedProducts = store.matchProducts("product1", "TOYS", Arrays.asList("description"));
+
+        assertEquals(1, matchedProducts.size());
+        assertEquals("product1", matchedProducts.get(0));
+    }
+
+    @Test
+    public void testMatchProductsDTO() {
+        when(mockProduct.getProductName()).thenReturn("product1");
+        when(mockProduct.getCategoryName()).thenReturn("TOYS");
+        when(mockProduct.getDescription()).thenReturn("A product description");
+        when(mockProduct.getProductDTO()).thenReturn(new ProductDTO("product1", 10, 5, "A product", "TOYS"));
+        store.addProduct(mockProduct);
+
+        List<ProductDTO> matchedProductsDTO = store.matchProductsDTO("product1", "TOYS", Arrays.asList("description"));
+
+        assertEquals(1, matchedProductsDTO.size());
+        assertEquals("product1", matchedProductsDTO.get(0).getName());
+    }
+
+    @Test
+    public void testFilterProducts() {
+        when(mockProduct.getProductName()).thenReturn("product1");
+        when(mockProduct.getCategoryName()).thenReturn("TOYS");
+        when(mockProduct.getDescription()).thenReturn("A product description");
+        when(mockProduct.getPrice()).thenReturn(10);
+        when(mockProduct.getRating()).thenReturn(4.5);
+        store.addProduct(mockProduct);
+
+        List<String> filteredProducts = store.filterProducts("TOYS", null, null, null, null, Arrays.asList(mockProduct.getProductName()), null);
 
         assertEquals(1, filteredProducts.size());
-        assertTrue(filteredProducts.contains("Milk"));
+        assertEquals("product1", filteredProducts.get(0));
     }
 
     @Test
-    void testReturnProductToStore() {
-        store.addProduct(new ProductDTO("Milk", 10, 100, "Dairy product", "Dairy"));
-        Map<String, List<Integer>> productsToReturn = new HashMap<>();
-        List<Integer> quantityAndPrice = new ArrayList();
-        quantityAndPrice.add(10);
-        quantityAndPrice.add(50);
-        productsToReturn.put("Milk", quantityAndPrice);
+    public void testAddPurchaseRule() {
+        List<Rule<UserDTO, List<ProductDTO>>> rules = new ArrayList<>();
+        List<String> operators = new ArrayList<>();
+        store.addPurchaseRule(rules, operators);
 
-        store.returnProductToStore(productsToReturn);
-
-        Product product = store.getProductByName("Milk");
-        assertEquals(110, product.getQuantity());
+        verify(mockPurchasePolicy).addRule(rules, operators);
     }
 
+    @Test
+    public void testRemovePurchaseRule() {
+        store.removePurchaseRule(1);
+
+        verify(mockPurchasePolicy).removeRule(1);
+    }
+
+    @Test
+    public void testAddDiscountCondRule() {
+        List<Rule<UserDTO, List<ProductDTO>>> rules = new ArrayList<>();
+        List<String> logicalOperators = new ArrayList<>();
+        List<DiscountValue> discDetails = new ArrayList<>();
+        List<String> numericalOperators = new ArrayList<>();
+        store.addDiscountCondRule(rules, logicalOperators, discDetails, numericalOperators);
+
+        verify(mockDiscountPolicy).addCondRule(rules, logicalOperators, discDetails, numericalOperators);
+    }
+
+    @Test
+    public void testAddDiscountSimple() {
+        List<DiscountValue> discDetails = new ArrayList<>();
+        List<String> numericalOperators = new ArrayList<>();
+        store.addDiscountSimple(discDetails, numericalOperators);
+
+        verify(mockDiscountPolicy).addSimple(discDetails, numericalOperators);
+    }
+
+    @Test
+    public void testRemoveDiscountRule() {
+        store.removeDiscountRule(1);
+
+        verify(mockDiscountPolicy).removeRule(1);
+    }
 }

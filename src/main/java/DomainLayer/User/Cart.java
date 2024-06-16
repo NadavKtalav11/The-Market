@@ -18,6 +18,14 @@ public class Cart {
         priceLock = new Object();
     }
 
+    //Constructor injection for testing
+    public Cart(Map<String, Basket> baskets, int cartPrice) {
+        this.baskets = baskets;
+        this.cartPrice = cartPrice;
+        basketsLock = new Object();
+        priceLock = new Object();
+    }
+
     public int getCartPrice()
     {
         calcCartTotal();
@@ -89,6 +97,9 @@ public class Cart {
         synchronized (basketsLock) {
             if (baskets.containsKey(storeId)) {
                 baskets.get(storeId).removeItemFromBasket(productName);
+                if (baskets.get(storeId).isBasketEmpty()){
+                    baskets.remove(storeId);
+                }
             }
             else{
                 throw new IllegalArgumentException("The store id" + storeId + "you entered is invalid");
@@ -159,5 +170,9 @@ public class Cart {
             }
         }
         return basketsProd;
+    }
+
+    public Map<String, Basket> getBaskets() {
+        return baskets;
     }
 }

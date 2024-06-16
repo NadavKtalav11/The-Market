@@ -1,5 +1,7 @@
 package DomainLayer.Store;
 
+import Util.ExceptionsEnum;
+
 public enum Category {
     ELECTRONICS,
     CLOTHING,
@@ -15,8 +17,8 @@ public enum Category {
             return null;
         try {
             return Category.valueOf(categoryStr.toUpperCase());
-        } catch (IllegalArgumentException e) {
-            return null; // or handle the error as appropriate
+        } catch (Exception e) {
+            throw new RuntimeException(ExceptionsEnum.categoryNotExist.toString());
         }
     }
 }

@@ -1,9 +1,8 @@
 package AcceptanceTests;
 
 import ServiceLayer.Response;
-import ServiceLayer.Service_layer;
-import Util.ProductDTO;
-import Util.UserDTO;
+import PresentationLayer.WAF.Service_layer;
+import Util.*;
 
 import java.util.HashSet;
 import java.util.List;
@@ -20,11 +19,9 @@ public class RealToTest implements BridgeToTests {
     }
 
     @Override
-    public Response<String> init(String userName, String birthday, String country, String city, String address, String name, String password, String licensedDealerNumber,
+    public Response<String> init(UserDTO userDTO,  String password, PaymentServiceDTO paymentServiceDTO, SupplyServiceDTO supplyServiceDTO) {
 
-                                 String paymentServiceName, String url, String licensedDealerNumber1, String supplyServiceName, HashSet<String> countries, HashSet<String> cities) {
-
-        return service.init(userName, birthday, country, city, address, name, password, licensedDealerNumber, paymentServiceName, url, licensedDealerNumber1, supplyServiceName, countries, cities);
+        return service.init(userDTO, password, paymentServiceDTO,supplyServiceDTO);
 
     }
 
@@ -49,7 +46,7 @@ public class RealToTest implements BridgeToTests {
 
     public Response<String> register(String userID, String userName, String birthdate, String country, String city, String address, String name, String password)
     {
-        return service.register(userID, userName, birthdate, country, city, address, name, password);
+        return service.register(new UserDTO(userID, userName, birthdate, country, city, address, name) , password);
     }
 
     public Response<String> login(String userID, String username, String password)
@@ -64,7 +61,7 @@ public class RealToTest implements BridgeToTests {
 
     public Response<String> addProductToStore(String userId, String storeID, String productName, int price, int quantity, String description, String categoryStr)
     {
-        return service.addProductToStore(userId, storeID, productName, price, quantity, description, categoryStr);
+        return service.addProductToStore(userId, storeID, new ProductDTO(productName, price, quantity, description, categoryStr));
     }
 
     public Response<String> removeProductFromStore(String userId, String storeID, String productName)
@@ -74,7 +71,7 @@ public class RealToTest implements BridgeToTests {
 
     public Response<String> updateProductInStore(String userId, String storeID, String productName, int price, int quantity, String description, String categoryStr)
     {
-        return service.updateProductInStore(userId, storeID, productName, price, quantity, description, categoryStr);
+        return service.updateProductInStore(userId, storeID, new ProductDTO(productName, price, quantity, description, categoryStr));
     }
 
     public Response<String> appointStoreOwner(String nominatorUserId, String nominatorUsername, String storeID)
@@ -173,8 +170,37 @@ public class RealToTest implements BridgeToTests {
     }
 
     public Response<String> purchase(String user_ID, String country, String city, String address, String cardNumber, int cvv, int month, int year, String holderID){
-        return service.purchase(user_ID, country, city, address, cardNumber, cvv, month, year, holderID);
+        return service.purchase(new UserDTO(user_ID,null, null, country, city, address, null) , new PaymentDTO(holderID,cardNumber,  cvv, month, year));
 
+    }
+
+
+    public Response<String> addPurchaseRuleToStore(List<Integer> ruleNums, List<String> operators, String userId, String storeId) {
+        return service.addPurchaseRuleToStore(ruleNums, operators, userId, storeId);
+    }
+
+
+    public Response<String> removePurchaseRuleFromStore(int ruleNum, String userId, String storeId) {
+        return service.removePurchaseRuleFromStore(ruleNum, userId, storeId);
+    }
+
+
+    public Response<String> addDiscountCondRuleToStore(List<Integer> ruleNums, List<String> logicOperators, List<DiscountValueDTO> discDetails, List<String> numericalOperators, String userId, String storeId) {
+        return service.addDiscountCondRuleToStore(ruleNums, logicOperators, discDetails, numericalOperators, userId, storeId);
+    }
+
+
+    public Response<String> addDiscountSimpleRuleToStore(List<DiscountValueDTO> discDetails, List<String> discountValueOperators, String userId, String storeId) {
+        return service.addDiscountSimpleRuleToStore(discDetails, discountValueOperators, userId, storeId);
+    }
+
+
+    public Response<String> removeDiscountRuleFromStore(int ruleNum, String userId, String storeId) {
+        return service.removeDiscountRuleFromStore(ruleNum, userId, storeId);
+    }
+
+    public Response<String> setUserConfirmationPurchase(String userID) {
+        return service.setUserConfirmationPurchase(userID);
     }
 
 }

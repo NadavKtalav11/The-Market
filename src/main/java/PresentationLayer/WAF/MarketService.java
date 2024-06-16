@@ -1,27 +1,23 @@
 package PresentationLayer.WAF;
 
 import DomainLayer.Market.Market;
-import DomainLayer.User.UserFacade;
-import Util.UserDTO;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
-
-import java.util.List;
 
 @Service
 public class MarketService {
 
 
 
-    private final Market market;
+    private final Service_layer service;
 
 
     public MarketService (){
+        service = new Service_layer();
+        //market = Market.getInstance();
 
-        market = Market.getInstance();
     }
 
 
@@ -37,7 +33,11 @@ public class MarketService {
 
 
     public String enterMarket(){
-        return market.enterMarketSystem();
+        return service.enterMarketSystem().getData();
     }
+
+
+
+
 
 }

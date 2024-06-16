@@ -1,12 +1,12 @@
 package DomainLayer.Store;
 
-import Util.ExceptionsEnum;
-import Util.ProductDTO;
-import Util.StoreDTO;
-import Util.UserDTO;
+import DomainLayer.Store.StoreDiscountPolicy.DiscountRulesRepository;
+import DomainLayer.Store.StoreDiscountPolicy.DiscountValue;
+import DomainLayer.Store.StoreDiscountPolicy.SimpleDiscountValue;
+import Util.*;
 import DomainLayer.Store.PoliciesRulesLogicalConditions.Rule;
 import DomainLayer.Store.PoliciesRulesLogicalConditions.SimpleRule;
-import DomainLayer.Store.StorePurchasePolicy.RulesRepository;
+import DomainLayer.Store.StorePurchasePolicy.PurchaseRulesRepository;
 
 import java.util.*;
 
@@ -41,6 +41,10 @@ public class StoreFacade {
         return storeFacadeInstance;
     }
 
+    // Added for testing purposes
+    public StoreFacade(StoreRepository storeRepository) {
+        this.allStores = storeRepository;
+    }
 
 
     public StoreFacade newForTest(){
@@ -69,6 +73,12 @@ public class StoreFacade {
         return storesDTOList;
     }
 
+
+    public List<ProductDTO> getStoreProductsDTO(String storeId){
+        Store store = allStores.get(storeId);
+        return  store.getProductsDTO();
+    }
+
     public StoreDTO getStoreDTOById(String storeId){
         Store store = getStoreByID(storeId);
         return getStoreDTOFromStore(store);
@@ -78,6 +88,14 @@ public class StoreFacade {
         if(getStoreByID(storeID) == null){
             throw new Exception(ExceptionsEnum.storeNotExist.toString());
         }
+    }
+
+    public List<String> getStoreCategories(){
+       List<String> categories = new ArrayList<>();
+       for (Category cat : EnumSet.allOf(Category.class)){
+           categories.add(cat.toString());
+       }
+       return categories;
     }
 
     public String getNewStoreId(){
@@ -102,13 +120,6 @@ public class StoreFacade {
         this.checkIfProductQuantityIsPositive(quantity);
     }
 
-    public boolean checkPolicies(UserDTO userDTO, List<ProductDTO> products, String storeId) {
-        //Check here all policies
-        this.checkPurchasePolicy(userDTO, products, storeId);
-        //this.checkDiscountPolicy(productName, storeId, userId);
-        return true;
-    }
-
     public void checkIfProductExists(String productName, String storeId){
         Store store = getStoreByID(storeId);
         if (!store.checkProductExists(productName))
@@ -117,8 +128,7 @@ public class StoreFacade {
         }
     }
 
-    public List<ProductDTO> getProductsDTOSByProductsNames(Map<String, List<Integer>> products, String storeId)
-    {
+    public List<ProductDTO> getProductsDTOSByProductsNames(Map<String, List<Integer>> products, String storeId) throws Exception {
         List<ProductDTO> productDTOS = new ArrayList<>();
         Store store = getStoreByID(storeId);
         for (Map.Entry<String, List<Integer>> product : products.entrySet()) {
@@ -156,14 +166,10 @@ public class StoreFacade {
         }
     }
 
-    public void checkDiscountPolicy(String productName, String storeId, String userId)
+    public int calcDiscountPolicy(UserDTO userDTO, List<ProductDTO> products, String storeId)
     {
         Store store = getStoreByID(storeId);
-
-        if (!store.checkDiscountPolicy(userId, productName))
-        {
-            throw new IllegalArgumentException(ExceptionsEnum.discountPolicyIsNotMet.toString());
-        }
+        return store.calcDiscountPolicy(userDTO, products);
     }
 
     public int calcPrice(String productName, int quantity, String storeId, String userId)
@@ -258,15 +264,20 @@ public class StoreFacade {
         return store.getProducts();
     }
 
-    public int calculateTotalCartPriceAfterDiscount(String store_ID, Map<String, List<Integer>> products, int totalPriceBeforeDiscount) {
-        return totalPriceBeforeDiscount; //In the future - check discount and calculate price by policies
-    }
     public List<String> inStoreProductSearch(String productName, String categoryStr, List<String> keywords, String storeId)
     {
         Store storeToSearchIn = getStoreByID(storeId);
         List<String> filteredProducts = storeToSearchIn.matchProducts(productName, categoryStr, keywords);
         return filteredProducts;
     }
+
+    public List<ProductDTO> inStoreProductSearchDTO(String productName, String categoryStr, List<String> keywords, String storeId)
+    {
+        Store storeToSearchIn = getStoreByID(storeId);
+        List<ProductDTO> filteredProducts = storeToSearchIn.matchProductsDTO(productName, categoryStr, keywords);
+        return filteredProducts;
+    }
+
 
     public List<String> inStoreProductFilter(String categoryStr, List<String> keywords, Integer minPrice, Integer maxPrice, Double minRating, String storeId, List<String> productsFromSearch, Double storeMinRating)
     {
@@ -279,10 +290,7 @@ public class StoreFacade {
     {
         if (categoryStr != null)
         {
-            if (Category.fromString(categoryStr) == null)
-            {
-                throw new IllegalArgumentException(ExceptionsEnum.categoryNotExist.toString());
-            }
+            Category.fromString(categoryStr);
         }
     }
 
@@ -297,22 +305,52 @@ public class StoreFacade {
             return allStores.getAllIds();
         }
 
-
     public void addReceiptToStore(String storeId, String  receiptId, String userId)
     {
         allStores.get(storeId).addReceipt(receiptId, userId);
     }
 
-    public void addRuleToStore(List<Integer> ruleNums, List<String> operators, String storeId) {
+    public void addPurchaseRuleToStore(List<Integer> ruleNums, List<String> operators, String storeId) {
         List<Rule<UserDTO, List<ProductDTO>>> rules = new ArrayList<>();
         for (int ruleNum : ruleNums) {
-            rules.add(new SimpleRule<>(RulesRepository.getByRuleNumber(ruleNum)));
+            rules.add(new SimpleRule<>(PurchaseRulesRepository.getByRuleNumber(ruleNum)));
         }
-        allStores.get(storeId).addRule(rules, operators);
+        allStores.get(storeId).addPurchaseRule(rules, operators);
     }
 
     //implement removeRuleFromStore
-    public void removeRuleFromStore(int ruleNum, String storeId) {
-        allStores.get(storeId).removeRule(ruleNum);
+    public void removePurchaseRuleFromStore(int ruleNum, String storeId) {
+        allStores.get(storeId).removePurchaseRule(ruleNum);
+    }
+
+    public void addDiscountCondRuleToStore(List<Integer> ruleNums, List<String> operators, List<DiscountValueDTO> discDetails, List<String> numericalOperators, String storeId) {
+
+        List<DiscountValue> discountValue = getDiscountValuesList(discDetails);
+
+        List<Rule<UserDTO, List<ProductDTO>>> rules = new ArrayList<>();
+        for (int ruleNum : ruleNums) {
+            rules.add(new SimpleRule<>(DiscountRulesRepository.getByRuleNumber(ruleNum)));
+        }
+
+        allStores.get(storeId).addDiscountCondRule(rules, operators, discountValue, numericalOperators);
+    }
+
+    public void addDiscountSimpleRuleToStore(List<DiscountValueDTO> discDetails, List<String> numericalOperators, String storeId) {
+        List<DiscountValue> discountValue = getDiscountValuesList(discDetails);
+
+        allStores.get(storeId).addDiscountSimple(discountValue, numericalOperators);
+    }
+
+    public void removeDiscountRuleFromStore(int ruleNum, String storeId) {
+        allStores.get(storeId).removeDiscountRule(ruleNum);
+    }
+
+    public List<DiscountValue> getDiscountValuesList(List<DiscountValueDTO> discDetails) {
+        List<DiscountValue> discountValue = new ArrayList<>();
+
+        for (DiscountValueDTO discDetail : discDetails) {
+            discountValue.add(new SimpleDiscountValue(discDetail.getPercentage(), Category.fromString(discDetail.getCategory()) , discDetail.getIsStoreDiscount(), discDetail.getProductsNames()));
+        }
+        return discountValue;
     }
 }
