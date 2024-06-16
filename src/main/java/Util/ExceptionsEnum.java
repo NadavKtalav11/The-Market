@@ -62,6 +62,14 @@ package Util;
         ExternalSupplyServiceIsNotAvailable{
             public String toString() {return "Unfortunately, there is no shipping for the user address";}
         },
+
+        NoExternalSupplyService{
+            public String toString() {return "There is no external supply service in the system";}
+        },
+        ExternalSupplyServiceIsNotAvailableForArea{
+            public String toString() {return "There is no external supply service for this area";}
+        },
+
         createShiftingError{
             public String toString() {return "Unfortunately, there was problem in creating the shifting";}
         },
@@ -239,7 +247,7 @@ package Util;
             public String toString(){
                 return "The time has been expired";
             }
-        };
+        },
         PaymentFailed{
             public String toString(){
                 return "Payment failed";
