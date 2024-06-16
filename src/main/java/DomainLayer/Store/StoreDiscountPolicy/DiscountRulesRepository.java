@@ -104,6 +104,14 @@ public enum DiscountRulesRepository implements TestRule<UserDTO, List<ProductDTO
         return description;
     }
 
+    public static Map<Integer, String> getAllRules() {
+        Map<Integer, String> rules = new HashMap<>();
+        for (DiscountRulesRepository rule : values()) {
+            rules.put(rule.getRuleNumber(), rule.getDescription());
+        }
+        return rules;
+    }
+
     public static DiscountRulesRepository getByRuleNumber(int ruleNumber) {
         for (DiscountRulesRepository rule : values()) {
             if (rule.getRuleNumber() == ruleNumber) {

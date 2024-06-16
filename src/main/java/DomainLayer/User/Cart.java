@@ -97,6 +97,9 @@ public class Cart {
         synchronized (basketsLock) {
             if (baskets.containsKey(storeId)) {
                 baskets.get(storeId).removeItemFromBasket(productName);
+                if (baskets.get(storeId).isBasketEmpty()){
+                    baskets.remove(storeId);
+                }
             }
             else{
                 throw new IllegalArgumentException("The store id" + storeId + "you entered is invalid");

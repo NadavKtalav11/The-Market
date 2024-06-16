@@ -50,7 +50,20 @@ public class SimpleDiscountValue implements DiscountValue {
             }
         }
 
-        public int getPercentage() {
+    @Override
+    public String getDescription() {
+        if (isCategoryDiscount()) {
+            return "Discount of " + percentage + "% on category " + category.toString();
+        }
+        else if (isProductsDiscount()) {
+            return "Discount of " + percentage + "% on products " + productsNames.toString();
+        }
+        else {
+            return "Discount of " + percentage + "% on store";
+        }
+    }
+
+    public int getPercentage() {
             return percentage;
         }
 

@@ -311,4 +311,12 @@ public class Store {
     public void setPurchasePolicy(PurchasePolicy purchasePolicy) {
         this.purchasePolicy = purchasePolicy;
     }
+
+    public List<String> getStoreCurrentPurchaseRules() {
+        return purchasePolicy.getRulesDescriptions();
+    }
+
+    public List<String> getStoreCurrentDiscountRules() {
+        return discountPolicy.getRulesDescriptions();
+    }
 }
