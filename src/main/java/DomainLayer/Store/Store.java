@@ -33,7 +33,7 @@ public class Store {
     private final Object isOpenedLock;
     private final Object receiptsLock;
 
-    Store(String store_ID, String storeName, String description)
+    public Store(String store_ID, String storeName, String description)
     {
         this.store_ID = store_ID;
         this.isOpened = true;
@@ -73,6 +73,12 @@ public class Store {
         Category category = Category.fromString(product.getCategoryStr());
         synchronized (storeProductLock) {
             storeProducts.put(product.getName(), new Product(product, category));
+        }
+    }
+
+    public void addProduct(Product product) {
+        synchronized (storeProductLock) {
+            storeProducts.put(product.getProductName(),product);
         }
     }
 
@@ -296,5 +302,13 @@ public class Store {
 
     public void removeDiscountRule(int ruleNum) {
         discountPolicy.removeRule(ruleNum);
+    }
+
+    public void setDiscountPolicy(DiscountPolicy discountPolicy) {
+        this.discountPolicy = discountPolicy;
+    }
+
+    public void setPurchasePolicy(PurchasePolicy purchasePolicy) {
+        this.purchasePolicy = purchasePolicy;
     }
 }
