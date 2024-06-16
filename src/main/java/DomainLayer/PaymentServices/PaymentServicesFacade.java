@@ -1,6 +1,7 @@
 package DomainLayer.PaymentServices;
 
 
+import Util.ExceptionsEnum;
 import Util.PaymentDTO;
 import Util.PaymentServiceDTO;
 import Util.UserDTO;
@@ -101,7 +102,7 @@ public class PaymentServicesFacade {
         }
         else
         {
-            throw new IllegalArgumentException("Payment failed");
+            throw new IllegalArgumentException(ExceptionsEnum.PaymentFailed.toString());
         }
     }
 
