@@ -12,7 +12,7 @@ import org.junit.jupiter.api.Test;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class AdditionDiscountTest {
 
@@ -41,7 +41,7 @@ public class AdditionDiscountTest {
         // TOYS category discount: (100 + 300) * 0.5 = 200
         // Store discount: (100 + 200 + 300) * 0.2 = 120
         // Total discount: 120 + 200 = 320
-        assertEquals("Total discount calculated", 320, totalDiscount);
+        assertEquals(320, totalDiscount);
     }
 
     @Test
@@ -56,6 +56,6 @@ public class AdditionDiscountTest {
 
         // Expected discount calculation:
         // No products match 'ELECTRONICS' or 'FOOD', so total discount should be 0
-        assertEquals("Total discount calculated", 0, totalDiscount);
+        assertEquals(0, totalDiscount);
     }
 }
