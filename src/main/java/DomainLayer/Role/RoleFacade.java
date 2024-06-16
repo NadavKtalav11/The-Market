@@ -117,6 +117,17 @@ public class RoleFacade {
         storeOwnerRepository.add(storeOwner);
     }
 
+    public void addNewStoreManagerToTheMarketForTests(StoreManager storeManager) {
+        if(!verifyStoreManager(storeManager.getStore_ID(), storeManager.getMember_ID()))
+            storeManagerRepository.add(storeManager);
+    }
+
+    public void addNewStoreOwnerToTheMarketForTests(StoreOwner storeOwner) {
+        if(!verifyStoreOwner(storeOwner.getStore_ID(), storeOwner.getMember_ID()))
+            storeOwnerRepository.add(storeOwner);
+    }
+
+
     public Map<String, String> getInformationAboutStoreRoles(String store_ID) {
         List<String> storeManagers = getAllStoreManagers(store_ID);
         List<String> storeOwners = getAllStoreOwners(store_ID);
@@ -210,5 +221,4 @@ public class RoleFacade {
         roleFacadeInstance = null;
     }
 }
-
 

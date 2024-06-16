@@ -240,6 +240,11 @@ package Util;
                 return "The time has been expired";
             }
         };
+        PaymentFailed{
+            public String toString(){
+                return "Payment failed";
+            }
+        },
     }
 
 
