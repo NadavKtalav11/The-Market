@@ -16,16 +16,16 @@ import static org.mockito.Mockito.*;
 public class UserTest {
 
     private User user;
-    private Member member;
+    private Member mockMember;
     private Cart mockCart;
-    private State mockState;
     private Store storeMock;
+    private State mockState;
     private String userID = "1";
 
     @BeforeEach
     public void setUp() {
         user = new User("1");
-        member = mock(Member.class);
+        mockMember = mock(Member.class);
 
         // Create the mocks
         mockCart = Mockito.mock(Cart.class);
@@ -50,72 +50,96 @@ public class UserTest {
 
     @Test
     public void testLogout() {
-        user.setState(member);
+        user.setState(mockMember);
         user.Logout();
+        doNothing().when(mockMember).Logout();
+
+        //verify that the logout method was called on the mock member
+        verify(mockMember).Logout();
         assertFalse(user.isMember());
     }
 
     @Test
     public void testAddToCart() {
-        User user2 = new User("2");
-        user2.addToCart("Product1", 2, "1", 100);
-        assertFalse(user2.getCart().isCartEmpty());
-        assertTrue(user2.checkIfProductInUserCart("Product1", "1"));
+        String productName = "Product1";
+        int quantity = 2;
+        String storeId = "1";
+        int price = 100;
+
+        user.addToCart(productName, quantity, storeId, price);
+
+        verify(mockCart).addItemsToCart(productName, quantity, storeId, price);
     }
 
     @Test
     public void testModifyProductInCart() {
-        User user2 = new User("2");
-        user2.addToCart("Product1", 2, "1", 100);
-        user2.modifyProductInCart("Product1", 3, "1", 150);
-        assertEquals(1, user2.getCartProductsByStore("1").size());
-        assertEquals(3, user2.getCartProductsByStore("1").get("Product1").get(0));
+        String productName = "Product1";
+        int quantity = 3;
+        String storeId = "1";
+        int price = 150;
+
+        user.modifyProductInCart(productName, quantity, storeId, price);
+
+        verify(mockCart).modifyProductInCart(productName, quantity, storeId, price);
     }
 
+
     @Test
-    void testLogin() throws Exception {
-        user.Login(member);
-        when(member.isMember()).thenReturn(true);
+    public void testLogin() throws Exception {
+        user.Login(mockMember);
+        when(mockMember.isMember()).thenReturn(true);
+
         assertTrue(user.getState().isMember());
     }
 
     @Test
     public void testRemoveItemFromUserCart() {
         String productName = "Product1";
-        String storeId = "100";
+        String storeId = "1";
 
-        // Set up the mock behavior for the store
-        when(storeMock.getStoreID()).thenReturn(storeId);
-
-        // Call the method to be tested
         user.removeItemFromUserCart(productName, storeId);
 
-        // Verify that the removeItemFromCart method was called on the mock cart with the correct parameters
         verify(mockCart).removeItemFromCart(productName, storeId);
     }
 
     @Test
     public void testGetCartProductsByStore() {
-        User user2 = new User("2");
-        user2.addToCart("Product1", 2, "1", 100);
-        user2.addToCart("Product2", 1, "1", 50);
-        assertEquals(2, user2.getCartProductsByStore("1").size());
+        String storeId = "1";
+        Map<String, List<Integer>> mockProducts = new HashMap<>();
+        when(mockCart.getProductsDetailsByStore(storeId)).thenReturn(mockProducts);
+
+        Map<String, List<Integer>> products = user.getCartProductsByStore(storeId);
+
+        assertEquals(mockProducts, products);
+        verify(mockCart).getProductsDetailsByStore(storeId);
     }
 
     @Test
     public void testGetCartTotalPriceBeforeDiscount() {
-        User user2 = new User("2");
-        user2.addToCart("Product1", 2, "1", 100);
-        user2.addToCart("Product2", 1, "1", 50);
+        int totalPrice = 150;
+        when(mockCart.getCartPrice()).thenReturn(totalPrice);
 
-        assertEquals(150, user2.getCartTotalPriceBeforeDiscount());
+        assertEquals(totalPrice, user.getCartTotalPriceBeforeDiscount());
     }
+
 
     @Test
     public void testIsCartEmpty() {
-        User user2 = new User("2");
-        assertTrue(user2.isCartEmpty());
-        user2.addToCart("Product1", 2, "1", 100);
-        assertFalse(user2.isCartEmpty());
+        when(mockCart.isCartEmpty()).thenReturn(true, false);
+
+        assertTrue(user.isCartEmpty());
+        assertFalse(user.isCartEmpty());
     }
+
+    @Test
+    public void testCheckIfProductInUserCart() {
+        String productName = "Product1";
+        String storeId = "1";
+
+        when(mockCart.checkIfProductInCart(productName, storeId)).thenReturn(true);
+
+        assertTrue(user.checkIfProductInUserCart(productName, storeId));
+        verify(mockCart).checkIfProductInCart(productName, storeId);
+    }
+
 }

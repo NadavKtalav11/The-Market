@@ -234,7 +234,13 @@ package Util;
             public String toString(){
                 return "the index you entered is invalid";
             }
-        };
+        },
+
+        PaymentFailed{
+            public String toString(){
+                return "Payment failed";
+            }
+        },
     }
 
 

@@ -38,7 +38,7 @@ public class Member extends State{
         this.receiptIdsAndStoreId = new HashMap<>();
     }*/
 
-    Member(String userId , String member_ID, String username,String address, String name, String password , String birthday, String country, String city )
+    public Member(String userId , String member_ID, String username,String address, String name, String password , String birthday, String country, String city )
     {
         this.userId = userId;
         this.member_ID = member_ID;
