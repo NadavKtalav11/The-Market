@@ -29,6 +29,7 @@ public class User implements Observable {
     private String city;
     private String address;
     private String name;
+    private boolean readyToPay;
 
     @Transient
     private Observer observer;
@@ -45,7 +46,9 @@ public class User implements Observable {
         this.address = null;
         this.state = new Guest(); //default state
         this.name = null;
+        this.readyToPay = false;
         //this.cart = new Cart();
+
     }
 
     public void updateByDTO(UserDTO userDTO){
@@ -113,6 +116,14 @@ public class User implements Observable {
     public String getName(){return this.name;}
 
     public String getCity(){return this.city;}
+
+    public boolean isReadyToPay() {
+        return readyToPay;
+    }
+
+    public void setReadyToPay(boolean readyToPay) {
+        this.readyToPay = readyToPay;
+    }
 
     public boolean isMember(){ return this.state.isMember();}
 
