@@ -11,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -431,21 +432,25 @@ public class MarketController {
     }
 
     @GetMapping("/generalProductSearch/{userId}/{productName}/{categoryStr}/{keywords}")
-    public ResponseEntity<APIResponse<List<String>>> generalProductSearch(@PathVariable String userId,@PathVariable String productName,@PathVariable String categoryStr,@PathVariable List<String> keywords) {
+    public ResponseEntity<APIResponse<Map<String,List<String>>>> generalProductSearch(@PathVariable String userId,@PathVariable String productName,@PathVariable String categoryStr,@PathVariable List<String> keywords) {
         try {
-            Response<List<ProductDTO>> response = serviceLayer.generalProductSearchDTO(userId,productName , categoryStr , keywords);
-
+            Response<Map<String, List<ProductDTO>>> response = serviceLayer.generalProductSearchDTO(userId,productName , categoryStr , keywords);
+            Map<String, List<ProductDTO>> result = response.getResult();
             if (response.isSuccess()) {
-                List<String> dtos = new ArrayList<>();
-                for (ProductDTO productDTO: response.getResult()){
-                    dtos.add(objectMapper.writeValueAsString(productDTO));
+                Map<String , List<String>> dtos = new HashMap<>();
+                for (String storeID: result.keySet()){
+                    List<String> stringDTOs= new ArrayList<>();
+                    for (ProductDTO productDTO : result.get(storeID)){
+                        stringDTOs.add(objectMapper.writeValueAsString(productDTO));
+                    }
+                    dtos.put(storeID, stringDTOs);
                 }
                 //List<ProductDTO> result = response.getResult();
                 HttpHeaders headers = new HttpHeaders();
                 headers.add("accept", "*/*");
 
                 return ResponseEntity.status(HttpStatus.OK).headers(headers)
-                        .body(new APIResponse<List<String>>(dtos, null));
+                        .body(new APIResponse<>(dtos, null));
             } else {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                         .body(new APIResponse<>(null, response.getDescription()));
