@@ -63,6 +63,9 @@ public class SupplyServicesFacade {
 
     public String checkAvailableExternalSupplyService(String country, String city) {
         //   (private Map<Integer, ExternalSupplyService>  ExternalSupplyService)
+        if(externalSupplyService.size()<=0){
+            return "-1";
+        }
         synchronized (externalSupplyServiceLock) {
             for (Map.Entry<String, ExternalSupplyService> entry : externalSupplyService.entrySet()) {
                 ExternalSupplyService externalSupplyService1 = entry.getValue();
@@ -71,7 +74,7 @@ public class SupplyServicesFacade {
                     }
             }
         }
-        return "-1";
+        return "-2";
     }
 
     public ExternalSupplyService getExternalSupplyServiceById(String externalSupplyServiceId){

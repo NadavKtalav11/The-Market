@@ -72,18 +72,17 @@ public class PurchaseTest {
 //        });
 //    }
 
-    //todo David implement this already
-//    @Test
-//    public void purchaseWithInvalidPaymentDetailsTest() {
-//        // Invalid payment details
-//        PaymentDTO invalidPaymentDTO = new PaymentDTO("holderName", "1111222233334444", 13, 2025, "123", "holderID");
-//
-//        Exception exception = assertThrows(Exception.class, () -> {
-//            impl.purchase(userID1, invalidPaymentDTO, userDTO);
-//        });
-//
-//        assertEquals("There is a problem with the provided payment measure or details of the order.\n", exception.getMessage());
-//    }
+//    //todo David implement this already
+    @Test
+    public void purchaseWithInvalidPaymentDetailsTest() throws Exception {
+        // Invalid payment details
+        PaymentDTO invalidPaymentDTO = new PaymentDTO("holderName", "1111222233334444", 13, 12, 1990);
+        Response<String> response = impl.purchase(userID2, userDTO.getCountry(), userDTO.getCity(),userDTO.getAddress(),
+                    invalidPaymentDTO.getCreditCardNumber(), invalidPaymentDTO.getCvv(), invalidPaymentDTO.getMonth(), invalidPaymentDTO.getYear(), invalidPaymentDTO.getHolderId());
+
+
+        assertEquals( ExceptionsEnum.InvalidCreditCardParameters.toString(), response.getDescription());
+    }
 
     @Test
     public void purchaseWithEmptyCartTest() {
@@ -131,6 +130,6 @@ public class PurchaseTest {
          Response<String> response =impl.purchase(userID2, "Israel", "Tel Aviv", "Rothschild", paymentDTO.getCreditCardNumber(),paymentDTO.getCvv(),paymentDTO.getMonth(), paymentDTO.getYear(),paymentDTO.getHolderId());
          assertFalse(response.isSuccess());
 
-         assertEquals(ExceptionsEnum.ExternalSupplyServiceIsNotAvailable.toString(), response.getDescription());
+         assertEquals(ExceptionsEnum.ExternalSupplyServiceIsNotAvailableForArea.toString(), response.getDescription());
      }
 }
