@@ -4,6 +4,7 @@ import DomainLayer.Store.PoliciesRulesLogicalConditions.TestRule;
 import Util.ProductDTO;
 import Util.UserDTO;
 
+import javax.persistence.criteria.CriteriaBuilder;
 import java.time.Clock;
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -119,6 +120,14 @@ public enum PurchaseRulesRepository implements TestRule<UserDTO, List<ProductDTO
 
     public String getDescription() {
         return description;
+    }
+
+    public static Map<Integer, String > getAllRules() {
+        Map<Integer, String> rules = new HashMap<>();
+        for (PurchaseRulesRepository rule : values()) {
+            rules.put(rule.getRuleNumber(), rule.getDescription());
+        }
+        return rules;
     }
 
     public static PurchaseRulesRepository getByRuleNumber(int ruleNumber) {
