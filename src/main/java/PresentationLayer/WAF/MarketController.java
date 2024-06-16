@@ -875,6 +875,28 @@ public class MarketController {
                     .body(new APIResponse<>(null, e.getMessage()));
         }
     }
+    
+    @GetMapping("/getStoreCurrentDiscountRules/{userId}/{storeId}")
+    public ResponseEntity<APIResponse<List<String>>> getStoreCurrentDiscountRules(@PathVariable String userId, @PathVariable String storeId) {
+        try {
+            Response<List<String>> response = serviceLayer.getStoreCurrentDiscountRules(userId, storeId);
+            if (response.isSuccess()) {
+                List<String> result = response.getResult();
+                HttpHeaders headers = new HttpHeaders();
+                headers.add("accept", "*/*");
+
+                return ResponseEntity.status(HttpStatus.OK).headers(headers)
+                        .body(new APIResponse<List<String>>(result, null));
+            } else {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                        .body(new APIResponse<>(null, response.getDescription()));
+            }
+        }  catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new APIResponse<>(null, e.getMessage()));
+
+        }
+    }
 
     private ResponseEntity<APIResponse<String>> checkIfResponseIsGood(Response<String> response) {
         try {
