@@ -849,7 +849,7 @@ public class Market {
         return filteredProductNames;
     }
 
-    public List<ProductDTO> generalProductSearchDTO(String userId, String productName, String categoryStr, List<String> keywords) throws Exception {
+    public Map<String, List<ProductDTO>> generalProductSearchDTO(String userId, String productName, String categoryStr, List<String> keywords) throws Exception {
         if (userFacade.isMember(userId)) {
             String memberId = userFacade.getMemberIdByUserId(userId);
             boolean succeeded = authenticationAndSecurityFacade.validateToken(authenticationAndSecurityFacade.getToken(memberId));
@@ -861,12 +861,13 @@ public class Market {
 
         storeFacade.checkCategory(categoryStr);
 
-        List<ProductDTO> filteredProductNames = new ArrayList<>();
+        Map<String, List<ProductDTO>> filteredProductNames = new HashMap<>();
         List<String> stores = this.storeFacade.getStores();
         for(String store_ID: stores)
         {
             try {
-                filteredProductNames.addAll(inStoreProductSearchDTO(userId, productName, categoryStr, keywords,store_ID));
+
+                filteredProductNames.put(store_ID, inStoreProductSearchDTO(userId, productName, categoryStr, keywords,store_ID));
             }
             catch (Exception e)
             {
