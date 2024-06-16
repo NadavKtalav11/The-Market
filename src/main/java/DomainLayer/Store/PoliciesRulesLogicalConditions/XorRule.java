@@ -13,7 +13,7 @@ public class XorRule<T, U> extends CompositeRule<T, U>  {
 
     @Override
     public String getDescription() {
-        return rule1.getDescription() + " xor " + rule2.getDescription();
+        return " (" + rule1.getDescription() + " xor " + rule2.getDescription() + ") ";
     }
 
 }
