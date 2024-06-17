@@ -4,7 +4,6 @@ import ServiceLayer.Response;
 import PresentationLayer.WAF.Service_layer;
 import Util.*;
 
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
@@ -102,10 +101,11 @@ public class RealToTest implements BridgeToTests {
         return service.generalProductSearch(userId, productName, categoryStr, keywords);
     }
 
-//    public Response<Integer> checkingCartValidationBeforePurchase(String user_ID, String country, String city, String address)
-//    {
-//        return service.checkingCartValidationBeforePurchase(user_ID, country, city,address);
-//    }
+    public Response<Integer> checkingCartValidationBeforePurchase(String user_ID, String username, String birthday, String name, String country, String city, String address)
+    {
+
+        return service.checkingCartValidationBeforePurchase(user_ID, new UserDTO(user_ID,username,birthday,country,city,address,name));
+    }
 
     public Response<List<String>> getInformationAboutStores(String user_ID)
     {
@@ -169,8 +169,9 @@ public class RealToTest implements BridgeToTests {
         return service.inStoreProductSearch(userId, productName, categoryStr, keywords, storeId);
     }
 
-    public Response<String> purchase(String user_ID, String country, String city, String address, String cardNumber, int cvv, int month, int year, String holderID){
-        return service.purchase(new UserDTO(user_ID,null, null, country, city, address, null) , new PaymentDTO(holderID,cardNumber,  cvv, month, year));
+    @Override
+    public Response<String> purchase(String user_ID, String country, String city, String address, String cardNumber, int cvv, int month, int year, String holderID, int price, Map<String,Map<String, List<Integer>>> products) {
+        return service.purchase(new UserDTO(user_ID,null, null, country, city, address, null) , new PaymentDTO(holderID,cardNumber,  cvv, month, year), new CartDTO(user_ID,price, products));
 
     }
 

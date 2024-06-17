@@ -3,7 +3,6 @@ package AcceptanceTests;
 import ServiceLayer.Response;
 import Util.*;
 
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
@@ -43,7 +42,7 @@ public interface BridgeToTests {
 
     Response<List<String>> generalProductSearch(String userId, String productName, String categoryStr, List<String> keywords);
 
-//    Response<Integer> checkingCartValidationBeforePurchase(String user_ID, String country, String city, String address);
+    Response<Integer> checkingCartValidationBeforePurchase(String user_ID, String username, String birthday, String name, String country, String city, String address);
 
     Response<List<String>> getInformationAboutStores(String user_ID);
 
@@ -69,7 +68,7 @@ public interface BridgeToTests {
 
     Response<List<String>> inStoreProductSearch(String userId, String productName, String categoryStr, List<String> keywords, String storeId);
 
-    Response<String> purchase(String user_ID, String country, String city, String address, String cardNumber, int cvv, int month, int year, String holderID);
+    Response<String> purchase(String user_ID, String country, String city, String address, String cardNumber, int cvv, int month, int year, String holderID, int price, Map<String, Map<String,List<Integer>>> products);
 
     Response<String> addPurchaseRuleToStore(List<Integer> ruleNums, List<String> operators, String userId, String storeId);
 

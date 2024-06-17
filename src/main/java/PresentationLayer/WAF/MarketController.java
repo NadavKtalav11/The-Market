@@ -175,7 +175,8 @@ public class MarketController {
         try {
             String userDTO = params.get("userDTO");
             String paymentDTO= params.get("paymentDTO");
-            Response<String> response = serviceLayer.purchase(objectMapper.readValue(userDTO, UserDTO.class),objectMapper.readValue( paymentDTO, PaymentDTO.class));
+            String cartDTO = params.get("cartDTO");
+            Response<String> response = serviceLayer.purchase(objectMapper.readValue(userDTO, UserDTO.class),objectMapper.readValue( paymentDTO, PaymentDTO.class), objectMapper.readValue( cartDTO, CartDTO.class));
             if (response.isSuccess()) {
                 String result = response.getResult();
                 HttpHeaders headers = new HttpHeaders();
@@ -210,6 +211,30 @@ public class MarketController {
                         .body(new APIResponse<String>(null, response.getDescription()));
             }
 
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new APIResponse<>(null, e.getMessage()));
+        }
+    }
+
+    @GetMapping("/getCartAfterValidation")
+    public ResponseEntity<APIResponse<String>> getCartAfterValidation(@RequestParam Map<String,String> params) {
+        try {
+            String userId = params.get("userID");
+            String userDTO = params.get("userDTO");
+            ObjectMapper objectMapper= new ObjectMapper();
+            Response<CartDTO> response = serviceLayer.checkingCartValidationBeforePurchaseDTO(userId, objectMapper.readValue(userDTO, UserDTO.class));
+            if (response.isSuccess()) {
+                String result = objectMapper.writeValueAsString(response.getResult());
+                HttpHeaders headers = new HttpHeaders();
+                headers.add("accept", "*/*");
+
+                return ResponseEntity.status(HttpStatus.OK).headers(headers)
+                        .body(new APIResponse<String>(result, null));
+            } else {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                        .body(new APIResponse<String>(null, response.getDescription()));
+            }
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(new APIResponse<>(null, e.getMessage()));
@@ -257,6 +282,7 @@ public class MarketController {
         }
     }
 
+
     @GetMapping("/getStoreProducts/{storeId}")
     public ResponseEntity<APIResponse<List<String>>> getStoreProducts(@PathVariable String storeId) {
         try {
@@ -276,7 +302,6 @@ public class MarketController {
                     .body(new APIResponse<>(null, e.getMessage()));
         }
     }
-
 
 
 

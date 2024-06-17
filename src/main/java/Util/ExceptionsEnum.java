@@ -239,12 +239,12 @@ package Util;
             public String toString(){
                 return "The time has been expired";
             }
-        };
+        },
         PaymentFailed{
             public String toString(){
                 return "Payment failed";
             }
-        },
+        };
     }
 
 
