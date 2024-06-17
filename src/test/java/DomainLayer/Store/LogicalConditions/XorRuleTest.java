@@ -83,7 +83,7 @@ class XorRuleTest {
         String description = xorRule.getDescription();
 
         // Assert
-        assertEquals("Rule 1 xor Rule 2", description);
+        assertEquals(" (Rule 1 xor Rule 2) ", description);
     }
 }
 

@@ -83,7 +83,7 @@ class OrRuleTest {
         String description = orRule.getDescription();
 
         // Assert
-        assertEquals("Rule 1 or Rule 2", description);
+        assertEquals(" (Rule 1 or Rule 2) ", description);
     }
 }
 
