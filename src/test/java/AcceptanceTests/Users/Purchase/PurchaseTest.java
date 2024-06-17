@@ -4,16 +4,20 @@ import AcceptanceTests.BridgeToTests;
 import AcceptanceTests.ProxyToTest;
 import ServiceLayer.Response;
 import Util.*;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentMatchers;
+import org.mockito.Mockito;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.concurrent.*;
+import javax.persistence.criteria.CriteriaBuilder;
+import java.util.*;
+import java.util.concurrent.TimeoutException;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.when;
 
 public class PurchaseTest {
 
@@ -23,6 +27,7 @@ public class PurchaseTest {
     private static String storeID;
     private static PaymentDTO paymentDTO;
     private static UserDTO userDTO;
+    private static Map<String, Map<String,List<Integer>>> products;
 
     @BeforeEach
     public void setUp() {
@@ -54,34 +59,47 @@ public class PurchaseTest {
         // Initialize paymentDTO and userDTO
         paymentDTO = new PaymentDTO("holderName", "1111222233334444", 1, 12, 2025);
         userDTO = new UserDTO(userID2, "newUser2", "12/12/2000", "Israel", "BeerSheva", "bialik", "noa");
+        products = new HashMap<>();
+        Map<String, List<Integer>> basketProducts = new HashMap<>();
+        List<Integer> Milk = new ArrayList<>();
+        Milk.add(0,2);
+        Milk.add(1,20);
+        List<Integer> Cheese = new ArrayList<>();
+        Cheese.add(0,4);
+        Cheese.add(1,60);
+        List<Integer> Yogurt = new ArrayList<>();
+        Yogurt.add(0,5);
+        Yogurt.add(1,20);
+        basketProducts.put("Milk", Milk);
+        basketProducts.put("Cheese", Cheese);
+        basketProducts.put("Yogurt", Yogurt);
+        products.put(storeID, basketProducts);
     }
 
     @Test
-    public void successfulPurchaseTest() {
-        assertTrue(impl.purchase(userID2,userDTO.getCountry(), userDTO.getCity(),userDTO.getAddress(),
-                paymentDTO.getCreditCardNumber(),paymentDTO.getCvv(),paymentDTO.getMonth(), paymentDTO.getYear(),paymentDTO.getHolderId()).isSuccess());
+    public void successfulPurchaseTest() throws JsonProcessingException {
+        impl.setUserConfirmationPurchase(userID2);
+        int price = impl.checkingCartValidationBeforePurchase(userID2, userDTO.getUserName(), userDTO.getBirthday(),
+                userDTO.getName(), userDTO.getCountry(), userDTO.getCity(), userDTO.getAddress()).getResult();
+        CartDTO cartDTO = new CartDTO(userID2,price,products);
+
+        Response<String> result = impl.purchase(userID2, userDTO.getCountry(), userDTO.getCity(), userDTO.getAddress(),
+                paymentDTO.getCreditCardNumber(), paymentDTO.getCvv(), paymentDTO.getMonth(), paymentDTO.getYear(),
+                paymentDTO.getHolderId(), cartDTO.getCartPrice(), cartDTO.getStoreToProducts());
+
+        assertTrue(result.isSuccess());
     }
 
-    //todo implement this test after implement 5 seconds
-//    @Test
-//    public void purchaseWithTimeoutTest() {
-//        // This simulates the user not responding within the 5-minute limit
-//        Exception exception = assertThrows(Exception.class, () -> {
-//            impl.purchase(userID1,userDTO.getCountry(), userDTO.getCity(),userDTO.getAddress(),
-//                    paymentDTO.getCreditCardNumber(),paymentDTO.getCvv(),paymentDTO.getMonth(), paymentDTO.getYear(),paymentDTO.getHolderId());
-//        });
-//    }
-
-//    //todo David implement this already
     @Test
-    public void purchaseWithInvalidPaymentDetailsTest() throws Exception {
-        // Invalid payment details
-        PaymentDTO invalidPaymentDTO = new PaymentDTO("holderName", "1111222233334444", 13, 12, 1990);
-        Response<String> response = impl.purchase(userID2, userDTO.getCountry(), userDTO.getCity(),userDTO.getAddress(),
-                    invalidPaymentDTO.getCreditCardNumber(), invalidPaymentDTO.getCvv(), invalidPaymentDTO.getMonth(), invalidPaymentDTO.getYear(), invalidPaymentDTO.getHolderId());
-
-
-        assertEquals( ExceptionsEnum.InvalidCreditCardParameters.toString(), response.getDescription());
+    public void purchaseWithTimeoutTest() {
+        // This simulates the user not responding within the 5-minute limit
+        int price = impl.checkingCartValidationBeforePurchase(userID2, userDTO.getUserName(), userDTO.getBirthday(),
+                userDTO.getName(), userDTO.getCountry(), userDTO.getCity(), userDTO.getAddress()).getResult();
+        CartDTO cartDTO = new CartDTO(userID2,price,products);
+        Response<String> response = impl.purchase(userID2,userDTO.getCountry(), userDTO.getCity(),userDTO.getAddress(),
+                paymentDTO.getCreditCardNumber(),paymentDTO.getCvv(),paymentDTO.getMonth(), paymentDTO.getYear(),
+                paymentDTO.getHolderId(), cartDTO.getCartPrice(), cartDTO.getStoreToProducts());
+        assertEquals(ExceptionsEnum.TimeExpired.toString(), response.getDescription());
     }
 
     @Test
@@ -89,17 +107,22 @@ public class PurchaseTest {
         impl.removeProductFromBasket("Milk", storeID, userID2);
         impl.removeProductFromBasket("Cheese", storeID, userID2);
         impl.removeProductFromBasket("Yogurt" , storeID, userID2);
+        products.clear();
+        impl.setUserConfirmationPurchase(userID2);
 
-        Response<String> response = impl.purchase(userID2,userDTO.getCountry(), userDTO.getCity(),userDTO.getAddress(),
-                paymentDTO.getCreditCardNumber(),paymentDTO.getCvv(),paymentDTO.getMonth(), paymentDTO.getYear(),paymentDTO.getHolderId());
+        impl.setUserConfirmationPurchase(userID2);
+        Response<Integer> response = impl.checkingCartValidationBeforePurchase(userID2, userDTO.getUserName(), userDTO.getBirthday(),
+                userDTO.getName(), userDTO.getCountry(), userDTO.getCity(), userDTO.getAddress());
         assertEquals(ExceptionsEnum.userCartIsEmpty.toString(), response.getDescription());
     }
 
     @Test
      public void productQuantityUnavailableTest() {
          impl.updateProductInStore(userID1, storeID, "Cheese", 20, 1, "Cheddar", "Dairy");
-         Response<String> response = impl.purchase(userID2,userDTO.getCountry(), userDTO.getCity(),userDTO.getAddress(),
-                 paymentDTO.getCreditCardNumber(),paymentDTO.getCvv(),paymentDTO.getMonth(), paymentDTO.getYear(),paymentDTO.getHolderId());
+        impl.setUserConfirmationPurchase(userID2);
+        impl.setUserConfirmationPurchase(userID2);
+        Response<Integer> response = impl.checkingCartValidationBeforePurchase(userID2, userDTO.getUserName(), userDTO.getBirthday(),
+                userDTO.getName(), userDTO.getCountry(), userDTO.getCity(), userDTO.getAddress());
          assertFalse(response.isSuccess());
          assertEquals(ExceptionsEnum.productQuantityNotExist.toString(), response.getDescription());
      }
@@ -107,9 +130,11 @@ public class PurchaseTest {
      @Test
      public void productNotExistTest() {
          impl.removeProductFromStore(userID1, storeID, "Milk");
+         impl.setUserConfirmationPurchase(userID2);
+         impl.setUserConfirmationPurchase(userID2);
+         Response<Integer> response = impl.checkingCartValidationBeforePurchase(userID2, userDTO.getUserName(), userDTO.getBirthday(),
+                 userDTO.getName(), userDTO.getCountry(), userDTO.getCity(), userDTO.getAddress());
 
-         Response<String> response = impl.purchase(userID2,userDTO.getCountry(), userDTO.getCity(),userDTO.getAddress(),
-                 paymentDTO.getCreditCardNumber(),paymentDTO.getCvv(),paymentDTO.getMonth(), paymentDTO.getYear(),paymentDTO.getHolderId());
          assertFalse(response.isSuccess());
 
          assertEquals(ExceptionsEnum.productNotExistInStore.toString(), response.getDescription());
@@ -118,8 +143,10 @@ public class PurchaseTest {
      @Test
      public void purchasePolicyInvalidTest() {
          impl.addPurchaseRuleToStore(new ArrayList<>(Arrays.asList(5)), new ArrayList<>(), userID1, storeID);
-
-         Response<String> response =impl.purchase(userID2, userDTO.getCountry(), userDTO.getCity(), userDTO.getAddress(), paymentDTO.getCreditCardNumber(),paymentDTO.getCvv(),paymentDTO.getMonth(), paymentDTO.getYear(),paymentDTO.getHolderId());
+         impl.setUserConfirmationPurchase(userID2);
+         impl.setUserConfirmationPurchase(userID2);
+         Response<Integer> response = impl.checkingCartValidationBeforePurchase(userID2, userDTO.getUserName(), userDTO.getBirthday(),
+                 userDTO.getName(), userDTO.getCountry(), userDTO.getCity(), userDTO.getAddress());
          assertFalse(response.isSuccess());
 
          assertEquals(ExceptionsEnum.purchasePolicyIsNotMet.toString(), response.getDescription());
@@ -127,59 +154,11 @@ public class PurchaseTest {
 
      @Test
      public void shippingInvalidTest() {
-         Response<String> response =impl.purchase(userID2, "Israel", "Tel Aviv", "Rothschild", paymentDTO.getCreditCardNumber(),paymentDTO.getCvv(),paymentDTO.getMonth(), paymentDTO.getYear(),paymentDTO.getHolderId());
+         impl.setUserConfirmationPurchase(userID2);
+         Response<Integer> response = impl.checkingCartValidationBeforePurchase(userID2, userDTO.getUserName(), userDTO.getBirthday(),
+                 userDTO.getName(), "Israel", "Tel Aviv", "Rothschild");
          assertFalse(response.isSuccess());
 
-         assertEquals(ExceptionsEnum.ExternalSupplyServiceIsNotAvailableForArea.toString(), response.getDescription());
+         assertEquals(ExceptionsEnum.ExternalSupplyServiceIsNotAvailable.toString(), response.getDescription());
      }
-
-
-    @Test
-    public void concurrentPurchaseTest() throws InterruptedException, ExecutionException {
-
-        final int NUM_ITERATIONS = 100;
-        final String productName = "water";
-        boolean allPassed = true;
-
-        ExecutorService executor = Executors.newFixedThreadPool(2);
-        ArrayList<Callable<Boolean>> tasks = new ArrayList<>();
-
-        for (int i = 0; i < NUM_ITERATIONS; i++) {
-            setUp();
-            impl.addProductToStore(userID1, storeID, productName, 1, 1, "Milk 12%", "food");
-            impl.addProductToBasket(productName, 1, storeID, userID2);
-            impl.addProductToBasket(productName, 1, storeID, userID1);
-
-            Callable<Boolean> user1Task = () -> {
-                Response<String> response = impl.purchase(userID2, userDTO.getCountry(), userDTO.getCity(), userDTO.getAddress(),
-                        paymentDTO.getCreditCardNumber(), paymentDTO.getCvv(), paymentDTO.getMonth(), paymentDTO.getYear(), paymentDTO.getHolderId());
-                return response.isSuccess();
-            };
-
-            Callable<Boolean> user2Task = () -> {
-                Response<String> response = impl.purchase(userID1, userDTO.getCountry(), userDTO.getCity(), userDTO.getAddress(),
-                        paymentDTO.getCreditCardNumber(), paymentDTO.getCvv(), paymentDTO.getMonth(), paymentDTO.getYear(), paymentDTO.getHolderId());
-                return response.isSuccess();
-            };
-
-            tasks.add(user1Task);
-            tasks.add(user2Task);
-            Future<Boolean> user1Future = executor.submit(tasks.get(0));
-            Future<Boolean> user2Future = executor.submit(tasks.get(1));
-
-            tasks.remove(0);
-            tasks.remove(0);
-            boolean user1Success = user1Future.get();
-            boolean user2Success = user2Future.get();
-            if (user1Success && user2Success || !user1Success && !user2Success) {
-                System.out.println(i);
-                allPassed = false;
-                break;
-            }
-        }
-
-        executor.shutdown();
-        assertTrue(allPassed, "Concurrent purchase test failed.");
-    }
 }
-

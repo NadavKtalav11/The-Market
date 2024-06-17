@@ -16,6 +16,7 @@ import DomainLayer.SupplyServices.SupplyServicesFacade;
 import Util.*;
 
 import java.util.*;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.regex.Pattern;
 import java.util.concurrent.*;
 
@@ -33,7 +34,6 @@ public class Market {
     private boolean initialized= false;
     private final Object initializedLock;
     private final Object managersLock;
-
     private final Object validationLock;
 
     public synchronized static Market getInstance() {
@@ -228,43 +228,48 @@ public class Market {
         }
     }
 
-    public void purchase(PaymentDTO paymentDTO, UserDTO userDTO) throws Exception {
-        CartDTO cartDTO = null;
-        ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
+    public void purchase(PaymentDTO paymentDTO, UserDTO userDTO, CartDTO cartDTO) throws Exception {
         ScheduledFuture<?> timeoutHandle = null;
+        ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
+        AtomicBoolean timeoutExpired = new AtomicBoolean(false);
 
         try {
-            cartDTO = checkingCartValidationBeforePurchase(userDTO.getUserId(), userDTO);
+            timeoutHandle = scheduler.schedule(() -> {
+                timeoutExpired.set(true);
+            }, 15L, TimeUnit.SECONDS);
 
-            // Create a CompletableFuture for user input
-//            CompletableFuture<Void> userInputFuture = new CompletableFuture<>();
-//
-//            // Schedule a task to complete the future with an exception if the user does not respond in time
-//            timeoutHandle = scheduler.schedule(() -> {
-//                userInputFuture.completeExceptionally(new TimeoutException("User input time expired"));
-//            }, 5, TimeUnit.SECONDS);
-//
-//            // Here you should integrate your actual user input mechanism
-//            // For this example, we simulate user input with a manual completion
-//            // In a real application, replace this line with actual user input handling
-//            // userInputFuture.complete(null);  // Uncomment this to simulate user input completion
-//
-//            // Wait for user input or timeout
-//            userInputFuture.get();
-
-            // Proceed with payment if user input is received
-            payWithExternalPaymentService(cartDTO, paymentDTO, userDTO.getUserId());
-        } catch (Exception e) {
-            if (cartDTO != null) {
-                returnCartToStock(cartDTO.getStoreToProducts());
+            boolean userReadyToPay;
+            for(userReadyToPay = false; !userReadyToPay && !timeoutExpired.get(); userReadyToPay = this.getUserConfirmationPurchase(userDTO.getUserId())) {
             }
+
+            if (!userReadyToPay || timeoutExpired.get()) {
+                throw new RuntimeException(ExceptionsEnum.TimeExpired.toString());
+            }
+
+            this.payWithExternalPaymentService(cartDTO, paymentDTO, userDTO.getUserId());
+        } catch (Exception var11) {
+            Exception e = var11;
+            if (cartDTO != null) {
+                this.returnCartToStock(cartDTO.getStoreToProducts());
+            }
+
             throw e;
         } finally {
             if (timeoutHandle != null && !timeoutHandle.isDone()) {
                 timeoutHandle.cancel(true);
             }
+
             scheduler.shutdown();
         }
+
+    }
+
+    public void setUserConfirmationPurchase(String userID) {
+        this.userFacade.getUserByID(userID).setReadyToPay(true);
+    }
+
+    public boolean getUserConfirmationPurchase(String userID) {
+        return this.userFacade.getUserByID(userID).isReadyToPay();
     }
 
     public void purchaseForTest(PaymentDTO paymentDTO, UserDTO userDTO) throws Exception {
@@ -380,7 +385,6 @@ public class Market {
     }
 
     public void logout(String userId){
-        //todo add condition if the user is logged in
         userFacade.getUserByID(userId).Logout();
         authenticationAndSecurityFacade.removeToken(userId);
     }
@@ -408,8 +412,6 @@ public class Market {
         //authenticationAndSecurityFacade.generateToken(memberId);
         return memberId;
     }
-
-
 
     public boolean checkPasswordValidation(String password){
         String PASSWORD_PATTERN =
@@ -842,43 +844,84 @@ public class Market {
         return storeReceiptsAndTotalAmount;
     }
 
-    public  CartDTO checkingCartValidationBeforePurchase(String user_ID,UserDTO userDTO) throws Exception {
-        synchronized (validationLock) {
-            if (userFacade.isMember(user_ID)) {
-                String memberId = userFacade.getMemberIdByUserId(user_ID);
-                boolean succeeded = authenticationAndSecurityFacade.validateToken(authenticationAndSecurityFacade.getToken(memberId));
-                if (!succeeded) {
-                    logout(user_ID);
-                    throw new Exception(ExceptionsEnum.sessionOver.toString());
-                }
+    public int checkingCartValidationBeforePurchase(String user_ID, UserDTO userDTO) throws Exception {
+        if (this.userFacade.isMember(user_ID)) {
+            String memberId = this.userFacade.getMemberIdByUserId(user_ID);
+            boolean succeeded = this.authenticationAndSecurityFacade.validateToken(this.authenticationAndSecurityFacade.getToken(memberId));
+            if (!succeeded) {
+                this.logout(user_ID);
+                throw new Exception(ExceptionsEnum.sessionOver.toString());
             }
-            int totalPrice = 0;
-            this.userFacade.isUserCartEmpty(user_ID);
-
-            List<String> stores = this.userFacade.getCartStoresByUser(user_ID);
-            for (String store_ID : stores) {
-                Map<String, List<Integer>> products = this.userFacade.getCartProductsByStoreAndUser(store_ID, user_ID);
-                int quantity;
-                List<ProductDTO> productDTOS = this.storeFacade.getProductsDTOSByProductsNames(products, store_ID);
-                for (String productName : products.keySet()) {
-                    quantity = products.get(productName).get(0);
-                    this.storeFacade.checkQuantity(productName, quantity, store_ID);
-                }
-
-                storeFacade.checkPurchasePolicy(userDTO, productDTOS, store_ID);
-                int priceToReduce = storeFacade.calcDiscountPolicy(userDTO, productDTOS, store_ID);
-
-                String availableExternalSupplyService = this.checkAvailableExternalSupplyService(userDTO.getCountry(), userDTO.getCity());
-                this.createShiftingDetails(userDTO.getCountry(), userDTO.getCity(), availableExternalSupplyService, userDTO.getAddress(), user_ID);
-
-                int storeTotalPriceBeforeDiscount = this.userFacade.getCartPriceByUser(user_ID);
-                int storeTotalPrice = storeTotalPriceBeforeDiscount - priceToReduce;
-                totalPrice += storeTotalPrice;
-            }
-            //remove items from stock
-            removeUserCartFromStock(user_ID);
-            return new CartDTO(user_ID, totalPrice, getPurchaseList(user_ID));
         }
+
+        int totalPrice = 0;
+        this.userFacade.isUserCartEmpty(user_ID);
+        List<String> stores = this.userFacade.getCartStoresByUser(user_ID);
+
+        int storeTotalPrice;
+        for(Iterator var5 = stores.iterator(); var5.hasNext(); totalPrice += storeTotalPrice) {
+            String store_ID = (String)var5.next();
+            Map<String, List<Integer>> products = this.userFacade.getCartProductsByStoreAndUser(store_ID, user_ID);
+            List<ProductDTO> productDTOS = this.storeFacade.getProductsDTOSByProductsNames(products, store_ID);
+            Iterator var10 = products.keySet().iterator();
+
+            String availableExternalSupplyService;
+            while(var10.hasNext()) {
+                availableExternalSupplyService = (String)var10.next();
+                int quantity = (Integer)((List)products.get(availableExternalSupplyService)).get(0);
+                this.storeFacade.checkQuantity(availableExternalSupplyService, quantity, store_ID);
+            }
+
+            this.storeFacade.checkPurchasePolicy(userDTO, productDTOS, store_ID);
+            int priceToReduce = this.storeFacade.calcDiscountPolicy(userDTO, productDTOS, store_ID);
+            availableExternalSupplyService = this.checkAvailableExternalSupplyService(userDTO.getCountry(), userDTO.getCity());
+            this.createShiftingDetails(userDTO.getCountry(), userDTO.getCity(), availableExternalSupplyService, userDTO.getAddress(), user_ID);
+            int storeTotalPriceBeforeDiscount = this.userFacade.getCartPriceByUser(user_ID);
+            storeTotalPrice = storeTotalPriceBeforeDiscount - priceToReduce;
+        }
+
+        this.removeUserCartFromStock(user_ID);
+        return totalPrice;
+    }
+
+    public CartDTO checkingCartValidationBeforePurchaseDTO(String user_ID, UserDTO userDTO) throws Exception {
+        if (this.userFacade.isMember(user_ID)) {
+            String memberId = this.userFacade.getMemberIdByUserId(user_ID);
+            boolean succeeded = this.authenticationAndSecurityFacade.validateToken(this.authenticationAndSecurityFacade.getToken(memberId));
+            if (!succeeded) {
+                this.logout(user_ID);
+                throw new Exception(ExceptionsEnum.sessionOver.toString());
+            }
+        }
+
+        int totalPrice = 0;
+        this.userFacade.isUserCartEmpty(user_ID);
+        List<String> stores = this.userFacade.getCartStoresByUser(user_ID);
+
+        int storeTotalPrice;
+        for(Iterator var5 = stores.iterator(); var5.hasNext(); totalPrice += storeTotalPrice) {
+            String store_ID = (String)var5.next();
+            Map<String, List<Integer>> products = this.userFacade.getCartProductsByStoreAndUser(store_ID, user_ID);
+            List<ProductDTO> productDTOS = this.storeFacade.getProductsDTOSByProductsNames(products, store_ID);
+            Iterator var10 = products.keySet().iterator();
+
+            String availableExternalSupplyService;
+            while(var10.hasNext()) {
+                availableExternalSupplyService = (String)var10.next();
+                int quantity = (Integer)((List)products.get(availableExternalSupplyService)).get(0);
+                this.storeFacade.checkQuantity(availableExternalSupplyService, quantity, store_ID);
+            }
+
+            this.storeFacade.checkPurchasePolicy(userDTO, productDTOS, store_ID);
+            int priceToReduce = this.storeFacade.calcDiscountPolicy(userDTO, productDTOS, store_ID);
+            availableExternalSupplyService = this.checkAvailableExternalSupplyService(userDTO.getCountry(), userDTO.getCity());
+            this.createShiftingDetails(userDTO.getCountry(), userDTO.getCity(), availableExternalSupplyService, userDTO.getAddress(), user_ID);
+            int storeTotalPriceBeforeDiscount = this.userFacade.getCartPriceByUser(user_ID);
+            storeTotalPrice = storeTotalPriceBeforeDiscount - priceToReduce;
+        }
+
+        this.removeUserCartFromStock(user_ID);
+        return new CartDTO(user_ID, totalPrice, this.getPurchaseList(user_ID));
     }
 
     public String checkAvailableExternalSupplyService(String country, String city) throws Exception {

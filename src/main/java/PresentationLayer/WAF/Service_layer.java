@@ -120,11 +120,11 @@ public class Service_layer {
         }
     }
 
-    public Response<String> purchase(UserDTO userDTO, PaymentDTO paymentDTO){
+    public Response<String> purchase(UserDTO userDTO, PaymentDTO paymentDTO, CartDTO cartDTO){
         String user_ID = userDTO.getUserId();
         logger.info("Initiating purchase for user: {}", user_ID);
         try {
-            market.purchase( paymentDTO,userDTO);
+            market.purchase( paymentDTO,userDTO, cartDTO);
             logger.info("Purchase successful for user: {}", user_ID);
             return new Response<>("Purchase successful", "");
         } catch (Exception e) {
@@ -677,17 +677,16 @@ public class Service_layer {
     }
 
 
-//TODO
-//    public Response<String> setUserConfirmationPurchase (String userID) {
-//        logger.info("set user is ready to pay");
-//        try {
-//            market.setUserConfirmationPurchase(userID);
-//            return new Response<>("user's answer get successfully", "user's answer get successfully.");
-//        } catch (Exception e) {
-//            logger.error("Error occurred during setting answer from user: {}", e.getMessage(), e);
-//            return new Response<>(null, e.getMessage());
-//        }
-//    }
+    public Response<String> setUserConfirmationPurchase (String userID) {
+        logger.info("set user is ready to pay");
+        try {
+            market.setUserConfirmationPurchase(userID);
+            return new Response<>("user's answer get successfully", "user's answer get successfully.");
+        } catch (Exception e) {
+            logger.error("Error occurred during setting answer from user: {}", e.getMessage(), e);
+            return new Response<>(null, e.getMessage());
+        }
+    }
 
     public Response<List<String>> getStoreCurrentPurchaseRules(String userId, String storeId) {
         logger.info("Getting store current rules");
@@ -737,17 +736,31 @@ public class Service_layer {
 
 
 
-//    public Response<Integer> checkingCartValidationBeforePurchase(String user_ID, String country, String city, String address)
-//    {
-//        logger.info("Starting care validation and price calculation before purchase.");
-//
-//        try {
-//            int totalPrice = market.checkingCartValidationBeforePurchase(user_ID, country,city,address);
-//            return new Response<>(totalPrice, "Cart validation and price calculation completed successfully.");
-//        } catch (Exception e) {
-//            logger.error("Error occurred during the validation of the cart: {}", e.getMessage(), e);
-//            return new Response<>(null, "Cart validation failed: " + e.getMessage());
-//        }
-//    }
+    public Response<CartDTO> checkingCartValidationBeforePurchaseDTO(String user_ID, UserDTO userDTO)
+    {
+        logger.info("Starting care validation and price calculation before purchase.");
+
+        try {
+            CartDTO cartDTO = market.checkingCartValidationBeforePurchaseDTO(user_ID, userDTO);
+            return new Response<>(cartDTO, "Cart validation and price calculation completed successfully.");
+        } catch (Exception e) {
+            logger.error("Error occurred during the validation of the cart: {}", e.getMessage(), e);
+            return new Response<>(null, "Cart validation failed: " + e.getMessage());
+        }
+    }
+
+    public Response<Integer> checkingCartValidationBeforePurchase(String user_ID, UserDTO userDTO)
+    {
+        logger.info("Starting care validation and price calculation before purchase.");
+
+        try {
+            int price = market.checkingCartValidationBeforePurchase(user_ID, userDTO);
+            Response<Integer> ans = new Response<>(price, "Cart validation and price calculation completed successfully.");
+            return ans;
+        } catch (Exception e) {
+            logger.error("Error occurred during the validation of the cart: {}", e.getMessage(), e);
+            return new Response<>(null, e.getMessage());
+        }
+    }
 
 }

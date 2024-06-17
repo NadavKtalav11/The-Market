@@ -3,7 +3,7 @@ package AcceptanceTests;
 import ServiceLayer.Response;
 import Util.*;
 
-import java.util.HashSet;
+import javax.persistence.criteria.CriteriaBuilder;
 import java.util.List;
 import java.util.Map;
 
@@ -20,9 +20,7 @@ public class ProxyToTest implements BridgeToTests {
 
 
     @Override
-    public Response<String> init(UserDTO userDTO, String password, PaymentServiceDTO paymentServiceDTO, SupplyServiceDTO supplyServiceDTO)
-
-    {
+    public Response<String> init(UserDTO userDTO, String password, PaymentServiceDTO paymentServiceDTO, SupplyServiceDTO supplyServiceDTO) {
         if (realServiceAdaptor != null)
             return realServiceAdaptor.init(userDTO, password, paymentServiceDTO, supplyServiceDTO);
 
@@ -143,20 +141,20 @@ public class ProxyToTest implements BridgeToTests {
             return new Response<>(null, "Not Implemented yet");
     }
 
-//    @Override
-//    public Response<Integer> checkingCartValidationBeforePurchase(String user_ID, String country, String city, String address) {
-//        if (realServiceAdaptor != null)
-//            return realServiceAdaptor.checkingCartValidationBeforePurchase(user_ID, country,city,address);
-//        else
-//            return new Response<>(null, "Not Implemented yet");
-//    }
-
     @Override
     public Response<List<String>> getInformationAboutStores(String user_ID) {
         if (realServiceAdaptor != null)
             return realServiceAdaptor.getInformationAboutStores(user_ID);
         else
             return new Response<>(null, "Not Implemented yet");
+    }
+
+    @Override
+    public Response<Integer> checkingCartValidationBeforePurchase(String user_ID, String username, String birthday, String name, String country, String city, String address){
+        if(realServiceAdaptor !=null)
+            return realServiceAdaptor.checkingCartValidationBeforePurchase(user_ID,username,birthday,name,country,city,address);
+        else
+            return new Response<>(null,"Not Implemented yet");
     }
 
     @Override
@@ -247,9 +245,10 @@ public class ProxyToTest implements BridgeToTests {
             return new Response<>(null, "Not Implemented yet");
     }
 
-    public Response<String> purchase(String user_ID, String country, String city, String address, String cardNumber, int cvv, int month, int year, String holderID){
+    @Override
+    public Response<String> purchase(String user_ID, String country, String city, String address, String cardNumber, int cvv, int month, int year, String holderID, int price, Map<String, Map<String, List<Integer>>> products) {
         if (realServiceAdaptor != null)
-            return realServiceAdaptor.purchase(user_ID, country, city, address, cardNumber ,cvv,month,year,holderID);
+            return realServiceAdaptor.purchase(user_ID, country, city, address, cardNumber ,cvv,month,year,holderID, price,products);
         else
             return new Response<>(null, "Not Implemented yet");
     }
