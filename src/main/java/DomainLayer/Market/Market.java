@@ -124,13 +124,16 @@ public class Market {
             if (paymentServiceDTO.getPaymentServiceName() == null || paymentServiceDTO.getUrl()==null || paymentServiceDTO.getLicensedDealerNumber() ==null) {
                 throw new IllegalArgumentException(ExceptionsEnum.InvalidPaymentServiceDetails.toString());
             }
-            // Initialization logic here
-            synchronized (initializedLock) {
-                initialized = true;
-            }
+
         } catch (Exception e) {
             // Log the error or handle it as needed
             throw e;  // Re-throwing the exception to be handled by the caller
+        }
+        if (password == null || password.equals("")){
+            throw new Exception(ExceptionsEnum.emptyField.toString());
+        }
+        if (!checkPasswordValidation(password)){
+            throw new Exception("password must contains at least one digit, lowercase letter and uppercase letter.\n password must contains at least 8 characters");
         }
         String encrypted = authenticationAndSecurityFacade.encodePassword(password);
         String firstUserID = enterMarketSystem();
