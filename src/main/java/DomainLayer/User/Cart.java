@@ -88,7 +88,7 @@ public class Cart {
                 return baskets.get(storeId).checkIfProductInBasket(productName);
             }
         }
-
+        //return false;
         throw new IllegalArgumentException("The store id" + storeId + "you entered is invalid");
     }
 

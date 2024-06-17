@@ -3,6 +3,8 @@ package AcceptanceTests.Users.StoreOwner;
 import AcceptanceTests.BridgeToTests;
 import AcceptanceTests.ProxyToTest;
 import Util.*;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
@@ -17,10 +19,12 @@ public class PurhcaseHistoryInfo {
     private static String storeID;
     private static PaymentDTO paymentDTO;
     private static UserDTO userDTO;
+    private static Map<String, Map<String,List<Integer>>> products;
+
 
 
     @BeforeAll
-    public static void setUp() {
+    public static void setUp() throws JsonProcessingException {
         impl = new ProxyToTest("Real");
         //Do what you need
         HashSet<String> countries = new HashSet<>();
@@ -47,11 +51,32 @@ public class PurhcaseHistoryInfo {
         impl.addProductToBasket("Cheese", 4, storeID, userID2);
         impl.addProductToBasket("Yogurt", 5, storeID, userID2);
 
-        // Initialize paymentDTO and userDTO
+        products = new HashMap<>();
+        Map<String, List<Integer>> basketProducts = new HashMap<>();
+        List<Integer> Milk = new ArrayList<>();
+        Milk.add(0,2);
+        Milk.add(1,20);
+        List<Integer> Cheese = new ArrayList<>();
+        Cheese.add(0,4);
+        Cheese.add(1,60);
+        List<Integer> Yogurt = new ArrayList<>();
+        Yogurt.add(0,5);
+        Yogurt.add(1,20);
+        basketProducts.put("Milk", Milk);
+        basketProducts.put("Cheese", Cheese);
+        basketProducts.put("Yogurt", Yogurt);
+        products.put(storeID, basketProducts);
+
+        // Initialize paymentDTO, userDTO and cartDTO
         paymentDTO = new PaymentDTO("holderName", "1111222233334444", 1, 12, 2025);
         userDTO = new UserDTO(userID1, "newUser1", "12/12/2000", "Israel", "BeerSheva", "bialik", "noa");
+        int price = impl.checkingCartValidationBeforePurchase(userID2, userDTO.getUserName(), userDTO.getBirthday(), userDTO.getName()
+        , userDTO.getCountry(),userDTO.getCity(), userDTO.getAddress()).getResult();
+        CartDTO cartDTO = new CartDTO(userID2,price,products);
+        impl.setUserConfirmationPurchase(userID2);
         impl.purchase(userID2,userDTO.getCountry(), userDTO.getCity(),userDTO.getAddress(),
-                paymentDTO.getCreditCardNumber(),paymentDTO.getCvv(),paymentDTO.getMonth(), paymentDTO.getYear(),paymentDTO.getHolderId()).isSuccess();
+                paymentDTO.getCreditCardNumber(),paymentDTO.getCvv(),paymentDTO.getMonth(), paymentDTO.getYear(),paymentDTO.getHolderId(),
+                cartDTO.getCartPrice(), cartDTO.getStoreToProducts()).isSuccess();
     }
 
     @Test

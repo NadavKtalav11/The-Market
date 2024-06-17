@@ -10,10 +10,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @RestController
 @RequestMapping("/api/market")
@@ -73,14 +70,22 @@ public class MarketController {
         }
     }
 
-    @PostMapping("/init")
-    public ResponseEntity<APIResponse<String>> init(@RequestParam Map<String,String> params) {
+    @PostMapping("/initiate")
+    public ResponseEntity<APIResponse<String>> initiate(@RequestParam Map<String,String> params) {
         try {
             String userDTO = params.get("userDTO");
             String password = params.get("password");
             String paymentServiceDTO = params.get("paymentServiceDTO");
-            String supplyServiceDTO = params.get("supplyServiceDTO");
-            Response<String> response = serviceLayer.init(objectMapper.readValue(userDTO,UserDTO.class), password, objectMapper.readValue(paymentServiceDTO, PaymentServiceDTO.class), objectMapper.readValue(supplyServiceDTO,SupplyServiceDTO.class));
+            //String supplyServiceDTO = params.get("supplyServiceDTO");
+            String supplyDealerNumberField = params.get("supplyDealerNumberField");
+            String supplyServiceName = params.get("supplyServiceName");
+            String countriesSet = params.get("countriesSet");
+            String citiesSet = params.get("citiesSet");
+            Set<String> coutries = new HashSet();
+            coutries.add(countriesSet);
+            Set<String> cities = new HashSet();
+            cities.add(citiesSet);
+            Response<String> response = serviceLayer.init(objectMapper.readValue(userDTO,UserDTO.class), password, objectMapper.readValue(paymentServiceDTO, PaymentServiceDTO.class), new SupplyServiceDTO(supplyDealerNumberField, supplyServiceName, coutries ,cities ));
             if (response.isSuccess()) {
                 String userId = response.getData();
                 HttpHeaders headers = new HttpHeaders();
@@ -98,6 +103,69 @@ public class MarketController {
                     .body(new APIResponse<>(null, e.getMessage()));
         }
     }
+
+
+    @PostMapping("/addDiscountCondRuleToStore")
+    public ResponseEntity<APIResponse<String>> addDiscountCondRuleToStore(@RequestParam Map<String,String> params) {
+        try {
+
+            String ruleNums = params.get("ruleNums");
+            String logicOperators = params.get("logicOperators");
+            String discDetails = params.get("discDetails");
+            String numericalOperators = params.get("numericalOperators");
+            String userId = params.get("userId");
+            String storeId = params.get("storeId");
+            List<Integer> ruleNumsList = objectMapper.readValue(ruleNums, objectMapper.getTypeFactory().constructCollectionType(List.class, Integer.class));
+            List<String> logicOperatorsList = objectMapper.readValue(logicOperators, objectMapper.getTypeFactory().constructCollectionType(List.class, String.class));
+            List<DiscountValueDTO> discDetailsList = objectMapper.readValue(discDetails, objectMapper.getTypeFactory().constructCollectionType(List.class, DiscountValueDTO.class));
+            List<String> numericalOperatorsList = objectMapper.readValue(numericalOperators, objectMapper.getTypeFactory().constructCollectionType(List.class, String.class));
+            Response<String> response = serviceLayer.addDiscountCondRuleToStore(ruleNumsList, logicOperatorsList, discDetailsList, numericalOperatorsList, userId, storeId);
+            if (response.isSuccess()) {
+                String data = response.getData();
+                HttpHeaders headers = new HttpHeaders();
+                headers.add("accept", "*/*");
+
+                return ResponseEntity.status(HttpStatus.OK).headers(headers)
+                        .body(new APIResponse<String>(data, null));
+            } else {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                        .body(new APIResponse<String>(null, response.getDescription()));
+            }
+
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new APIResponse<>(null, e.getMessage()));
+        }
+    }
+
+    @PostMapping("/addDiscountSimpleRuleToStore")
+    public ResponseEntity<APIResponse<String>> addDiscountSimpleRuleToStore(@RequestParam Map<String,String> params) {
+        try {
+            String discs = params.get("discs");
+            String numericalOperators = params.get("numericalOperators");
+            String userId = params.get("userId");
+            String storeId = params.get("storeId");
+            List<DiscountValueDTO> discDetailsList = objectMapper.readValue(discs, objectMapper.getTypeFactory().constructCollectionType(List.class, DiscountValueDTO.class));
+            List<String> numericalOperatorsList = objectMapper.readValue(numericalOperators, objectMapper.getTypeFactory().constructCollectionType(List.class, String.class));
+            Response<String> response = serviceLayer.addDiscountSimpleRuleToStore(discDetailsList, numericalOperatorsList, userId, storeId);
+            if (response.isSuccess()) {
+                String data = response.getData();
+                HttpHeaders headers = new HttpHeaders();
+                headers.add("accept", "*/*");
+
+                return ResponseEntity.status(HttpStatus.OK).headers(headers)
+                        .body(new APIResponse<String>(data, null));
+            } else {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                        .body(new APIResponse<String>(null, response.getDescription()));
+            }
+
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new APIResponse<>(null, e.getMessage()));
+        }
+    }
+
 
     @PostMapping("/addExternalPaymentService")
     public ResponseEntity<APIResponse<String>> addExternalPaymentService(@RequestParam Map<String,String> params) {
@@ -196,7 +264,8 @@ public class MarketController {
         try {
             String userDTO = params.get("userDTO");
             String paymentDTO= params.get("paymentDTO");
-            Response<String> response = serviceLayer.purchase(objectMapper.readValue(userDTO, UserDTO.class),objectMapper.readValue( paymentDTO, PaymentDTO.class));
+            String cartDTO = params.get("cartDTO");
+            Response<String> response = serviceLayer.purchase(objectMapper.readValue(userDTO, UserDTO.class),objectMapper.readValue( paymentDTO, PaymentDTO.class), objectMapper.readValue( cartDTO, CartDTO.class));
             if (response.isSuccess()) {
                 String result = response.getResult();
                 HttpHeaders headers = new HttpHeaders();
@@ -231,6 +300,30 @@ public class MarketController {
                         .body(new APIResponse<String>(null, response.getDescription()));
             }
 
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new APIResponse<>(null, e.getMessage()));
+        }
+    }
+
+    @GetMapping("/getCartAfterValidation")
+    public ResponseEntity<APIResponse<String>> getCartAfterValidation(@RequestParam Map<String,String> params) {
+        try {
+            String userId = params.get("userID");
+            String userDTO = params.get("userDTO");
+            ObjectMapper objectMapper= new ObjectMapper();
+            Response<CartDTO> response = serviceLayer.checkingCartValidationBeforePurchaseDTO(userId, objectMapper.readValue(userDTO, UserDTO.class));
+            if (response.isSuccess()) {
+                String result = objectMapper.writeValueAsString(response.getResult());
+                HttpHeaders headers = new HttpHeaders();
+                headers.add("accept", "*/*");
+
+                return ResponseEntity.status(HttpStatus.OK).headers(headers)
+                        .body(new APIResponse<String>(result, null));
+            } else {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                        .body(new APIResponse<String>(null, response.getDescription()));
+            }
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(new APIResponse<>(null, e.getMessage()));
@@ -278,6 +371,7 @@ public class MarketController {
         }
     }
 
+
     @GetMapping("/getStoreProducts/{storeId}")
     public ResponseEntity<APIResponse<List<String>>> getStoreProducts(@PathVariable String storeId) {
         try {
@@ -297,7 +391,6 @@ public class MarketController {
                     .body(new APIResponse<>(null, e.getMessage()));
         }
     }
-
 
 
 
@@ -854,7 +947,7 @@ public class MarketController {
         }
     }
 
-    @PostMapping("/getAllCondDiscountRules/{userId}/{storeId}}")
+    @PostMapping("/getAllCondDiscountRules/{userId}/{storeId}")
     public ResponseEntity<APIResponse<Map<Integer, String>>> getAllCondDiscountRules(@PathVariable String userId, @PathVariable String storeId)
     {
         try {
