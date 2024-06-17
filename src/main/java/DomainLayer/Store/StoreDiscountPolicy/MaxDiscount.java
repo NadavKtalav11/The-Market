@@ -20,4 +20,9 @@ public class MaxDiscount extends CompositeNumericalDiscount {
         int discount2 = discountValue2.calcDiscount(basketProducts);
         return Math.max(discount1, discount2);
     }
+
+    @Override
+    public String getDescription() {
+        return " (Max between " + discountValue1.getDescription() + " and " + discountValue2.getDescription() + ") ";
+    }
 }

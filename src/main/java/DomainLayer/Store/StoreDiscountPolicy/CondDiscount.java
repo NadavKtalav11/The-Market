@@ -1,9 +1,6 @@
 package DomainLayer.Store.StoreDiscountPolicy;
 
-import DomainLayer.Store.PoliciesRulesLogicalConditions.AndRule;
-import DomainLayer.Store.PoliciesRulesLogicalConditions.CondRule;
-import DomainLayer.Store.PoliciesRulesLogicalConditions.OrRule;
-import DomainLayer.Store.PoliciesRulesLogicalConditions.Rule;
+import DomainLayer.Store.PoliciesRulesLogicalConditions.*;
 import Util.ProductDTO;
 import Util.UserDTO;
 
@@ -25,7 +22,7 @@ public class CondDiscount extends Discount{
                 switch (operators.get(i)) {
                     case "AND" -> rule = new AndRule<>(rule, rules.get(i + 1));
                     case "OR" -> rule = new OrRule<>(rule, rules.get(i + 1));
-                    case "COND" -> rule = new CondRule<>(rule, rules.get(i + 1));
+                    case "XOR" -> rule = new XorRule<>(rule, rules.get(i + 1));
                 }
             }
         }
@@ -41,5 +38,10 @@ public class CondDiscount extends Discount{
         if(discountRule.checkRule(userDTO, basketProducts))
             return super.calcDiscount(basketProducts, userDTO);
         return 0;
+    }
+
+    @Override
+    public String getDescription() {
+        return " (" + super.getDescription() + " only if " + discountRule.getDescription() + ") ";
     }
 }

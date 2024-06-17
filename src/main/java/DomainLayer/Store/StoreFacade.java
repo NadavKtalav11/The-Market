@@ -353,4 +353,12 @@ public class StoreFacade {
         }
         return discountValue;
     }
+
+    public List<String> getStoreCurrentPurchaseRules(String storeId) {
+        return allStores.get(storeId).getStoreCurrentPurchaseRules();
+    }
+
+    public List<String> getStoreCurrentDiscountRules(String storeId) {
+        return allStores.get(storeId).getStoreCurrentDiscountRules();
+    }
 }

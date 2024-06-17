@@ -10,6 +10,7 @@ public class Basket {
     private Map<String, List<Integer>> products; //key = product name, value = [quantity, products total price]
     int basketPrice;
     private final Object basketPriceLock;
+    private final Object productsLock;
 
 
     public Basket(String storeId) {
@@ -17,6 +18,7 @@ public class Basket {
         this.basketPrice = 0;
         basketPriceLock = new Object();
         products = new HashMap<>();
+        productsLock =new Object();
     }
 
     public String getStoreId()
@@ -41,53 +43,70 @@ public class Basket {
         }
     }
 
-    public synchronized Map<String, List<Integer>> getProducts()
-    {
+    public synchronized Map<String, List<Integer>> getProducts() {
+        synchronized (productsLock) {
             return products;
+        }
     }
 
     public synchronized void addProduct(String productName, int quantity, int totalPrice)
     {
         List<Integer> quantityAndPrice = new ArrayList<>();
-        quantityAndPrice.add(quantity);
-        quantityAndPrice.add(totalPrice);
-        products.put(productName, quantityAndPrice);
+        synchronized (productsLock) {
+            quantityAndPrice.add(quantity);
+            quantityAndPrice.add(totalPrice);
+            products.put(productName, quantityAndPrice);
+        }
     }
 
     public synchronized void modifyProduct(String productName, int quantity, int totalPrice)
     {
-        if (!products.containsKey(productName)) {
-            throw new IllegalArgumentException("The item you try to edit is not in your basket. Please add the item before attempting to modify it.");
+        synchronized (productsLock) {
+            if (!products.containsKey(productName)) {
+                throw new IllegalArgumentException("The item you try to edit is not in your basket. Please add the item before attempting to modify it.");
+            }
         }
-        List<Integer> quantityAndPrice = products.get(productName);
-
-        quantityAndPrice.set(0, quantity);
-        quantityAndPrice.set(1, totalPrice);
+        List<Integer> quantityAndPrice;
+        synchronized (productsLock) {
+            quantityAndPrice = products.get(productName);
+            quantityAndPrice.set(0, quantity);
+            quantityAndPrice.set(1, totalPrice);
+        }
     }
 
     public synchronized void calcBasketPrice()
     {
         int totalPrice = 0;
-        for (String productName : products.keySet()) {
-            int totalItemPrice = products.get(productName).get(1);
-            totalPrice += totalItemPrice;
+        synchronized (productsLock) {
+            for (String productName : products.keySet()) {
+                int totalItemPrice = products.get(productName).get(1);
+                totalPrice += totalItemPrice;
+            }
         }
         setBasketPrice(totalPrice);
     }
 
     public synchronized boolean checkIfProductInBasket(String productName)
     {
-        return products.containsKey(productName);
+        synchronized (productsLock) {
+            return products.containsKey(productName);
+        }
+
     }
 
     public synchronized void removeItemFromBasket(String productName)
     {
-        products.remove(productName);
+        synchronized (productsLock) {
+            products.remove(productName);
+        }
     }
 
     public synchronized boolean isBasketEmpty()
     {
-        return products.isEmpty();
+        synchronized (productsLock){
+            return products.isEmpty();
+        }
+
     }
 
 

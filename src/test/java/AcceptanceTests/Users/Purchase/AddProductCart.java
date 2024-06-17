@@ -29,6 +29,7 @@ public class AddProductCart {
     private static BridgeToTests impl;
     static String userId0;
     static String storeId0;
+    static String userId1;
 
 
     @BeforeEach
@@ -36,8 +37,12 @@ public class AddProductCart {
         impl = new ProxyToTest("Real");
         //Do what you need
         userId0 = impl.enterMarketSystem().getData();
+        userId1 = impl.enterMarketSystem().getData();
         impl.register(userId0, "user1", "12/12/00", "Israel", "Beer Sheva", "Mesada", "Toy", "fSijsd281");
         impl.login(userId0, "user1", "fSijsd281");
+        impl.register(userId1, "user2", "12/12/00", "Israel", "Beer Sheva", "Mesada", "Toy", "fSijsd281");
+        impl.login(userId1, "user2", "fSijsd281");
+
 
         storeId0 = impl.openStore(userId0, "Zara", "clothing store").getData();
         impl.addProductToStore(userId0, storeId0, "Milk", 10, 5, "Milk 5%", "food");
@@ -141,39 +146,44 @@ public class AddProductCart {
     @Test
     public void concurrentAddProductToBasketTest() throws Exception {
         // Add a product with quantity 1
-        impl.addProductToStore(userId0, storeId0, "Limited Edition Shirt", 50, 1, "Rare shirt", "clothing");
+        setUp();
+        for (int i=0 ; i<1000 ; i++) {
 
-        // Set up the thread executor and count down latch
-        ExecutorService executor = Executors.newFixedThreadPool(2);
-        CountDownLatch latch = new CountDownLatch(1);
+            impl.addProductToStore(userId0, storeId0, "Limited Edition Shirt", 50, 1, "Rare shirt", "clothing");
 
-        Future<Response<String>> future1 = executor.submit(() -> {
-            latch.await(); // Wait until both threads are ready to run
-            return impl.addProductToBasket("Limited Edition Shirt", 1, storeId0, userId0);
-        });
+            // Set up the thread executor and count down latch
+            ExecutorService executor = Executors.newFixedThreadPool(2);
+            CountDownLatch latch = new CountDownLatch(1);
 
-        Future<Response<String>> future2 = executor.submit(() -> {
-            latch.await(); // Wait until both threads are ready to run
-            return impl.addProductToBasket("Limited Edition Shirt", 1, storeId0, userId0);
-        });
+            Future<Response<String>> future1 = executor.submit(() -> {
+                latch.await(); // Wait until both threads are ready to run
+                return impl.addProductToBasket("Limited Edition Shirt", 1, storeId0, userId0);
+            });
 
-        // Start both threads at the same time
-        latch.countDown();
+            Future<Response<String>> future2 = executor.submit(() -> {
+                latch.await(); // Wait until both threads are ready to run
+                return impl.addProductToBasket("Limited Edition Shirt", 1, storeId0, userId1);
+            });
 
-        // Get the results of both threads
-        Response<String> response1 = future1.get();
-        Response<String> response2 = future2.get();
+            // Start both threads at the same time
+            latch.countDown();
 
-        // Shut down the executor
-        executor.shutdown();
+            // Get the results of both threads
+            Response<String> response1 = future1.get();
+            Response<String> response2 = future2.get();
 
-        // Check that only one thread succeeded
-        assertTrue(response1.isSuccess() & response2.isSuccess(), "Only one thread should succeed in adding the last product to the basket");
-        if (!response1.isSuccess()) {
-            assertEquals(ExceptionsEnum.productQuantityNotExist.toString(), response1.getDescription());
-        }
-        if (!response2.isSuccess()) {
-            assertEquals(ExceptionsEnum.productQuantityNotExist.toString(), response2.getDescription());
+            // Shut down the executor
+            executor.shutdown();
+
+            // Check that only one thread succeeded
+            assertTrue(response1.isSuccess() & response2.isSuccess(), "Only one thread should succeed in adding the last product to the basket");
+            if (!response1.isSuccess()) {
+                assertEquals(ExceptionsEnum.productQuantityNotExist.toString(), response1.getDescription());
+            }
+            if (!response2.isSuccess()) {
+                assertEquals(ExceptionsEnum.productQuantityNotExist.toString(), response2.getDescription());
+            }
+
         }
     }
 

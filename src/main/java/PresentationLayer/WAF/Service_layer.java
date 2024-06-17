@@ -133,7 +133,16 @@ public class Service_layer {
         }
     }
 
-
+    public Response<Boolean> checkInitializedMarket() {
+        logger.info("Checking if the market has been already initialized");
+        try {
+            Boolean res = market.checkInitializedMarket();
+            return new Response<Boolean>(res, "Checked if the market has already initialized, res is the answer");
+        } catch (Exception e) {
+            logger.error("Error occurred during Checking if the market has been already initialized {}", e.getMessage());
+            return new Response<>(null, e.getMessage());
+        }
+    }
 
 
     public Response<String> exitMarketSystem(String userID) {
@@ -578,6 +587,19 @@ public class Service_layer {
     }
 
 
+    public Response<Map<Integer, String>> getAllPurchaseRules(String userId, String storeId)
+    {
+        logger.info("returns all possible purchase rules descriptions to the store owner");
+
+        try {
+            Map<Integer, String> rules = market.getAllPurchaseRules(userId, storeId);
+            return new Response<>(rules, "All purchase rules descriptions returned successfully.");
+        } catch (Exception e) {
+            logger.error("Error occurred during getting purchase rules description: {}", e.getMessage(), e);
+            return new Response<>(null, e.getMessage());
+        }
+    }
+
     public Response<String> addPurchaseRuleToStore(List<Integer> ruleNums, List<String> operators, String userId, String storeId) {
         logger.info("Adding purchase rule to store");
 
@@ -591,14 +613,28 @@ public class Service_layer {
     }
 
     //rule num is the index of the rule from all the rules displayed to the storeowner
-    public Response<String> removePurchaseRuleFromStore(int ruleNum, String userId, String storeId) {
+    public Response<String> removePurchaseRuleFromStore(int ruleIndex, String userId, String storeId) {
         logger.info("Removing purchase rule from store");
 
         try {
-            market.removePurchaseRuleFromStore(ruleNum, userId, storeId);
+            market.removePurchaseRuleFromStore(ruleIndex, userId, storeId);
             return new Response<>("Removing purchase rule removed successfully", "Removing purchase rule removed from store successfully.");
         } catch (Exception e) {
             logger.error("Error occurred during removing purchase rule from store: {}", e.getMessage(), e);
+            return new Response<>(null, e.getMessage());
+        }
+    }
+
+
+    public Response<Map<Integer, String>> getAllCondDiscountRules(String userId, String storeId)
+    {
+        logger.info("returns all possible conditional discount rules descriptions to the store owner");
+
+        try {
+            Map<Integer, String> rules = market.getAllCondDiscountRules(userId, storeId);
+            return new Response<>(rules, "All conditional discount rules descriptions returned successfully.");
+        } catch (Exception e) {
+            logger.error("Error occurred during getting conditional discount rules description: {}", e.getMessage(), e);
             return new Response<>(null, e.getMessage());
         }
     }
@@ -628,11 +664,11 @@ public class Service_layer {
     }
 
     //rule num is the index of the rule from all the rules displayed to the storeowner
-    public Response<String> removeDiscountRuleFromStore(int ruleNum, String userId, String storeId) {
+    public Response<String> removeDiscountRuleFromStore(int ruleIndex, String userId, String storeId) {
         logger.info("Removing discount rule from store");
 
         try {
-            market.removeDiscountRuleFromStore(ruleNum, userId, storeId);
+            market.removeDiscountRuleFromStore(ruleIndex, userId, storeId);
             return new Response<>("Discount rule removed successfully", "Discount rule removed from store successfully.");
         } catch (Exception e) {
             logger.error("Error occurred during removing discount rule from store: {}", e.getMessage(), e);
@@ -641,14 +677,40 @@ public class Service_layer {
     }
 
 
+//TODO
+//    public Response<String> setUserConfirmationPurchase (String userID) {
+//        logger.info("set user is ready to pay");
+//        try {
+//            market.setUserConfirmationPurchase(userID);
+//            return new Response<>("user's answer get successfully", "user's answer get successfully.");
+//        } catch (Exception e) {
+//            logger.error("Error occurred during setting answer from user: {}", e.getMessage(), e);
+//            return new Response<>(null, e.getMessage());
+//        }
+//    }
 
-    public Response<String> setUserConfirmationPurchase (String userID) {
-        logger.info("set user is ready to pay");
+    public Response<List<String>> getStoreCurrentPurchaseRules(String userId, String storeId) {
+        logger.info("Getting store current rules");
+
         try {
-            market.setUserConfirmationPurchase(userID);
-            return new Response<>("user's answer get successfully", "user's answer get successfully.");
+            List<String> storeRules = market.getStoreCurrentPurchaseRules(userId, storeId);
+            return new Response<>(storeRules, "Store current rules retrieved successfully.");
         } catch (Exception e) {
-            logger.error("Error occurred during setting answer from user: {}", e.getMessage(), e);
+            logger.error("Error occurred during getting store current rules: {}", e.getMessage(), e);
+            return new Response<>(null, e.getMessage());
+        }
+    }
+
+    public Response<List<String>> getStoreCurrentDiscountRules(String userId, String storeId) {
+        logger.info("Getting store current rules");
+
+        try {
+
+            List<String> storeRules = market.getStoreCurrentDiscountRules(userId, storeId);
+            return new Response<>(storeRules, "Store current rules retrieved successfully.");
+
+        } catch (Exception e) {
+            logger.error("Error occurred during getting store current rules: {}", e.getMessage(), e);
             return new Response<>(null, e.getMessage());
         }
     }
