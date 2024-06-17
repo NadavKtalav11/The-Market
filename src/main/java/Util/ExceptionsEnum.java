@@ -71,7 +71,7 @@ package Util;
         },
 
         createShiftingError{
-            public String toString() {return "Unfortunately, there was problem in creating the shifting";}
+            public String toString() {return "There is no external supply service for this area";}
         },
         productNotExistInMarket{
             public String toString() {

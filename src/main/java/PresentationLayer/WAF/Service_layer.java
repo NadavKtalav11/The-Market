@@ -677,17 +677,16 @@ public class Service_layer {
     }
 
 
-//TODO
-//    public Response<String> setUserConfirmationPurchase (String userID) {
-//        logger.info("set user is ready to pay");
-//        try {
-//            market.setUserConfirmationPurchase(userID);
-//            return new Response<>("user's answer get successfully", "user's answer get successfully.");
-//        } catch (Exception e) {
-//            logger.error("Error occurred during setting answer from user: {}", e.getMessage(), e);
-//            return new Response<>(null, e.getMessage());
-//        }
-//    }
+    public Response<String> setUserConfirmationPurchase (String userID) {
+        logger.info("set user is ready to pay");
+        try {
+            market.setUserConfirmationPurchase(userID);
+            return new Response<>("user's answer get successfully", "user's answer get successfully.");
+        } catch (Exception e) {
+            logger.error("Error occurred during setting answer from user: {}", e.getMessage(), e);
+            return new Response<>(null, e.getMessage());
+        }
+    }
 
     public Response<List<String>> getStoreCurrentPurchaseRules(String userId, String storeId) {
         logger.info("Getting store current rules");
