@@ -15,6 +15,7 @@ public class UserFacadeTest {
     private final String userId = "1";
     private final String storeId = "1";
     private final String productName = "Product1";
+    private final String productName2 = "Product2";
     private final int quantity = 2;
     private final int totalPrice = 100;
 
@@ -92,6 +93,8 @@ public class UserFacadeTest {
     @Test
     public void testRemoveItemFromUserCart() {
         userFacade.addItemsToBasket(productName, quantity, storeId, userId, totalPrice);
+        userFacade.addItemsToBasket(productName2, quantity, storeId, userId, totalPrice);
+
         userFacade.removeItemFromUserCart(productName, storeId, userId);
 
         User user = userFacade.getUserByID(userId);

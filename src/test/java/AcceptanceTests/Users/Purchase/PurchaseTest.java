@@ -159,6 +159,6 @@ public class PurchaseTest {
                  userDTO.getName(), "Israel", "Tel Aviv", "Rothschild");
          assertFalse(response.isSuccess());
 
-         assertEquals(ExceptionsEnum.ExternalSupplyServiceIsNotAvailable.toString(), response.getDescription());
+         assertEquals(ExceptionsEnum.ExternalSupplyServiceIsNotAvailableForArea.toString(), response.getDescription());
      }
 }

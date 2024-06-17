@@ -72,6 +72,6 @@ class CondRuleTest {
         String description = condRule.getDescription();
 
         // Assert
-        assertEquals("Rule 2 only if Rule 1", description);
+        assertEquals(" (Rule 2 only if Rule 1) ", description);
     }
 }

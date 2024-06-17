@@ -104,6 +104,6 @@ public class CondDiscountTest {
         String description = condDiscount.getDiscountRulesDescriptions();
 
         // Assert
-        assertEquals(rule1Description + " and " + rule2Description, description);
+        assertEquals(" (" + rule1Description + " and " + rule2Description + ") ", description);
     }
 }

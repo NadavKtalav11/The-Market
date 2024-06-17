@@ -660,10 +660,11 @@ public class Market {
         List<String> storeManagers = roleFacade.getAllStoreManagers(store_ID);
         List<String> storeOwners = roleFacade.getAllStoreOwners(store_ID);
         //todo: add function which send notification to all store roles (notification component).
-        String storeName = storeFacade.getStoreByID(store_ID).getStoreName();
+
+       /* String storeName = storeFacade.getStoreByID(store_ID).getStoreName();
 
         Notification n =new StoreNotification(storeName,"The store is now inactive");
-        sendMessageToStaffOfStore(n,member_ID);
+        sendMessageToStaffOfStore(n,member_ID);*/
         //todo: update use-case parameters
 
     }

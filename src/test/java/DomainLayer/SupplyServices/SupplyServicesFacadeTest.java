@@ -70,7 +70,7 @@ public class SupplyServicesFacadeTest {
         assertEquals("12345", result);
 
         String result1 = supplyServicesFacadeSpy.checkAvailableExternalSupplyService("Israel", "Ashdod");
-        assertEquals("-1", result1);
+        assertEquals("-2", result1);
         ExternalSupplyService externalSupplyService = supplyServicesFacadeSpy.getExternalSupplyServiceById("12345");
         HashSet<String> cities1 =new HashSet<>();
         cities1.add("Ashdod");

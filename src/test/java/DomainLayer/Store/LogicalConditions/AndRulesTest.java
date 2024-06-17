@@ -84,6 +84,6 @@ class AndRulesTest {
         String description = andRule.getDescription();
 
         // Assert
-        assertEquals("Rule 1 and Rule 2", description);
+        assertEquals(" (Rule 1 and Rule 2) ", description);
     }
 }

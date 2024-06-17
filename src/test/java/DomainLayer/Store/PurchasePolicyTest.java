@@ -114,7 +114,7 @@ class PurchasePolicyTest {
 
         List<String> descriptions = purchasePolicy.getRulesDescriptions();
         assertEquals(1, descriptions.size());
-        assertEquals("Rule 1 and Rule 2", descriptions.get(0));
+        assertEquals(" (Rule 1 and Rule 2) ", descriptions.get(0));
 
     }
 

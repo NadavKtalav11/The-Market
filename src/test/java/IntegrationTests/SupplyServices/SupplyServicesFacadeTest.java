@@ -76,7 +76,7 @@ public class SupplyServicesFacadeTest {
         assertEquals(licensedDealerNumber, result);
 
         String resultNotFound = supplyServicesFacade.checkAvailableExternalSupplyService("NonExistentCountry", "NonExistentCity");
-        assertEquals("-1", resultNotFound);
+        assertEquals("-2", resultNotFound);
     }
 
     @Test
