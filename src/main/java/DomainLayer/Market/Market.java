@@ -2,6 +2,7 @@ package DomainLayer.Market;
 
 import DomainLayer.AuthenticationAndSecurity.AuthenticationAndSecurityFacade;
 import DomainLayer.Notifications.Notification;
+import DomainLayer.Notifications.NotificationFacade;
 import DomainLayer.Notifications.StoreNotification;
 import DomainLayer.PaymentServices.PaymentServicesFacade;
 import DomainLayer.Role.RoleFacade;
@@ -35,6 +36,7 @@ public class Market {
     private final Object initializedLock;
     private final Object managersLock;
     private final Object validationLock;
+    private NotificationFacade notificationFacade;
 
     public synchronized static Market getInstance() {
         if (MarketInstance == null) {
@@ -54,6 +56,7 @@ public class Market {
         this.systemManagerIds = new HashSet<>();
         managersLock = new Object();
         validationLock = new Object();
+        notificationFacade = new NotificationFacade();
     }
 
 
@@ -69,6 +72,7 @@ public class Market {
         this.systemManagerIds = new HashSet<>();
         managersLock = new Object();
         validationLock = new Object();
+        notificationFacade = new NotificationFacade();
 
     }
 
@@ -84,6 +88,7 @@ public class Market {
         this.systemManagerIds = new HashSet<>();
         managersLock = new Object();
         validationLock = new Object();
+        notificationFacade = new NotificationFacade();
 
     }
 
@@ -102,6 +107,7 @@ public class Market {
         authenticationAndSecurityFacade = authenticationAndSecurityFacade1;
         paymentServicesFacade = paymentServicesFacade1;
         supplyServicesFacade = supplyServicesFacade1;
+        notificationFacade = new NotificationFacade();
         return MarketInstance;
 
 
@@ -250,6 +256,8 @@ public class Market {
             }
 
             this.payWithExternalPaymentService(cartDTO, paymentDTO, userDTO.getUserId());
+            sendMessagesOnPurchaseToStoreOwners(cartDTO);
+
         } catch (Exception var11) {
             Exception e = var11;
             if (cartDTO != null) {
@@ -265,6 +273,17 @@ public class Market {
             scheduler.shutdown();
         }
 
+    }
+
+
+    public void sendMessagesOnPurchaseToStoreOwners(CartDTO cartDTO){
+        for (String storeId : cartDTO.getStoreToProducts().keySet()){
+            List<String> storeOwnerIds = roleFacade.getAllStoreOwners(storeId);
+            String storeName = storeFacade.getStoreName(storeId);
+            for (String memberId: storeOwnerIds) {
+                notificationFacade.sendLateMessage(memberId , "A purchase was made from your store - "+ storeName);
+            }
+        }
     }
 
     public void setUserConfirmationPurchase(String userID) {
@@ -312,6 +331,10 @@ public class Market {
             }
             scheduler.shutdown();
         }
+    }
+
+    public List<String> getUserNotifications(String memberId){
+        return notificationFacade.getUserNotifications(memberId);
     }
 
     public CartDTO checkingCartValidationBeforePurchase1(String user_ID,UserDTO userDTO) throws Exception {
@@ -663,7 +686,13 @@ public class Market {
         List<String> storeManagers = roleFacade.getAllStoreManagers(store_ID);
         List<String> storeOwners = roleFacade.getAllStoreOwners(store_ID);
         //todo: add function which send notification to all store roles (notification component).
-
+        String message = "store" + storeFacade.getStoreName(store_ID) + "closed by " + userFacade.getMemberName(member_ID);
+        for (String currMemId : storeManagers) {
+            notificationFacade.sendLateMessage(currMemId, message);
+        }
+        for (String currMemId : storeOwners) {
+            notificationFacade.sendLateMessage(currMemId, message);
+        }
        /* String storeName = storeFacade.getStoreByID(store_ID).getStoreName();
 
         Notification n =new StoreNotification(storeName,"The store is now inactive");

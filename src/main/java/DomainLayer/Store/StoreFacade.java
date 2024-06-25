@@ -52,6 +52,11 @@ public class StoreFacade {
         return storeFacadeInstance;
     }
 
+
+    public String getStoreName(String storeId){
+        return allStores.get(storeId).getStoreName();
+    }
+
     public void returnProductToStore(Map<String, List<Integer>> products , String storeId){
         getStoreByID(storeId).returnProductToStore(products);
     }
