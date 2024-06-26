@@ -16,7 +16,6 @@ public class Guest extends State{
 
     @Override
     public void exitMarketSystem() {
-        //todo think if we need to do here something
     }
 
     @Override
@@ -37,6 +36,11 @@ public class Guest extends State{
 
     @Override
     public String getUsername() {
+        return null;
+    }
+
+    @Override
+    public Map<String, String> getReceiptIdsAndStoreId() {
         return null;
     }
 

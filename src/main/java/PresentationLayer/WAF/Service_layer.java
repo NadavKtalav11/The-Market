@@ -124,9 +124,9 @@ public class Service_layer {
         String user_ID = userDTO.getUserId();
         logger.info("Initiating purchase for user: {}", user_ID);
         try {
-            market.purchase( paymentDTO,userDTO, cartDTO);
+            String receiptID = market.purchase( paymentDTO,userDTO, cartDTO);
             logger.info("Purchase successful for user: {}", user_ID);
-            return new Response<>("Purchase successful", "");
+            return new Response<>("Purchase successful", "", receiptID);
         } catch (Exception e) {
             logger.error("Purchase failed for user: {} with error: {}", user_ID, e.getMessage(), e);
             return new Response<>(null, e.getMessage());

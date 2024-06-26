@@ -231,7 +231,7 @@ public class Market {
         }
     }
 
-    public void purchase(PaymentDTO paymentDTO, UserDTO userDTO, CartDTO cartDTO) throws Exception {
+    public String purchase(PaymentDTO paymentDTO, UserDTO userDTO, CartDTO cartDTO) throws Exception {
         ScheduledFuture<?> timeoutHandle = null;
         ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
         AtomicBoolean timeoutExpired = new AtomicBoolean(false);
@@ -239,7 +239,7 @@ public class Market {
         try {
             timeoutHandle = scheduler.schedule(() -> {
                 timeoutExpired.set(true);
-            }, 15L, TimeUnit.SECONDS);
+            }, 60L, TimeUnit.SECONDS);
 
             boolean userReadyToPay;
             for(userReadyToPay = false; !userReadyToPay && !timeoutExpired.get(); userReadyToPay = this.getUserConfirmationPurchase(userDTO.getUserId())) {
@@ -249,7 +249,8 @@ public class Market {
                 throw new RuntimeException(ExceptionsEnum.TimeExpired.toString());
             }
 
-            this.payWithExternalPaymentService(cartDTO, paymentDTO, userDTO.getUserId());
+            String receiptID = this.payWithExternalPaymentService(cartDTO, paymentDTO, userDTO.getUserId());
+            return receiptID;
         } catch (Exception var11) {
             Exception e = var11;
             if (cartDTO != null) {
@@ -355,7 +356,7 @@ public class Market {
 
 
 
-    public void payWithExternalPaymentService(CartDTO cartDTO,PaymentDTO payment, String userId) throws Exception{
+    public String payWithExternalPaymentService(CartDTO cartDTO,PaymentDTO payment, String userId) throws Exception{
         if(cartDTO.getCartPrice()<= 0 || payment.getMonth()> 12 || payment.getMonth()<1 || payment.getYear() < 2020 ||payment.getHolderId()==null ||cartDTO.getStoreToProducts()==null) {
             throw new IllegalArgumentException(ExceptionsEnum.InvalidCreditCardParameters.toString());
         }
@@ -370,10 +371,13 @@ public class Market {
         {
             userFacade.addReceiptToUser(receiptIdStoreId, userId);
         }
+        String receiptIdRes = null;
         //Add the receiptId and userId to the store receipts map
         for (String receiptId : receiptIdStoreId.keySet()) {
             storeFacade.addReceiptToStore(receiptIdStoreId.get(receiptId), receiptId, userId);
+            receiptIdRes = receiptId;
         }
+        return receiptIdRes;
     }
 
     public void paymentFailed(CartDTO cartDTO) throws Exception {
