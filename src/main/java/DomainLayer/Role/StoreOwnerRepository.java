@@ -7,6 +7,6 @@ public interface StoreOwnerRepository {
     public void add(StoreOwner to_add);
     public List<String> getAllMemberId();
     public List<StoreOwner> getAllMemberIdOwners(String memberId);
-
+    public void remove(StoreOwner to_remove);
 
 }

@@ -38,6 +38,16 @@ public class MemoryStoreOwnerRepository implements  StoreOwnerRepository {
         }
     }
 
+    @Override
+    public void remove(StoreOwner storeOwner) {
+        synchronized (storeOwnerLock) {
+            String memberId = storeOwner.getMember_ID();
+            if (memberId_storeOwnersMap.get(memberId)!=null){
+                memberId_storeOwnersMap.remove(memberId);
+            }
+        }
+    }
+
 
     @Override
     public List<String> getAllMemberId() {

@@ -256,10 +256,10 @@ public class Service_layer {
     }
 
     public Response<String> appointStoreOwner(String nominatorUserId, String nominatedUsername, String storeID) {
-        logger.info("AppoString store owner");
+        logger.info("Appoint store owner");
 
         try {
-            market.appointStoreOwner(nominatorUserId, nominatedUsername, storeID);
+            market.fireStoreOwner(nominatorUserId, nominatedUsername, storeID);
             return new Response<>("Store owner appointed successfully", "Store owner appointed successfully.");
         } catch (Exception e) {
 
@@ -269,10 +269,24 @@ public class Service_layer {
         }
     }
 
+    public Response<String> fireStoreOwner(String nominatorUserId, String nominatedUsername, String storeID) {
+        logger.info("Fire store owner");
+
+        try {
+            market.appointStoreOwner(nominatorUserId, nominatedUsername, storeID);
+            return new Response<>("Store owner fired successfully", "Store owner fired successfully.");
+        } catch (Exception e) {
+
+            logger.error("Error occurred during firing store owner", e.getMessage(), e);
+            return new Response<>(null, e.getMessage());
+
+        }
+    }
+
     public Response<String> appointStoreManager(String nominatorUserId ,String nominatedUsername, String storeID,
                                     boolean inventoryPermissions, boolean purchasePermissions) {
 
-        logger.info("AppoString store manager");
+        logger.info("Appoint store manager");
 
         try {
             market.appointStoreManager(nominatorUserId, nominatedUsername, storeID,
@@ -282,6 +296,20 @@ public class Service_layer {
 
             logger.error("Error occurred during appointing store manager", e.getMessage(), e);
             return new Response<>(null, e.getMessage());
+        }
+    }
+
+    public Response<String> fireStoreManager(String nominatorUserId, String nominatedUsername, String storeID) {
+        logger.info("Fire store manager");
+
+        try {
+            market.fireStoreManager(nominatorUserId, nominatedUsername, storeID);
+            return new Response<>("Store manager fired successfully", "Store manager fired successfully.");
+        } catch (Exception e) {
+
+            logger.error("Error occurred during firing store manager", e.getMessage(), e);
+            return new Response<>(null, e.getMessage());
+
         }
     }
 
@@ -476,6 +504,19 @@ public class Service_layer {
             return new Response<>("Store closed successfully", "Store closed successfully.");
         } catch (Exception e) {
             logger.error("Error occurred during store owner was trying to close a store: {}", e.getMessage(), e);
+            return new Response<>(null, e.getMessage());
+        }
+    }
+
+    public Response<String> reopenStore(String user_ID, String store_ID)
+    {
+        logger.info("Store owner started  store reopening.");
+
+        try {
+            market.reopenStore(user_ID, store_ID);
+            return new Response<>("Store reopened successfully", "Store reopened successfully.");
+        } catch (Exception e) {
+            logger.error("Error occurred during store owner was trying to reopened a store: {}", e.getMessage(), e);
             return new Response<>(null, e.getMessage());
         }
     }

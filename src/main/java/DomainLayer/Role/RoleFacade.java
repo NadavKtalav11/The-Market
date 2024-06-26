@@ -53,6 +53,11 @@ public class RoleFacade {
             throw new Exception(ExceptionsEnum.userIsNotStoreOwner.toString());
     }
 
+    public void verifyNominatorError(String nominatorMemberID, String nominated, String storeID) throws Exception {
+        if (storeManagerRepository.get(storeID, nominated).getNominatorMemberId() != nominatorMemberID)
+            throw new Exception(ExceptionsEnum.notNominatorOfThisEmployee.toString());
+    }
+
     public StoreOwner getStoreOwner(String storeID, String memberID) {
         return storeOwnerRepository.get(storeID, memberID);
     }
@@ -94,7 +99,7 @@ public class RoleFacade {
             if (getStoreManager(storeId, memberId).getNominatorMemberId().equals(nominatorMemberID)) {
                 getStoreManager(storeId, memberId).setPermissions(inventoryPermissions, purchasePermissions);
             } else {
-                throw new Exception(ExceptionsEnum.notNominatorOfThisManager.toString());
+                throw new Exception(ExceptionsEnum.notNominatorOfThisEmployee.toString());
             }
         } else {
             throw new Exception(ExceptionsEnum.notManager.toString());
@@ -219,6 +224,28 @@ public class RoleFacade {
 
     public static void resetInstanceForTests() {
         roleFacadeInstance = null;
+    }
+
+    public void fireStoreOwner(String memberIdToFire, String storeID){
+        List<String> ownersOfTheStore = getAllStoreOwners(storeID);
+        for(int i=0 ; i<ownersOfTheStore.size() ; i++){
+            String storeOwner = ownersOfTheStore.get(i);
+            if(storeOwnerRepository.get(storeID, storeOwner).getNominatorId().equals(memberIdToFire)){
+                fireStoreOwner(storeOwner, storeID);
+            }
+        }
+        List<String> managersOfTheStore = getAllStoreManagers(storeID);
+        for(int i=0 ; i<managersOfTheStore.size() ; i++){
+            String storeManager = managersOfTheStore.get(i);
+            if(storeManagerRepository.get(storeID, storeManager).getNominatorId().equals(memberIdToFire)){
+                fireStoreManager(storeManager, storeID);
+            }
+        }
+        storeOwnerRepository.remove(storeOwnerRepository.get(storeID, memberIdToFire));
+    }
+
+    public void fireStoreManager(String memberIdToFire, String storeID){
+        storeManagerRepository.remove(storeManagerRepository.get(storeID, memberIdToFire));
     }
 }
 
