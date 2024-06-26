@@ -56,13 +56,10 @@ public class Member extends State{
 
     public void Logout()
     {
-        // todo save data if needed
         // do nothing
-
     }
 
     public void exitMarketSystem(){
-        //todo understand what happens after user press x.
     }
 
     @Override

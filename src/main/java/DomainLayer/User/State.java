@@ -73,4 +73,5 @@ public abstract class State {
     public abstract boolean isMember();
     protected abstract void addReceipt(Map<String, String> receiptIdAndStoreId);
     public abstract String getUsername();
+    public abstract Map<String, String> getReceiptIdsAndStoreId();
 }
