@@ -108,6 +108,18 @@ public class Service_layer {
         }
     }
 
+
+    public Response<List<String>> getUserNotifications( String memberId) throws Exception {
+        logger.info("Trying to get User notifications");
+        try {
+            List<String> notificationsList =  market.getUserNotifications(memberId);
+            return new Response<>(notificationsList, "get user "+ memberId +"notifications");
+        } catch (Exception e) {
+            logger.error("Error occurred during the adding: {}", e.getMessage(), e);
+            return new Response<>(null, e.getMessage());
+        }
+    }
+
     public Response<String> removeExternalSupplyService(String licensedDealerNumber, String systemManagerId) {
         logger.info("Trying to remove the supply service number: {}", licensedDealerNumber);
         try {

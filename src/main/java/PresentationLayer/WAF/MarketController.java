@@ -48,6 +48,27 @@ public class MarketController {
         }
     }
 
+    @GetMapping("/getUserNotifications/{memberId}")
+    public ResponseEntity<APIResponse<List<String>>> getUserNotifications(@PathVariable String memberId) {
+        try {
+            Response<List<String>> response = serviceLayer.getUserNotifications(memberId);
+            if (response.isSuccess()) {
+                List<String> res = response.getResult();
+                HttpHeaders headers = new HttpHeaders();
+                headers.add("accept", "*/*");
+                return ResponseEntity.status(HttpStatus.OK).headers(headers)
+                        .body(new APIResponse<>(res, null));
+            } else {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                        .body(new APIResponse<>(null, response.getDescription()));
+            }
+
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new APIResponse<>(null, e.getMessage()));
+        }
+    }
+
 
     @GetMapping("/enterSystem")
     public ResponseEntity<APIResponse<String>> enterMarket() {
