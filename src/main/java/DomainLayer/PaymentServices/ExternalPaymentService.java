@@ -57,19 +57,19 @@ public  class ExternalPaymentService {
     }
 
     // Abstract method for paying with a card
-    public Map<String, String> payWithCard(int price, PaymentDTO payment, String id, Map<String, Map<String, List<Integer>>> productList,
-                                             String acquisitionIdCounter, String receiptIdCounter) throws Exception {
+    public void payWithCard(int price, PaymentDTO payment, String id, Map<String, Map<String, List<Integer>>> productList,
+                                             String acquisitionIdCounter) throws Exception {
         // Mocking HTTP request to check if there is enough money in the card
         boolean response = httpClient.checkCreditCard( url, payment );
         if(!response){
             throw new Exception(ExceptionsEnum.CreditCardIssue.toString());
         }
-      Acquisition acquisition = new Acquisition(acquisitionIdCounter, id, price, payment, productList, receiptIdCounter);
+    }
+
+    public void addAcquisition(String acquisitionId, Acquisition acquisition){
         synchronized (acquisitionLock) {
-            idAndAcquisition.put(acquisitionIdCounter, acquisition);
+            idAndAcquisition.put(acquisitionId, acquisition);
         }
-        return acquisition.getReceiptIdAndStoreIdMap();
-      
     }
 
    

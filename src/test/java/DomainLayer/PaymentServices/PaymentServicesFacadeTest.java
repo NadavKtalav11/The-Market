@@ -67,10 +67,10 @@ public class PaymentServicesFacadeTest {
         productList.put("store1", new HashMap<>());
 
         paymentServicesFacade.addExternalService("1", "TestService", "http://testservice.com");
-        Map<String,String> acquisitionAndExternalService = null;
+        String acquisitionId;
 
-        acquisitionAndExternalService= paymentServicesFacade.pay(price, new PaymentDTO(holderID, creditCard, cvv, month, year), userId, productList);
-        assertNotNull(acquisitionAndExternalService);
+        acquisitionId= paymentServicesFacade.pay(price, new PaymentDTO(holderID, creditCard, cvv, month, year), userId, productList);
+        assertNotNull(acquisitionId);
     }
 
 //

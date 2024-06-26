@@ -71,7 +71,7 @@ public abstract class State {
     //void Register(User user, String username, String password, String birthday, String address) throws Exception;
     protected abstract void Login() throws Exception;
     public abstract boolean isMember();
-    protected abstract void addReceipt(Map<String, String> receiptIdAndStoreId);
     public abstract String getUsername();
-    public abstract Map<String, String> getReceiptIdsAndStoreId();
+    public abstract void addAcquisition(String acquisitionId);
+    public abstract List<String> getAcquisitionIds();
 }

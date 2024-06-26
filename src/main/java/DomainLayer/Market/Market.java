@@ -255,10 +255,11 @@ public class Market {
                 throw new RuntimeException(ExceptionsEnum.TimeExpired.toString());
             }
 
-            this.payWithExternalPaymentService(cartDTO, paymentDTO, userDTO.getUserId());
+            //Todo: we call payWithExternalPaymentService twice, check if needed
+            //this.payWithExternalPaymentService(cartDTO, paymentDTO, userDTO.getUserId());
             sendMessagesOnPurchaseToStoreOwners(cartDTO);
-            String receiptID = this.payWithExternalPaymentService(cartDTO, paymentDTO, userDTO.getUserId());
-            return receiptID;
+            String acquisitionIdID = this.payWithExternalPaymentService(cartDTO, paymentDTO, userDTO.getUserId());
+            return acquisitionIdID;
         } catch (Exception var11) {
             Exception e = var11;
             if (cartDTO != null) {
@@ -386,21 +387,18 @@ public class Market {
         if(paymentServicesFacade.getAllPaymentServices().size()<1){
             throw new Exception(ExceptionsEnum.noAvailableExternalPaymentService.toString());
         }
-        Map<String,String> receiptIdStoreId = paymentServicesFacade.pay(cartDTO.getCartPrice(), payment, userId, cartDTO.getStoreToProducts()); //<receiptId, storeId>
+        String acquisitionId = paymentServicesFacade.pay(cartDTO.getCartPrice(), payment, userId, cartDTO.getStoreToProducts());
+        Map<String,String> receiptIdStoreId = paymentServicesFacade.getAcquisitionReceipts(acquisitionId); //<receiptId, storeId>
         //print when implement notifications (purchase successes)
 
-        //Add the receiptId and storeId to the user receipts map
-        if (userFacade.isMember(userId))
-        {
-            userFacade.addReceiptToUser(receiptIdStoreId, userId);
-        }
-        String receiptIdRes = null;
+        //add acquisitionId to user
+        userFacade.addAcquisitionToUser(userId,acquisitionId);
+
         //Add the receiptId and userId to the store receipts map
         for (String receiptId : receiptIdStoreId.keySet()) {
             storeFacade.addReceiptToStore(receiptIdStoreId.get(receiptId), receiptId, userId);
-            receiptIdRes = receiptId;
         }
-        return receiptIdRes;
+        return acquisitionId;
     }
 
     public void paymentFailed(CartDTO cartDTO) throws Exception {
@@ -1354,4 +1352,31 @@ public class Market {
         roleFacade.verifyStoreOwnerError(storeId, member_ID);
         return storeFacade.getStoreCurrentDiscountRules(storeId);
     }
+
+    public List<AcquisitionDTO> getUserAcquisitionsHistory(String userId) throws Exception {
+        if (userFacade.isMember(userId)){
+            String memberId = userFacade.getMemberIdByUserId(userId);
+            boolean succeeded = authenticationAndSecurityFacade.validateToken(authenticationAndSecurityFacade.getToken(memberId));
+            if (!succeeded) {
+                logout(userId);
+            }
+        }
+        List<String> acquisitions = userFacade.getUserAcquisitionsHistory(userId);
+        return paymentServicesFacade.getAcquisitionsDTO(acquisitions);
+    }
+
+    public Map<String, ReceiptDTO> getUserReceiptsByAcquisition(String userId, String acquisitionId) throws Exception {
+        if (userFacade.isMember(userId)){
+            String memberId = userFacade.getMemberIdByUserId(userId);
+            boolean succeeded = authenticationAndSecurityFacade.validateToken(authenticationAndSecurityFacade.getToken(memberId));
+            if (!succeeded) {
+                logout(userId);
+            }
+        }
+        //check if user has the acquisition
+        userFacade.checkIfUserHasAcquisition(userId, acquisitionId);
+        return paymentServicesFacade.getReceiptsDTOByAcquisition(acquisitionId);
+    }
+
+
 }

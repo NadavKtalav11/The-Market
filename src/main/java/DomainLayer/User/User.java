@@ -204,10 +204,6 @@ public class User implements Observable {
         return state.getCartTotalPriceBeforeDiscount();
     }
 
-    public void addReceipt(Map<String, String> receiptIdAndStoreId)
-    {
-        state.addReceipt(receiptIdAndStoreId);
-    }
 
     public String getBirthday(){
         return birthday;
@@ -216,5 +212,13 @@ public class User implements Observable {
     public CartDTO getCartDTO(){
         return getCart().getDTO(userID);
 
+    }
+
+    public void addAcquisition(String acquisitionId) {
+        state.addAcquisition(acquisitionId);
+    }
+
+    public List<String> getAcquisitionIds() {
+        return state.getAcquisitionIds();
     }
 }

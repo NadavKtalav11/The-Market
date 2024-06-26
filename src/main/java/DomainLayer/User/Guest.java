@@ -1,5 +1,6 @@
 package DomainLayer.User;
 
+import java.util.List;
 import java.util.Map;
 
 public class Guest extends State{
@@ -29,20 +30,21 @@ public class Guest extends State{
         return false;
     }
 
-    @Override
-    public void addReceipt(Map<String, String> receiptIdAndStoreId) {
-        return;
-    }
 
     @Override
     public String getUsername() {
         return null;
     }
 
+
     @Override
-    public Map<String, String> getReceiptIdsAndStoreId() {
-        return null;
+    public void addAcquisition(String acquisitionId) {
+        return;
     }
 
+    @Override
+    public List<String> getAcquisitionIds() {
+        return null;
+    }
 
 }

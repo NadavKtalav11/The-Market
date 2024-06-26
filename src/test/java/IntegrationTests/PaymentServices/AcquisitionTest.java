@@ -8,6 +8,7 @@ import org.junit.jupiter.api.Test;
 import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class AcquisitionTest {
 
@@ -25,7 +26,7 @@ public class AcquisitionTest {
         productList.get("store1").put("Product2", Arrays.asList(1, 50));
 
         // Create Acquisition instance
-        acquisition = new Acquisition("acq-1", "user-1", 150, payment, productList, "receipt-1");
+        acquisition = new Acquisition("acq-1", "user-1", 150, payment, productList);
     }
 
     @Test
@@ -47,14 +48,13 @@ public class AcquisitionTest {
     @Test
     public void testGetReceiptIdByStoreId() {
         String receiptIdStore1 = acquisition.getReceiptIdByStoreId("store1");
-        assertEquals("receipt-1", receiptIdStore1);
+        assertTrue(receiptIdStore1.startsWith("receipt"));
     }
 
     @Test
     public void testGetReceiptIdAndStoreIdMap() {
         Map<String, String> receiptIdMap = acquisition.getReceiptIdAndStoreIdMap();
         assertEquals(1, receiptIdMap.size());
-        assertEquals("store1", receiptIdMap.get("receipt-1"));
     }
 }
 
