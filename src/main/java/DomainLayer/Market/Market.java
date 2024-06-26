@@ -2,6 +2,7 @@ package DomainLayer.Market;
 
 import DomainLayer.AuthenticationAndSecurity.AuthenticationAndSecurityFacade;
 import DomainLayer.Notifications.Notification;
+import DomainLayer.Notifications.NotificationFacade;
 import DomainLayer.Notifications.StoreNotification;
 import DomainLayer.PaymentServices.PaymentServicesFacade;
 import DomainLayer.Role.RoleFacade;
@@ -35,6 +36,7 @@ public class Market {
     private final Object initializedLock;
     private final Object managersLock;
     private final Object validationLock;
+    private NotificationFacade notificationFacade;
 
     public synchronized static Market getInstance() {
         if (MarketInstance == null) {
@@ -54,6 +56,7 @@ public class Market {
         this.systemManagerIds = new HashSet<>();
         managersLock = new Object();
         validationLock = new Object();
+        notificationFacade = new NotificationFacade();
     }
 
 
@@ -69,6 +72,7 @@ public class Market {
         this.systemManagerIds = new HashSet<>();
         managersLock = new Object();
         validationLock = new Object();
+        notificationFacade = new NotificationFacade();
 
     }
 
@@ -84,6 +88,7 @@ public class Market {
         this.systemManagerIds = new HashSet<>();
         managersLock = new Object();
         validationLock = new Object();
+        notificationFacade = new NotificationFacade();
 
     }
 
@@ -102,6 +107,7 @@ public class Market {
         authenticationAndSecurityFacade = authenticationAndSecurityFacade1;
         paymentServicesFacade = paymentServicesFacade1;
         supplyServicesFacade = supplyServicesFacade1;
+        notificationFacade = new NotificationFacade();
         return MarketInstance;
 
 
@@ -124,13 +130,16 @@ public class Market {
             if (paymentServiceDTO.getPaymentServiceName() == null || paymentServiceDTO.getUrl()==null || paymentServiceDTO.getLicensedDealerNumber() ==null) {
                 throw new IllegalArgumentException(ExceptionsEnum.InvalidPaymentServiceDetails.toString());
             }
-            // Initialization logic here
-            synchronized (initializedLock) {
-                initialized = true;
-            }
+
         } catch (Exception e) {
             // Log the error or handle it as needed
             throw e;  // Re-throwing the exception to be handled by the caller
+        }
+        if (password == null || password.equals("")){
+            throw new Exception(ExceptionsEnum.emptyField.toString());
+        }
+        if (!checkPasswordValidation(password)){
+            throw new Exception("password must contains at least one digit, lowercase letter and uppercase letter.\n password must contains at least 8 characters");
         }
         String encrypted = authenticationAndSecurityFacade.encodePassword(password);
         String firstUserID = enterMarketSystem();
@@ -228,7 +237,7 @@ public class Market {
         }
     }
 
-    public void purchase(PaymentDTO paymentDTO, UserDTO userDTO, CartDTO cartDTO) throws Exception {
+    public String purchase(PaymentDTO paymentDTO, UserDTO userDTO, CartDTO cartDTO) throws Exception {
         ScheduledFuture<?> timeoutHandle = null;
         ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
         AtomicBoolean timeoutExpired = new AtomicBoolean(false);
@@ -236,7 +245,7 @@ public class Market {
         try {
             timeoutHandle = scheduler.schedule(() -> {
                 timeoutExpired.set(true);
-            }, 15L, TimeUnit.SECONDS);
+            }, 60L, TimeUnit.SECONDS);
 
             boolean userReadyToPay;
             for(userReadyToPay = false; !userReadyToPay && !timeoutExpired.get(); userReadyToPay = this.getUserConfirmationPurchase(userDTO.getUserId())) {
@@ -247,6 +256,9 @@ public class Market {
             }
 
             this.payWithExternalPaymentService(cartDTO, paymentDTO, userDTO.getUserId());
+            sendMessagesOnPurchaseToStoreOwners(cartDTO);
+            String receiptID = this.payWithExternalPaymentService(cartDTO, paymentDTO, userDTO.getUserId());
+            return receiptID;
         } catch (Exception var11) {
             Exception e = var11;
             if (cartDTO != null) {
@@ -262,6 +274,17 @@ public class Market {
             scheduler.shutdown();
         }
 
+    }
+
+
+    public void sendMessagesOnPurchaseToStoreOwners(CartDTO cartDTO){
+        for (String storeId : cartDTO.getStoreToProducts().keySet()){
+            List<String> storeOwnerIds = roleFacade.getAllStoreOwners(storeId);
+            String storeName = storeFacade.getStoreName(storeId);
+            for (String memberId: storeOwnerIds) {
+                notificationFacade.sendLateMessage(memberId , "A purchase was made from your store - "+ storeName);
+            }
+        }
     }
 
     public void setUserConfirmationPurchase(String userID) {
@@ -311,6 +334,10 @@ public class Market {
         }
     }
 
+    public List<String> getUserNotifications(String memberId){
+        return notificationFacade.getUserNotifications(memberId);
+    }
+
     public CartDTO checkingCartValidationBeforePurchase1(String user_ID,UserDTO userDTO) throws Exception {
         if (userFacade.isMember(user_ID)) {
             String memberId = userFacade.getMemberIdByUserId(user_ID);
@@ -352,7 +379,7 @@ public class Market {
 
 
 
-    public void payWithExternalPaymentService(CartDTO cartDTO,PaymentDTO payment, String userId) throws Exception{
+    public String payWithExternalPaymentService(CartDTO cartDTO,PaymentDTO payment, String userId) throws Exception{
         if(cartDTO.getCartPrice()<= 0 || payment.getMonth()> 12 || payment.getMonth()<1 || payment.getYear() < 2020 ||payment.getHolderId()==null ||cartDTO.getStoreToProducts()==null) {
             throw new IllegalArgumentException(ExceptionsEnum.InvalidCreditCardParameters.toString());
         }
@@ -367,10 +394,13 @@ public class Market {
         {
             userFacade.addReceiptToUser(receiptIdStoreId, userId);
         }
+        String receiptIdRes = null;
         //Add the receiptId and userId to the store receipts map
         for (String receiptId : receiptIdStoreId.keySet()) {
             storeFacade.addReceiptToStore(receiptIdStoreId.get(receiptId), receiptId, userId);
+            receiptIdRes = receiptId;
         }
+        return receiptIdRes;
     }
 
     public void paymentFailed(CartDTO cartDTO) throws Exception {
@@ -660,7 +690,13 @@ public class Market {
         List<String> storeManagers = roleFacade.getAllStoreManagers(store_ID);
         List<String> storeOwners = roleFacade.getAllStoreOwners(store_ID);
         //todo: add function which send notification to all store roles (notification component).
-
+        String message = "store" + storeFacade.getStoreName(store_ID) + "closed by " + userFacade.getMemberName(member_ID);
+        for (String currMemId : storeManagers) {
+            notificationFacade.sendLateMessage(currMemId, message);
+        }
+        for (String currMemId : storeOwners) {
+            notificationFacade.sendLateMessage(currMemId, message);
+        }
        /* String storeName = storeFacade.getStoreByID(store_ID).getStoreName();
 
         Notification n =new StoreNotification(storeName,"The store is now inactive");

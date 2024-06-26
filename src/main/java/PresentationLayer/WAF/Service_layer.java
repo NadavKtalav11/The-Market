@@ -108,6 +108,18 @@ public class Service_layer {
         }
     }
 
+
+    public Response<List<String>> getUserNotifications( String memberId) throws Exception {
+        logger.info("Trying to get User notifications");
+        try {
+            List<String> notificationsList =  market.getUserNotifications(memberId);
+            return new Response<>(notificationsList, "get user "+ memberId +"notifications");
+        } catch (Exception e) {
+            logger.error("Error occurred during the adding: {}", e.getMessage(), e);
+            return new Response<>(null, e.getMessage());
+        }
+    }
+
     public Response<String> removeExternalSupplyService(String licensedDealerNumber, String systemManagerId) {
         logger.info("Trying to remove the supply service number: {}", licensedDealerNumber);
         try {
@@ -124,9 +136,9 @@ public class Service_layer {
         String user_ID = userDTO.getUserId();
         logger.info("Initiating purchase for user: {}", user_ID);
         try {
-            market.purchase( paymentDTO,userDTO, cartDTO);
+            String receiptID = market.purchase( paymentDTO,userDTO, cartDTO);
             logger.info("Purchase successful for user: {}", user_ID);
-            return new Response<>("Purchase successful", "");
+            return new Response<>("Purchase successful", "", receiptID);
         } catch (Exception e) {
             logger.error("Purchase failed for user: {} with error: {}", user_ID, e.getMessage(), e);
             return new Response<>(null, e.getMessage());

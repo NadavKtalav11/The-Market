@@ -48,6 +48,27 @@ public class MarketController {
         }
     }
 
+    @GetMapping("/getUserNotifications/{memberId}")
+    public ResponseEntity<APIResponse<List<String>>> getUserNotifications(@PathVariable String memberId) {
+        try {
+            Response<List<String>> response = serviceLayer.getUserNotifications(memberId);
+            if (response.isSuccess()) {
+                List<String> res = response.getResult();
+                HttpHeaders headers = new HttpHeaders();
+                headers.add("accept", "*/*");
+                return ResponseEntity.status(HttpStatus.OK).headers(headers)
+                        .body(new APIResponse<>(res, null));
+            } else {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                        .body(new APIResponse<>(null, response.getDescription()));
+            }
+
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new APIResponse<>(null, e.getMessage()));
+        }
+    }
+
 
     @GetMapping("/enterSystem")
     public ResponseEntity<APIResponse<String>> enterMarket() {
@@ -260,14 +281,14 @@ public class MarketController {
     }
 
     @PostMapping("/purchase")
-    public ResponseEntity<APIResponse<String>> purchase(@RequestParam Map<String,String> params) {
+    public ResponseEntity<APIResponse<String>> purchase(@RequestBody Map<String,String> params) {
         try {
             String userDTO = params.get("userDTO");
             String paymentDTO= params.get("paymentDTO");
             String cartDTO = params.get("cartDTO");
             Response<String> response = serviceLayer.purchase(objectMapper.readValue(userDTO, UserDTO.class),objectMapper.readValue( paymentDTO, PaymentDTO.class), objectMapper.readValue( cartDTO, CartDTO.class));
             if (response.isSuccess()) {
-                String result = response.getResult();
+                String result = response.getData();
                 HttpHeaders headers = new HttpHeaders();
                 headers.add("accept", "*/*");
 
@@ -289,7 +310,7 @@ public class MarketController {
         try {
             Response<String> response = serviceLayer.exitMarketSystem(userId);
             if (response.isSuccess()) {
-                String result = response.getResult();
+                String result = response.getData();
                 HttpHeaders headers = new HttpHeaders();
                 headers.add("accept", "*/*");
 
@@ -788,6 +809,13 @@ public class MarketController {
         return checkIfResponseIsGood(response);
     }
 
+
+    @PostMapping("/setUserConfirmationPurchase/{userId}")
+    public ResponseEntity<APIResponse<String>> setUserConfirmationPurchase(@PathVariable String userId ) {
+
+        Response<String> response = serviceLayer.setUserConfirmationPurchase(userId);
+        return checkIfResponseIsGood(response);
+    }
 
     @PostMapping("/modifyShoppingCart/{productName}/{quantity}/{storeId}/{userId}")
     public ResponseEntity<APIResponse<String>> modifyShoppingCart(@PathVariable String productName,  @PathVariable int quantity,  @PathVariable String storeId, @PathVariable String userId ) {
