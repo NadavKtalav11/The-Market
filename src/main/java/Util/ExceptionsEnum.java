@@ -101,9 +101,9 @@ package Util;
                 return "Member already has a role in this store";
             }
         },
-        notNominatorOfThisManager{
+        notNominatorOfThisEmployee{
             public String toString() {
-                return "Store owner is not the store manager's nominator";
+                return "Store owner is not the employee's nominator";
             }
         },
         notManager{

@@ -238,6 +238,11 @@ public class StoreFacade {
         storeToClose.closeStore();
     }
 
+    public void reopenStore(String store_ID) throws Exception
+    {
+        this.getStoreByID(store_ID).reopenStore();
+    }
+
     public List<String> getInformationAboutOpenStores()
     {
         List<String> openStoreInformation = new ArrayList<>();

@@ -42,6 +42,10 @@ public class StoreManager implements Role {
         return this.member_ID;
     }
 
+    public String getNominatorId() {
+        return this.nominatorMemberId;
+    }
+
     public List<Integer> getAuthorizations(){
         return this.authorizations;
     }

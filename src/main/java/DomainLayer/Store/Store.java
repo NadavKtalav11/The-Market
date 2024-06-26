@@ -163,6 +163,15 @@ public class Store {
 
     }
 
+    public void reopenStore()
+    {
+        synchronized (isOpenedLock) {
+            this.isOpened = true;
+        }
+
+
+    }
+
     public void sendMessageToStaffOfStore(Notification notification) {
 //        founder.notifyObserver(notification);
 //        for (User u : getOwnersOfStore())

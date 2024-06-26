@@ -40,6 +40,16 @@ public class MemoryStoreManagerRepository implements StoreManagerRepository{
     }
 
     @Override
+    public void remove(StoreManager storeManager) {
+        synchronized (storeManagerLock) {
+            String memberId = storeManager.getMember_ID();
+            if (memberId_storeManagerMap.get(memberId)!=null){
+                memberId_storeManagerMap.remove(memberId);
+            }
+        }
+    }
+
+    @Override
     public List<String> getAllMemberId() {
         synchronized (storeManagerLock) {
             return memberId_storeManagerMap.keySet().stream().toList();

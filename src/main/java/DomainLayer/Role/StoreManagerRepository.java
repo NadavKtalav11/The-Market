@@ -8,6 +8,7 @@ public interface StoreManagerRepository {
     public void add(StoreManager to_add);
     public List<String> getAllMemberId();
     public List<StoreManager> getAllMemberIdOwners(String memberId);
+    public void remove(StoreManager to_remove);
 
 }
 

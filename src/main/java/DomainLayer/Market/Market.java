@@ -592,6 +592,23 @@ public class Market {
         roleFacade.createStoreOwner(nominatedMemberID, storeId, false, nominatorMemberID);
     }
 
+    public void fireStoreOwner(String nominatorUserId, String nominatedUsername, String storeId) throws Exception {
+        userFacade.errorIfUserNotExist(nominatorUserId);
+        userFacade.errorIfUserNotMember(nominatorUserId);
+        String nominatorMemberID = userFacade.getMemberIdByUserId(nominatorUserId);
+        boolean succeeded = authenticationAndSecurityFacade.validateToken(authenticationAndSecurityFacade.getToken(nominatorMemberID));
+        if (!succeeded) {
+            logout(nominatorUserId);
+            throw new Exception(ExceptionsEnum.sessionOver.toString());
+        }
+        storeFacade.errorIfStoreNotExist(storeId);
+        roleFacade.verifyStoreOwnerError(storeId, nominatorMemberID);
+        userFacade.errorIfUsernameNotFound(nominatedUsername);
+        String nominatedMemberID = userFacade.getMemberByUsername(nominatedUsername).getMemberID();
+        roleFacade.verifyNominatorError(nominatorMemberID, nominatedMemberID, storeId);
+        roleFacade.fireStoreOwner(nominatedMemberID, storeId);
+    }
+
     public void appointStoreManager(String nominatorUserId, String nominatedUsername, String storeId,
                                     boolean inventoryPermissions, boolean purchasePermissions) throws Exception {
         userFacade.errorIfUserNotExist(nominatorUserId);
@@ -607,6 +624,23 @@ public class Market {
         userFacade.errorIfUsernameNotFound(nominatedUsername);
         String nominatedMemberID = userFacade.getMemberByUsername(nominatedUsername).getMemberID();
         roleFacade.createStoreManager(nominatedMemberID, storeId, inventoryPermissions, purchasePermissions, nominatorMemberID);
+    }
+
+    public void fireStoreManager(String nominatorUserId, String nominatedUsername, String storeId) throws Exception {
+        userFacade.errorIfUserNotExist(nominatorUserId);
+        userFacade.errorIfUserNotMember(nominatorUserId);
+        String nominatorMemberID = userFacade.getMemberIdByUserId(nominatorUserId);
+        boolean succeeded = authenticationAndSecurityFacade.validateToken(authenticationAndSecurityFacade.getToken(nominatorMemberID));
+        if (!succeeded) {
+            logout(nominatorUserId);
+            throw new Exception(ExceptionsEnum.sessionOver.toString());
+        }
+        storeFacade.errorIfStoreNotExist(storeId);
+        roleFacade.verifyStoreOwnerError(storeId, nominatorMemberID);
+        userFacade.errorIfUsernameNotFound(nominatedUsername);
+        String nominatedMemberID = userFacade.getMemberByUsername(nominatedUsername).getMemberID();
+        roleFacade.verifyNominatorError(nominatorMemberID, nominatedMemberID, storeId);
+        roleFacade.fireStoreManager(nominatedMemberID, storeId);
     }
 
     public void updateStoreManagerPermissions(String nominatorUserId, String nominatedUsername, String storeId,
@@ -704,6 +738,25 @@ public class Market {
         //todo: update use-case parameters
 
     }
+
+    public void reopenStore(String user_ID, String store_ID) throws Exception
+    {
+        if (userFacade.isMember(user_ID)) {
+            String memberId = userFacade.getMemberIdByUserId(user_ID);
+            boolean succeeded = authenticationAndSecurityFacade.validateToken(authenticationAndSecurityFacade.getToken(memberId));
+            if (!succeeded) {
+                logout(user_ID);
+                throw new Exception(ExceptionsEnum.sessionOver.toString());
+            }
+        }
+        userFacade.isUserLoggedInError(user_ID);
+        String member_ID = this.userFacade.getMemberIdByUserId(user_ID);
+        roleFacade.verifyStoreOwnerError(store_ID, member_ID);
+        roleFacade.verifyStoreOwnerIsFounder(store_ID, member_ID);
+        storeFacade.verifyStoreExistError(store_ID);
+        storeFacade.reopenStore(store_ID);
+    }
+
     public void sendMessageToStaffOfStore(Notification notification, String member_ID) {
         userFacade.getUserByID(member_ID).notifyObserver(notification);
 //       // founder.notifyObserver(notification);
