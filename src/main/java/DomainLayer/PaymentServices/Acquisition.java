@@ -18,7 +18,7 @@ public class Acquisition {
 
     private final Object storeReceiptLock;
 
-    public Acquisition(String acquisitionId, String userId, int totalPrice, PaymentDTO payment, Map<String, Map<String, List<Integer>>> productList, String receiptIdCounter) {
+    public Acquisition(String acquisitionId, String userId, int totalPrice, PaymentDTO payment, Map<String, Map<String, List<Integer>>> productList) {
         this.acquisitionId = acquisitionId;
         this.userId = userId;
         this.totalPrice = totalPrice;
@@ -32,9 +32,13 @@ public class Acquisition {
 
         for (String storeId : productList.keySet())
         {
-            storeIdAndReceipt.put(storeId, new Receipt(receiptIdCounter, storeId, userId, productList.get(storeId)));
+            storeIdAndReceipt.put(storeId, new Receipt(getNewReceiptId(), storeId, userId, productList.get(storeId)));
 
         }
+    }
+
+    public String getAcquisitionId() {
+        return acquisitionId;
     }
 
     // Getters and Setters
@@ -88,5 +92,11 @@ public class Acquisition {
             }
         }
         return receiptIdAndStoreIdMap;
+    }
+
+    public String getNewReceiptId(){
+        UUID uuid = UUID.randomUUID();
+        String id = "receipt-"+uuid.toString() ;
+        return id;
     }
 }

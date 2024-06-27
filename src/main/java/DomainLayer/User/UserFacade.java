@@ -331,11 +331,6 @@ public class UserFacade {
         return getUserByID(user_ID).getCartTotalPriceBeforeDiscount();
     }
 
-    public void addReceiptToUser(Map<String, String> receiptIdAndStoreId, String userId)
-    {
-        userRepository.get(userId).addReceipt(receiptIdAndStoreId);
-    }
-
     public List<UserDTO> getAllUsers(){
         List<User> users = userRepository.getAll();
         List<UserDTO> userDTOList = new ArrayList<>();
@@ -370,5 +365,18 @@ public class UserFacade {
 
     public UserRepository<User> getUserRepository() {
         return userRepository;
+    }
+
+    public void addAcquisitionToUser(String userId, String acquisitionId) {
+        getUserByID(userId).addAcquisition(acquisitionId);
+    }
+
+    public List<String> getUserAcquisitionsHistory(String userId) {
+        return getUserByID(userId).getAcquisitionIds();
+    }
+
+    public void checkIfUserHasAcquisition(String userId, String acquisitionId) {
+        if(!getUserByID(userId).getAcquisitionIds().contains(acquisitionId))
+            throw new IllegalArgumentException(ExceptionsEnum.AcquisitionNotExist.toString());
     }
 }

@@ -4,6 +4,7 @@ import Util.UserDTO;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.util.List;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -52,14 +53,17 @@ public class MemberTest {
     }
 
     @Test
-    public void testAddReceipt() {
-        // Prepare test data
-        String receiptId = "123";
-        String storeId = "456";
-        member.addReceipt(Map.of(receiptId, storeId));
+    public void testAddAquisition() {
+        String storeId = "1";
+        String productName = "Product1";
+        int quantity = 2;
+        int totalPrice = 100;
 
-        // Assert that the receipt was added correctly
-        assertTrue(member.getReceiptIdsAndStoreId().containsKey(receiptId));
-        assertEquals(storeId, member.getReceiptIdsAndStoreId().get(receiptId));
+        member.addAcquisition("1");
+
+        // Check if acquisition was added correctly
+        List<String> acquisitions = member.getAcquisitionIds();
+        assertTrue(acquisitions.contains(storeId));
+
     }
 }

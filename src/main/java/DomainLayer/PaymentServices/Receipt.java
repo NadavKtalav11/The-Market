@@ -40,4 +40,12 @@ public class Receipt {
     public String getReceiptId() {
         return receiptId;
     }
+
+    public String getUserId() {
+        return userId;
+    }
+
+    public Map<String, List<Integer>> getProductList() {
+        return productList;
+    }
 }

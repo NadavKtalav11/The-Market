@@ -252,6 +252,11 @@ package Util;
             public String toString(){
                 return "Payment failed";
             }
+        },
+        AcquisitionNotExist{
+            public String toString(){
+                return "Acquisition does not exist";
+            }
         };
     }
 

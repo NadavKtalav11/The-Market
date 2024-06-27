@@ -62,10 +62,9 @@ public class PaymentServicesFacadeTest {
         storeProducts.put("product1", Arrays.asList(2, 100));
         productList.put("store1", storeProducts);
 
-        Map<String, String> result = paymentServicesFacade.pay(100, paymentDTO, "userId", productList);
+        String result = paymentServicesFacade.pay(100, paymentDTO, "userId", productList);
 
         assertNotNull(result);
-        assertEquals(1, result.size());
     }
 
     @Test

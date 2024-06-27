@@ -136,9 +136,9 @@ public class Service_layer {
         String user_ID = userDTO.getUserId();
         logger.info("Initiating purchase for user: {}", user_ID);
         try {
-            String receiptID = market.purchase( paymentDTO,userDTO, cartDTO);
+            String acquisitionID = market.purchase( paymentDTO,userDTO, cartDTO);
             logger.info("Purchase successful for user: {}", user_ID);
-            return new Response<>("Purchase successful", "", receiptID);
+            return new Response<>("Purchase successful", "", acquisitionID);
         } catch (Exception e) {
             logger.error("Purchase failed for user: {} with error: {}", user_ID, e.getMessage(), e);
             return new Response<>(null, e.getMessage());
@@ -812,6 +812,28 @@ public class Service_layer {
             return ans;
         } catch (Exception e) {
             logger.error("Error occurred during the validation of the cart: {}", e.getMessage(), e);
+            return new Response<>(null, e.getMessage());
+        }
+    }
+
+    public Response<List<AcquisitionDTO>> getUserAcquisitionsHistory(String userId) {
+        logger.info("Getting all acquisitions of user: {}", userId);
+        try {
+            List<AcquisitionDTO> acquisitions = market.getUserAcquisitionsHistory(userId);
+            return new Response<>(acquisitions, "Acquisitions retrieved successfully.");
+        } catch (Exception e) {
+            logger.error("Error occurred during getting acquisitions of user: {}", userId, e);
+            return new Response<>(null, e.getMessage());
+        }
+    }
+
+    public Response<Map<String, ReceiptDTO>> getUserReceiptsByAcquisition(String userId, String acquisitionId) {
+        logger.info("Getting all receipts of user: {} by acquisition: {}", userId, acquisitionId);
+        try {
+            Map<String, ReceiptDTO> receipts = market.getUserReceiptsByAcquisition(userId, acquisitionId);
+            return new Response<>(receipts, "Receipts retrieved successfully.");
+        } catch (Exception e) {
+            logger.error("Error occurred during getting receipts of user: {} by acquisition: {}", userId, acquisitionId, e);
             return new Response<>(null, e.getMessage());
         }
     }

@@ -1,15 +1,9 @@
 package DomainLayer.PaymentServices;
 
 
-import Util.ExceptionsEnum;
-import Util.PaymentDTO;
-import Util.PaymentServiceDTO;
-import Util.UserDTO;
+import Util.*;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 public class PaymentServicesFacade {
     private static PaymentServicesFacade paymentServicesFacadeInstance;
@@ -66,6 +60,7 @@ public class PaymentServicesFacade {
             return allPaymentServices.size() == size_before + 1;
         }
     }
+
     public boolean addExternalService(PaymentServiceDTO paymentServiceDTO, HttpClient httpClient){
         synchronized (paymentServiceLock) {
             int size_before = allPaymentServices.size();
@@ -74,47 +69,46 @@ public class PaymentServicesFacade {
             return allPaymentServices.size() == size_before + 1;
         }
     }
+
     public void clearPaymentServices() {
         synchronized (paymentServiceLock) {
             allPaymentServices.clear();
         }
     }
 
-    public Map<String,String> pay(int price, PaymentDTO payment, String userId, Map<String, Map<String, List<Integer>>> productList) throws Exception{
+    public String pay(int price, PaymentDTO payment, String userId, Map<String, Map<String, List<Integer>>> productList) throws Exception{
        
         String acquisitionId  = getNewAcquisitionId();
-        String receiptId = getNewReceiptId();
         ExternalPaymentService externalPaymentService;
         synchronized (paymentServiceLock) {
             externalPaymentService = allPaymentServices.values().iterator().next();
         }
-        Map<String,String> paymentSucceeded = externalPaymentService.payWithCard(price, payment, userId, productList, acquisitionId, receiptId);
-        if (paymentSucceeded!=null)
-        {
-            //String acquisitionId1  = getNewAcquisitionId();
-            Acquisition acquisition = new Acquisition(acquisitionId, userId, price, payment, productList, getNewReceiptId());
-            synchronized (acquisitionLock) {
-                IdAndAcquisition.put(acquisitionId, acquisition);
-            }
-            //acquisitionIdCounter++;
-            //receiptIdCounter += productList.size();
-            return acquisition.getReceiptIdAndStoreIdMap();
+        externalPaymentService.payWithCard(price, payment, userId, productList, acquisitionId);
+
+        Acquisition acquisition = new Acquisition(acquisitionId, userId, price, payment, productList);
+        synchronized (acquisitionLock) {
+            IdAndAcquisition.put(acquisitionId, acquisition);
         }
-        else
-        {
-            throw new IllegalArgumentException(ExceptionsEnum.PaymentFailed.toString());
+
+        externalPaymentService.addAcquisition(acquisitionId, acquisition);
+        return acquisition.getAcquisitionId();
+
+    }
+
+    public Map<String, String> getAcquisitionReceipts(String acquisitionId){
+        Acquisition acquisition;
+        synchronized (acquisitionLock) {
+            acquisition = IdAndAcquisition.get(acquisitionId);
         }
+        if(acquisition == null){
+            throw new IllegalArgumentException(ExceptionsEnum.AcquisitionNotExist.toString());
+        }
+        return acquisition.getReceiptIdAndStoreIdMap();
     }
 
     public String getNewAcquisitionId(){
         UUID uuid = UUID.randomUUID();
         String id = "acquisition-"+uuid.toString() ;
-        return id;
-    }
-
-    public String getNewReceiptId(){
-        UUID uuid = UUID.randomUUID();
-        String id = "receipt-"+uuid.toString() ;
         return id;
     }
 
@@ -124,13 +118,6 @@ public class PaymentServicesFacade {
         }
     }
 
-    //public int getAcquisitionIdCounter(){
-       // return this.acquisitionIdCounter;
-    //}
-
-    //public int getReceiptIdCounter(){
-    //    return this.receiptIdCounter;
-    //}
 
     public PaymentServiceDTO getPaymentServiceDTOById(String paymentServiceId){
         ExternalPaymentService externalPaymentService = getPaymentServiceById(paymentServiceId);
@@ -181,5 +168,35 @@ public class PaymentServicesFacade {
         synchronized (acquisitionLock) {
             return IdAndAcquisition;
         }
+    }
+
+    public List<AcquisitionDTO> getAcquisitionsDTO(List<String> acquisitions) {
+        List<AcquisitionDTO> acquisitionsDTO = new LinkedList<>();
+        synchronized (acquisitionLock) {
+            for (String acqId : acquisitions) {
+                Acquisition acq = IdAndAcquisition.get(acqId);
+                if (acq != null) {
+                    acquisitionsDTO.add(new AcquisitionDTO(acq.getAcquisitionId(), acq.getUserId(), acq.getTotalPrice(), acq.getDate()));
+                }
+            }
+        }
+        return acquisitionsDTO;
+    }
+
+    public Map<String, ReceiptDTO> getReceiptsDTOByAcquisition(String acquisitionId) {
+
+        Map<String, ReceiptDTO> receiptsDTO = new HashMap<>();
+        Acquisition acq;
+        synchronized (acquisitionLock) {
+            acq = IdAndAcquisition.get(acquisitionId);
+        }
+        if (acq != null) {
+            Map<String, Receipt> storeReceipts = acq.getStoreIdAndReceipt();
+            for (String storeId : storeReceipts.keySet()) {
+                Receipt receipt = storeReceipts.get(storeId);
+                receiptsDTO.put(receipt.getReceiptId(), new ReceiptDTO(receipt.getReceiptId(), receipt.getStoreId(), receipt.getUserId(), receipt.getProductList()));
+            }
+        }
+        return receiptsDTO;
     }
 }

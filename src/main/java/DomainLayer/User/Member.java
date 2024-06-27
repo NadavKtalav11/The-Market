@@ -5,7 +5,9 @@ import DomainLayer.Role.RoleFacade;
 import Util.ExceptionsEnum;
 import Util.UserDTO;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.zip.CheckedOutputStream;
 
@@ -21,7 +23,7 @@ public class Member extends State{
     private String city;
     private String address;
     private int productIdCounter;
-    private Map<String, String> receiptIdsAndStoreId; //<receiptId, storeId>
+    private List<String> acquisitionIds;
     //private boolean isLogin;
 
     /*Member(String member_ID, UserDTO user, String password)
@@ -50,7 +52,7 @@ public class Member extends State{
         this.address = address;
         this.name = name;
         this.productIdCounter = 0;
-        this.receiptIdsAndStoreId = new HashMap<>();
+        this.acquisitionIds = new ArrayList<>();
     }
 
 
@@ -102,7 +104,7 @@ public class Member extends State{
         return password;
     }
 
-    public Map<String, String> getReceiptIdsAndStoreId(){return receiptIdsAndStoreId;}
+    //public Map<String, String> getReceiptIdsAndStoreId(){return receiptIdsAndStoreId;}
 
     public String getMemberID()
     {
@@ -114,9 +116,14 @@ public class Member extends State{
         return true;
     }
 
+
+    public void addAcquisition(String acquisitionId){
+        acquisitionIds.add(acquisitionId);
+    }
+
     @Override
-    public void addReceipt(Map<String, String> receiptIdAndStoreId) {
-        receiptIdsAndStoreId.putAll(receiptIdAndStoreId);
+    public List<String> getAcquisitionIds() {
+        return acquisitionIds;
     }
 
     public String getMember_ID() {
@@ -126,4 +133,6 @@ public class Member extends State{
     public String getUserId() {
         return userId;
     }
+
+
 }
