@@ -1046,6 +1046,56 @@ public class MarketController {
         }
     }
 
+    @GetMapping("/getUserAcquisitionsHistory/{userId}")
+    public ResponseEntity<APIResponse<List<String>>> getUserAcquisitionsHistory(@PathVariable String userId) {
+        try {
+            Response<List<AcquisitionDTO>> response = serviceLayer.getUserAcquisitionsHistory(userId);
+            if (response.isSuccess()) {
+                List<String> dtos = new ArrayList<>();
+                for (AcquisitionDTO acquisitionDTO : response.getResult()){
+                    dtos.add(objectMapper.writeValueAsString(acquisitionDTO));
+                }
+                HttpHeaders headers = new HttpHeaders();
+                headers.add("accept", "*/*");
+
+                return ResponseEntity.status(HttpStatus.OK).headers(headers)
+                        .body(new APIResponse<List<String>>(dtos, null));
+            } else {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                        .body(new APIResponse<>(null, response.getDescription()));
+            }
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new APIResponse<>(null, e.getMessage()));
+
+        }
+    }
+
+    @GetMapping("/getUserReceiptsByAcquisition/{userId}/{acquisitionId}")
+    public ResponseEntity<APIResponse<Map<String,String>>> getUserReceiptsByAcquisition(@PathVariable String userId,@PathVariable String acquisitionId) {
+        try {
+            Response<Map<String, ReceiptDTO>> response = serviceLayer.getUserReceiptsByAcquisition(userId, acquisitionId);
+            if (response.isSuccess()) {
+                Map<String,String> idToDtos = new HashMap<>();
+                for (Map.Entry<String, ReceiptDTO> entry : response.getResult().entrySet()) {
+                    idToDtos.put(entry.getKey(), objectMapper.writeValueAsString(entry.getValue()));
+                }
+                HttpHeaders headers = new HttpHeaders();
+                headers.add("accept", "*/*");
+
+                return ResponseEntity.status(HttpStatus.OK).headers(headers)
+                        .body(new APIResponse<Map<String,String>>(idToDtos, null));
+            } else {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                        .body(new APIResponse<>(null, response.getDescription()));
+            }
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new APIResponse<>(null, e.getMessage()));
+
+        }
+    }
+
 }
 
 
