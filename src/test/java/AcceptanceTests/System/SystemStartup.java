@@ -5,6 +5,7 @@ import AcceptanceTests.ProxyToTest;
 import DomainLayer.Market.Market;
 import static org.junit.jupiter.api.Assertions.*;
 
+import DomainLayer.User.UserFacade;
 import Util.ExceptionsEnum;
 import Util.PaymentServiceDTO;
 import Util.SupplyServiceDTO;
@@ -16,29 +17,26 @@ import java.util.Arrays;
 import java.util.HashSet;
 
 
-public class SystemStartup {
+public class  SystemStartup {
     private static BridgeToTests impl;
     private Market market;
+    private UserFacade userFacade;
 
 
     @BeforeEach
     public void setUp() {
         impl = new ProxyToTest("Real");
-        this.market = Market.getInstance();
+        this.userFacade = UserFacade.getInstance();
+        this.market = new Market(userFacade);
 
     }
 
     @Test
     public void successfulInitTest() throws Exception {
         assertFalse(market.isInitialized());
+        assertEquals(0, market.getSystemManagerIds().size());
 
-        String userName = "manager";
-        String password = "password123";
-        String birthday = "01/01/1990";
-        String country = "USA";
-        String city = "New York";
-        String address = "123 Main St";
-        String name = "Manager Name";
+
         String licensedDealerNumber = "12345";
         String paymentServiceName = "PayPal";
         String url = "http://example.com";
@@ -48,11 +46,21 @@ public class SystemStartup {
         HashSet<String> cities = new HashSet<>(Arrays.asList("New York", "Los Angeles"));
 
         // Act
-        market.init(new UserDTO(null, userName, birthday, country, city, address, name), password, new PaymentServiceDTO(licensedDealerNumber,
+        market.init(new PaymentServiceDTO(licensedDealerNumber,
                 paymentServiceName, url), new SupplyServiceDTO(licensedDealerNumber1, supplyServiceName, countries, cities));
 
         // Assuming there's a method isInitialized() that returns whether the system is initialized
         assertTrue(market.isInitialized());
+        assertEquals(1, market.getSystemManagerIds().size());
+        String memberID = market.getSystemManagerIds().iterator().next();
+
+        // assert the system manager details match the details in the config file
+        assertEquals("u1", userFacade.getMembers().get(memberID).getUsername());
+        assertEquals("19/09/1996", userFacade.getMembers().get(memberID).getBirthday());
+        assertEquals("Israel", userFacade.getMembers().get(memberID).getCountry());
+        assertEquals("Ashdod", userFacade.getMembers().get(memberID).getCity());
+        assertEquals("Elul", userFacade.getMembers().get(memberID).getAddress());
+        assertEquals("David Volodarsky", userFacade.getMembers().get(memberID).getName());
 
     }
 
@@ -61,13 +69,7 @@ public class SystemStartup {
         assertFalse(market.isInitialized());
 
         // Arrange
-        String userName = "manager";
-        String password = "password123";
-        String birthday = "1990-01-01";
-        String country = "USA";
-        String city = "New York";
-        String address = "123 Main St";
-        String name = "Manager Name";
+
         String licensedDealerNumber = "12345";
         String paymentServiceName = "PayPal";
         String url = "http://example.com";
@@ -78,7 +80,7 @@ public class SystemStartup {
 
         // Act and Assert
         Exception exception = assertThrows(Exception.class, () -> {
-            market.init(new UserDTO(null , userName, birthday, country, city, address, name), password, new PaymentServiceDTO(licensedDealerNumber,
+            market.init( new PaymentServiceDTO(licensedDealerNumber,
                     paymentServiceName, url), new SupplyServiceDTO( licensedDealerNumber1, supplyServiceName, countries, cities));
         });
 
@@ -108,14 +110,14 @@ public class SystemStartup {
         HashSet<String> countries = new HashSet<>(Arrays.asList("USA", "Canada"));
         HashSet<String> cities = new HashSet<>(Arrays.asList("New York", "Los Angeles"));
 
-        // Act and Assert
+//        // Act and Assert
         Exception exception = assertThrows(Exception.class, () -> {
-            market.init(new UserDTO(null , userName, birthday, country, city, address, name), password,new PaymentServiceDTO( licensedDealerNumber,
+            market.init(new PaymentServiceDTO( licensedDealerNumber,
                     paymentServiceName, url) ,new SupplyServiceDTO( licensedDealerNumber1, supplyServiceName, countries, cities));
         });
-
-
-        // Optionally check the exception message
+////
+////
+////        // Optionally check the exception message
         assertEquals(ExceptionsEnum.InvalidPaymentServiceDetails.toString(), exception.getMessage());
         assertFalse(market.isInitialized());
     }

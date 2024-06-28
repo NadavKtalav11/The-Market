@@ -64,13 +64,13 @@ public class UpdateManagerPermissions {
         Response<String> response1 = impl.updateStoreManagerPermissions(saarUserID, "ovad",storeIDjalal,
                 true, false);
         assertFalse(response1.isSuccess());
-        assertEquals(ExceptionsEnum.notNominatorOfThisManager.toString(), response1.getDescription());
+        assertEquals(ExceptionsEnum.notNominatorOfThisEmployee.toString(), response1.getDescription());
 
         impl.appointStoreOwner(saarUserID, "jalal", storeIDsaar);
         Response<String> response2 = impl.updateStoreManagerPermissions(jalalUserID ,"tom",storeIDsaar,
                 true, true);
         assertFalse(response2.isSuccess());
-        assertEquals(ExceptionsEnum.notNominatorOfThisManager.toString(), response2.getDescription());
+        assertEquals(ExceptionsEnum.notNominatorOfThisEmployee.toString(), response2.getDescription());
 
     }
 }

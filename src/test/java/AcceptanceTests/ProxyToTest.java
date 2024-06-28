@@ -20,9 +20,9 @@ public class ProxyToTest implements BridgeToTests {
 
 
     @Override
-    public Response<String> init(UserDTO userDTO, String password, PaymentServiceDTO paymentServiceDTO, SupplyServiceDTO supplyServiceDTO) {
+    public Response<String> init( PaymentServiceDTO paymentServiceDTO, SupplyServiceDTO supplyServiceDTO) {
         if (realServiceAdaptor != null)
-            return realServiceAdaptor.init(userDTO, password, paymentServiceDTO, supplyServiceDTO);
+            return realServiceAdaptor.init( paymentServiceDTO, supplyServiceDTO);
 
         else
             return new Response<>(null, "Not Implemented yet");

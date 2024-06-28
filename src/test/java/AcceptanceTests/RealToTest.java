@@ -18,9 +18,9 @@ public class RealToTest implements BridgeToTests {
     }
 
     @Override
-    public Response<String> init(UserDTO userDTO,  String password, PaymentServiceDTO paymentServiceDTO, SupplyServiceDTO supplyServiceDTO) {
+    public Response<String> init( PaymentServiceDTO paymentServiceDTO, SupplyServiceDTO supplyServiceDTO) {
 
-        return service.init(userDTO, password, paymentServiceDTO,supplyServiceDTO);
+        return service.init( paymentServiceDTO,supplyServiceDTO);
 
     }
 
