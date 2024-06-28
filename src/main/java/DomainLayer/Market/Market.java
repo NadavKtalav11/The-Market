@@ -16,6 +16,11 @@ import DomainLayer.User.UserFacade;
 import DomainLayer.SupplyServices.SupplyServicesFacade;
 import Util.*;
 
+import org.yaml.snakeyaml.Yaml;
+import java.io.FileInputStream;
+import java.io.InputStream;
+import java.util.Map;
+
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.regex.Pattern;
@@ -92,6 +97,21 @@ public class Market {
 
     }
 
+    public Market(UserFacade userFacade){
+        this.storeFacade = StoreFacade.getInstance();
+        this.userFacade = userFacade;
+        this.roleFacade = RoleFacade.getInstance();
+        this.paymentServicesFacade = PaymentServicesFacade.getInstance();
+        this.authenticationAndSecurityFacade = AuthenticationAndSecurityFacade.getInstance();
+        this.supplyServicesFacade= SupplyServicesFacade.getInstance();
+        initializedLock= new Object();
+        this.systemManagerIds = new HashSet<>();
+        managersLock = new Object();
+        validationLock = new Object();
+        notificationFacade = new NotificationFacade();
+
+    }
+
 
     public synchronized Market newForTests(){
         MarketInstance = new Market();
@@ -113,9 +133,23 @@ public class Market {
 
     }
 
+    public Map<String, Object> loadAdminConfiguration() throws Exception {
+        String configFilePath = "src/main/resources/ConfigurationFile.yaml";
+        try (InputStream inputStream = new FileInputStream(configFilePath)) {
+            Yaml yaml = new Yaml();
+            Map<String, Object> config = yaml.load(inputStream);
+            return config;
+        }
+    }
 
 
-    public String init(UserDTO user, String password, PaymentServiceDTO paymentServiceDTO,  SupplyServiceDTO supplyServiceDTO) throws Exception {
+
+    public String init( PaymentServiceDTO paymentServiceDTO,  SupplyServiceDTO supplyServiceDTO) throws Exception {
+        Map<String, Object> initConfig = null; // Declare initConfig here
+        Map<String, Object> adminConfig = null; // Declare adminConfig here
+
+        String adminPassword = "";
+
         synchronized (initializedLock) {
             if (initialized == true) {
                 return null;
@@ -131,31 +165,59 @@ public class Market {
                 throw new IllegalArgumentException(ExceptionsEnum.InvalidPaymentServiceDetails.toString());
             }
 
+
+             initConfig = loadAdminConfiguration();
+             adminConfig = (Map<String, Object>) initConfig.get("admin");
+             adminPassword = (String) adminConfig.get("password");
+            validateAdminPassword1(adminPassword);
+
         } catch (Exception e) {
-            // Log the error or handle it as needed
-            throw e;  // Re-throwing the exception to be handled by the caller
+            throw e; // Re-throw the exception to be handled by the caller
         }
-        if (password == null || password.equals("")){
-            throw new Exception(ExceptionsEnum.emptyField.toString());
-        }
-        if (!checkPasswordValidation(password)){
-            throw new Exception("password must contains at least one digit, lowercase letter and uppercase letter.\n password must contains at least 8 characters");
-        }
-        String encrypted = authenticationAndSecurityFacade.encodePassword(password);
-        String firstUserID = enterMarketSystem();
-        user.setUserId(firstUserID);
-        String systemMangerId = userFacade.register(firstUserID, user, encrypted);
-        synchronized (managersLock) {
-            systemManagerIds.add(systemMangerId);
+
+
+            // Extract admin configuration values
+            String adminUsername = (String) adminConfig.get("username");
+            String adminBirthday = (String) adminConfig.get("birthday");
+            String adminCountry = (String) adminConfig.get("country");
+            String adminCity = (String) adminConfig.get("city");
+            String adminAddress = (String) adminConfig.get("address");
+            String adminName = (String) adminConfig.get("name");
+
+
+
+            // Encode admin password
+            String encryptedPassword = authenticationAndSecurityFacade.encodePassword(adminPassword);
+
+            // Register user and retrieve system manager ID
+            String firstUserID = enterMarketSystem();
+            UserDTO userDTO1 = new UserDTO(firstUserID, adminUsername, adminBirthday, adminCountry, adminCity, adminAddress, adminName);
+            String systemManagerId = userFacade.register(firstUserID, userDTO1, encryptedPassword);
+            synchronized (managersLock) {
+                systemManagerIds.add(systemManagerId);
+            }
+            paymentServicesFacade.addExternalService(paymentServiceDTO);
+            supplyServicesFacade.addExternalService(supplyServiceDTO);
+            synchronized (initializedLock) {
+                initialized = true;
+            }
+            return firstUserID; // Return the generated user ID
+
+
 
         }
-        paymentServicesFacade.addExternalService(paymentServiceDTO);
-        supplyServicesFacade.addExternalService(supplyServiceDTO);
-        synchronized (initializedLock) {
-            initialized = true;
+
+    public void validateAdminPassword1(String adminPassword) throws Exception {
+        if (adminPassword == null || adminPassword.isEmpty()) {
+            throw new Exception(ExceptionsEnum.emptyField.toString());
         }
-        return firstUserID;
+
+        if (!checkPasswordValidation(adminPassword)) {
+            throw new Exception("Password must contain at least one digit, one lowercase letter, one uppercase letter, and be at least 8 characters long.");
+        }
     }
+
+
 
     public boolean checkInitializedMarket(){
         return initialized;

@@ -56,10 +56,10 @@ public class Service_layer {
     }
 
 
-    public Response<String> init(UserDTO userDTO ,String password , PaymentServiceDTO paymentDTO, SupplyServiceDTO supplyServiceDTO){
+    public Response<String> init(PaymentServiceDTO paymentDTO, SupplyServiceDTO supplyServiceDTO){
         logger.info("Starting the initialization of the system.");
         try {
-            String userId = market.init(userDTO,password, paymentDTO, supplyServiceDTO );
+            String userId = market.init( paymentDTO, supplyServiceDTO );
             logger.info("System initialized successfully.");
             return new Response<>("Initialization successful", "System initialized successfully.",userId);
 

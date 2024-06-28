@@ -106,7 +106,7 @@ public class MarketController {
             coutries.add(countriesSet);
             Set<String> cities = new HashSet();
             cities.add(citiesSet);
-            Response<String> response = serviceLayer.init(objectMapper.readValue(userDTO,UserDTO.class), password, objectMapper.readValue(paymentServiceDTO, PaymentServiceDTO.class), new SupplyServiceDTO(supplyDealerNumberField, supplyServiceName, coutries ,cities ));
+            Response<String> response = serviceLayer.init(objectMapper.readValue(paymentServiceDTO, PaymentServiceDTO.class), new SupplyServiceDTO(supplyDealerNumberField, supplyServiceName, coutries ,cities ));
             if (response.isSuccess()) {
                 String userId = response.getData();
                 HttpHeaders headers = new HttpHeaders();

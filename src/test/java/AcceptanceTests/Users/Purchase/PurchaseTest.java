@@ -37,8 +37,7 @@ public class PurchaseTest {
          countries.add("Israel");
          HashSet<String> cities = new HashSet<>();
          cities.add("BeerSheva");
-         impl.init(new UserDTO("0", "KobiM", "27/4/95", "Israel","Beer Sheva","Mesada","kobi Menashe"), "Password123",
-
+         impl.init(
                  new PaymentServiceDTO("1", "payementService", "kobi@gmail.com"),new SupplyServiceDTO("2", "supplyService", countries, cities));
 
 

@@ -180,5 +180,10 @@
             <artifactId>icu4j</artifactId>
             <version>72.1</version>
         </dependency>
+        <dependency>
+            <groupId>org.yaml</groupId>
+            <artifactId>snakeyaml</artifactId>
+            <version>1.29</version> <!-- Replace with the latest version -->
+        </dependency>
     </dependencies>
 </project>

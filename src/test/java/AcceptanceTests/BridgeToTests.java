@@ -8,7 +8,7 @@ import java.util.Map;
 
 public interface BridgeToTests {
 
-    Response<String> init(UserDTO userDTO, String password, PaymentServiceDTO paymentServiceDTO, SupplyServiceDTO supplyServiceDTO);
+    Response<String> init( PaymentServiceDTO paymentServiceDTO, SupplyServiceDTO supplyServiceDTO);
 
 
 //    Response<String> payWithExternalPaymentService(int price,String cardNumber, int cvv, int month, int year, String holderID, String userID);
