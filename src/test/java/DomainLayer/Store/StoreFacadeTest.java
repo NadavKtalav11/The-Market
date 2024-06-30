@@ -8,6 +8,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
@@ -322,12 +323,16 @@ public class StoreFacadeTest {
     @Test
     void testAddPurchaseRuleToStore() {
         String storeId = "store1";
-        List<Integer> ruleNums = Arrays.asList(1, 2);
+        TestRuleDTO rule1 = new TestRuleDTO("Price", "Above", null, null, "Basket price is greater than 100 shekels", true, null, null, null, 100, null);
+        TestRuleDTO rule2 = new TestRuleDTO("Amount", "Above", null, "bun", "Basket must contain more than 5 buns", true, null, 5, null, null, null);
+        List<TestRuleDTO> rules = new ArrayList<>();
+        rules.add(rule1);
+        rules.add(rule2);
         List<String> operators = Arrays.asList("AND");
 
         when(storeRepository.get(storeId)).thenReturn(mockStore);
 
-        storeFacade.addPurchaseRuleToStore(ruleNums, operators, storeId);
+        storeFacade.addPurchaseRuleToStore(rules, operators, storeId);
 
         verify(mockStore).addPurchaseRule(anyList(), eq(operators));
     }
@@ -347,14 +352,18 @@ public class StoreFacadeTest {
     @Test
     void testAddDiscountCondRuleToStore() {
         String storeId = "store1";
-        List<Integer> ruleNums = Arrays.asList(1, 2);
+        TestRuleDTO rule1 = new TestRuleDTO("Price", "Above", null, null, "Basket price is greater than 100 shekels", true, null, null, null, 100, null);
+        TestRuleDTO rule2 = new TestRuleDTO("Amount", "Above", null, "bun", "Basket must contain more than 5 buns", true, null, 5, null, null, null);
+        List<TestRuleDTO> rules = new ArrayList<>();
+        rules.add(rule1);
+        rules.add(rule2);
         List<String> operators = Arrays.asList("AND");
         List<DiscountValueDTO> discDetails = Arrays.asList(mock(DiscountValueDTO.class));
         List<String> numericalOperators = Arrays.asList("GT");
 
         when(storeRepository.get(storeId)).thenReturn(mockStore);
 
-        storeFacade.addDiscountCondRuleToStore(ruleNums, operators, discDetails, numericalOperators, storeId);
+        storeFacade.addDiscountCondRuleToStore(rules, operators, discDetails, numericalOperators, storeId);
 
         verify(mockStore).addDiscountCondRule(anyList(), eq(operators), anyList(), eq(numericalOperators));
     }

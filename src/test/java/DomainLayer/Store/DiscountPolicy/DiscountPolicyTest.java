@@ -27,7 +27,7 @@ public class DiscountPolicyTest {
     private CondDiscount condDiscount;
 
     @Mock
-    private Rule<UserDTO, List<ProductDTO>> rule;
+    private Rule rule;
 
     @Mock
     private DiscountValue discountValue;
@@ -66,7 +66,7 @@ public class DiscountPolicyTest {
     @Test
     public void testAddCondRule() {
         // Arrange
-        List<Rule<UserDTO, List<ProductDTO>>> rules = Arrays.asList(rule);
+        List<Rule> rules = Arrays.asList(rule);
         List<String> logicalOperators = Arrays.asList();
         List<DiscountValue> discDetails = Arrays.asList(discountValue);
         List<String> numericalOperators = Arrays.asList();
