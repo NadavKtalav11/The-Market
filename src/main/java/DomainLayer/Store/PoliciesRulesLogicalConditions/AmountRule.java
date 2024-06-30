@@ -9,8 +9,8 @@ import java.util.List;
 public class AmountRule extends TestRule {
     private int quantity;
 
-    public AmountRule(int quantity, boolean isAbove, Category category, boolean isStoreDiscount, String productName, String description) {
-        super(isAbove, category, isStoreDiscount, productName, description);
+    public AmountRule(int quantity, boolean isAbove, Category category, String productName, String description) {
+        super(isAbove, category, productName, description);
         this.quantity = quantity;
     }
 

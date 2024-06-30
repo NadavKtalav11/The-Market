@@ -9,8 +9,8 @@ import java.util.List;
 public class PriceRule extends TestRule {
     private int price;
 
-    public PriceRule(int price, boolean isAbove, Category category, boolean isStoreDiscount, String productName, String description) {
-        super(isAbove, category, isStoreDiscount, productName, description);
+    public PriceRule(int price, boolean isAbove, Category category, String productName, String description) {
+        super(isAbove, category, productName, description);
         this.price = price;
     }
 
