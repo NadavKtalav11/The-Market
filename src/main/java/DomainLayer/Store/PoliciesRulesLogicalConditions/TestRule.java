@@ -7,13 +7,13 @@ import Util.UserDTO;
 import java.util.List;
 
 public abstract class TestRule {
-    protected final boolean isAbove;
+    protected final String range;
     protected final Category category;
     protected final String productName;
     protected final String description;
 
-    public TestRule(boolean isAbove, Category category, String productName, String description) {
-        this.isAbove = isAbove;
+    public TestRule(String range, Category category, String productName, String description) {
+        this.range = range;
         this.category = category;
         this.productName = productName;
         this.description = description;
