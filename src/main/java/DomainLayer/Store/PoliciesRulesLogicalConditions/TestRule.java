@@ -11,12 +11,14 @@ public abstract class TestRule {
     protected final Category category;
     protected final String productName;
     protected final String description;
+    protected final boolean contains;
 
-    public TestRule(String range, Category category, String productName, String description) {
+    public TestRule(String range, Category category, String productName, String description, boolean contains) {
         this.range = range;
         this.category = category;
         this.productName = productName;
         this.description = description;
+        this.contains = contains;
     }
 
     public abstract boolean test(UserDTO user, List<ProductDTO> products);
@@ -29,14 +31,48 @@ public abstract class TestRule {
         return category == null && productName != null;
     }
 
-    protected boolean isRuleSatisfied(boolean conditionCheck, List<ProductDTO> products) {
+    protected int getQuantity(List<ProductDTO> products) {
         if (isCategoryRule()) {
-            return conditionCheck && products.stream().anyMatch(p -> p.getCategoryStr().equals(category.toString()));
+            return (int) products.stream().filter(p -> p.getCategoryStr().equals(category.toString())).count();
         } else if (isProductsRule()) {
-            return conditionCheck && products.stream().anyMatch(p -> p.getName().equals(productName));
+            return (int) products.stream().filter(p -> p.getName().equals(productName)).count();
         }
+        throw new IllegalArgumentException("Invalid rule type");
+    }
 
-        return false;
+    protected boolean isRuleSatisfied(List<ProductDTO> products, int quantity) {
+        if (contains) {
+            if(quantity > 0)
+            {
+                //switch case on range
+                return switch (range) {
+                    case "Above" -> getQuantity(products) > quantity;
+                    case "Below" -> getQuantity(products) < quantity;
+                    case "`Exactly" -> getQuantity(products) == quantity;
+                    default -> throw new IllegalArgumentException("Invalid range: " + range);
+                };
+            }
+            else
+            {
+                return getQuantity(products) > quantity;
+            }
+        }
+        else {
+            if(quantity > 0)
+            {
+                //switch case on range
+                return switch (range) {
+                    case "Above" -> getQuantity(products) <= quantity;
+                    case "Below" -> getQuantity(products) >= quantity;
+                    case "`Exactly" -> getQuantity(products) != quantity;
+                    default -> throw new IllegalArgumentException("Invalid range: " + range);
+                };
+            }
+            else
+            {
+                return getQuantity(products) == quantity;
+            }
+        }
     }
 
     public String getDescription() {

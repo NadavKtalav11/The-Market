@@ -16,8 +16,8 @@ public class AgeRule extends TestRule {
     private int age;
     private static final ThreadLocal<Clock> clock = ThreadLocal.withInitial(Clock::systemDefaultZone); // Default clock
 
-    public AgeRule(int age, String range, Category category, String productName, String description) {
-        super(range, category, productName, description);
+    public AgeRule(int age, String range, Category category, String productName, String description, boolean contains){
+        super(range, category, productName, description, contains);
         this.age = age;
     }
 
@@ -31,9 +31,20 @@ public class AgeRule extends TestRule {
         LocalDate today = LocalDate.now(clock.get());
         int userAge = Period.between(birthdate, today).getYears();
 
-        boolean ageCheck = isAbove ? userAge >= age : userAge <= age;
-
-        return isRuleSatisfied(ageCheck, products);
+        //check if the user is above or below the age, age can be "Above" or "Below" or "Exactly"
+        boolean ageCheck = switch (range) {
+            case "Above" -> userAge > age;
+            case "Below" -> userAge < age;
+            case "Exactly" -> userAge == age;
+            default -> throw new IllegalArgumentException("Invalid range: " + range);
+        };
+        if (ageCheck){
+            return isRuleSatisfied(products,0);
+        }
+        else
+        {
+            return true;
+        }
     }
 
     public static void setClock(Clock newClock) {
