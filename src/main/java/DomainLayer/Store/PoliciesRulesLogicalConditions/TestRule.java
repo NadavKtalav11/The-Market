@@ -43,13 +43,13 @@ public abstract class TestRule {
     protected boolean isRuleSatisfied(List<ProductDTO> products, int quantity) {
         if (contains) {
             if(quantity == -1)
-                return getQuantity(products) > quantity;
+                return getQuantity(products) > 0;
             else
                 return checkRange(range, getQuantity(products), quantity);
         }
         else {
             if(quantity == -1)
-                return getQuantity(products) == quantity;
+                return getQuantity(products) == 0;
             else
             {
                 return !checkRange(range, getQuantity(products), quantity);
