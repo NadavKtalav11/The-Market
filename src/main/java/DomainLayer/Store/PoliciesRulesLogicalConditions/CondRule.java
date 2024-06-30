@@ -17,7 +17,7 @@ public class CondRule extends CompositeRule {
         if (rule1.checkRule(user, products)) {
             return rule2.checkRule(user, products);
         }
-        return false;
+        return true;
     }
 
     @Override
