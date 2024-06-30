@@ -62,6 +62,11 @@ public class Store {
         }
     }
 
+    public Map<String, Product> getStoreProducts() {
+        synchronized (storeProductLock) {
+            return storeProducts;
+        }
+    }
     public String getStoreID()
     {
         synchronized (storeIdLock) {

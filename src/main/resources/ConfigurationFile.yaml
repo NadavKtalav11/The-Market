@@ -1,7 +1,7 @@
 database:
   host: localhost
   port: 3306
-  name: mydatabase
+  name: TheMarket-DB
   username: admin
   password: secretpassword
 

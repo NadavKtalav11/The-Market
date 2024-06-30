@@ -57,6 +57,17 @@ public class StoreFacade {
         return allStores.get(storeId).getStoreName();
     }
 
+    public String getStoreId(String storeName){
+        List<Store> stores = allStores.getAll();
+        for (Store store : stores) {
+            if(store.getStoreName().equals(storeName)){
+                return store.getStore_ID();
+            }
+        }
+        return "not found";
+    }
+
+
     public void returnProductToStore(Map<String, List<Integer>> products , String storeId){
         getStoreByID(storeId).returnProductToStore(products);
     }
