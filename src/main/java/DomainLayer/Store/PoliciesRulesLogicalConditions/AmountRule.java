@@ -9,8 +9,8 @@ import java.util.List;
 public class AmountRule extends TestRule {
     private int quantity;
 
-    public AmountRule(int quantity, boolean isAbove, Category category, String productName, String description) {
-        super(isAbove, category, productName, description);
+    public AmountRule(int quantity, String range, Category category, String productName, String description) {
+        super(range, category, productName, description);
         this.quantity = quantity;
     }
 
@@ -19,7 +19,8 @@ public class AmountRule extends TestRule {
         long productCount = products.stream()
                 .filter(p -> p.getName().equals(productName))
                 .count();
-        boolean quantityCheck = isAbove ? productCount >= quantity : productCount <= quantity;
+
+        boolean quantityCheck = checkRange(range, productCount, quantity);
 
         return isRuleSatisfied(quantityCheck, products);
     }

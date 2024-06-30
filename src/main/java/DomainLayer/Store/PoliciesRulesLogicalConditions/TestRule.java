@@ -35,11 +35,26 @@ public abstract class TestRule {
         } else if (isProductsRule()) {
             return conditionCheck && products.stream().anyMatch(p -> p.getName().equals(productName));
         }
-
-        return false;
+        else {
+            return conditionCheck;
+        }
     }
 
     public String getDescription() {
         return description;
+    }
+
+    public boolean checkRange(String range, double actual, double expected)
+    {
+        switch (range) {
+            case "Above":
+                return actual > expected;
+            case "Below":
+                return actual < expected;
+            case "Exact":
+                return actual == expected;
+            default:
+                throw new IllegalArgumentException("Invalid range: " + range);
+        }
     }
 }
