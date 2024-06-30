@@ -18,13 +18,25 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 public class DiscountTest {
 
     private Discount discount;
+    private int percentage1;
+    private int percentage2;
+    private int milkPrice;
+    private int cheesePrice;
 
     @BeforeEach
     public void setUp() {
+        //initialize percentage
+        percentage1 = 20;
+        percentage2 = 50;
+
+        // Initialize products prices
+        milkPrice = 100;
+        cheesePrice = 200;
+
         // Create a Discount instance with initial discount values
         List<DiscountValue> discountValues = new ArrayList<>();
-        discountValues.add(new SimpleDiscountValue(20, Category.fromString( "FOOD"), false, null)); // 20% discount
-        discountValues.add(new SimpleDiscountValue(50, Category.fromString( "FOOD"), false, null));
+        discountValues.add(new SimpleDiscountValue(percentage1, Category.fromString( "FOOD"), false, null)); // 20% discount
+        discountValues.add(new SimpleDiscountValue(percentage2, Category.fromString( "FOOD"), false, null));
 
         List<String> operators = new ArrayList<>();
         operators.add("ADDITION"); // Apply addition operator
@@ -43,8 +55,8 @@ public class DiscountTest {
     public void testCalcDiscount() {
         // Create a basket of products
         List<ProductDTO> basketProducts = new ArrayList<>();
-        basketProducts.add(new ProductDTO("Milk", 100, 2, "Good milk", "FOOD")); // Price: $100
-        basketProducts.add(new ProductDTO("Cheese", 200, 2, "Good cheese", "FOOD")); // Price: $200
+        basketProducts.add(new ProductDTO("Milk", milkPrice, 2, "Good milk", "FOOD")); // Price: $100
+        basketProducts.add(new ProductDTO("Cheese", cheesePrice, 2, "Good cheese", "FOOD")); // Price: $200
 
         // Create a userDTO (not used in this simple example)
         UserDTO userDTO = new UserDTO("Moshe");
@@ -52,8 +64,9 @@ public class DiscountTest {
         // Calculate discount
         int discountAmount = discount.calcDiscount(basketProducts, userDTO);
 
-        // Expected discount: 20% of (100 + 200) + $50 = $110
-        assertEquals(210, discountAmount);
+        // Expected discount: 20% of (100 + 200) + 50% of (100 + 200) = $110
+        int expectedDiscount = (milkPrice + cheesePrice) * percentage1 / 100 + (milkPrice + cheesePrice) * percentage2 / 100;
+        assertEquals(expectedDiscount, discountAmount);
     }
 
     @Test

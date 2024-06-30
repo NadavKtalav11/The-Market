@@ -2,8 +2,8 @@ package IntegrationTests.Store.PurchasePolicy;
 
 import DomainLayer.Store.PoliciesRulesLogicalConditions.*;
 import DomainLayer.Store.StorePurchasePolicy.PurchasePolicy;
-import DomainLayer.Store.StorePurchasePolicy.PurchaseRulesRepository;
 import Util.ProductDTO;
+import Util.TestRuleDTO;
 import Util.UserDTO;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -14,21 +14,29 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class PurchasePolicyTest {
     private PurchasePolicy purchasePolicy;
-
+    private TestRuleDTO testRule1;
+    private TestRuleDTO testRule2;
+    private int product1Price;
     @BeforeEach
     public void setUp() {
         purchasePolicy = new PurchasePolicy();
+        product1Price = 10;
+
+        //initialize testRule1 and testRule2
+        testRule1 = new TestRuleDTO("Amount", "Below", null, "tomato", "basket contains less than 5 tomatoes", true, null, 5, null, null, null);
+        testRule2 = new TestRuleDTO("Amount", "Above", null, "corn", "basket contains at least 2 corns", true, null, 2, null, null, null);
     }
 
     @Test
     public void testAddAndCheckRule() {
+        //initialize testRule1 "basket contains less than 5 tomatoes"
         // Creating a simple rule that always returns true
-        Rule<UserDTO, List<ProductDTO>> trueRule = new SimpleRule<>(PurchaseRulesRepository.getByRuleNumber(3)); //basket contains less than 5 tomatoes
-        List<Rule<UserDTO, List<ProductDTO>>> rules = Collections.singletonList(trueRule);
+        Rule trueRule = new SimpleRule(testRule1); //basket contains less than 5 tomatoes
+        List<Rule> rules = Collections.singletonList(trueRule);
         purchasePolicy.addRule(rules, Collections.emptyList());
 
         UserDTO user = new UserDTO("User1", "user1@gmail.com", "12/3/45", "Israel", "Ashqelon", "rabin", "moshe");
-        ProductDTO product = new ProductDTO("Product1", 10, 5, "A product", "TOYS");
+        ProductDTO product = new ProductDTO("Product1", product1Price, 5, "A product", "TOYS");
         List<ProductDTO> products = Collections.singletonList(product);
 
         assertTrue(purchasePolicy.checkPurchasePolicy(user, products));
@@ -37,15 +45,15 @@ public class PurchasePolicyTest {
     @Test
     public void testAddMultipleRulesWithAndOperator() {
         // Creating simple rules
-        Rule<UserDTO, List<ProductDTO>> trueRule = new SimpleRule<>(PurchaseRulesRepository.getByRuleNumber(3)); //basket contains less than 5 tomatoes
-        Rule<UserDTO, List<ProductDTO>> falseRule = new SimpleRule<>(PurchaseRulesRepository.getByRuleNumber(5)); //basket contains at least 2 corns
+        Rule trueRule = new SimpleRule(testRule1); //basket contains less than 5 tomatoes
+        Rule falseRule = new SimpleRule(testRule2); //basket contains at least 2 corns
 
-        List<Rule<UserDTO, List<ProductDTO>>> rules = Arrays.asList(trueRule, falseRule);
+        List<Rule> rules = Arrays.asList(trueRule, falseRule);
         List<String> operators = Collections.singletonList("AND");
         purchasePolicy.addRule(rules, operators);
 
         UserDTO user = new UserDTO("User1", "user1@gmail.com", "12/3/45", "Israel", "Ashqelon", "rabin", "moshe");
-        ProductDTO product = new ProductDTO("Product1", 10, 5, "A product", "TOYS");
+        ProductDTO product = new ProductDTO("Product1", product1Price, 5, "A product", "TOYS");
         List<ProductDTO> products = Collections.singletonList(product);
 
         assertFalse(purchasePolicy.checkPurchasePolicy(user, products));
@@ -54,16 +62,16 @@ public class PurchasePolicyTest {
     @Test
     public void testAddMultipleRulesWithOrOperator() {
         // Creating simple rules
-        Rule<UserDTO, List<ProductDTO>> trueRule = new SimpleRule<>(PurchaseRulesRepository.getByRuleNumber(3)); //basket contains less than 5 tomatoes
-        Rule<UserDTO, List<ProductDTO>> falseRule = new SimpleRule<>(PurchaseRulesRepository.getByRuleNumber(5)); //basket contains at least 2 corns
+        Rule trueRule = new SimpleRule(testRule1); //basket contains less than 5 tomatoes
+        Rule falseRule = new SimpleRule(testRule2); //basket contains at least 2 corns
 
 
-        List<Rule<UserDTO, List<ProductDTO>>> rules = Arrays.asList(falseRule, trueRule);
+        List<Rule> rules = Arrays.asList(falseRule, trueRule);
         List<String> operators = Collections.singletonList("OR");
         purchasePolicy.addRule(rules, operators);
 
         UserDTO user = new UserDTO("User1", "user1@gmail.com", "12/3/45", "Israel", "Ashqelon", "rabin", "moshe");
-        ProductDTO product = new ProductDTO("Product1", 10, 5, "A product", "TOYS");
+        ProductDTO product = new ProductDTO("Product1", product1Price, 5, "A product", "TOYS");
         List<ProductDTO> products = Collections.singletonList(product);
 
         assertTrue(purchasePolicy.checkPurchasePolicy(user, products));
@@ -72,16 +80,15 @@ public class PurchasePolicyTest {
     @Test
     public void testAddCondRule() {
         // Creating simple rules
-        Rule<UserDTO, List<ProductDTO>> trueRule = new SimpleRule<>(PurchaseRulesRepository.getByRuleNumber(3)); //basket contains less than 5 tomatoes
-        Rule<UserDTO, List<ProductDTO>> falseRule = new SimpleRule<>(PurchaseRulesRepository.getByRuleNumber(5)); //basket contains at least 2 corns
+        Rule trueRule = new SimpleRule(testRule1); //basket contains less than 5 tomatoes
+        Rule falseRule = new SimpleRule(testRule2); //basket contains at least 2 corns
 
-
-        List<Rule<UserDTO, List<ProductDTO>>> rules = Arrays.asList(trueRule, falseRule);
+        List<Rule> rules = Arrays.asList(trueRule, falseRule);
         List<String> operators = Collections.singletonList("COND");
         purchasePolicy.addRule(rules, operators);
 
         UserDTO user = new UserDTO("User1", "user1@gmail.com", "12/3/45", "Israel", "Ashqelon", "rabin", "moshe");
-        ProductDTO product = new ProductDTO("Product1", 10, 5, "A product", "TOYS");
+        ProductDTO product = new ProductDTO("Product1", product1Price, 5, "A product", "TOYS");
         List<ProductDTO> products = Collections.singletonList(product);
 
         assertFalse(purchasePolicy.checkPurchasePolicy(user, products));
@@ -90,22 +97,22 @@ public class PurchasePolicyTest {
     @Test
     public void testGetRulesDescriptions() {
         // Creating a simple rule
-        Rule<UserDTO, List<ProductDTO>> trueRule = new SimpleRule<>(PurchaseRulesRepository.getByRuleNumber(3)); //basket contains less than 5 tomatoes
+        Rule trueRule = new SimpleRule(testRule1); //basket contains less than 5 tomatoes
 
-        List<Rule<UserDTO, List<ProductDTO>>> rules = Collections.singletonList(trueRule);
+        List<Rule> rules = Collections.singletonList(trueRule);
         purchasePolicy.addRule(rules, Collections.emptyList());
 
         List<String> descriptions = purchasePolicy.getRulesDescriptions();
 
         assertEquals(1, descriptions.size());
-        assertEquals(PurchaseRulesRepository.getByRuleNumber(3).getDescription(), descriptions.get(0));
+        assertEquals(trueRule.getDescription(), descriptions.get(0));
     }
 
     @Test
     public void testRemoveRule() {
         // Creating a simple rule
-        Rule<UserDTO, List<ProductDTO>> trueRule = new SimpleRule<>(PurchaseRulesRepository.getByRuleNumber(3)); //basket contains less than 5 tomatoes
-        List<Rule<UserDTO, List<ProductDTO>>> rules = Collections.singletonList(trueRule);
+        Rule trueRule = new SimpleRule(testRule1); //basket contains less than 5 tomatoes
+        List<Rule> rules = Collections.singletonList(trueRule);
         purchasePolicy.addRule(rules, Collections.emptyList());
 
         purchasePolicy.removeRule(0);

@@ -4,6 +4,7 @@ import DomainLayer.Store.Category;
 import Util.ProductDTO;
 import Util.UserDTO;
 
+import java.time.Clock;
 import java.util.List;
 
 public abstract class TestRule {
@@ -12,6 +13,7 @@ public abstract class TestRule {
     protected final String productName;
     protected final String description;
     protected final boolean contains;
+    private static final ThreadLocal<Clock> clock = ThreadLocal.withInitial(Clock::systemDefaultZone); // Default clock
 
     public TestRule(String range, Category category, String productName, String description, boolean contains) {
         this.range = range;
@@ -56,5 +58,13 @@ public abstract class TestRule {
             default:
                 throw new IllegalArgumentException("Invalid range: " + range);
         }
+    }
+
+    public static void setClock(Clock newClock) {
+        clock.set(newClock);
+    }
+
+    public static Clock getClock() {
+        return clock.get();
     }
 }

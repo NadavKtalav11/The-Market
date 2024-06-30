@@ -1,12 +1,10 @@
 package DomainLayer.Store;
 
-import DomainLayer.Store.StoreDiscountPolicy.DiscountRulesRepository;
 import DomainLayer.Store.StoreDiscountPolicy.DiscountValue;
 import DomainLayer.Store.StoreDiscountPolicy.SimpleDiscountValue;
 import Util.*;
 import DomainLayer.Store.PoliciesRulesLogicalConditions.Rule;
 import DomainLayer.Store.PoliciesRulesLogicalConditions.SimpleRule;
-import DomainLayer.Store.StorePurchasePolicy.PurchaseRulesRepository;
 
 import java.util.*;
 

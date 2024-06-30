@@ -43,4 +43,9 @@ public class SimpleRule implements Rule {
         return rule.test(user, products);
     }
 
+    /*
+    public TestRule getTestRule() {
+        return rule;
+    }
+     */
 }

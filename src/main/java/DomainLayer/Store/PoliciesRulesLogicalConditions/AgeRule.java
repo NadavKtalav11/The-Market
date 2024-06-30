@@ -14,7 +14,6 @@ import java.util.*;
 
 public class AgeRule extends TestRule {
     private int age;
-    private static final ThreadLocal<Clock> clock = ThreadLocal.withInitial(Clock::systemDefaultZone); // Default clock
 
     public AgeRule(int age, String range, Category category, String productName, String description, boolean contains){
         super(range, category, productName, description, contains);
@@ -45,13 +44,5 @@ public class AgeRule extends TestRule {
                 return true;
         }
         return ageCheck;
-    }
-
-    public static void setClock(Clock newClock) {
-        clock.set(newClock);
-    }
-
-    public static Clock getClock() {
-        return clock.get();
     }
 }
