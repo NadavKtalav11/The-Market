@@ -293,7 +293,7 @@ public class Store {
         return description;
     }
 
-    public void addPurchaseRule(List<Rule<UserDTO, List<ProductDTO>>> rules, List<String> operators) {
+    public void addPurchaseRule(List<Rule> rules, List<String> operators) {
         purchasePolicy.addRule(rules, operators);
     }
 
@@ -301,7 +301,7 @@ public class Store {
         purchasePolicy.removeRule(ruleNum);
     }
 
-    public void addDiscountCondRule(List<Rule<UserDTO, List<ProductDTO>>> rules, List<String> logicalOperators, List<DiscountValue> discDetails, List<String> numericalOperators) {
+    public void addDiscountCondRule(List<Rule> rules, List<String> logicalOperators, List<DiscountValue> discDetails, List<String> numericalOperators) {
         discountPolicy.addCondRule(rules, logicalOperators, discDetails, numericalOperators);
     }
 

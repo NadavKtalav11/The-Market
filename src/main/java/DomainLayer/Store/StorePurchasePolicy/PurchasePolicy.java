@@ -19,7 +19,7 @@ public class PurchasePolicy {
 
     private final Object usersLock;
     private final Object productLock;
-    private List<Rule<UserDTO, List<ProductDTO>>> purchaseRules;
+    private List<Rule> purchaseRules;
 
     public PurchasePolicy()
     {
@@ -33,7 +33,7 @@ public class PurchasePolicy {
 
     public boolean checkPurchasePolicy(UserDTO userDTO, List<ProductDTO> products)
     {
-        for (Rule<UserDTO, List<ProductDTO>> rule : purchaseRules)
+        for (Rule rule : purchaseRules)
         {
             if (!rule.checkRule(userDTO, products))
                 return false;
@@ -41,9 +41,9 @@ public class PurchasePolicy {
         return true;
     }
 
-    public void addRule(List<Rule<UserDTO, List<ProductDTO>>> rules, List<String> operators)
+    public void addRule(List<Rule> rules, List<String> operators)
     {
-        Rule<UserDTO, List<ProductDTO>> rule = rules.get(0);
+        Rule rule = rules.get(0);
         if(rules.size() > 1) {
             for (int i = 0; i < operators.size(); i++) {
                 switch (operators.get(i)) {
@@ -58,7 +58,7 @@ public class PurchasePolicy {
 
     public List<String> getRulesDescriptions() {
         List<String> rulesDescriptions = new ArrayList<>();
-        for (Rule<UserDTO, List<ProductDTO>> rule : purchaseRules) {
+        for (Rule rule : purchaseRules) {
             rulesDescriptions.add(rule.getDescription());
         }
         return rulesDescriptions;

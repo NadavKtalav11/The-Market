@@ -34,7 +34,7 @@ public class DiscountPolicy {
         return totalDiscount;
     }
 
-    public void addCondRule(List<Rule<UserDTO, List<ProductDTO>>> rules, List<String> logicalOperators, List<DiscountValue> discDetails, List<String> numericalOperators) {
+    public void addCondRule(List<Rule> rules, List<String> logicalOperators, List<DiscountValue> discDetails, List<String> numericalOperators) {
         discountRules.add(new CondDiscount(discDetails, numericalOperators, rules, logicalOperators));
     }
 
