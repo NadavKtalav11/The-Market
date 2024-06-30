@@ -1,16 +1,19 @@
 package DomainLayer.Store.PoliciesRulesLogicalConditions;
 
+import Util.ProductDTO;
+import Util.UserDTO;
+
 import java.util.List;
 
-public class CondRule<T, U> extends CompositeRule<T, U> {
+public class CondRule extends CompositeRule {
 
 
-    public CondRule(Rule<T,U> rule1, Rule<T,U> rule2) {
+    public CondRule(Rule rule1, Rule rule2) {
         super(rule1, rule2);
     }
 
     @Override
-    public boolean checkRule(T user, U products) {
+    public boolean checkRule(UserDTO user, List<ProductDTO> products) {
         if (rule1.checkRule(user, products)) {
             return rule2.checkRule(user, products);
         }

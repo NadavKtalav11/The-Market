@@ -1,3 +1,5 @@
+package DomainLayer.Store.PoliciesRulesLogicalConditions;
+
 import DomainLayer.Store.Category;
 import Util.ProductDTO;
 import Util.UserDTO;

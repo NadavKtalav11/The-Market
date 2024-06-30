@@ -1,6 +1,11 @@
 package DomainLayer.Store.PoliciesRulesLogicalConditions;
 
-public class SimpleRule<T, U> implements Rule<T, U> {
+import Util.ProductDTO;
+import Util.UserDTO;
+
+import java.util.List;
+
+public class SimpleRule implements Rule {
 
     private TestRule rule;
 
@@ -13,8 +18,8 @@ public class SimpleRule<T, U> implements Rule<T, U> {
     }
 
     @Override
-    public boolean checkRule(T user, U products) {
-        return rule.getPredicate().test(user, products);
+    public boolean checkRule(UserDTO user, List<ProductDTO> products) {
+        return rule.test(user, products);
     }
 
 }
