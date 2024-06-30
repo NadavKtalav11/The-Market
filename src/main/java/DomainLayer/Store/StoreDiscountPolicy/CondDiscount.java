@@ -20,9 +20,9 @@ public class CondDiscount extends Discount{
         if(rules.size() > 1) {
             for (int i = 0; i < operators.size(); i++) {
                 switch (operators.get(i)) {
-                    case "AND" -> rule = new AndRule<>(rule, rules.get(i + 1));
-                    case "OR" -> rule = new OrRule<>(rule, rules.get(i + 1));
-                    case "XOR" -> rule = new XorRule<>(rule, rules.get(i + 1));
+                    case "AND" -> rule = new AndRule(rule, rules.get(i + 1));
+                    case "OR" -> rule = new OrRule(rule, rules.get(i + 1));
+                    case "XOR" -> rule = new XorRule(rule, rules.get(i + 1));
                 }
             }
         }
