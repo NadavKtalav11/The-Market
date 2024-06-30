@@ -40,23 +40,6 @@ public abstract class TestRule {
         throw new IllegalArgumentException("Invalid rule type");
     }
 
-    protected boolean isRuleSatisfied(List<ProductDTO> products, int quantity) {
-        if (contains) {
-            if(quantity == -1)
-                return getQuantity(products) > 0;
-            else
-                return checkRange(range, getQuantity(products), quantity);
-        }
-        else {
-            if(quantity == -1)
-                return getQuantity(products) == 0;
-            else
-            {
-                return !checkRange(range, getQuantity(products), quantity);
-            }
-        }
-    }
-
     public String getDescription() {
         return description;
     }

@@ -9,18 +9,20 @@ import java.util.List;
 public class PriceRule extends TestRule {
     private int price;
 
-    public PriceRule(int price, String range, Category category, String productName, String description) {
-        super(range, category, productName, description);
+    public PriceRule(int price, String range, Category category, String productName, String description, boolean contains) {
+        super(range, category, productName, description, contains);
         this.price = price;
     }
 
     @Override
     public boolean test(UserDTO user, List<ProductDTO> products) {
-        double totalPrice = products.stream().mapToDouble(ProductDTO::getPrice).sum();
+        //calculate the total price of the products
+        int totalPrice = 0;
+        for(ProductDTO product : products){
+            totalPrice += product.getPrice();
+        }
 
-        boolean priceCheck = checkRange(range, totalPrice, price);
-
-        return isRuleSatisfied(priceCheck, products);
+        return checkRange(range, totalPrice, price);
     }
 }
 
