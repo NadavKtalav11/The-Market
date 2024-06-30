@@ -35,9 +35,10 @@ public abstract class TestRule {
 
     protected int getQuantity(List<ProductDTO> products) {
         if (isCategoryRule()) {
-            return (int) products.stream().filter(p -> p.getCategoryStr().equals(category.toString())).count();
+            return products.stream().filter(p -> p.getCategoryStr().equals(category.toString())).mapToInt(ProductDTO::getQuantity).sum();
         } else if (isProductsRule()) {
-            return (int) products.stream().filter(p -> p.getName().equals(productName)).count();
+            //loop through products and sum the quantity of the product with the given name
+            return products.stream().filter(p -> p.getName().equals(productName)).mapToInt(ProductDTO::getQuantity).sum();
         }
         throw new IllegalArgumentException("Invalid rule type");
     }

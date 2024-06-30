@@ -18,6 +18,7 @@ public class TestRuleDTO {
     private LocalTime time;
 
     public TestRuleDTO(String type, String range, String category, String productName, String description, boolean contains, Integer age, Integer quantity, LocalDate date, Integer price, LocalTime time) {
+        this.type = type;
         this.range = range;
         this.category = category;
         this.productName = productName;
