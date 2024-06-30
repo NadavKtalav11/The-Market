@@ -640,24 +640,11 @@ public class Service_layer {
     }
 
 
-    public Response<Map<Integer, String>> getAllPurchaseRules(String userId, String storeId)
-    {
-        logger.info("returns all possible purchase rules descriptions to the store owner");
-
-        try {
-            Map<Integer, String> rules = market.getAllPurchaseRules(userId, storeId);
-            return new Response<>(rules, "All purchase rules descriptions returned successfully.");
-        } catch (Exception e) {
-            logger.error("Error occurred during getting purchase rules description: {}", e.getMessage(), e);
-            return new Response<>(null, e.getMessage());
-        }
-    }
-
-    public Response<String> addPurchaseRuleToStore(List<Integer> ruleNums, List<String> operators, String userId, String storeId) {
+    public Response<String> addPurchaseRuleToStore(List<TestRuleDTO> testRules, List<String> operators, String userId, String storeId) {
         logger.info("Adding purchase rule to store");
 
         try {
-            market.addPurchaseRuleToStore(ruleNums, operators, userId, storeId);
+            market.addPurchaseRuleToStore(testRules, operators, userId, storeId);
             return new Response<>("Purchase rule added successfully", "Purchase rule added to store successfully.");
         } catch (Exception e) {
             logger.error("Error occurred during adding purchase rule to store: {}", e.getMessage(), e);
@@ -679,24 +666,11 @@ public class Service_layer {
     }
 
 
-    public Response<Map<Integer, String>> getAllCondDiscountRules(String userId, String storeId)
-    {
-        logger.info("returns all possible conditional discount rules descriptions to the store owner");
-
-        try {
-            Map<Integer, String> rules = market.getAllCondDiscountRules(userId, storeId);
-            return new Response<>(rules, "All conditional discount rules descriptions returned successfully.");
-        } catch (Exception e) {
-            logger.error("Error occurred during getting conditional discount rules description: {}", e.getMessage(), e);
-            return new Response<>(null, e.getMessage());
-        }
-    }
-
-    public Response<String> addDiscountCondRuleToStore(List<Integer> ruleNums, List<String> logicOperators, List<DiscountValueDTO> discDetails, List<String> numericalOperators, String userId, String storeId) {
+    public Response<String> addDiscountCondRuleToStore(List<TestRuleDTO> testRules, List<String> logicOperators, List<DiscountValueDTO> discDetails, List<String> numericalOperators, String userId, String storeId) {
         logger.info("Adding conditional discount rule to store");
 
         try {
-            market.addDiscountCondRuleToStore(ruleNums, logicOperators, discDetails, numericalOperators, userId, storeId);
+            market.addDiscountCondRuleToStore(testRules, logicOperators, discDetails, numericalOperators, userId, storeId);
             return new Response<>("Discount conditional rule added successfully", "Discount conditional rule added to store successfully.");
         } catch (Exception e) {
             logger.error("Error occurred during adding conditional discount rule to store: {}", e.getMessage(), e);

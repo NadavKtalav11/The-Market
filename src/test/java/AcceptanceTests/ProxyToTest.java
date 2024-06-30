@@ -254,9 +254,9 @@ public class ProxyToTest implements BridgeToTests {
     }
 
     @Override
-    public Response<String> addPurchaseRuleToStore(List<Integer> ruleNums, List<String> operators, String userId, String storeId) {
+    public Response<String> addPurchaseRuleToStore(List<TestRuleDTO> testRules, List<String> operators, String userId, String storeId) {
         if (realServiceAdaptor != null)
-            return realServiceAdaptor.addPurchaseRuleToStore(ruleNums, operators, userId, storeId);
+            return realServiceAdaptor.addPurchaseRuleToStore(testRules, operators, userId, storeId);
         else
             return new Response<>(null, "Not Implemented yet");
     }
@@ -270,9 +270,9 @@ public class ProxyToTest implements BridgeToTests {
     }
 
     @Override
-    public Response<String> addDiscountCondRuleToStore(List<Integer> ruleNums, List<String> logicOperators, List<DiscountValueDTO> discDetails, List<String> numericalOperators, String userId, String storeId) {
+    public Response<String> addDiscountCondRuleToStore(List<TestRuleDTO> testRules, List<String> logicOperators, List<DiscountValueDTO> discDetails, List<String> numericalOperators, String userId, String storeId) {
         if (realServiceAdaptor != null)
-            return realServiceAdaptor.addDiscountCondRuleToStore(ruleNums, logicOperators, discDetails, numericalOperators, userId, storeId);
+            return realServiceAdaptor.addDiscountCondRuleToStore(testRules, logicOperators, discDetails, numericalOperators, userId, storeId);
         else
             return new Response<>(null, "Not Implemented yet");
     }

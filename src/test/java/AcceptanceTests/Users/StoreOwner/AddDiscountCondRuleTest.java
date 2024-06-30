@@ -4,6 +4,7 @@ import AcceptanceTests.BridgeToTests;
 import AcceptanceTests.ProxyToTest;
 import Util.DiscountValueDTO;
 import Util.ExceptionsEnum;
+import Util.TestRuleDTO;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
@@ -29,9 +30,11 @@ public class AddDiscountCondRuleTest {
 
     @Test
     public void successfulAdditionTest() {
-        List<Integer> ruleNums = new ArrayList<>();
-        ruleNums.add(1);
-        ruleNums.add(2);
+        TestRuleDTO rule1 = new TestRuleDTO("Price", "Above", null, null, "Basket price is greater than 100 shekels", true, null, null, null, 100, null);
+        TestRuleDTO rule2 = new TestRuleDTO("Amount", "Above", null, "bun", "Basket must contain more than 5 buns", true, null, 5, null, null, null);
+        List<TestRuleDTO> rules = new ArrayList<>();
+        rules.add(rule1);
+        rules.add(rule2);
         List<String> logicalOperators = new ArrayList<>();
         logicalOperators.add("AND");
 
@@ -41,33 +44,18 @@ public class AddDiscountCondRuleTest {
         List<String> numericalOperators = new ArrayList<>();
         numericalOperators.add("MAX");
 
-        assertTrue(impl.addDiscountCondRuleToStore(ruleNums, logicalOperators, discountDetails, numericalOperators, saarUserID, storeId).isSuccess());
+        assertTrue(impl.addDiscountCondRuleToStore(rules, logicalOperators, discountDetails, numericalOperators, saarUserID, storeId).isSuccess());
 
     }
 
-    @Test
-    public void ruleNumDontExist() {
-        List<Integer> ruleNums = new ArrayList<>();
-        ruleNums.add(100);
-        ruleNums.add(2);
-        List<String> logicalOperators = new ArrayList<>();
-        logicalOperators.add("AND");
-
-        List<DiscountValueDTO> discountDetails = new ArrayList<>();
-        discountDetails.add(new DiscountValueDTO(10, "CLOTHING", false, null));
-        discountDetails.add(new DiscountValueDTO(20, "CLOTHING", false, null));
-        List<String> numericalOperators = new ArrayList<>();
-        numericalOperators.add("MAX");
-
-        assertFalse(impl.addDiscountCondRuleToStore(ruleNums, logicalOperators, discountDetails, numericalOperators, saarUserID, storeId).isSuccess());
-        assertEquals(impl.addDiscountCondRuleToStore(ruleNums, logicalOperators, discountDetails, numericalOperators, saarUserID, storeId).getDescription(), ExceptionsEnum.InvalidRuleNumber.toString());
-    }
 
     @Test
     public void logicalOperatorDontExist() {
-        List<Integer> ruleNums = new ArrayList<>();
-        ruleNums.add(1);
-        ruleNums.add(2);
+        TestRuleDTO rule1 = new TestRuleDTO("Price", "Above", null, null, "Basket price is greater than 100 shekels", true, null, null, null, 100, null);
+        TestRuleDTO rule2 = new TestRuleDTO("Amount", "Above", null, "bun", "Basket must contain more than 5 buns", true, null, 5, null, null, null);
+        List<TestRuleDTO> rules = new ArrayList<>();
+        rules.add(rule1);
+        rules.add(rule2);
         List<String> logicalOperators = new ArrayList<>();
         logicalOperators.add("NOR");
 
@@ -77,15 +65,17 @@ public class AddDiscountCondRuleTest {
         List<String> numericalOperators = new ArrayList<>();
         numericalOperators.add("MAX");
 
-        assertFalse(impl.addDiscountCondRuleToStore(ruleNums, logicalOperators, discountDetails, numericalOperators, saarUserID, storeId).isSuccess());
-        assertEquals(impl.addDiscountCondRuleToStore(ruleNums, logicalOperators, discountDetails, numericalOperators, saarUserID, storeId).getDescription(), ExceptionsEnum.InvalidOperator.toString());
+        assertFalse(impl.addDiscountCondRuleToStore(rules, logicalOperators, discountDetails, numericalOperators, saarUserID, storeId).isSuccess());
+        assertEquals(impl.addDiscountCondRuleToStore(rules, logicalOperators, discountDetails, numericalOperators, saarUserID, storeId).getDescription(), ExceptionsEnum.InvalidOperator.toString());
     }
 
     @Test
     public void numericalOperatorDontExist() {
-        List<Integer> ruleNums = new ArrayList<>();
-        ruleNums.add(1);
-        ruleNums.add(2);
+        TestRuleDTO rule1 = new TestRuleDTO("Price", "Above", null, null, "Basket price is greater than 100 shekels", true, null, null, null, 100, null);
+        TestRuleDTO rule2 = new TestRuleDTO("Amount", "Above", null, "bun", "Basket must contain more than 5 buns", true, null, 5, null, null, null);
+        List<TestRuleDTO> rules = new ArrayList<>();
+        rules.add(rule1);
+        rules.add(rule2);
         List<String> logicalOperators = new ArrayList<>();
         logicalOperators.add("AND");
 
@@ -95,15 +85,17 @@ public class AddDiscountCondRuleTest {
         List<String> numericalOperators = new ArrayList<>();
         numericalOperators.add("MIN");
 
-        assertFalse(impl.addDiscountCondRuleToStore(ruleNums, logicalOperators, discountDetails, numericalOperators, saarUserID, storeId).isSuccess());
-        assertEquals(impl.addDiscountCondRuleToStore(ruleNums, logicalOperators, discountDetails, numericalOperators, saarUserID, storeId).getDescription(), ExceptionsEnum.InvalidOperator.toString());
+        assertFalse(impl.addDiscountCondRuleToStore(rules, logicalOperators, discountDetails, numericalOperators, saarUserID, storeId).isSuccess());
+        assertEquals(impl.addDiscountCondRuleToStore(rules, logicalOperators, discountDetails, numericalOperators, saarUserID, storeId).getDescription(), ExceptionsEnum.InvalidOperator.toString());
     }
 
     @Test
     public void numOfRuleDontMatchLogicalOperators() {
-        List<Integer> ruleNums = new ArrayList<>();
-        ruleNums.add(1);
-        ruleNums.add(2);
+        TestRuleDTO rule1 = new TestRuleDTO("Price", "Above", null, null, "Basket price is greater than 100 shekels", true, null, null, null, 100, null);
+        TestRuleDTO rule2 = new TestRuleDTO("Amount", "Above", null, "bun", "Basket must contain more than 5 buns", true, null, 5, null, null, null);
+        List<TestRuleDTO> rules = new ArrayList<>();
+        rules.add(rule1);
+        rules.add(rule2);
         List<String> logicalOperators = new ArrayList<>();
 
         List<DiscountValueDTO> discountDetails = new ArrayList<>();
@@ -112,15 +104,17 @@ public class AddDiscountCondRuleTest {
         List<String> numericalOperators = new ArrayList<>();
         numericalOperators.add("MAX");
 
-        assertFalse(impl.addDiscountCondRuleToStore(ruleNums, logicalOperators, discountDetails, numericalOperators, saarUserID, storeId).isSuccess());
-        assertEquals(impl.addDiscountCondRuleToStore(ruleNums, logicalOperators, discountDetails, numericalOperators, saarUserID, storeId).getDescription(), ExceptionsEnum.rulesNotMatchOpeators.toString());
+        assertFalse(impl.addDiscountCondRuleToStore(rules, logicalOperators, discountDetails, numericalOperators, saarUserID, storeId).isSuccess());
+        assertEquals(impl.addDiscountCondRuleToStore(rules, logicalOperators, discountDetails, numericalOperators, saarUserID, storeId).getDescription(), ExceptionsEnum.rulesNotMatchOpeators.toString());
     }
 
     @Test
     public void numOfDiscountValuesDontMatchNumericalDiscounts() {
-        List<Integer> ruleNums = new ArrayList<>();
-        ruleNums.add(1);
-        ruleNums.add(2);
+        TestRuleDTO rule1 = new TestRuleDTO("Price", "Above", null, null, "Basket price is greater than 100 shekels", true, null, null, null, 100, null);
+        TestRuleDTO rule2 = new TestRuleDTO("Amount", "Above", null, "bun", "Basket must contain more than 5 buns", true, null, 5, null, null, null);
+        List<TestRuleDTO> rules = new ArrayList<>();
+        rules.add(rule1);
+        rules.add(rule2);
         List<String> logicalOperators = new ArrayList<>();
         logicalOperators.add("AND");
 
@@ -129,15 +123,17 @@ public class AddDiscountCondRuleTest {
         List<String> numericalOperators = new ArrayList<>();
         numericalOperators.add("MAX");
 
-        assertFalse(impl.addDiscountCondRuleToStore(ruleNums, logicalOperators, discountDetails, numericalOperators, saarUserID, storeId).isSuccess());
-        assertEquals(impl.addDiscountCondRuleToStore(ruleNums, logicalOperators, discountDetails, numericalOperators, saarUserID, storeId).getDescription(), ExceptionsEnum.rulesNotMatchOpeators.toString());
+        assertFalse(impl.addDiscountCondRuleToStore(rules, logicalOperators, discountDetails, numericalOperators, saarUserID, storeId).isSuccess());
+        assertEquals(impl.addDiscountCondRuleToStore(rules, logicalOperators, discountDetails, numericalOperators, saarUserID, storeId).getDescription(), ExceptionsEnum.rulesNotMatchOpeators.toString());
     }
 
     @Test
     public void discountValueFieldsNull() {
-        List<Integer> ruleNums = new ArrayList<>();
-        ruleNums.add(1);
-        ruleNums.add(2);
+        TestRuleDTO rule1 = new TestRuleDTO("Price", "Above", null, null, "Basket price is greater than 100 shekels", true, null, null, null, 100, null);
+        TestRuleDTO rule2 = new TestRuleDTO("Amount", "Above", null, "bun", "Basket must contain more than 5 buns", true, null, 5, null, null, null);
+        List<TestRuleDTO> rules = new ArrayList<>();
+        rules.add(rule1);
+        rules.add(rule2);
         List<String> logicalOperators = new ArrayList<>();
         logicalOperators.add("AND");
 
@@ -147,15 +143,17 @@ public class AddDiscountCondRuleTest {
         List<String> numericalOperators = new ArrayList<>();
         numericalOperators.add("MAX");
 
-        assertFalse(impl.addDiscountCondRuleToStore(ruleNums, logicalOperators, discountDetails, numericalOperators, saarUserID, storeId).isSuccess());
-        assertEquals(impl.addDiscountCondRuleToStore(ruleNums, logicalOperators, discountDetails, numericalOperators, saarUserID, storeId).getDescription(), ExceptionsEnum.InvalidDiscountValueParameters.toString());
+        assertFalse(impl.addDiscountCondRuleToStore(rules, logicalOperators, discountDetails, numericalOperators, saarUserID, storeId).isSuccess());
+        assertEquals(impl.addDiscountCondRuleToStore(rules, logicalOperators, discountDetails, numericalOperators, saarUserID, storeId).getDescription(), ExceptionsEnum.InvalidDiscountValueParameters.toString());
     }
 
     @Test
     public void discountValueFieldsNotMatch() {
-        List<Integer> ruleNums = new ArrayList<>();
-        ruleNums.add(1);
-        ruleNums.add(2);
+        TestRuleDTO rule1 = new TestRuleDTO("Price", "Above", null, null, "Basket price is greater than 100 shekels", true, null, null, null, 100, null);
+        TestRuleDTO rule2 = new TestRuleDTO("Amount", "Above", null, "bun", "Basket must contain more than 5 buns", true, null, 5, null, null, null);
+        List<TestRuleDTO> rules = new ArrayList<>();
+        rules.add(rule1);
+        rules.add(rule2);
         List<String> logicalOperators = new ArrayList<>();
         logicalOperators.add("AND");
 
@@ -165,7 +163,7 @@ public class AddDiscountCondRuleTest {
         List<String> numericalOperators = new ArrayList<>();
         numericalOperators.add("MAX");
 
-        assertFalse(impl.addDiscountCondRuleToStore(ruleNums, logicalOperators, discountDetails, numericalOperators, saarUserID, storeId).isSuccess());
-        assertEquals(impl.addDiscountCondRuleToStore(ruleNums, logicalOperators, discountDetails, numericalOperators, saarUserID, storeId).getDescription(), ExceptionsEnum.InvalidDiscountValueParameters.toString());
+        assertFalse(impl.addDiscountCondRuleToStore(rules, logicalOperators, discountDetails, numericalOperators, saarUserID, storeId).isSuccess());
+        assertEquals(impl.addDiscountCondRuleToStore(rules, logicalOperators, discountDetails, numericalOperators, saarUserID, storeId).getDescription(), ExceptionsEnum.InvalidDiscountValueParameters.toString());
     }
 }

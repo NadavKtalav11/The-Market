@@ -4,9 +4,11 @@ import AcceptanceTests.BridgeToTests;
 import AcceptanceTests.ProxyToTest;
 import ServiceLayer.Response;
 import Util.ExceptionsEnum;
+import Util.TestRuleDTO;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -30,51 +32,49 @@ public class AddPurchaseRuleTest {
 
     @Test
     public void successfulAdditionTest() {
-        List<Integer> ruleNums = new ArrayList<>();
-        ruleNums.add(1);
-        ruleNums.add(2);
+        TestRuleDTO rule1 = new TestRuleDTO("Age", "Below", "ALCOHOL", null, "Alcohol cannot be sold to users below the age of 18", false, 18, null, null, null, null);
+        TestRuleDTO rule2 = new TestRuleDTO("Time", "Above", "ALCOHOL", null, "Alcohol cannot be sold after 23:00", false, null, null, null, null, LocalTime.of(23, 0));
+        List<TestRuleDTO> rules = new ArrayList<>();
+        rules.add(rule1);
+        rules.add(rule2);
         List<String> operators = new ArrayList<>();
         operators.add("AND");
 
-        assertTrue(impl.addPurchaseRuleToStore(ruleNums, operators, saarUserID, storeId).isSuccess());
+        assertTrue(impl.addPurchaseRuleToStore(rules, operators, saarUserID, storeId).isSuccess());
 
-        List<Integer> singleRule = new ArrayList<>();
-        singleRule.add(3);
+        TestRuleDTO rule3 = new TestRuleDTO("Amount", "Below", null, "Tomatoes", "Basket must contain less than 5kg of tomatoes", true, null, 5, null, null, null);
+        List<TestRuleDTO> singleRule = new ArrayList<>();
+        singleRule.add(rule3);
         List<String> emptyOperators = new ArrayList<>();
 
         assertTrue(impl.addPurchaseRuleToStore(singleRule, emptyOperators, saarUserID, storeId).isSuccess());
     }
 
-    @Test
-    public void ruleNumDontExist() {
-        List<Integer> ruleNums = new ArrayList<>();
-        ruleNums.add(100);
-        List<String> operators = new ArrayList<>();
-
-        assertFalse(impl.addPurchaseRuleToStore(ruleNums, operators, saarUserID, storeId).isSuccess());
-        assertEquals(impl.addPurchaseRuleToStore(ruleNums, operators, saarUserID, storeId).getDescription(), ExceptionsEnum.InvalidRuleNumber.toString());
-    }
 
     @Test
     public void operatorDontExist() {
-        List<Integer> ruleNums = new ArrayList<>();
-        ruleNums.add(1);
-        ruleNums.add(2);
+        TestRuleDTO rule1 = new TestRuleDTO("Age", "Below", "ALCOHOL", null, "Alcohol cannot be sold to users below the age of 18", false, 18, null, null, null, null);
+        TestRuleDTO rule2 = new TestRuleDTO("Time", "Above", "ALCOHOL", null, "Alcohol cannot be sold after 23:00", false, null, null, null, null, LocalTime.of(23, 0));
+        List<TestRuleDTO> rules = new ArrayList<>();
+        rules.add(rule1);
+        rules.add(rule2);
         List<String> operators = new ArrayList<>();
         operators.add("NOR");
 
-        assertFalse(impl.addPurchaseRuleToStore(ruleNums, operators, storeId, saarUserID).isSuccess());
-        assertEquals(impl.addPurchaseRuleToStore(ruleNums, operators, storeId, saarUserID).getDescription(), ExceptionsEnum.InvalidOperator.toString());
+        assertFalse(impl.addPurchaseRuleToStore(rules, operators, storeId, saarUserID).isSuccess());
+        assertEquals(impl.addPurchaseRuleToStore(rules, operators, storeId, saarUserID).getDescription(), ExceptionsEnum.InvalidOperator.toString());
     }
 
     @Test
     public void numOfRuleDontMuchOperators() {
-        List<Integer> ruleNums = new ArrayList<>();
-        ruleNums.add(1);
-        ruleNums.add(2);
+        TestRuleDTO rule1 = new TestRuleDTO("Age", "Below", "ALCOHOL", null, "Alcohol cannot be sold to users below the age of 18", false, 18, null, null, null, null);
+        TestRuleDTO rule2 = new TestRuleDTO("Time", "Above", "ALCOHOL", null, "Alcohol cannot be sold after 23:00", false, null, null, null, null, LocalTime.of(23, 0));
+        List<TestRuleDTO> rules = new ArrayList<>();
+        rules.add(rule1);
+        rules.add(rule2);
         List<String> operators = new ArrayList<>();
 
-        assertFalse(impl.addPurchaseRuleToStore(ruleNums, operators, storeId, saarUserID).isSuccess());
-        assertEquals(impl.addPurchaseRuleToStore(ruleNums, operators, storeId, saarUserID).getDescription(), ExceptionsEnum.rulesNotMatchOpeators.toString());
+        assertFalse(impl.addPurchaseRuleToStore(rules, operators, storeId, saarUserID).isSuccess());
+        assertEquals(impl.addPurchaseRuleToStore(rules, operators, storeId, saarUserID).getDescription(), ExceptionsEnum.rulesNotMatchOpeators.toString());
     }
 }

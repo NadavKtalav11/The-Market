@@ -257,6 +257,12 @@ package Util;
             public String toString(){
                 return "Acquisition does not exist";
             }
+        },
+
+        InvalidRuleType{
+            public String toString(){
+                return "Invalid rule type";
+            }
         };
     }
 

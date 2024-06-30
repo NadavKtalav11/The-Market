@@ -3,9 +3,11 @@ package AcceptanceTests.Users.StoreOwner;
 import AcceptanceTests.BridgeToTests;
 import AcceptanceTests.ProxyToTest;
 import Util.ExceptionsEnum;
+import Util.TestRuleDTO;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -25,8 +27,18 @@ public class RemovePurchaseRuleTest {
         impl.login(saarUserID, "saar", "Fadidaa1");
         storeId = impl.openStore(saarUserID, "alona", "shopping").getData();
         impl.addProductToStore(saarUserID, storeId,"weddingDress", 10, 5, "pink", "clothes");
-        impl.addPurchaseRuleToStore(List.of(1, 2), List.of("AND"), saarUserID, storeId);
-        impl.addPurchaseRuleToStore(List.of(3), new ArrayList<>(), saarUserID, storeId);
+
+        TestRuleDTO rule1 = new TestRuleDTO("Age", "Below", "ALCOHOL", null, "Alcohol cannot be sold to users below the age of 18", false, 18, null, null, null, null);
+        TestRuleDTO rule2 = new TestRuleDTO("Time", "Above", "ALCOHOL", null, "Alcohol cannot be sold after 23:00", false, null, null, null, null, LocalTime.of(23, 0));
+        List<TestRuleDTO> rules = new ArrayList<>();
+        rules.add(rule1);
+        rules.add(rule2);
+        impl.addPurchaseRuleToStore(rules, List.of("AND"), saarUserID, storeId);
+
+        TestRuleDTO rule3 = new TestRuleDTO("Amount", "Below", null, "Tomatoes", "Basket must contain less than 5kg of tomatoes", true, null, 5, null, null, null);
+        List<TestRuleDTO> singleRule = new ArrayList<>();
+        singleRule.add(rule3);
+        impl.addPurchaseRuleToStore(singleRule, new ArrayList<>(), saarUserID, storeId);
     }
 
     @Test

@@ -22,10 +22,10 @@ import static org.mockito.Mockito.*;
 public class CondDiscountTest {
 
     @Mock
-    private Rule<UserDTO, List<ProductDTO>> mockRule1;
+    private Rule mockRule1;
 
     @Mock
-    private Rule<UserDTO, List<ProductDTO>> mockRule2;
+    private Rule mockRule2;
 
     @Mock
     private DiscountValue discountValue1;
@@ -40,7 +40,7 @@ public class CondDiscountTest {
         MockitoAnnotations.openMocks(this);
         List<DiscountValue> discountValues = Arrays.asList(discountValue1, discountValue2);
         List<String> discountValueOperators = Arrays.asList("ADDITION");
-        List<Rule<UserDTO, List<ProductDTO>>> discountRules = Arrays.asList(mockRule1, mockRule2);
+        List<Rule> discountRules = Arrays.asList(mockRule1, mockRule2);
         List<String> discountRuleOperators = Arrays.asList("AND");
         condDiscount = new CondDiscount(discountValues, discountValueOperators, discountRules, discountRuleOperators);
     }

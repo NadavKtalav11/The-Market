@@ -7,8 +7,7 @@ import DomainLayer.Notifications.StoreNotification;
 import DomainLayer.PaymentServices.PaymentServicesFacade;
 import DomainLayer.Role.RoleFacade;
 import DomainLayer.Store.Product;
-import DomainLayer.Store.StoreDiscountPolicy.DiscountRulesRepository;
-import DomainLayer.Store.StorePurchasePolicy.PurchaseRulesRepository;
+
 import Util.ExceptionsEnum;
 
 import DomainLayer.Store.StoreFacade;
@@ -1279,22 +1278,7 @@ public class Market {
             throw new IllegalArgumentException(ExceptionsEnum.storeRateInvalid.toString());
     }
 
-    public Map<Integer,String> getAllPurchaseRules(String userId, String storeId) throws Exception {
-        if (userFacade.isMember(userId)){
-            String memberId = userFacade.getMemberIdByUserId(userId);
-            boolean succeeded = authenticationAndSecurityFacade.validateToken(authenticationAndSecurityFacade.getToken(memberId));
-            if (!succeeded) {
-                logout(userId);
-                throw new IllegalArgumentException(ExceptionsEnum.sessionOver.toString());
-            }
-        }
-        String member_ID = this.userFacade.getMemberIdByUserId(userId);
-        storeFacade.verifyStoreExistError(storeId);
-        roleFacade.verifyStoreOwnerError(storeId, member_ID);
-        return PurchaseRulesRepository.getAllRules();
-    }
-
-    public void addPurchaseRuleToStore(List<Integer> ruleNums, List<String> operators, String userId, String storeId) throws Exception {
+    public void addPurchaseRuleToStore(List<TestRuleDTO> testRules, List<String> operators, String userId, String storeId) throws Exception {
         if (userFacade.isMember(userId)){
             String memberId = userFacade.getMemberIdByUserId(userId);
             boolean succeeded = authenticationAndSecurityFacade.validateToken(authenticationAndSecurityFacade.getToken(memberId));
@@ -1304,11 +1288,12 @@ public class Market {
             }
         }
 
-        checkLogicalRulesAndOperators(ruleNums, operators);
+        checkLogicalRulesAndOperators(testRules, operators);
         String member_ID = this.userFacade.getMemberIdByUserId(userId);
+        //TODO: check testrules
         storeFacade.verifyStoreExistError(storeId);
         roleFacade.verifyStoreOwnerError(storeId, member_ID);
-        storeFacade.addPurchaseRuleToStore(ruleNums, operators, storeId);
+        storeFacade.addPurchaseRuleToStore(testRules, operators, storeId);
     }
 
     public void removePurchaseRuleFromStore(int ruleNum,  String userId, String storeId) throws Exception {
@@ -1327,7 +1312,7 @@ public class Market {
         storeFacade.removePurchaseRuleFromStore(ruleNum, storeId);
     }
 
-    public Map<Integer,String> getAllCondDiscountRules(String userId, String storeId) throws Exception {
+    public void addDiscountCondRuleToStore(List<TestRuleDTO> testRules, List<String> logicOperators, List<DiscountValueDTO> discDetails, List<String> numericalOperators, String userId ,String storeId) throws Exception {
         if (userFacade.isMember(userId)){
             String memberId = userFacade.getMemberIdByUserId(userId);
             boolean succeeded = authenticationAndSecurityFacade.validateToken(authenticationAndSecurityFacade.getToken(memberId));
@@ -1337,29 +1322,13 @@ public class Market {
             }
         }
 
-        String member_ID = this.userFacade.getMemberIdByUserId(userId);
-        storeFacade.verifyStoreExistError(storeId);
-        roleFacade.verifyStoreOwnerError(storeId, member_ID);
-        return DiscountRulesRepository.getAllRules();
-    }
-
-    public void addDiscountCondRuleToStore(List<Integer> ruleNums, List<String> logicOperators, List<DiscountValueDTO> discDetails, List<String> numericalOperators, String userId ,String storeId) throws Exception {
-        if (userFacade.isMember(userId)){
-            String memberId = userFacade.getMemberIdByUserId(userId);
-            boolean succeeded = authenticationAndSecurityFacade.validateToken(authenticationAndSecurityFacade.getToken(memberId));
-            if (!succeeded) {
-                logout(userId);
-                throw new IllegalArgumentException(ExceptionsEnum.sessionOver.toString());
-            }
-        }
-
-        checkLogicalRulesAndOperators(ruleNums, logicOperators);
+        checkLogicalRulesAndOperators(testRules, logicOperators);
         checkNumericalRulesAndOperators(discDetails, numericalOperators);
         checkProductDiscountDetails(discDetails);
         String member_ID = this.userFacade.getMemberIdByUserId(userId);
         storeFacade.verifyStoreExistError(storeId);
         roleFacade.verifyStoreOwnerError(storeId, member_ID);
-        storeFacade.addDiscountCondRuleToStore(ruleNums, logicOperators, discDetails, numericalOperators, storeId);
+        storeFacade.addDiscountCondRuleToStore(testRules, logicOperators, discDetails, numericalOperators, storeId);
     }
 
 
@@ -1415,7 +1384,7 @@ public class Market {
         }
     }
 
-    public void checkLogicalRulesAndOperators(List<Integer> ruleNums, List<String> operators) throws Exception {
+    public void checkLogicalRulesAndOperators(List<TestRuleDTO> ruleNums, List<String> operators) throws Exception {
         if (ruleNums.size() != operators.size() + 1) {
             throw new IllegalArgumentException(ExceptionsEnum.rulesNotMatchOpeators.toString());
         }

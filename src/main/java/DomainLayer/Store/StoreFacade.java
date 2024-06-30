@@ -320,10 +320,10 @@ public class StoreFacade {
         allStores.get(storeId).addReceipt(receiptId, userId);
     }
 
-    public void addPurchaseRuleToStore(List<Integer> ruleNums, List<String> operators, String storeId) {
-        List<Rule<UserDTO, List<ProductDTO>>> rules = new ArrayList<>();
-        for (int ruleNum : ruleNums) {
-            rules.add(new SimpleRule<>(PurchaseRulesRepository.getByRuleNumber(ruleNum)));
+    public void addPurchaseRuleToStore(List<TestRuleDTO> testRules, List<String> operators, String storeId) {
+        List<Rule> rules = new ArrayList<>();
+        for (TestRuleDTO testRule : testRules) {
+            rules.add(new SimpleRule(testRule));
         }
         allStores.get(storeId).addPurchaseRule(rules, operators);
     }
@@ -333,13 +333,13 @@ public class StoreFacade {
         allStores.get(storeId).removePurchaseRule(ruleNum);
     }
 
-    public void addDiscountCondRuleToStore(List<Integer> ruleNums, List<String> operators, List<DiscountValueDTO> discDetails, List<String> numericalOperators, String storeId) {
+    public void addDiscountCondRuleToStore(List<TestRuleDTO> testRules, List<String> operators, List<DiscountValueDTO> discDetails, List<String> numericalOperators, String storeId) {
 
         List<DiscountValue> discountValue = getDiscountValuesList(discDetails);
 
-        List<Rule<UserDTO, List<ProductDTO>>> rules = new ArrayList<>();
-        for (int ruleNum : ruleNums) {
-            rules.add(new SimpleRule<>(DiscountRulesRepository.getByRuleNumber(ruleNum)));
+        List<Rule> rules = new ArrayList<>();
+        for (TestRuleDTO testRule : testRules) {
+            rules.add(new SimpleRule(testRule));
         }
 
         allStores.get(storeId).addDiscountCondRule(rules, operators, discountValue, numericalOperators);
