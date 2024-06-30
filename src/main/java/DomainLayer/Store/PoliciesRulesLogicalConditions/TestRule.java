@@ -42,35 +42,17 @@ public abstract class TestRule {
 
     protected boolean isRuleSatisfied(List<ProductDTO> products, int quantity) {
         if (contains) {
-            if(quantity > 0)
-            {
-                //switch case on range
-                return switch (range) {
-                    case "Above" -> getQuantity(products) > quantity;
-                    case "Below" -> getQuantity(products) < quantity;
-                    case "`Exactly" -> getQuantity(products) == quantity;
-                    default -> throw new IllegalArgumentException("Invalid range: " + range);
-                };
-            }
-            else
-            {
+            if(quantity == -1)
                 return getQuantity(products) > quantity;
-            }
+            else
+                return checkRange(range, getQuantity(products), quantity);
         }
         else {
-            if(quantity > 0)
-            {
-                //switch case on range
-                return switch (range) {
-                    case "Above" -> getQuantity(products) <= quantity;
-                    case "Below" -> getQuantity(products) >= quantity;
-                    case "`Exactly" -> getQuantity(products) != quantity;
-                    default -> throw new IllegalArgumentException("Invalid range: " + range);
-                };
-            }
+            if(quantity == -1)
+                return getQuantity(products) == quantity;
             else
             {
-                return getQuantity(products) == quantity;
+                return !checkRange(range, getQuantity(products), quantity);
             }
         }
     }

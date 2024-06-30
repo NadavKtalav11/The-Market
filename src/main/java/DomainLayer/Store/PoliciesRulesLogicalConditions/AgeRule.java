@@ -32,19 +32,12 @@ public class AgeRule extends TestRule {
         int userAge = Period.between(birthdate, today).getYears();
 
         //check if the user is above or below the age, age can be "Above" or "Below" or "Exactly"
-        boolean ageCheck = switch (range) {
-            case "Above" -> userAge > age;
-            case "Below" -> userAge < age;
-            case "Exactly" -> userAge == age;
-            default -> throw new IllegalArgumentException("Invalid range: " + range);
-        };
-        if (ageCheck){
-            return isRuleSatisfied(products,0);
-        }
+        boolean ageCheck = checkRange(range, userAge, age);
+
+        if (ageCheck)
+            return isRuleSatisfied(products,-1);
         else
-        {
             return true;
-        }
     }
 
     public static void setClock(Clock newClock) {
