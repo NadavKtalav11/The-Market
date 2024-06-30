@@ -28,16 +28,23 @@ public class AgeRule extends TestRule {
         }
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
         LocalDate birthdate = LocalDate.parse(user.getBirthday(), formatter);
-        LocalDate today = LocalDate.now(clock.get());
+        LocalDate today = LocalDate.now(getClock());
         int userAge = Period.between(birthdate, today).getYears();
 
         //check if the user is above or below the age, age can be "Above" or "Below" or "Exactly"
         boolean ageCheck = checkRange(range, userAge, age);
 
-        if (ageCheck)
-            return isRuleSatisfied(products,-1);
-        else
-            return true;
+        if(category !=null || productName != null) {
+            if(ageCheck) {
+                if (contains)
+                    return getQuantity(products) > 0;
+                else
+                    return getQuantity(products) == 0;
+            }
+            else
+                return true;
+        }
+        return ageCheck;
     }
 
     public static void setClock(Clock newClock) {
