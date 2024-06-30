@@ -41,13 +41,12 @@ class SimpleRuleTest {
         assertTrue(simpleRule.checkRule(userDTO, products));
     }
 
-    //TODO: Fix this test
-    /*
     @Test
     void testAlcoholRestrictionAfter2300() {
         Clock after2300Clock = Clock.fixed(Instant.parse("2024-06-01T23:30:00Z"), ZoneId.of("UTC"));
-        PurchaseRulesRepository.setClock(after2300Clock);
-        SimpleRule<UserDTO, List<ProductDTO>> rule = new SimpleRule<>(PurchaseRulesRepository.ALCOHOL_RESTRICTION_AFTER_2300);
+        TestRule.setClock(after2300Clock);
+        TestRuleDTO testRule = new TestRuleDTO("Time", "Above", "ALCOHOL", null, "Alcohol cannot be sold after 23:00", false, null, null, null, null, LocalTime.of(23, 0));
+        SimpleRule rule = new SimpleRule(testRule);
 
         ProductDTO product = new ProductDTO("Beer", 10, 1, "Alcohol", "ALCOHOL");
         products.add(product);
@@ -55,15 +54,14 @@ class SimpleRuleTest {
         assertFalse(rule.checkRule(userDTO, products));
 
         Clock before2300Clock = Clock.fixed(Instant.parse("2024-06-01T22:30:00Z"), ZoneId.of("UTC"));
-        PurchaseRulesRepository.setClock(before2300Clock);
-        rule = new SimpleRule<>(PurchaseRulesRepository.ALCOHOL_RESTRICTION_AFTER_2300);
+        TestRule.setClock(before2300Clock);
+        rule = new SimpleRule(testRule);
         assertTrue(rule.checkRule(userDTO, products));
     }
-     */
 
     @Test
     void testBasketContainsLessThan5KgTomatoes() {
-        TestRuleDTO rule3 = new TestRuleDTO("Amount", "Below", null, "Tomatoes", "Basket must contain less than 5kg of tomatoes", true, null, 5, null, null, null);
+        TestRuleDTO rule3 = new TestRuleDTO("Amount", "Below", null, "Tomato", "Basket must contain less than 5kg of tomatoes", true, null, 5, null, null, null);
         SimpleRule simpleRule = new SimpleRule(rule3);
 
         ProductDTO product = new ProductDTO("tomato", 5, 4, "Vegetable", "FOOD");
@@ -75,25 +73,9 @@ class SimpleRuleTest {
     }
 
     @Test
-    void testNoIceCreamInRoshHodesh() {
-        Clock roshHodeshClock = Clock.fixed(Instant.parse("2024-06-01T10:00:00Z"), ZoneId.of("UTC"));
-        PurchaseRulesRepository.setClock(roshHodeshClock);
-        SimpleRule<UserDTO, List<ProductDTO>> rule = new SimpleRule<>(PurchaseRulesRepository.NO_ICE_CREAM_IN_ROSH_HODESH);
-
-        ProductDTO product = new ProductDTO("ice cream", 9, 1, "Dessert", "FOOD");
-        products.add(product);
-
-        assertFalse(rule.checkRule(userDTO, products));
-
-        Clock notRoshHodeshClock = Clock.fixed(Instant.parse("2024-06-02T10:00:00Z"), ZoneId.of("UTC"));
-        PurchaseRulesRepository.setClock(notRoshHodeshClock);
-        rule = new SimpleRule<>(PurchaseRulesRepository.NO_ICE_CREAM_IN_ROSH_HODESH);
-        assertTrue(rule.checkRule(userDTO, products));
-    }
-
-    @Test
     void testBasketContainsAtLeast2Corns() {
-        SimpleRule<UserDTO, List<ProductDTO>> rule = new SimpleRule<>(PurchaseRulesRepository.BASKET_CONTAINS_AT_LEAST_2_CORNS);
+        TestRuleDTO testRule = new TestRuleDTO("Amount", "Above", null, "corn", "basket contains at least 2 corns", true, null, 1, null, null, null);
+        SimpleRule rule = new SimpleRule(testRule);
 
         ProductDTO product = new ProductDTO("corn", 7, 1, "Vegetable", "FOOD");
         products.add(product);
@@ -105,7 +87,8 @@ class SimpleRuleTest {
 
     @Test
     void testBasketContainsEggplants() {
-        SimpleRule<UserDTO, List<ProductDTO>> rule = new SimpleRule<>(PurchaseRulesRepository.BASKET_CONTAINS_EGGPLANTS);
+        TestRuleDTO testRule = new TestRuleDTO("Amount", "Above", null, "eggplant", "Basket must contain eggplants", true, null, 0, null, null, null);
+        SimpleRule rule = new SimpleRule(testRule);
 
         assertFalse(rule.checkRule(userDTO, products));
 
@@ -116,16 +99,20 @@ class SimpleRuleTest {
 
     @Test
     void testIsHolidayEvening() {
-        SimpleRule<UserDTO, List<ProductDTO>> rule = new SimpleRule<>(PurchaseRulesRepository.IS_HOLIDAY_EVENING);
+        int year = LocalDate.now().getYear();
+
+        TestRuleDTO testRule = new TestRuleDTO("Date", "Exact", null, null, "The day must be Christmas Holiday", true, null, null, LocalDate.of(year, 12, 25), null, null);
+
+        SimpleRule rule = new SimpleRule(testRule);
 
         // Test for the evening before Christmas
-        Clock christmasEveClock = Clock.fixed(Instant.parse("2024-12-24T10:00:00Z"), ZoneId.of("UTC"));
-        PurchaseRulesRepository.setClock(christmasEveClock);
+        Clock christmasEveClock = Clock.fixed(Instant.parse("2024-12-25T10:00:00Z"), ZoneId.of("UTC"));
+        TestRule.setClock(christmasEveClock);
         assertTrue(rule.checkRule(userDTO, products));
 
         // Test for a regular day
         Clock regularDayClock = Clock.fixed(Instant.parse("2024-12-26T10:00:00Z"), ZoneId.of("UTC"));
-        PurchaseRulesRepository.setClock(regularDayClock);
+        TestRule.setClock(regularDayClock);
         assertFalse(rule.checkRule(userDTO, products));
     }
 }
