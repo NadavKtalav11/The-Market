@@ -16,9 +16,9 @@ import java.util.List;
 class PurchasePolicyTest {
 
     private PurchasePolicy purchasePolicy;
-    private Rule<UserDTO, List<ProductDTO>> rule1;
-    private Rule<UserDTO, List<ProductDTO>> rule2;
-    private Rule<UserDTO, List<ProductDTO>> rule3;
+    private Rule rule1;
+    private Rule rule2;
+    private Rule rule3;
 
     @BeforeEach
     void setUp() {

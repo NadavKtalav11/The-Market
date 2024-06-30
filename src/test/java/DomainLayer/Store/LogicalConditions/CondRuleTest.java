@@ -6,20 +6,24 @@ import static org.mockito.Mockito.*;
 
 import DomainLayer.Store.PoliciesRulesLogicalConditions.CondRule;
 import DomainLayer.Store.PoliciesRulesLogicalConditions.Rule;
+import Util.ProductDTO;
+import Util.UserDTO;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.util.List;
+
 class CondRuleTest {
 
-    private Rule<Object, Object> rule1;
-    private Rule<Object, Object> rule2;
-    private CondRule<Object, Object> condRule;
+    private Rule rule1;
+    private Rule rule2;
+    private CondRule condRule;
 
     @BeforeEach
     void setUp() {
         rule1 = mock(Rule.class);
         rule2 = mock(Rule.class);
-        condRule = new CondRule<>(rule1, rule2);
+        condRule = new CondRule(rule1, rule2);
     }
 
     @Test
@@ -29,7 +33,10 @@ class CondRuleTest {
         when(rule2.checkRule(any(), any())).thenReturn(true);
 
         // Act
-        boolean result = condRule.checkRule(new Object(), new Object());
+        ProductDTO productDTO = new ProductDTO("Product 1", 100, 2, "Description 1", "Category 1");
+        UserDTO userDTO = new UserDTO();
+        List<ProductDTO> basketProducts = List.of(productDTO);
+        boolean result = condRule.checkRule(userDTO, basketProducts);
 
         // Assert
         assertTrue(result);
@@ -41,7 +48,10 @@ class CondRuleTest {
         when(rule1.checkRule(any(), any())).thenReturn(false);
 
         // Act
-        boolean result = condRule.checkRule(new Object(), new Object());
+        ProductDTO productDTO = new ProductDTO("Product 1", 100, 2, "Description 1", "Category 1");
+        UserDTO userDTO = new UserDTO();
+        List<ProductDTO> basketProducts = List.of(productDTO);
+        boolean result = condRule.checkRule(userDTO, basketProducts);
 
         // Assert
         assertFalse(result);
@@ -56,7 +66,10 @@ class CondRuleTest {
         when(rule2.checkRule(any(), any())).thenReturn(false);
 
         // Act
-        boolean result = condRule.checkRule(new Object(), new Object());
+        ProductDTO productDTO = new ProductDTO("Product 1", 100, 2, "Description 1", "Category 1");
+        UserDTO userDTO = new UserDTO();
+        List<ProductDTO> basketProducts = List.of(productDTO);
+        boolean result = condRule.checkRule(userDTO, basketProducts);
 
         // Assert
         assertFalse(result);

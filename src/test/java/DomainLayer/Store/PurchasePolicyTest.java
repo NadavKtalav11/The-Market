@@ -17,8 +17,8 @@ import static org.mockito.Mockito.*;
 class PurchasePolicyTest {
 
     private PurchasePolicy purchasePolicy;
-    private Rule<UserDTO, List<ProductDTO>> mockRule1;
-    private Rule<UserDTO, List<ProductDTO>> mockRule2;
+    private Rule mockRule1;
+    private Rule mockRule2;
     private UserDTO userDTO;
 
     @BeforeEach
@@ -42,7 +42,7 @@ class PurchasePolicyTest {
 
         when(mockRule1.checkRule(userDTO, products)).thenReturn(false);
 
-        List<Rule<UserDTO, List<ProductDTO>>> rules = List.of(mockRule1);
+        List<Rule> rules = List.of(mockRule1);
         purchasePolicy.addRule(rules, new ArrayList<>());
 
         assertFalse(purchasePolicy.checkPurchasePolicy(userDTO, products));
@@ -54,7 +54,7 @@ class PurchasePolicyTest {
 
         when(mockRule1.checkRule(userDTO, products)).thenReturn(true);
 
-        List<Rule<UserDTO, List<ProductDTO>>> rules = List.of(mockRule1);
+        List<Rule> rules = List.of(mockRule1);
         purchasePolicy.addRule(rules, new ArrayList<>());
 
         assertTrue(purchasePolicy.checkPurchasePolicy(userDTO, products));
@@ -67,7 +67,7 @@ class PurchasePolicyTest {
         when(mockRule1.checkRule(userDTO, products)).thenReturn(true);
         when(mockRule2.checkRule(userDTO, products)).thenReturn(false);
 
-        List<Rule<UserDTO, List<ProductDTO>>> rules = List.of(mockRule1, mockRule2);
+        List<Rule> rules = List.of(mockRule1, mockRule2);
         List<String> operators = List.of("AND");
         purchasePolicy.addRule(rules, operators);
 
@@ -81,7 +81,7 @@ class PurchasePolicyTest {
         when(mockRule1.checkRule(userDTO, products)).thenReturn(false);
         when(mockRule2.checkRule(userDTO, products)).thenReturn(true);
 
-        List<Rule<UserDTO, List<ProductDTO>>> rules = List.of(mockRule1, mockRule2);
+        List<Rule> rules = List.of(mockRule1, mockRule2);
         List<String> operators = List.of("OR");
         purchasePolicy.addRule(rules, operators);
 
@@ -95,7 +95,7 @@ class PurchasePolicyTest {
         when(mockRule1.checkRule(userDTO, products)).thenReturn(true);
         when(mockRule2.checkRule(userDTO, products)).thenReturn(true);
 
-        List<Rule<UserDTO, List<ProductDTO>>> rules = List.of(mockRule1, mockRule2);
+        List<Rule> rules = List.of(mockRule1, mockRule2);
         List<String> operators = List.of("COND");
         purchasePolicy.addRule(rules, operators);
 
@@ -107,7 +107,7 @@ class PurchasePolicyTest {
         when(mockRule1.getDescription()).thenReturn("Rule 1");
         when(mockRule2.getDescription()).thenReturn("Rule 2");
 
-        List<Rule<UserDTO, List<ProductDTO>>> rules = List.of(mockRule1, mockRule2);
+        List<Rule> rules = List.of(mockRule1, mockRule2);
         List<String> operators = new ArrayList<>();
         operators.add("AND"); // This is not used in the test, but it is required by the method signature
         purchasePolicy.addRule(rules, operators);
@@ -123,7 +123,7 @@ class PurchasePolicyTest {
         when(mockRule1.getDescription()).thenReturn("Rule 1");
         when(mockRule2.getDescription()).thenReturn("Rule 2");
 
-        List<Rule<UserDTO, List<ProductDTO>>> rules = List.of(mockRule1, mockRule2);
+        List<Rule> rules = List.of(mockRule1, mockRule2);
         List<String> operators = new ArrayList<>();
         operators.add("AND"); // This is not used in the test, but it is required by the method signature
         purchasePolicy.addRule(rules, operators);
