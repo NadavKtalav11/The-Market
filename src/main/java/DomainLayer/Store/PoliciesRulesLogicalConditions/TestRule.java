@@ -78,4 +78,18 @@ public abstract class TestRule {
     public String getDescription() {
         return description;
     }
+
+    public boolean checkRange(String range, double actual, double expected)
+    {
+        switch (range) {
+            case "Above":
+                return actual > expected;
+            case "Below":
+                return actual < expected;
+            case "Exact":
+                return actual == expected;
+            default:
+                throw new IllegalArgumentException("Invalid range: " + range);
+        }
+    }
 }
