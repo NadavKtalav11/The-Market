@@ -47,9 +47,9 @@ public class PurchasePolicy {
         if(rules.size() > 1) {
             for (int i = 0; i < operators.size(); i++) {
                 switch (operators.get(i)) {
-                    case "AND" -> rule = new AndRule<>(rule, rules.get(i + 1));
-                    case "OR" -> rule = new OrRule<>(rule, rules.get(i + 1));
-                    case "COND" -> rule = new CondRule<>(rule, rules.get(i + 1));
+                    case "AND" -> rule = new AndRule(rule, rules.get(i + 1));
+                    case "OR" -> rule = new OrRule(rule, rules.get(i + 1));
+                    case "COND" -> rule = new CondRule(rule, rules.get(i + 1));
                 }
             }
         }
