@@ -1,7 +1,12 @@
 package DomainLayer.Store.PoliciesRulesLogicalConditions;
 
-public interface Rule<T, U> {
-    public boolean checkRule(T user, U products);
+import Util.ProductDTO;
+import Util.UserDTO;
+
+import java.util.List;
+
+public interface Rule {
+    public boolean checkRule(UserDTO user, List<ProductDTO> products);
 
     public String getDescription();
 }

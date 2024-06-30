@@ -1,5 +1,5 @@
 package DomainLayer.Store.StoreDiscountPolicy;
-
+/*
 import DomainLayer.Store.PoliciesRulesLogicalConditions.TestRule;
 import Util.ProductDTO;
 import Util.UserDTO;
@@ -134,3 +134,5 @@ public enum DiscountRulesRepository implements TestRule<UserDTO, List<ProductDTO
         return clock.get();
     }
 }
+
+ */
