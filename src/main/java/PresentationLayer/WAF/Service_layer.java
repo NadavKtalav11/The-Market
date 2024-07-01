@@ -6,11 +6,15 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import DomainLayer.Market.Market;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.messaging.Message;
+import org.springframework.messaging.MessageChannel;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -28,9 +32,16 @@ public class Service_layer {
     private static final Logger logger = LoggerFactory.getLogger(Service_layer.class);
     private Market market;
 
+    //private final SimpMessagingTemplate messagingTemplate;
+
     public Service_layer() {
-        this.market = Market.getInstance(); // Initialize the Market instance
+        this.market = Market.getInstance();
+        //this.messagingTemplate = messagingTemplate;
+        // Initialize the Market instance
+
     }
+
+
 
     @Bean
     public RestTemplate restTemplate() {
@@ -49,6 +60,7 @@ public class Service_layer {
 
 
     public Service_layer(int i) {
+        //this.messagingTemplate = messagingTemplate;
         market = Market.getInstance();
         Market market1 = market.newForTests();
         market=market1;
@@ -198,7 +210,13 @@ public class Service_layer {
 
         try {
             String memberId = market.Login(userID, username, password);
+
+            String notificationMessage = String.format("User %s logged in successfully.", username);
+            //messagingTemplate.convertAndSend("/topic/notifications", notificationMessage);
+
+
             return new Response<>("Login successful", "User logged in successfully.", memberId);
+
         } catch (Exception e) {
             logger.error("Error occurred during log in - {}", e.getMessage());
             return new Response<>(null, e.getMessage(), e.getMessage());
