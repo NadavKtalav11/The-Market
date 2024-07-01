@@ -250,6 +250,8 @@ public class StoreFacadeTest {
         when(storeRepository.get(storeId)).thenReturn(mockStore);
         when(mockStore.checkProductExists(productName)).thenReturn(true);
         when(mockStore.checkProductQuantity(productName, quantity)).thenReturn(true);
+        when(mockStore.getProductDTOByName(productName, quantity)).thenReturn(mockProduct);
+        when(mockProduct.getPrice()).thenReturn(10);
 
         storeFacade.checkQuantityAndPrice(productName, quantity, storeId);
 
