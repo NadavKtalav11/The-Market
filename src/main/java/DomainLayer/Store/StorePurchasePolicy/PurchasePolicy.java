@@ -64,6 +64,19 @@ public class PurchasePolicy {
         return rulesDescriptions;
     }
 
+    public void composeCurrentStoreRules(int ruleNum1, int ruleNum2, String Operator)
+    {
+        if (ruleNum1 < purchaseRules.size() && ruleNum2 < purchaseRules.size())
+        {
+            Rule rule1 = purchaseRules.get(ruleNum1);
+            Rule rule2 = purchaseRules.get(ruleNum2);
+            removeRule(ruleNum1);
+            removeRule(ruleNum2);
+            addRule(List.of(rule1, rule2), List.of(Operator));
+        }
+        else throw new IllegalArgumentException(InvalidRuleIndex.toString());
+    }
+
     public void removeRule(int ruleNum) {
         if (ruleNum < purchaseRules.size())
             purchaseRules.remove(ruleNum);
