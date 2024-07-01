@@ -120,4 +120,24 @@ public class PurchasePolicyTest {
 
         assertEquals(0, descriptions.size());
     }
+
+    @Test
+    public void testComposeCurrentStoreRules() {
+        // Creating simple rules
+        Rule trueRule = new SimpleRule(testRule1); //basket contains less than 5 tomatoes
+        Rule falseRule = new SimpleRule(testRule2); //basket contains at least 2 corns
+        purchasePolicy.addRule(Collections.singletonList(trueRule), Collections.emptyList());
+        purchasePolicy.addRule(Collections.singletonList(falseRule), Collections.emptyList());
+
+        //compose the two first rules
+        purchasePolicy.composeCurrentStoreRules(0, 1, "OR");
+        List<String> descriptions = purchasePolicy.getRulesDescriptions();
+
+        UserDTO user = new UserDTO("User1", "user1@gmail.com", "12/3/45", "Israel", "Ashqelon", "rabin", "moshe");
+        ProductDTO product = new ProductDTO("Product1", product1Price, 5, "A product", "TOYS");
+        List<ProductDTO> products = Collections.singletonList(product);
+
+        assertEquals(1, descriptions.size());
+        assertTrue(purchasePolicy.checkPurchasePolicy(user, products));
+    }
 }
