@@ -1389,7 +1389,7 @@ public class Market {
             throw new IllegalArgumentException(ExceptionsEnum.rulesNotMatchOpeators.toString());
         }
         for (int i = 0; i < operators.size(); i++) {
-            if (!operators.get(i).equals("AND") && !operators.get(i).equals("OR") && !operators.get(i).equals("COND") && !operators.get(i).equals("XOR")) {
+            if (!operators.get(i).equals("AND") && !operators.get(i).equals("OR") && !operators.get(i).equals("ONLY IF") && !operators.get(i).equals("XOR")) {
                 throw new IllegalArgumentException(ExceptionsEnum.InvalidOperator.toString());
             }
         }
@@ -1472,7 +1472,7 @@ public class Market {
             }
         }
 
-        if (!operator.equals("AND") && !operator.equals("OR") && !operator.equals("COND")) {
+        if (!operator.equals("AND") && !operator.equals("OR") && !operator.equals("ONLY IF")) {
             throw new IllegalArgumentException(ExceptionsEnum.InvalidOperator.toString());
         }
 

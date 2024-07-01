@@ -83,7 +83,7 @@ class PurchasePolicyTest {
     @Test
     void addRule_WithCondCondition() {
         // Arrange
-        purchasePolicy.addRule(List.of(rule1, rule2), List.of("COND"));
+        purchasePolicy.addRule(List.of(rule1, rule2), List.of("ONLY IF"));
 
         // Act
         List<String> descriptions = purchasePolicy.getRulesDescriptions();
@@ -166,7 +166,7 @@ class PurchasePolicyTest {
         when(rule2.getDescription()).thenReturn("Rule 2");
 
         // Act
-        purchasePolicy.composeCurrentStoreRules(0, 1, "COND");
+        purchasePolicy.composeCurrentStoreRules(0, 1, "ONLY IF");
         List<String> descriptions = purchasePolicy.getRulesDescriptions();
 
         // Assert

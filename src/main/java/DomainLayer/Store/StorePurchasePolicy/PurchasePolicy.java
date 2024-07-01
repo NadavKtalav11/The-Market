@@ -51,7 +51,7 @@ public class PurchasePolicy {
                 switch (operators.get(i)) {
                     case "AND" -> rule = new AndRule(rule, rules.get(i + 1));
                     case "OR" -> rule = new OrRule(rule, rules.get(i + 1));
-                    case "COND" -> rule = new CondRule(rule, rules.get(i + 1));
+                    case "ONLY IF" -> rule = new CondRule(rule, rules.get(i + 1));
                 }
             }
         }

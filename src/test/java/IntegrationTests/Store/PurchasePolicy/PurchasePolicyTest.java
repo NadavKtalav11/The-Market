@@ -84,7 +84,7 @@ public class PurchasePolicyTest {
         Rule falseRule = new SimpleRule(testRule2); //basket contains at least 2 corns
 
         List<Rule> rules = Arrays.asList(trueRule, falseRule);
-        List<String> operators = Collections.singletonList("COND");
+        List<String> operators = Collections.singletonList("ONLY IF");
         purchasePolicy.addRule(rules, operators);
 
         UserDTO user = new UserDTO("User1", "user1@gmail.com", "12/3/45", "Israel", "Ashqelon", "rabin", "moshe");
