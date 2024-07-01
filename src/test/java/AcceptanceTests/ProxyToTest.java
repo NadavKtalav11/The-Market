@@ -300,4 +300,28 @@ public class ProxyToTest implements BridgeToTests {
         else
             return new Response<>(null, "Not Implemented yet");
     }
+
+    @Override
+    public Response<String> composeCurrentPurchaseRules(int ruleIndex1, int ruleIndex2, String operator, String userId, String storeId) {
+        if (realServiceAdaptor != null)
+            return realServiceAdaptor.composeCurrentPurchaseRules(ruleIndex1, ruleIndex2, operator, userId, storeId);
+        else
+            return new Response<>(null, "Not Implemented yet");
+    }
+
+    @Override
+    public Response<String> composeCurrentSimpleDiscountRules(int ruleIndex1, int ruleIndex2, String numericalOperator, String userId, String storeId) {
+        if (realServiceAdaptor != null)
+            return realServiceAdaptor.composeCurrentSimpleDiscountRules(ruleIndex1, ruleIndex2, numericalOperator, userId, storeId);
+        else
+            return new Response<>(null, "Not Implemented yet");
+    }
+
+    @Override
+    public Response<String> composeCurrentCondDiscountRules(int ruleIndex1, int ruleIndex2, String logicalOperator, String numericalOperator, String userId, String storeId) {
+        if (realServiceAdaptor != null)
+            return realServiceAdaptor.composeCurrentCondDiscountRules(ruleIndex1, ruleIndex2, logicalOperator, numericalOperator, userId, storeId);
+        else
+            return new Response<>(null, "Not Implemented yet");
+    }
 }

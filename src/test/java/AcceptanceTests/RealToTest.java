@@ -204,4 +204,19 @@ public class RealToTest implements BridgeToTests {
         return service.setUserConfirmationPurchase(userID);
     }
 
+    @Override
+    public Response<String> composeCurrentPurchaseRules(int ruleIndex1, int ruleIndex2, String operator, String userId, String storeId) {
+        return service.composeCurrentPurchaseRules(ruleIndex1, ruleIndex2, operator, userId, storeId);
+    }
+
+    @Override
+    public Response<String> composeCurrentSimpleDiscountRules(int ruleIndex1, int ruleIndex2, String numericalOperator, String userId, String storeId) {
+        return service.composeCurrentSimpleDiscountRules(ruleIndex1, ruleIndex2, numericalOperator, userId, storeId);
+    }
+
+    @Override
+    public Response<String> composeCurrentCondDiscountRules(int ruleIndex1, int ruleIndex2, String logicalOperator, String numericalOperator, String userId, String storeId) {
+        return service.composeCurrentCondDiscountRules(ruleIndex1, ruleIndex2, logicalOperator, numericalOperator, userId, storeId);
+    }
+
 }

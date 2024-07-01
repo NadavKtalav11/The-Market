@@ -8,6 +8,8 @@ import Util.ProductDTO;
 import Util.UserDTO;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import static Util.ExceptionsEnum.*;
@@ -70,8 +72,16 @@ public class PurchasePolicy {
         {
             Rule rule1 = purchaseRules.get(ruleNum1);
             Rule rule2 = purchaseRules.get(ruleNum2);
-            removeRule(ruleNum1);
-            removeRule(ruleNum2);
+
+            // Create a list of indices and sort in reverse order
+            List<Integer> indices = Arrays.asList(ruleNum1, ruleNum2);
+            indices.sort(Collections.reverseOrder());
+
+            // Remove rules in reverse order of indices
+            for (int index : indices) {
+                removeRule(index);
+            }
+
             addRule(List.of(rule1, rule2), List.of(Operator));
         }
         else throw new IllegalArgumentException(InvalidRuleIndex.toString());

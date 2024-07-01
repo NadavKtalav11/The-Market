@@ -82,5 +82,10 @@ public interface BridgeToTests {
 
     Response<String> setUserConfirmationPurchase(String userID);
 
+    Response<String> composeCurrentPurchaseRules(int ruleIndex1, int ruleIndex2, String operator, String userId, String storeId);
+
+    Response<String> composeCurrentSimpleDiscountRules(int ruleIndex1, int ruleIndex2, String numericalOperator, String userId, String storeId);
+
+    Response<String> composeCurrentCondDiscountRules(int ruleIndex1, int ruleIndex2, String logicalOperator, String numericalOperator, String userId, String storeId);
 
 }

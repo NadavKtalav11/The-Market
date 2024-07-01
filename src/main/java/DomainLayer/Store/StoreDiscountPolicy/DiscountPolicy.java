@@ -7,6 +7,8 @@ import Util.ProductDTO;
 import Util.UserDTO;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import static Util.ExceptionsEnum.InvalidRuleIndex;
@@ -47,8 +49,16 @@ public class DiscountPolicy {
                 rules.add(discountRule2.getDiscountRule());
                 discDetails.add(discountRule1.getDiscountValue());
                 discDetails.add(discountRule2.getDiscountValue());
-                removeRule(ruleNum1);
-                removeRule(ruleNum2);
+
+                // Create a list of indices and sort in reverse order
+                List<Integer> indices = Arrays.asList(ruleNum1, ruleNum2);
+                indices.sort(Collections.reverseOrder());
+
+                // Remove rules in reverse order of indices
+                for (int index : indices) {
+                    removeRule(index);
+                }
+
                 addCondRule(rules, logicalOperators, discDetails, numericalOperators);
             } else throw new IllegalArgumentException(InvalidRuleIndex.toString());
         } else throw new IllegalArgumentException(InvalidRuleIndex.toString());
@@ -61,8 +71,16 @@ public class DiscountPolicy {
             {
                 discDetails.add(discountRules.get(ruleNum1).getDiscountValue());
                 discDetails.add(discountRules.get(ruleNum2).getDiscountValue());
-                removeRule(ruleNum1);
-                removeRule(ruleNum2);
+
+                // Create a list of indices and sort in reverse order
+                List<Integer> indices = Arrays.asList(ruleNum1, ruleNum2);
+                indices.sort(Collections.reverseOrder());
+
+                // Remove rules in reverse order of indices
+                for (int index : indices) {
+                    removeRule(index);
+                }
+
                 addSimple(discDetails, discountValueOperators);
             } else throw new IllegalArgumentException(InvalidRuleIndex.toString());
         } else throw new IllegalArgumentException(InvalidRuleIndex.toString());
