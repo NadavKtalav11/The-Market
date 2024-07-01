@@ -373,4 +373,20 @@ public class StoreFacade {
     public void composePurchaseRules(int ruleIndex1, int ruleIndex2, String operator, String storeId) {
         allStores.get(storeId).composePurchaseRules(ruleIndex1, ruleIndex2, operator);
     }
+
+    public void composeSimpleDiscountRules(int ruleIndex1, int ruleIndex2, String numericalOperator, String storeId) {
+        allStores.get(storeId).composeSimpleDiscountRules(ruleIndex1, ruleIndex2, numericalOperator);
+    }
+
+    public void composeCondDiscountRules(int ruleIndex1, int ruleIndex2, String logicalOperator, String numericalOperator, String storeId) {
+        allStores.get(storeId).composeCondDiscountRules(ruleIndex1, ruleIndex2, logicalOperator, numericalOperator);
+    }
+
+    public List<String> getStoreCurrentSimpleDiscountRules(String storeId) {
+        return allStores.get(storeId).getStoreCurrentSimpleDiscountRules();
+    }
+
+    public List<String> getStoreCurrentCondDiscountRules(String storeId) {
+        return allStores.get(storeId).getStoreCurrentCondDiscountRules();
+    }
 }

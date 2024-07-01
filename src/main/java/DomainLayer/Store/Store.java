@@ -332,4 +332,20 @@ public class Store {
     public void composePurchaseRules(int ruleIndex1, int ruleIndex2, String operator) {
         purchasePolicy.composeCurrentStoreRules(ruleIndex1, ruleIndex2, operator);
     }
+
+    public void composeSimpleDiscountRules(int ruleIndex1, int ruleIndex2, String numericalOperator) {
+        discountPolicy.composeSimpleDiscountRules(ruleIndex1, ruleIndex2, numericalOperator);
+    }
+
+    public void composeCondDiscountRules(int ruleIndex1, int ruleIndex2, String logicalOperator, String numericalOperator) {
+        discountPolicy.composeCondDiscountRules(ruleIndex1, ruleIndex2, logicalOperator, numericalOperator);
+    }
+
+    public List<String> getStoreCurrentSimpleDiscountRules() {
+        return discountPolicy.getSimpleDiscountRulesDescriptions();
+    }
+
+    public List<String> getStoreCurrentCondDiscountRules() {
+        return discountPolicy.getCondDiscountRulesDescriptions();
+    }
 }

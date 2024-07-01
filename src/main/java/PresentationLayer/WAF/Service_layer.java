@@ -677,7 +677,6 @@ public class Service_layer {
         }
     }
 
-
     public Response<String> addDiscountCondRuleToStore(List<TestRuleDTO> testRules, List<String> logicOperators, List<DiscountValueDTO> discDetails, List<String> numericalOperators, String userId, String storeId) {
         logger.info("Adding conditional discount rule to store");
 
@@ -711,6 +710,54 @@ public class Service_layer {
             return new Response<>("Discount rule removed successfully", "Discount rule removed from store successfully.");
         } catch (Exception e) {
             logger.error("Error occurred during removing discount rule from store: {}", e.getMessage(), e);
+            return new Response<>(null, e.getMessage());
+        }
+    }
+
+    public Response<String> composeSimpleDiscountRules(int ruleIndex1, int ruleIndex2, String numericalOperator, String userId, String storeId) {
+        logger.info("Composing simple discount rules");
+
+        try {
+            market.composeSimpleDiscountRules(ruleIndex1, ruleIndex2, numericalOperator, userId, storeId);
+            return new Response<>("Simple discount rules composed successfully", "Simple discount rules composed successfully.");
+        } catch (Exception e) {
+            logger.error("Error occurred during composing simple discount rules: {}", e.getMessage(), e);
+            return new Response<>(null, e.getMessage());
+        }
+    }
+
+    public Response<String> composeCondDiscountRules(int ruleIndex1, int ruleIndex2, String logicalOperator, String numericalOperator, String userId, String storeId) {
+        logger.info("Composing discount rules");
+
+        try {
+            market.composeCondDiscountRules(ruleIndex1, ruleIndex2, logicalOperator, numericalOperator, userId, storeId);
+            return new Response<>("Discount rules composed successfully", "Discount rules composed successfully.");
+        } catch (Exception e) {
+            logger.error("Error occurred during composing discount rules: {}", e.getMessage(), e);
+            return new Response<>(null, e.getMessage());
+        }
+    }
+
+    public Response<List<String>> getStoreCurrentSimpleDiscountRules(String userId, String storeId) {
+        logger.info("Getting store current simple rules");
+
+        try {
+            List<String> storeRules = market.getStoreCurrentSimpleDiscountRules(userId, storeId);
+            return new Response<>(storeRules, "Store current simple rules retrieved successfully.");
+        } catch (Exception e) {
+            logger.error("Error occurred during getting store current simple rules: {}", e.getMessage(), e);
+            return new Response<>(null, e.getMessage());
+        }
+    }
+
+    public Response<List<String>> getStoreCurrentCondDiscountRules(String userId, String storeId) {
+        logger.info("Getting store current rules");
+
+        try {
+            List<String> storeRules = market.getStoreCurrentCondDiscountRules(userId, storeId);
+            return new Response<>(storeRules, "Store current rules retrieved successfully.");
+        } catch (Exception e) {
+            logger.error("Error occurred during getting store current rules: {}", e.getMessage(), e);
             return new Response<>(null, e.getMessage());
         }
     }

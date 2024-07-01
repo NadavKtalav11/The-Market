@@ -947,10 +947,17 @@ public class MarketController {
     }
 
 
-    @DeleteMapping("/removePurchaseRuleFromStore/{ruleNums}/{userId}/{storeId}")
+    @DeleteMapping("/removePurchaseRuleFromStore/{ruleNum}/{userId}/{storeId}")
     public ResponseEntity<APIResponse<String>> removePurchaseRuleFromStore(@PathVariable int ruleNum,  @PathVariable String userId, @PathVariable String storeId ) {
 
         Response<String> response = serviceLayer.removePurchaseRuleFromStore(ruleNum,userId, storeId);
+        return checkIfResponseIsGood(response);
+    }
+
+    @PostMapping("/composePurchaseRules/{ruleIndex1}/{ruleIndex2}/{operator}/{userId}/{storeId}")
+    public ResponseEntity<APIResponse<String>> composePurchaseRules(@PathVariable int ruleIndex1, @PathVariable int ruleIndex2, @PathVariable String operator, @PathVariable String userId, @PathVariable String storeId ) {
+
+        Response<String> response = serviceLayer.composePurchaseRules(ruleIndex1, ruleIndex2, operator, userId, storeId);
         return checkIfResponseIsGood(response);
     }
 
@@ -996,6 +1003,64 @@ public class MarketController {
                     .body(new APIResponse<>(null, e.getMessage()));
 
         }
+    }
+
+    @GetMapping("/getStoreCurrentSimpleDiscountRules/{userId}/{storeId}")
+    public ResponseEntity<APIResponse<List<String>>> getStoreCurrentSimpleDiscountRules(@PathVariable String userId, @PathVariable String storeId) {
+        try {
+            Response<List<String>> response = serviceLayer.getStoreCurrentSimpleDiscountRules(userId, storeId);
+            if (response.isSuccess()) {
+                List<String> result = response.getResult();
+                HttpHeaders headers = new HttpHeaders();
+                headers.add("accept", "*/*");
+
+                return ResponseEntity.status(HttpStatus.OK).headers(headers)
+                        .body(new APIResponse<List<String>>(result, null));
+            } else {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                        .body(new APIResponse<>(null, response.getDescription()));
+            }
+        }  catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new APIResponse<>(null, e.getMessage()));
+
+        }
+    }
+
+    @GetMapping("/getStoreCurrentCondDiscountRules/{userId}/{storeId}")
+    public ResponseEntity<APIResponse<List<String>>> getStoreCurrentCondDiscountRules(@PathVariable String userId, @PathVariable String storeId) {
+        try {
+            Response<List<String>> response = serviceLayer.getStoreCurrentCondDiscountRules(userId, storeId);
+            if (response.isSuccess()) {
+                List<String> result = response.getResult();
+                HttpHeaders headers = new HttpHeaders();
+                headers.add("accept", "*/*");
+
+                return ResponseEntity.status(HttpStatus.OK).headers(headers)
+                        .body(new APIResponse<List<String>>(result, null));
+            } else {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                        .body(new APIResponse<>(null, response.getDescription()));
+            }
+        }  catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new APIResponse<>(null, e.getMessage()));
+
+        }
+    }
+
+    @PostMapping("/composeSimpleDiscountRules/{ruleIndex1}/{ruleIndex2}/{numericalOperator}/{userId}/{storeId}")
+    public ResponseEntity<APIResponse<String>> composeSimpleDiscountRules(@PathVariable int ruleIndex1, @PathVariable int ruleIndex2, @PathVariable String numericalOperator, @PathVariable String userId, @PathVariable String storeId ) {
+
+        Response<String> response = serviceLayer.composeSimpleDiscountRules(ruleIndex1, ruleIndex2, numericalOperator, userId, storeId);
+        return checkIfResponseIsGood(response);
+    }
+
+    @PostMapping("/composeCondDiscountRules/{ruleIndex1}/{ruleIndex2}/{logicalOperator}/{numericalOperator}/{userId}/{storeId}")
+    public ResponseEntity<APIResponse<String>> composeCondDiscountRules(@PathVariable int ruleIndex1, @PathVariable int ruleIndex2, @PathVariable String logicalOperator, @PathVariable String numericalOperator, @PathVariable String userId, @PathVariable String storeId ) {
+
+        Response<String> response = serviceLayer.composeCondDiscountRules(ruleIndex1, ruleIndex2, logicalOperator, numericalOperator, userId, storeId);
+        return checkIfResponseIsGood(response);
     }
 
     @DeleteMapping("/removeDiscountRuleFromStore/{ruleIndex}/{userId}/{storeId}")
@@ -1074,6 +1139,8 @@ public class MarketController {
 
         }
     }
+
+
 
 }
 
