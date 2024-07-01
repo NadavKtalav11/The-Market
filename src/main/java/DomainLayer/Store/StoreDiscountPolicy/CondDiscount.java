@@ -29,6 +29,10 @@ public class CondDiscount extends Discount{
         this.discountRule = rule;
     }
 
+    public Rule getDiscountRule() {
+        return this.discountRule;
+    }
+
     public String getDiscountRulesDescriptions() {
         return this.discountRule.getDescription();
     }

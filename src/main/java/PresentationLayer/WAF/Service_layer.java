@@ -665,11 +665,11 @@ public class Service_layer {
         }
     }
 
-    public Response<String> composePurchaseRules(int ruleIndex1, int ruleIndex2, String operator, String userId, String storeId) {
+    public Response<String> composeCurrentPurchaseRules(int ruleIndex1, int ruleIndex2, String operator, String userId, String storeId) {
         logger.info("Composing purchase rules");
 
         try {
-            market.composePurchaseRules(ruleIndex1, ruleIndex2, operator, userId, storeId);
+            market.composeCurrentPurchaseRules(ruleIndex1, ruleIndex2, operator, userId, storeId);
             return new Response<>("Purchase rules composed successfully", "Purchase rules composed successfully.");
         } catch (Exception e) {
             logger.error("Error occurred during composing purchase rules: {}", e.getMessage(), e);
@@ -714,11 +714,11 @@ public class Service_layer {
         }
     }
 
-    public Response<String> composeSimpleDiscountRules(int ruleIndex1, int ruleIndex2, String numericalOperator, String userId, String storeId) {
+    public Response<String> composeCurrentSimpleDiscountRules(int ruleIndex1, int ruleIndex2, String numericalOperator, String userId, String storeId) {
         logger.info("Composing simple discount rules");
 
         try {
-            market.composeSimpleDiscountRules(ruleIndex1, ruleIndex2, numericalOperator, userId, storeId);
+            market.composeCurrentSimpleDiscountRules(ruleIndex1, ruleIndex2, numericalOperator, userId, storeId);
             return new Response<>("Simple discount rules composed successfully", "Simple discount rules composed successfully.");
         } catch (Exception e) {
             logger.error("Error occurred during composing simple discount rules: {}", e.getMessage(), e);
@@ -726,11 +726,11 @@ public class Service_layer {
         }
     }
 
-    public Response<String> composeCondDiscountRules(int ruleIndex1, int ruleIndex2, String logicalOperator, String numericalOperator, String userId, String storeId) {
+    public Response<String> composeCurrentCondDiscountRules(int ruleIndex1, int ruleIndex2, String logicalOperator, String numericalOperator, String userId, String storeId) {
         logger.info("Composing discount rules");
 
         try {
-            market.composeCondDiscountRules(ruleIndex1, ruleIndex2, logicalOperator, numericalOperator, userId, storeId);
+            market.composeCurrentCondDiscountRules(ruleIndex1, ruleIndex2, logicalOperator, numericalOperator, userId, storeId);
             return new Response<>("Discount rules composed successfully", "Discount rules composed successfully.");
         } catch (Exception e) {
             logger.error("Error occurred during composing discount rules: {}", e.getMessage(), e);

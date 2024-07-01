@@ -954,10 +954,10 @@ public class MarketController {
         return checkIfResponseIsGood(response);
     }
 
-    @PostMapping("/composePurchaseRules/{ruleIndex1}/{ruleIndex2}/{operator}/{userId}/{storeId}")
-    public ResponseEntity<APIResponse<String>> composePurchaseRules(@PathVariable int ruleIndex1, @PathVariable int ruleIndex2, @PathVariable String operator, @PathVariable String userId, @PathVariable String storeId ) {
+    @PostMapping("/composeCurrentPurchaseRules/{ruleIndex1}/{ruleIndex2}/{operator}/{userId}/{storeId}")
+    public ResponseEntity<APIResponse<String>> composeCurrentPurchaseRules(@PathVariable int ruleIndex1, @PathVariable int ruleIndex2, @PathVariable String operator, @PathVariable String userId, @PathVariable String storeId ) {
 
-        Response<String> response = serviceLayer.composePurchaseRules(ruleIndex1, ruleIndex2, operator, userId, storeId);
+        Response<String> response = serviceLayer.composeCurrentPurchaseRules(ruleIndex1, ruleIndex2, operator, userId, storeId);
         return checkIfResponseIsGood(response);
     }
 
@@ -1049,17 +1049,17 @@ public class MarketController {
         }
     }
 
-    @PostMapping("/composeSimpleDiscountRules/{ruleIndex1}/{ruleIndex2}/{numericalOperator}/{userId}/{storeId}")
-    public ResponseEntity<APIResponse<String>> composeSimpleDiscountRules(@PathVariable int ruleIndex1, @PathVariable int ruleIndex2, @PathVariable String numericalOperator, @PathVariable String userId, @PathVariable String storeId ) {
+    @PostMapping("/composeCurrentSimpleDiscountRules/{ruleIndex1}/{ruleIndex2}/{numericalOperator}/{userId}/{storeId}")
+    public ResponseEntity<APIResponse<String>> composeCurrentSimpleDiscountRules(@PathVariable int ruleIndex1, @PathVariable int ruleIndex2, @PathVariable String numericalOperator, @PathVariable String userId, @PathVariable String storeId ) {
 
-        Response<String> response = serviceLayer.composeSimpleDiscountRules(ruleIndex1, ruleIndex2, numericalOperator, userId, storeId);
+        Response<String> response = serviceLayer.composeCurrentSimpleDiscountRules(ruleIndex1, ruleIndex2, numericalOperator, userId, storeId);
         return checkIfResponseIsGood(response);
     }
 
-    @PostMapping("/composeCondDiscountRules/{ruleIndex1}/{ruleIndex2}/{logicalOperator}/{numericalOperator}/{userId}/{storeId}")
-    public ResponseEntity<APIResponse<String>> composeCondDiscountRules(@PathVariable int ruleIndex1, @PathVariable int ruleIndex2, @PathVariable String logicalOperator, @PathVariable String numericalOperator, @PathVariable String userId, @PathVariable String storeId ) {
+    @PostMapping("/composeCurrentCondDiscountRules/{ruleIndex1}/{ruleIndex2}/{logicalOperator}/{numericalOperator}/{userId}/{storeId}")
+    public ResponseEntity<APIResponse<String>> composeCurrentCondDiscountRules(@PathVariable int ruleIndex1, @PathVariable int ruleIndex2, @PathVariable String logicalOperator, @PathVariable String numericalOperator, @PathVariable String userId, @PathVariable String storeId ) {
 
-        Response<String> response = serviceLayer.composeCondDiscountRules(ruleIndex1, ruleIndex2, logicalOperator, numericalOperator, userId, storeId);
+        Response<String> response = serviceLayer.composeCurrentCondDiscountRules(ruleIndex1, ruleIndex2, logicalOperator, numericalOperator, userId, storeId);
         return checkIfResponseIsGood(response);
     }
 

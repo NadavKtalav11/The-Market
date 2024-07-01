@@ -1463,7 +1463,7 @@ public class Market {
     }
 
 
-    public void composePurchaseRules(int ruleIndex1, int ruleIndex2, String operator, String userId, String storeId) throws Exception {
+    public void composeCurrentPurchaseRules(int ruleIndex1, int ruleIndex2, String operator, String userId, String storeId) throws Exception {
         if (userFacade.isMember(userId)){
             String memberId = userFacade.getMemberIdByUserId(userId);
             boolean succeeded = authenticationAndSecurityFacade.validateToken(authenticationAndSecurityFacade.getToken(memberId));
@@ -1479,10 +1479,10 @@ public class Market {
         String member_ID = this.userFacade.getMemberIdByUserId(userId);
         storeFacade.verifyStoreExistError(storeId);
         roleFacade.verifyStoreOwnerError(storeId, member_ID);
-        storeFacade.composePurchaseRules(ruleIndex1, ruleIndex2, operator, storeId);
+        storeFacade.composeCurrentPurchaseRules(ruleIndex1, ruleIndex2, operator, storeId);
     }
 
-    public void composeSimpleDiscountRules(int ruleIndex1, int ruleIndex2, String numericalOperator, String userId, String storeId) throws Exception {
+    public void composeCurrentSimpleDiscountRules(int ruleIndex1, int ruleIndex2, String numericalOperator, String userId, String storeId) throws Exception {
         if (userFacade.isMember(userId)){
             String memberId = userFacade.getMemberIdByUserId(userId);
             boolean succeeded = authenticationAndSecurityFacade.validateToken(authenticationAndSecurityFacade.getToken(memberId));
@@ -1498,10 +1498,10 @@ public class Market {
         String member_ID = this.userFacade.getMemberIdByUserId(userId);
         storeFacade.verifyStoreExistError(storeId);
         roleFacade.verifyStoreOwnerError(storeId, member_ID);
-        storeFacade.composeSimpleDiscountRules(ruleIndex1, ruleIndex2, numericalOperator, storeId);
+        storeFacade.composeCurrentSimpleDiscountRules(ruleIndex1, ruleIndex2, numericalOperator, storeId);
     }
 
-    public void composeCondDiscountRules(int ruleIndex1, int ruleIndex2, String logicalOperator, String numericalOperator, String userId, String storeId) throws Exception {
+    public void composeCurrentCondDiscountRules(int ruleIndex1, int ruleIndex2, String logicalOperator, String numericalOperator, String userId, String storeId) throws Exception {
         if (userFacade.isMember(userId)){
             String memberId = userFacade.getMemberIdByUserId(userId);
             boolean succeeded = authenticationAndSecurityFacade.validateToken(authenticationAndSecurityFacade.getToken(memberId));
@@ -1521,7 +1521,7 @@ public class Market {
         String member_ID = this.userFacade.getMemberIdByUserId(userId);
         storeFacade.verifyStoreExistError(storeId);
         roleFacade.verifyStoreOwnerError(storeId, member_ID);
-        storeFacade.composeCondDiscountRules(ruleIndex1, ruleIndex2, logicalOperator, numericalOperator, storeId);
+        storeFacade.composeCurrentCondDiscountRules(ruleIndex1, ruleIndex2, logicalOperator, numericalOperator, storeId);
     }
 
     public List<String> getStoreCurrentSimpleDiscountRules(String userId, String storeId) throws Exception {

@@ -38,6 +38,36 @@ public class DiscountPolicy {
         discountRules.add(new CondDiscount(discDetails, numericalOperators, rules, logicalOperators));
     }
 
+    public void composeCurrentCondDiscountRules(int ruleNum1, int ruleNum2, List<String> logicalOperators, List<String> numericalOperators) {
+        if (ruleNum1 < discountRules.size() && ruleNum2 < discountRules.size()) {
+            List<Rule> rules = new ArrayList<>();
+            List<DiscountValue> discDetails = new ArrayList<>();
+            if(discountRules.get(ruleNum1) instanceof CondDiscount discountRule1 && discountRules.get(ruleNum2) instanceof CondDiscount discountRule2) {
+                rules.add(discountRule1.getDiscountRule());
+                rules.add(discountRule2.getDiscountRule());
+                discDetails.add(discountRule1.getDiscountValue());
+                discDetails.add(discountRule2.getDiscountValue());
+                removeRule(ruleNum1);
+                removeRule(ruleNum2);
+                addCondRule(rules, logicalOperators, discDetails, numericalOperators);
+            } else throw new IllegalArgumentException(InvalidRuleIndex.toString());
+        } else throw new IllegalArgumentException(InvalidRuleIndex.toString());
+    }
+
+    public void composeCurrentSimpleDiscountRules(int ruleNum1, int ruleNum2, List<String> discountValueOperators) {
+        if (ruleNum1 < discountRules.size() && ruleNum2 < discountRules.size()) {
+            List<DiscountValue> discDetails = new ArrayList<>();
+            if(!(discountRules.get(ruleNum1) instanceof CondDiscount) && !(discountRules.get(ruleNum2) instanceof CondDiscount))
+            {
+                discDetails.add(discountRules.get(ruleNum1).getDiscountValue());
+                discDetails.add(discountRules.get(ruleNum2).getDiscountValue());
+                removeRule(ruleNum1);
+                removeRule(ruleNum2);
+                addSimple(discDetails, discountValueOperators);
+            } else throw new IllegalArgumentException(InvalidRuleIndex.toString());
+        } else throw new IllegalArgumentException(InvalidRuleIndex.toString());
+    }
+
     public void addSimple(List<DiscountValue> discDetails, List<String> discountValueOperators) {
         discountRules.add(new Discount(discDetails, discountValueOperators));
     }
@@ -64,5 +94,23 @@ public class DiscountPolicy {
         return rulesDescriptions;
     }
 
+    public List<String> getCondDiscountRulesDescriptions() {
+        List<String> rulesDescriptions = new ArrayList<>();
+        for (Discount discount : discountRules) {
+            if(discount instanceof CondDiscount condDiscount) {
+                rulesDescriptions.add(condDiscount.getDescription());
+            }
+        }
+        return rulesDescriptions;
+    }
 
+    public List<String> getSimpleDiscountRulesDescriptions() {
+        List<String> rulesDescriptions = new ArrayList<>();
+        for (Discount discount : discountRules) {
+            if(!(discount instanceof CondDiscount)) {
+                rulesDescriptions.add(discount.getDescription());
+            }
+        }
+        return rulesDescriptions;
+    }
 }

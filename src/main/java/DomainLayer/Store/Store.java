@@ -329,16 +329,16 @@ public class Store {
         return discountPolicy.getRulesDescriptions();
     }
 
-    public void composePurchaseRules(int ruleIndex1, int ruleIndex2, String operator) {
+    public void composeCurrentPurchaseRules(int ruleIndex1, int ruleIndex2, String operator) {
         purchasePolicy.composeCurrentStoreRules(ruleIndex1, ruleIndex2, operator);
     }
 
-    public void composeSimpleDiscountRules(int ruleIndex1, int ruleIndex2, String numericalOperator) {
-        discountPolicy.composeSimpleDiscountRules(ruleIndex1, ruleIndex2, numericalOperator);
+    public void composeCurrentSimpleDiscountRules(int ruleIndex1, int ruleIndex2, String numericalOperator) {
+        discountPolicy.composeCurrentSimpleDiscountRules(ruleIndex1, ruleIndex2, List.of(numericalOperator));
     }
 
-    public void composeCondDiscountRules(int ruleIndex1, int ruleIndex2, String logicalOperator, String numericalOperator) {
-        discountPolicy.composeCondDiscountRules(ruleIndex1, ruleIndex2, logicalOperator, numericalOperator);
+    public void composeCurrentCondDiscountRules(int ruleIndex1, int ruleIndex2, String logicalOperator, String numericalOperator) {
+        discountPolicy.composeCurrentCondDiscountRules(ruleIndex1, ruleIndex2, List.of(logicalOperator), List.of(numericalOperator));
     }
 
     public List<String> getStoreCurrentSimpleDiscountRules() {
