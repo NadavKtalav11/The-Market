@@ -4,25 +4,27 @@ import  DomainLayer.Notifications.Observer;
 import  DomainLayer.Notifications.Notification;
 
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.ElementCollection;
-import javax.persistence.Transient;
+import jakarta.persistence.*;
 
 import Util.CartDTO;
 import Util.UserDTO;
 import org.bouncycastle.crypto.generators.BaseKDFBytesGenerator;
+import org.springframework.stereotype.Component;
 
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+
+
+@Entity
+@Table(name = "user", schema = "themarketdb")
 public class User implements Observable {
 
+    @Id
     private String userID;
+    @Transient
     private State state;
     private String birthday;
     private String country;
@@ -48,6 +50,10 @@ public class User implements Observable {
         this.name = null;
         this.readyToPay = false;
         //this.cart = new Cart();
+
+    }
+
+    public User() {
 
     }
 

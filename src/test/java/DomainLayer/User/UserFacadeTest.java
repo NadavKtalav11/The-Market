@@ -1,6 +1,8 @@
 package DomainLayer.User;
 
 
+import DomainLayer.Repositories.MemberRepository;
+import DomainLayer.Repositories.UserRepository;
 import Util.UserDTO;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
