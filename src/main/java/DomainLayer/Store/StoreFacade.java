@@ -369,4 +369,8 @@ public class StoreFacade {
     public List<String> getStoreCurrentDiscountRules(String storeId) {
         return allStores.get(storeId).getStoreCurrentDiscountRules();
     }
+
+    public void composePurchaseRules(int ruleIndex1, int ruleIndex2, String operator, String storeId) {
+        allStores.get(storeId).composePurchaseRules(ruleIndex1, ruleIndex2, operator);
+    }
 }

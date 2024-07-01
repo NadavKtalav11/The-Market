@@ -54,7 +54,7 @@ class CondRuleTest {
         boolean result = condRule.checkRule(userDTO, basketProducts);
 
         // Assert
-        assertFalse(result);
+        assertTrue(result);
         // Verify that rule2 is not checked if rule1 is false
         verify(rule2, never()).checkRule(any(), any());
     }

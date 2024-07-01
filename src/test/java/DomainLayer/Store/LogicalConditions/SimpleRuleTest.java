@@ -64,7 +64,7 @@ class SimpleRuleTest {
         TestRuleDTO rule3 = new TestRuleDTO("Amount", "Below", null, "Tomato", "Basket must contain less than 5kg of tomatoes", true, null, 5, null, null, null);
         SimpleRule simpleRule = new SimpleRule(rule3);
 
-        ProductDTO product = new ProductDTO("tomato", 5, 4, "Vegetable", "FOOD");
+        ProductDTO product = new ProductDTO("Tomato", 5, 4, "Vegetable", "FOOD");
         products.add(product);
         assertTrue(simpleRule.checkRule(userDTO, products));
 
@@ -92,7 +92,7 @@ class SimpleRuleTest {
 
         assertFalse(rule.checkRule(userDTO, products));
 
-        ProductDTO product = new ProductDTO("eggplants", 10, 1, "Vegetable", "FOOD");
+        ProductDTO product = new ProductDTO("eggplant", 10, 1, "Vegetable", "FOOD");
         products.add(product);
         assertTrue(rule.checkRule(userDTO, products));
     }

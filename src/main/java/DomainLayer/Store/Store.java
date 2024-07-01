@@ -328,4 +328,8 @@ public class Store {
     public List<String> getStoreCurrentDiscountRules() {
         return discountPolicy.getRulesDescriptions();
     }
+
+    public void composePurchaseRules(int ruleIndex1, int ruleIndex2, String operator) {
+        purchasePolicy.composeCurrentStoreRules(ruleIndex1, ruleIndex2, operator);
+    }
 }

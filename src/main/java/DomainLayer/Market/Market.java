@@ -1463,4 +1463,22 @@ public class Market {
     }
 
 
+    public void composePurchaseRules(int ruleIndex1, int ruleIndex2, String operator, String userId, String storeId) throws Exception {
+        if (userFacade.isMember(userId)){
+            String memberId = userFacade.getMemberIdByUserId(userId);
+            boolean succeeded = authenticationAndSecurityFacade.validateToken(authenticationAndSecurityFacade.getToken(memberId));
+            if (!succeeded) {
+                logout(userId);
+            }
+        }
+
+        if (!operator.equals("AND") && !operator.equals("OR") && !operator.equals("COND")) {
+            throw new IllegalArgumentException(ExceptionsEnum.InvalidOperator.toString());
+        }
+
+        String member_ID = this.userFacade.getMemberIdByUserId(userId);
+        storeFacade.verifyStoreExistError(storeId);
+        roleFacade.verifyStoreOwnerError(storeId, member_ID);
+        storeFacade.composePurchaseRules(ruleIndex1, ruleIndex2, operator, storeId);
+    }
 }

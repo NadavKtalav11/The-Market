@@ -35,7 +35,7 @@ public class RemovePurchaseRuleTest {
         rules.add(rule2);
         impl.addPurchaseRuleToStore(rules, List.of("AND"), saarUserID, storeId);
 
-        TestRuleDTO rule3 = new TestRuleDTO("Amount", "Below", null, "Tomatoes", "Basket must contain less than 5kg of tomatoes", true, null, 5, null, null, null);
+        TestRuleDTO rule3 = new TestRuleDTO("Amount", "Below", null, "Tomato", "Basket must contain less than 5kg of tomatoes", true, null, 5, null, null, null);
         List<TestRuleDTO> singleRule = new ArrayList<>();
         singleRule.add(rule3);
         impl.addPurchaseRuleToStore(singleRule, new ArrayList<>(), saarUserID, storeId);

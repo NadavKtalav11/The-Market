@@ -665,6 +665,18 @@ public class Service_layer {
         }
     }
 
+    public Response<String> composePurchaseRules(int ruleIndex1, int ruleIndex2, String operator, String userId, String storeId) {
+        logger.info("Composing purchase rules");
+
+        try {
+            market.composePurchaseRules(ruleIndex1, ruleIndex2, operator, userId, storeId);
+            return new Response<>("Purchase rules composed successfully", "Purchase rules composed successfully.");
+        } catch (Exception e) {
+            logger.error("Error occurred during composing purchase rules: {}", e.getMessage(), e);
+            return new Response<>(null, e.getMessage());
+        }
+    }
+
 
     public Response<String> addDiscountCondRuleToStore(List<TestRuleDTO> testRules, List<String> logicOperators, List<DiscountValueDTO> discDetails, List<String> numericalOperators, String userId, String storeId) {
         logger.info("Adding conditional discount rule to store");

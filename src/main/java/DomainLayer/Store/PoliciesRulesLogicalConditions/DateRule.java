@@ -4,7 +4,9 @@ import DomainLayer.Store.Category;
 import Util.ProductDTO;
 import Util.UserDTO;
 
+import java.time.Clock;
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 
 public class DateRule extends TestRule {
@@ -17,7 +19,8 @@ public class DateRule extends TestRule {
 
     @Override
     public boolean test(UserDTO user, List<ProductDTO> products) {
-        LocalDate currentDate = LocalDate.now();
+        Clock clock = TestRule.getClock();
+        LocalDate currentDate = LocalDate.now(clock);
         boolean dateCheck = this.checkRange(range, currentDate, date);
 
         if(category !=null || productName != null) {

@@ -42,7 +42,7 @@ public class AddPurchaseRuleTest {
 
         assertTrue(impl.addPurchaseRuleToStore(rules, operators, saarUserID, storeId).isSuccess());
 
-        TestRuleDTO rule3 = new TestRuleDTO("Amount", "Below", null, "Tomatoes", "Basket must contain less than 5kg of tomatoes", true, null, 5, null, null, null);
+        TestRuleDTO rule3 = new TestRuleDTO("Amount", "Below", null, "Tomato", "Basket must contain less than 5kg of tomatoes", true, null, 5, null, null, null);
         List<TestRuleDTO> singleRule = new ArrayList<>();
         singleRule.add(rule3);
         List<String> emptyOperators = new ArrayList<>();
