@@ -112,7 +112,7 @@ public class Provision {
         Mockito.when(userFacade.getCartStoresByUser(userId)).thenReturn(List.of("store1"));
         Mockito.when(userFacade.getCartProductsByStoreAndUser("store1", userId)).thenReturn(Map.of("product1", List.of(1)));
         Mockito.when(storeFacade.getProductsDTOSByProductsNames(anyMap(), eq("store1"))).thenReturn(List.of(new ProductDTO()));
-        Mockito.doNothing().when(storeFacade).checkQuantity(anyString(), anyInt(), anyString());
+        Mockito.doNothing().when(storeFacade).checkQuantityAndPrice(anyString(), anyInt(), anyString());
 //        Mockito.when(storeFacade.checkPolicies(any(UserDTO.class), anyList(), eq("store1"))).thenReturn(true);
         Mockito.when(userFacade.getCartPriceByUser(userId)).thenReturn(100);
 //        Mockito.when(storeFacade.calculateTotalCartPriceAfterDiscount(eq("store1"), anyMap(), eq(100))).thenReturn(90);
@@ -158,7 +158,7 @@ public class Provision {
         Mockito.when(userFacade.getCartStoresByUser(userId)).thenReturn(List.of("store1"));
         Mockito.when(userFacade.getCartProductsByStoreAndUser("store1", userId)).thenReturn(Map.of("product1", List.of(1)));
         Mockito.when(storeFacade.getProductsDTOSByProductsNames(anyMap(), eq("store1"))).thenReturn(List.of(new ProductDTO()));
-        Mockito.doNothing().when(storeFacade).checkQuantity(anyString(), anyInt(), anyString());
+        Mockito.doNothing().when(storeFacade).checkQuantityAndPrice(anyString(), anyInt(), anyString());
 //        Mockito.doNothing().when(storeFacade).checkPurchasePolicy(userDTO, anyList(), "store1");
         Mockito.when(userFacade.getCartPriceByUser(userId)).thenReturn(100);
 //        Mockito.when(storeFacade.calcDiscountPolicy(userDTO, anyList(), "store1")).thenReturn(90);
@@ -203,7 +203,7 @@ public class Provision {
         Mockito.when(userFacade.getCartStoresByUser(userId)).thenReturn(List.of("store1"));
         Mockito.when(userFacade.getCartProductsByStoreAndUser("store1", userId)).thenReturn(Map.of("product1", List.of(1)));
         Mockito.when(storeFacade.getProductsDTOSByProductsNames(anyMap(), eq("store1"))).thenReturn(List.of(new ProductDTO()));
-        Mockito.doNothing().when(storeFacade).checkQuantity(anyString(), anyInt(), anyString());
+        Mockito.doNothing().when(storeFacade).checkQuantityAndPrice(anyString(), anyInt(), anyString());
 //        Mockito.doNothing().when(storeFacade).checkPurchasePolicy(userDTO, anyList() , eq("store1"));
         Mockito.when(userFacade.getCartPriceByUser(userId)).thenReturn(100);
 //        Mockito.when(storeFacade.calcDiscountPolicy(userDTO, anyList(), "store1")).thenReturn(90);
@@ -247,7 +247,7 @@ public class Provision {
         Mockito.when(userFacade.getCartStoresByUser(userId)).thenReturn(List.of("store1"));
         Mockito.when(userFacade.getCartProductsByStoreAndUser("store1", userId)).thenReturn(Map.of("product1", List.of(1)));
         Mockito.when(storeFacade.getProductsDTOSByProductsNames(anyMap(), eq("store1"))).thenReturn(List.of(new ProductDTO()));
-        Mockito.doNothing().when(storeFacade).checkQuantity(anyString(), anyInt(), anyString());
+        Mockito.doNothing().when(storeFacade).checkQuantityAndPrice(anyString(), anyInt(), anyString());
 //        Mockito.doNothing().when(storeFacade).checkPurchasePolicy(userDTO, anyList(), "store1");
         Mockito.when(userFacade.getCartPriceByUser(userId)).thenReturn(100);
 //        Mockito.when(storeFacade.calcDiscountPolicy(userDTO, anyList(), "store1")).thenReturn(90);

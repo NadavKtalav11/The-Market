@@ -242,7 +242,7 @@ public class StoreFacadeTest {
     }
 
     @Test
-    void testCheckQuantity() {
+    void testCheckQuantity() throws Exception {
         String storeId = "store1";
         String productName = "Milk";
         int quantity = 5;
@@ -250,8 +250,10 @@ public class StoreFacadeTest {
         when(storeRepository.get(storeId)).thenReturn(mockStore);
         when(mockStore.checkProductExists(productName)).thenReturn(true);
         when(mockStore.checkProductQuantity(productName, quantity)).thenReturn(true);
+        when(mockStore.getProductDTOByName(productName, quantity)).thenReturn(mockProduct);
+        when(mockProduct.getPrice()).thenReturn(10);
 
-        storeFacade.checkQuantity(productName, quantity, storeId);
+        storeFacade.checkQuantityAndPrice(productName, quantity, storeId);
 
         verify(mockStore).checkProductExists(productName);
         verify(mockStore).checkProductQuantity(productName, quantity);
