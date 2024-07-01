@@ -14,14 +14,22 @@ public class CondRule extends CompositeRule {
 
     @Override
     public boolean checkRule(UserDTO user, List<ProductDTO> products) {
-        if (rule1.checkRule(user, products)) {
-            return rule2.checkRule(user, products);
+        synchronized (rule1Lock){
+            synchronized (rule2Lock){
+                if (rule1.checkRule(user, products)) {
+                    return rule2.checkRule(user, products);
+                }
+                return true;
+            }
         }
-        return true;
     }
 
     @Override
     public String getDescription() {
-        return " (" + rule1.getDescription() + " only if " + rule2.getDescription() + ") ";
+        synchronized (rule1Lock) {
+            synchronized (rule2Lock) {
+                return " (" + rule1.getDescription() + " only if " + rule2.getDescription() + ") ";
+            }
+        }
     }
 }

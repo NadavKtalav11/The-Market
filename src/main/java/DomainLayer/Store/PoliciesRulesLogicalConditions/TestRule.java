@@ -1,6 +1,7 @@
 package DomainLayer.Store.PoliciesRulesLogicalConditions;
 
 import DomainLayer.Store.Category;
+import Util.ExceptionsEnum;
 import Util.ProductDTO;
 import Util.UserDTO;
 
@@ -14,6 +15,12 @@ public abstract class TestRule {
     protected final String description;
     protected final boolean contains;
     private static final ThreadLocal<Clock> clock = ThreadLocal.withInitial(Clock::systemDefaultZone); // Default clock
+    protected final Object rangeLock;
+    protected final Object categoryLock;
+    protected final Object productNameLock;
+    protected final Object descriptionLock;
+    protected final Object containsLock;
+    private static final Object clockLock = new Object();
 
     public TestRule(String range, Category category, String productName, String description, boolean contains) {
         this.range = range;
@@ -21,30 +28,49 @@ public abstract class TestRule {
         this.productName = productName;
         this.description = description;
         this.contains = contains;
+        this.rangeLock = new Object();
+        this.categoryLock = new Object();
+        this.productNameLock = new Object();
+        this.descriptionLock = new Object();
+        this.containsLock = new Object();
     }
 
     public abstract boolean test(UserDTO user, List<ProductDTO> products);
 
     protected boolean isCategoryRule() {
-        return category != null && productName == null;
+        synchronized (categoryLock) {
+            synchronized (productNameLock) {
+                return category != null && productName == null;
+            }
+        }
     }
 
     protected boolean isProductsRule() {
-        return category == null && productName != null;
+        synchronized (categoryLock) {
+            synchronized (productNameLock) {
+                return category == null && productName != null;
+            }
+        }
     }
 
     protected int getQuantity(List<ProductDTO> products) {
         if (isCategoryRule()) {
-            return products.stream().filter(p -> p.getCategoryStr().equals(category.toString())).mapToInt(ProductDTO::getQuantity).sum();
+            synchronized (categoryLock) {
+                return products.stream().filter(p -> p.getCategoryStr().equals(category.toString())).mapToInt(ProductDTO::getQuantity).sum();
+            }
         } else if (isProductsRule()) {
-            //loop through products and sum the quantity of the product with the given name
-            return products.stream().filter(p -> p.getName().equals(productName)).mapToInt(ProductDTO::getQuantity).sum();
+            synchronized (productNameLock) {
+                //loop through products and sum the quantity of the product with the given name
+                return products.stream().filter(p -> p.getName().equals(productName)).mapToInt(ProductDTO::getQuantity).sum();
+            }
         }
-        throw new IllegalArgumentException("Invalid rule type");
+        throw new IllegalArgumentException(ExceptionsEnum.InvalidRuleType.toString());
     }
 
     public String getDescription() {
-        return description;
+        synchronized (descriptionLock) {
+            return description;
+        }
     }
 
     public boolean checkRange(String range, double actual, double expected)
@@ -57,15 +83,44 @@ public abstract class TestRule {
             case "Exact":
                 return actual == expected;
             default:
-                throw new IllegalArgumentException("Invalid range: " + range);
+                throw new IllegalArgumentException(ExceptionsEnum.InvalidRangeType.toString());
         }
     }
 
     public static void setClock(Clock newClock) {
-        clock.set(newClock);
+        synchronized (clockLock) {
+            clock.set(newClock);
+        }
+
     }
 
     public static Clock getClock() {
-        return clock.get();
+        synchronized (clockLock) {
+            return clock.get();
+        }
+    }
+
+    protected String getRange() {
+        synchronized (rangeLock) {
+            return range;
+        }
+    }
+
+    protected Category getCategory() {
+        synchronized (categoryLock) {
+            return category;
+        }
+    }
+
+    protected String getProductName() {
+        synchronized (productNameLock) {
+            return productName;
+        }
+    }
+
+    protected boolean getContains() {
+        synchronized (containsLock) {
+            return contains;
+        }
     }
 }

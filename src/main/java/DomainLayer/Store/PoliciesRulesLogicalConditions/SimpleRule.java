@@ -9,10 +9,11 @@ import Util.UserDTO;
 import java.util.List;
 
 public class SimpleRule implements Rule {
-
     private TestRule rule;
+    protected final Object ruleLock;
 
     public SimpleRule(TestRuleDTO rule) {
+        ruleLock = new Object();
         switch (rule.getType()) {
             case "Time":
                 this.rule = new TimeRule(rule.getTime(), rule.getRange(), Category.fromString(rule.getCategory()), rule.getProductName(), rule.getDescription(), rule.isContains());
@@ -35,17 +36,15 @@ public class SimpleRule implements Rule {
     }
 
     public String getDescription() {
-        return rule.getDescription();
+        synchronized (ruleLock) {
+            return rule.getDescription();
+        }
     }
 
     @Override
     public boolean checkRule(UserDTO user, List<ProductDTO> products) {
-        return rule.test(user, products);
+        synchronized (ruleLock) {
+            return rule.test(user, products);
+        }
     }
-
-    /*
-    public TestRule getTestRule() {
-        return rule;
-    }
-     */
 }

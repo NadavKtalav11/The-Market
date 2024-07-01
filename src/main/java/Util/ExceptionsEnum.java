@@ -263,6 +263,16 @@ package Util;
             public String toString(){
                 return "Invalid rule type";
             }
+        },
+        UserCannotBeNull{
+            public String toString(){
+                return "User cannot be null";
+            }
+        },
+        InvalidRangeType{
+            public String toString(){
+                return "Invalid range type";
+            }
         };
     }
 

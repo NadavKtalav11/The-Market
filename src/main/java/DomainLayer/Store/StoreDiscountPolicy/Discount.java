@@ -11,8 +11,10 @@ import java.util.List;
 
 public class Discount {
     protected DiscountValue discountValue;
+    private final Object discountValueLock;
 
     public Discount(List<DiscountValue> discountValue, List<String> operators) {
+        discountValueLock = new Object();
         setDiscountValue(discountValue, operators);
     }
 
@@ -22,22 +24,31 @@ public class Discount {
             for (int i = 0; i < operators.size(); i++) {
                 switch (operators.get(i)) {
                     case "MAX" -> discountValue = new MaxDiscount(discountValue, discountValues.get(i + 1));
-                    case "ADDITION" -> discountValue = new AdditionDiscount(discountValue, discountValues.get(i + 1));
+                    case "ADDITION" ->
+                            discountValue = new AdditionDiscount(discountValue, discountValues.get(i + 1));
                 }
             }
         }
-        this.discountValue = discountValue;
+        synchronized (discountValueLock) {
+            this.discountValue = discountValue;
+        }
     }
 
     public int calcDiscount(List<ProductDTO> basketProducts, UserDTO userDTO) {
-        return discountValue.calcDiscount(basketProducts);
+        synchronized (discountValueLock) {
+            return discountValue.calcDiscount(basketProducts);
+        }
     }
 
     public DiscountValue getDiscountValue() {
-        return discountValue;
+        synchronized (discountValueLock) {
+            return discountValue;
+        }
     }
 
     public String getDescription() {
-        return discountValue.getDescription();
+        synchronized (discountValueLock) {
+            return discountValue.getDescription();
+        }
     }
 }

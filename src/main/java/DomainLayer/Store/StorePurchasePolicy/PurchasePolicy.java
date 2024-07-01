@@ -15,28 +15,19 @@ import java.util.List;
 import static Util.ExceptionsEnum.*;
 
 public class PurchasePolicy {
-    private List<String> usersIdsActivatePolicy;
-    private List<String> productNamesActivatePolicy;
-    private Purchase purchase;
 
-    private final Object usersLock;
-    private final Object productLock;
+    private final Object purchaseRulesLock;
     private List<Rule> purchaseRules;
 
     public PurchasePolicy()
     {
-        this.usersIdsActivatePolicy = new ArrayList<>();
-        this.productNamesActivatePolicy = new ArrayList<>();
-        this.purchase = new Purchase(); //Default purchase policy
-        usersLock = new Object();
-        productLock = new Object();
+        purchaseRulesLock = new Object();
         this.purchaseRules = new ArrayList<>();
     }
 
     public boolean checkPurchasePolicy(UserDTO userDTO, List<ProductDTO> products)
     {
-        for (Rule rule : purchaseRules)
-        {
+        for (Rule rule : getPurchaseRules()) {
             if (!rule.checkRule(userDTO, products))
                 return false;
         }
@@ -46,7 +37,7 @@ public class PurchasePolicy {
     public void addRule(List<Rule> rules, List<String> operators)
     {
         Rule rule = rules.get(0);
-        if(rules.size() > 1) {
+        if (rules.size() > 1) {
             for (int i = 0; i < operators.size(); i++) {
                 switch (operators.get(i)) {
                     case "AND" -> rule = new AndRule(rule, rules.get(i + 1));
@@ -55,12 +46,12 @@ public class PurchasePolicy {
                 }
             }
         }
-        purchaseRules.add(rule);
+        getPurchaseRules().add(rule);
     }
 
     public List<String> getRulesDescriptions() {
         List<String> rulesDescriptions = new ArrayList<>();
-        for (Rule rule : purchaseRules) {
+        for (Rule rule : getPurchaseRules()) {
             rulesDescriptions.add(rule.getDescription());
         }
         return rulesDescriptions;
@@ -68,10 +59,9 @@ public class PurchasePolicy {
 
     public void composeCurrentStoreRules(int ruleNum1, int ruleNum2, String Operator)
     {
-        if (ruleNum1 < purchaseRules.size() && ruleNum2 < purchaseRules.size())
-        {
-            Rule rule1 = purchaseRules.get(ruleNum1);
-            Rule rule2 = purchaseRules.get(ruleNum2);
+        if (ruleNum1 < getPurchaseRules().size() && ruleNum2 < getPurchaseRules().size()) {
+            Rule rule1 = getPurchaseRules().get(ruleNum1);
+            Rule rule2 = getPurchaseRules().get(ruleNum2);
 
             // Create a list of indices and sort in reverse order
             List<Integer> indices = Arrays.asList(ruleNum1, ruleNum2);
@@ -83,13 +73,18 @@ public class PurchasePolicy {
             }
 
             addRule(List.of(rule1, rule2), List.of(Operator));
-        }
-        else throw new IllegalArgumentException(InvalidRuleIndex.toString());
+        } else throw new IllegalArgumentException(InvalidRuleIndex.toString());
     }
 
     public void removeRule(int ruleNum) {
-        if (ruleNum < purchaseRules.size())
-            purchaseRules.remove(ruleNum);
+        if (ruleNum < getPurchaseRules().size())
+            getPurchaseRules().remove(ruleNum);
         else throw new IllegalArgumentException(InvalidRuleIndex.toString());
+    }
+
+    private List<Rule> getPurchaseRules(){
+        synchronized (purchaseRulesLock) {
+            return purchaseRules;
+        }
     }
 }

@@ -1,6 +1,7 @@
 package DomainLayer.Store.PoliciesRulesLogicalConditions;
 
 import DomainLayer.Store.Category;
+import Util.ExceptionsEnum;
 import Util.ProductDTO;
 import Util.UserDTO;
 
@@ -13,26 +14,27 @@ import java.util.List;
 
 public class TimeRule extends TestRule {
     private LocalTime time;
+    protected final Object timeLock;
 
     public TimeRule(LocalTime time, String range, Category category, String productName, String description, boolean contains) {
         super(range, category, productName, description, contains);
         this.time = time;
+        this.timeLock = new Object();
     }
 
     @Override
     public boolean test(UserDTO user, List<ProductDTO> products) {
         Clock clock = TestRule.getClock();
         LocalTime currentTime = LocalTime.now(clock);
-        boolean timeCheck = this.checkRange(range, currentTime, time);
+        boolean timeCheck = this.checkRange(getRange(), currentTime, getTime());
 
-        if(category !=null || productName != null) {
-            if(timeCheck) {
-                if (contains)
+        if (getCategory() != null || getProductName() != null) {
+            if (timeCheck) {
+                if (getContains())
                     return getQuantity(products) > 0;
                 else
                     return getQuantity(products) == 0;
-            }
-            else
+            } else
                 return true;
         }
         return timeCheck;
@@ -47,7 +49,14 @@ public class TimeRule extends TestRule {
             case "Exact":
                 return currentTime.equals(time);
             default:
-                throw new IllegalArgumentException("Invalid range type");
+                throw new IllegalArgumentException(ExceptionsEnum.InvalidRangeType.toString());
+        }
+    }
+
+    private LocalTime getTime()
+    {
+        synchronized (timeLock) {
+            return time;
         }
     }
 }

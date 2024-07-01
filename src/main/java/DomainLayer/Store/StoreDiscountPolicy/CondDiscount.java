@@ -9,15 +9,18 @@ import java.util.List;
 
 public class CondDiscount extends Discount{
     private Rule discountRule;
+    private final Object discountRuleLock;
+
     public CondDiscount(List<DiscountValue> discountValue, List<String> discountValueOperators, List<Rule> discountRule, List<String> discountRuleOperators) {
         super(discountValue, discountValueOperators);
+        discountRuleLock = new Object();
         this.setDiscountRule(discountRule, discountRuleOperators);
     }
 
     public void setDiscountRule(List<Rule> rules, List<String> operators)
     {
         Rule rule = rules.get(0);
-        if(rules.size() > 1) {
+        if (rules.size() > 1) {
             for (int i = 0; i < operators.size(); i++) {
                 switch (operators.get(i)) {
                     case "AND" -> rule = new AndRule(rule, rules.get(i + 1));
@@ -26,26 +29,36 @@ public class CondDiscount extends Discount{
                 }
             }
         }
-        this.discountRule = rule;
+        synchronized (discountRuleLock) {
+            this.discountRule = rule;
+        }
     }
 
     public Rule getDiscountRule() {
-        return this.discountRule;
+        synchronized (discountRuleLock) {
+            return this.discountRule;
+        }
     }
 
     public String getDiscountRulesDescriptions() {
-        return this.discountRule.getDescription();
+        synchronized (discountRuleLock) {
+            return this.discountRule.getDescription();
+        }
     }
 
     @Override
     public int calcDiscount(List<ProductDTO> basketProducts , UserDTO userDTO) {
-        if(discountRule.checkRule(userDTO, basketProducts))
-            return super.calcDiscount(basketProducts, userDTO);
-        return 0;
+        synchronized (discountRuleLock) {
+            if (discountRule.checkRule(userDTO, basketProducts))
+                return super.calcDiscount(basketProducts, userDTO);
+            return 0;
+        }
     }
 
     @Override
     public String getDescription() {
-        return " (" + super.getDescription() + " only if " + discountRule.getDescription() + ") ";
+        synchronized (discountRuleLock) {
+            return " (" + super.getDescription() + " only if " + discountRule.getDescription() + ") ";
+        }
     }
 }

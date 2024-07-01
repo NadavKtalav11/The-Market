@@ -8,10 +8,12 @@ import java.util.List;
 
 public class PriceRule extends TestRule {
     private int price;
+    protected final Object priceLock;
 
     public PriceRule(int price, String range, Category category, String productName, String description, boolean contains) {
         super(range, category, productName, description, contains);
         this.price = price;
+        this.priceLock = new Object();
     }
 
     @Override
@@ -22,7 +24,13 @@ public class PriceRule extends TestRule {
             totalPrice += product.getPrice();
         }
 
-        return checkRange(range, totalPrice, price);
+        return checkRange(getRange(), totalPrice, getPrice());
+    }
+
+    private int getPrice(){
+        synchronized (priceLock) {
+            return price;
+        }
     }
 }
 

@@ -1,6 +1,7 @@
 package DomainLayer.Store.PoliciesRulesLogicalConditions;
 
 import DomainLayer.Store.Category;
+import Util.ExceptionsEnum;
 import Util.ProductDTO;
 import Util.UserDTO;
 
@@ -11,21 +12,22 @@ import java.util.List;
 
 public class DateRule extends TestRule {
     private LocalDate date;
+    protected final Object dateLock;
 
     public DateRule(LocalDate date, String range, Category category, String productName, String description, boolean contains) {
         super(range, category, productName, description, contains);
         this.date = date;
+        this.dateLock = new Object();
     }
 
     @Override
     public boolean test(UserDTO user, List<ProductDTO> products) {
         Clock clock = TestRule.getClock();
         LocalDate currentDate = LocalDate.now(clock);
-        boolean dateCheck = this.checkRange(range, currentDate, date);
-
-        if(category !=null || productName != null) {
+        boolean dateCheck = this.checkRange(getRange(), currentDate, getDate());
+        if(getCategory() !=null || getProductName() != null) {
             if(dateCheck) {
-                if (contains)
+                if (getContains())
                     return getQuantity(products) > 0;
                 else
                     return getQuantity(products) == 0;
@@ -45,7 +47,14 @@ public class DateRule extends TestRule {
             case "Exact":
                 return currentDate.equals(date);
             default:
-                throw new IllegalArgumentException("Invalid range type");
+                throw new IllegalArgumentException(ExceptionsEnum.InvalidRangeType.toString());
+        }
+    }
+
+    private LocalDate getDate()
+    {
+        synchronized (dateLock) {
+            return date;
         }
     }
 }
