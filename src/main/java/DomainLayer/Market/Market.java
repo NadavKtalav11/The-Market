@@ -1,14 +1,17 @@
 package DomainLayer.Market;
 
 import DomainLayer.AuthenticationAndSecurity.AuthenticationAndSecurityFacade;
-import DomainLayer.Notifications.Notification;
+//import DomainLayer.Notifications.Notification;
 import DomainLayer.Notifications.NotificationFacade;
-import DomainLayer.Notifications.StoreNotification;
+//import DomainLayer.Notifications.StoreNotification;
 import DomainLayer.PaymentServices.PaymentServicesFacade;
 import DomainLayer.Role.RoleFacade;
 import DomainLayer.Store.Product;
 import DomainLayer.Store.StoreDiscountPolicy.DiscountRulesRepository;
 import DomainLayer.Store.StorePurchasePolicy.PurchaseRulesRepository;
+//import PresentationLayer.Vaadin.NotificationsEndPoint;
+//import PresentationLayer.WAF.NotificationService;
+import PresentationLayer.Vaadin.MyWebSocketHandler;
 import Util.ExceptionsEnum;
 
 import DomainLayer.Store.StoreFacade;
@@ -18,6 +21,7 @@ import Util.*;
 
 import org.yaml.snakeyaml.Yaml;
 import java.io.FileInputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.Map;
 
@@ -43,6 +47,9 @@ public class Market {
     private final Object validationLock;
     private NotificationFacade notificationFacade;
 
+   // private NotificationsEndPoint notificationService;
+    private MyWebSocketHandler myWebSocketHandler;
+
     public synchronized static Market getInstance() {
         if (MarketInstance == null) {
             MarketInstance = new Market();
@@ -62,6 +69,9 @@ public class Market {
         managersLock = new Object();
         validationLock = new Object();
         notificationFacade = new NotificationFacade();
+        //notificationService = new NotificationsEndPoint();
+        myWebSocketHandler =  MyWebSocketHandler.getInstance();
+        //init(new PaymentServiceDTO(" ds","f f" , "  ee"), new SupplyServiceDTO(" vv", "  vvv" , new HashSet<>(), new HashSet<>()));
     }
 
 
@@ -79,6 +89,9 @@ public class Market {
         validationLock = new Object();
         notificationFacade = new NotificationFacade();
 
+        //notificationService = new NotificationsEndPoint();
+        myWebSocketHandler =  MyWebSocketHandler.getInstance();
+
     }
 
     public Market(UserFacade userFacade, AuthenticationAndSecurityFacade authenticationAndSecurityFacade,
@@ -95,6 +108,9 @@ public class Market {
         validationLock = new Object();
         notificationFacade = new NotificationFacade();
 
+        //notificationService = new NotificationsEndPoint();
+        myWebSocketHandler =  MyWebSocketHandler.getInstance();
+
     }
 
     public Market(UserFacade userFacade){
@@ -109,6 +125,9 @@ public class Market {
         managersLock = new Object();
         validationLock = new Object();
         notificationFacade = new NotificationFacade();
+
+        //notificationService = new NotificationsEndPoint();
+        myWebSocketHandler =  MyWebSocketHandler.getInstance();
 
     }
 
@@ -143,7 +162,13 @@ public class Market {
         paymentServicesFacade = paymentServicesFacade1;
         supplyServicesFacade = supplyServicesFacade1;
         notificationFacade = new NotificationFacade();
+
+
+        //notificationService = new NotificationsEndPoint();
+        myWebSocketHandler =  MyWebSocketHandler.getInstance();
+
         return MarketInstance;
+
 
 
     }
@@ -571,12 +596,32 @@ public class Market {
     }
 
 
-    public void sendMessagesOnPurchaseToStoreOwners(CartDTO cartDTO){
-        for (String storeId : cartDTO.getStoreToProducts().keySet()){
+//    public void sendMessagesOnPurchaseToStoreOwners(CartDTO cartDTO){
+//        for (String storeId : cartDTO.getStoreToProducts().keySet()){
+//            List<String> storeOwnerIds = roleFacade.getAllStoreOwners(storeId);
+//            String storeName = storeFacade.getStoreName(storeId);
+//            for (String memberId: storeOwnerIds) {
+//                notificationFacade.sendLateMessage(memberId , "A purchase was made from your store - "+ storeName);
+//            }
+//        }
+//    }
+
+    public void sendMessagesOnPurchaseToStoreOwners(CartDTO cartDTO) throws Exception { // Inject VaadinUserService and NotificationService
+
+        for (String storeId : cartDTO.getStoreToProducts().keySet()) {
             List<String> storeOwnerIds = roleFacade.getAllStoreOwners(storeId);
             String storeName = storeFacade.getStoreName(storeId);
-            for (String memberId: storeOwnerIds) {
-                notificationFacade.sendLateMessage(memberId , "A purchase was made from your store - "+ storeName);
+
+            for (String memberId : storeOwnerIds) {
+                String message = "A purchase was made from your store - " + storeName;
+                //try {
+                myWebSocketHandler.handleStringMessage(memberId, message); // Send real-time notification via WebSocket
+                //}
+//                catch (IOException e) {
+//                    // Handle exception (log error or send late notification)
+//                    System.err.println("Failed to send real-time notification: " + e.getMessage());
+//                    notificationFacade.sendLateMessage(memberId, message); // Fallback to late notification
+//                }
             }
         }
     }
@@ -748,6 +793,8 @@ public class Market {
         String encryptedPassword = authenticationAndSecurityFacade.encodePassword(password);
         String memberId = userFacade.Login(userId, username,encryptedPassword);
         authenticationAndSecurityFacade.generateToken(memberId);
+        //notificationService.sendNotification("user" + userId + "logged in successfully");
+        //myWebSocketHandler.handleStringMessage(userId, "Hello from server!");
         return memberId;
     }
 
@@ -1048,7 +1095,7 @@ public class Market {
         storeFacade.reopenStore(store_ID);
     }
 
-    public void sendMessageToStaffOfStore(Notification notification, String member_ID) {
+ /*   public void sendMessageToStaffOfStore(Notification notification, String member_ID) {
         userFacade.getUserByID(member_ID).notifyObserver(notification);
 //       // founder.notifyObserver(notification);
 //        for (User u : getOwnersOfStore())
@@ -1056,6 +1103,9 @@ public class Market {
 //        for (User u : getManagersOfStore())
 //            u.notifyObserver(notification);
     }
+    */
+
+
 
 
 

@@ -1,7 +1,7 @@
 package DomainLayer.User;
-import  DomainLayer.Notifications.Observable;
-import  DomainLayer.Notifications.Observer;
-import  DomainLayer.Notifications.Notification;
+//import  DomainLayer.Notifications.Observable;
+//import  DomainLayer.Notifications.Observer;
+//import  DomainLayer.Notifications.Notification;
 
 
 import javax.persistence.Entity;
@@ -20,7 +20,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-public class User implements Observable {
+public class User   {
 
     private String userID;
     private State state;
@@ -31,12 +31,12 @@ public class User implements Observable {
     private String name;
     private boolean readyToPay;
 
-    @Transient
-    private Observer observer;
+    //@Transient
+    //private Observer observer;
     // maps notification to a bool value: true - if was published to user, false - if wasn't
 
-    @ElementCollection
-    private Map<Notification,Boolean> notifications;
+    //@ElementCollection
+   // private Map<Notification,Boolean> notifications;
 
     public User(String userID){
         this.userID = userID;
@@ -60,7 +60,7 @@ public class User implements Observable {
         this.name = userDTO.getName();
     }
 
-    @Override
+    /*@Override
     public void registerObserver(Observer observer) {
         this.observer=observer;
         notifyObserver();
@@ -82,8 +82,8 @@ public class User implements Observable {
         }
         return false;
         //DAO.getInstance().merge(this);
-    }
-
+    }*/
+/*
     @Override
     public void notifyObserver() {
         LinkedList<Notification> published=new LinkedList<>();
@@ -98,6 +98,8 @@ public class User implements Observable {
       //  if(published.size()>0)
           //  DAO.getInstance().merge(this);
     }
+
+ */
 
 
 
