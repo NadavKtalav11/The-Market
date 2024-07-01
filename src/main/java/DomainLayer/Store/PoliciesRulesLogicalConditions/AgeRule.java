@@ -25,7 +25,7 @@ public class AgeRule extends TestRule {
         if (user == null) {
             throw new IllegalArgumentException("User cannot be null.");
         }
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yy");
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
         LocalDate birthdate = LocalDate.parse(user.getBirthday(), formatter);
         LocalDate today = LocalDate.now(getClock());
         int userAge = Period.between(birthdate, today).getYears();

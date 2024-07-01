@@ -31,13 +31,13 @@ class SimpleRuleTest {
         TestRuleDTO rule1 = new TestRuleDTO("Age", "Below", "ALCOHOL", null, "Alcohol cannot be sold to users below the age of 18", false, 18, null, null, null, null);
         SimpleRule simpleRule = new SimpleRule(rule1);
 
-        userDTO.setBirthday("15/06/10"); // User is 13 years old
+        userDTO.setBirthday("15/06/2010"); // User is 13 years old
         ProductDTO product = new ProductDTO("Beer", 10, 1, "Alcohol", "ALCOHOL");
         products.add(product);
 
         assertFalse(simpleRule.checkRule(userDTO, products));
 
-        userDTO.setBirthday("15/06/00"); // User is 23 years old
+        userDTO.setBirthday("15/06/2000"); // User is 23 years old
         assertTrue(simpleRule.checkRule(userDTO, products));
     }
 

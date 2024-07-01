@@ -22,7 +22,7 @@ public class AdditionDiscount extends CompositeNumericalDiscount {
 
     @Override
     public String getDescription() {
-        return " (Addition between " + discountValue1.getDescription() + " and " + discountValue2.getDescription() + ") ";
+        return " (" + discountValue1.getDescription() + " addition " + discountValue2.getDescription() + ") ";
     }
 
 }
