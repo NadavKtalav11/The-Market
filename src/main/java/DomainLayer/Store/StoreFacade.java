@@ -116,11 +116,12 @@ public class StoreFacade {
     }
 
 
-    public void checkQuantity(String productName, int quantity, String storeId)
-    {
+    public void checkQuantityAndPrice(String productName, int quantity, String storeId) throws Exception {
         this.checkIfProductExists(productName, storeId);
         this.checkProductQuantityAvailability(productName, storeId, quantity);
         this.checkIfProductQuantityIsPositive(quantity);
+        Store store = getStoreByID(storeId);
+        checkProductPrice(store.getProductDTOByName(productName, quantity));
     }
 
     public void checkIfProductExists(String productName, String storeId){
@@ -184,6 +185,7 @@ public class StoreFacade {
 
     public void addProductToStore(String storeId, ProductDTO product) throws Exception {
 
+        checkProductPrice(product);
         if (!checkProductExistInStore(product.getName(), storeId)) {
             if (product.getQuantity() >= 0) {
                 allStores.get(storeId).addProduct(product);
@@ -194,6 +196,12 @@ public class StoreFacade {
             throw new Exception(ExceptionsEnum.productAlreadyExistInStore.toString());
         }
     }
+
+    private void checkProductPrice(ProductDTO product) {
+        if (product.getPrice() < 0)
+            throw new IllegalArgumentException(ExceptionsEnum.NegativePrice.toString());
+    }
+
 
     public void removeProductFromStore(String storeId, String productName) throws Exception {
         if (checkProductExistInStore(productName, storeId)) {
@@ -206,6 +214,7 @@ public class StoreFacade {
 
     public void updateProductInStore(String storeId, ProductDTO product) throws Exception {
 
+        checkProductPrice(product);
         if (checkProductExistInStore(product.getName(), storeId)) {
             if (product.getQuantity() >= 0) {
                 allStores.get(storeId).updateProduct(product);

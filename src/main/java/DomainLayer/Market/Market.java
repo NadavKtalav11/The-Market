@@ -419,7 +419,7 @@ public class Market {
             List<ProductDTO> productDTOS = this.storeFacade.getProductsDTOSByProductsNames(products, store_ID);
             for(String productName: products.keySet()) {
                 quantity = products.get(productName).get(0);
-                this.storeFacade.checkQuantity(productName, quantity, store_ID);
+                this.storeFacade.checkQuantityAndPrice(productName, quantity, store_ID);
             }
 
 //            this.storeFacade.checkPurchasePolicy(userDTO, productDTOS, store_ID);
@@ -529,7 +529,7 @@ public class Market {
             }
         }
 
-        storeFacade.checkQuantity(productName, quantity, storeId);
+        storeFacade.checkQuantityAndPrice(productName, quantity, storeId);
         Map<String, List<Integer>> products = this.userFacade.getCartProductsByStoreAndUser(storeId, userId);
         products.put(productName, new ArrayList<>(Arrays.asList(quantity)));
         List<ProductDTO> productDTOS = storeFacade.getProductsDTOSByProductsNames(products, storeId);
@@ -943,7 +943,7 @@ public class Market {
         else
         {
             userFacade.checkIfCanRemove(productName, storeId, userId);
-            storeFacade.checkQuantity(productName, quantity, storeId);
+            storeFacade.checkQuantityAndPrice(productName, quantity, storeId);
             Map<String, List<Integer>> products = this.userFacade.getCartProductsByStoreAndUser(storeId, userId);
             int totalPrice = storeFacade.calcPrice(productName, quantity, storeId, userId);
             products.put(productName, new ArrayList<>(Arrays.asList(quantity, totalPrice)));
@@ -1018,7 +1018,7 @@ public class Market {
             while(var10.hasNext()) {
                 availableExternalSupplyService = (String)var10.next();
                 int quantity = (Integer)((List)products.get(availableExternalSupplyService)).get(0);
-                this.storeFacade.checkQuantity(availableExternalSupplyService, quantity, store_ID);
+                this.storeFacade.checkQuantityAndPrice(availableExternalSupplyService, quantity, store_ID);
             }
 
             this.storeFacade.checkPurchasePolicy(userDTO, productDTOS, store_ID);
@@ -1058,7 +1058,7 @@ public class Market {
             while(var10.hasNext()) {
                 availableExternalSupplyService = (String)var10.next();
                 int quantity = (Integer)((List)products.get(availableExternalSupplyService)).get(0);
-                this.storeFacade.checkQuantity(availableExternalSupplyService, quantity, store_ID);
+                this.storeFacade.checkQuantityAndPrice(availableExternalSupplyService, quantity, store_ID);
             }
 
             this.storeFacade.checkPurchasePolicy(userDTO, productDTOS, store_ID);
@@ -1368,6 +1368,9 @@ public class Market {
 
     private void checkProductDiscountDetails(List<DiscountValueDTO> discDetails) {
         for (DiscountValueDTO discountValueDTO : discDetails) {
+            if (discountValueDTO.getPercentage() < 0 || discountValueDTO.getPercentage() > 100) {
+                throw new IllegalArgumentException(ExceptionsEnum.InvalidDiscountValueParameters.toString());
+            }
             int count = 0;
             if (discountValueDTO.getCategory() != null) {
                 count++;

@@ -263,6 +263,18 @@ package Util;
             public String toString(){
                 return "Invalid rule type";
             }
+        },
+
+        IllegalProductName{
+            public String toString(){
+                return "Illegal product name. Product name is empty.";
+            }
+        },
+
+        NegativePrice{
+            public String toString(){
+                return "The price you entered is negative";
+            }
         };
     }
 
