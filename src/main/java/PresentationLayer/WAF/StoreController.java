@@ -25,18 +25,20 @@ public class StoreController {
         this.storeService = storeService;
     }
 
-    @GetMapping("/getStore/{storeId}")
-    public ResponseEntity<APIResponse<String>> getStore(@PathVariable String storeId) {
-        ObjectMapper objectMapper= new ObjectMapper();
+    @GetMapping("/isStoreOpen/{storeID}")
+    public ResponseEntity<APIResponse<Boolean>> isStoreOpen(@PathVariable String storeID) {
         try {
-            StoreDTO storeDTO = storeService.getStore(storeId);
-            return ResponseEntity.status(HttpStatus.CREATED).body(new APIResponse<>(objectMapper.writeValueAsString(storeDTO), null));
+            boolean isOpen = storeService.isStoreOpen(storeID);
+            HttpHeaders headers = new HttpHeaders();
+            headers.add("accept", "*/*");
+
+            return ResponseEntity.status(HttpStatus.OK).headers(headers)
+                    .body(new APIResponse<Boolean>(isOpen, null));
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new APIResponse<>(null, e.getMessage()));
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new APIResponse<>(null, e.getMessage()));
         }
     }
-
-
 
 
 

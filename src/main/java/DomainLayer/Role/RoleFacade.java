@@ -43,6 +43,8 @@ public class RoleFacade {
     }
 
 
+
+
     public boolean verifyStoreOwner(String storeID, String memberID) {
         return getStoreOwner(storeID, memberID) != null;
     }
