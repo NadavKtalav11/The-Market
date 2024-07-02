@@ -195,6 +195,7 @@ public class UserFacade {
 
             Member newMember = new Member(userID, memberId,user.getUserName(), user.getAddress(), user.getName(), password, user.getBirthday(), user.getCountry(), user.getCity());
             members.add(memberId, newMember);
+            getUserByID(userID).addInfo(user);
             //todo pass the user to login page.
             return memberId;
         }
