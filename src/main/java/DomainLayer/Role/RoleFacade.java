@@ -119,7 +119,7 @@ public class RoleFacade {
     }
 
     private void addNewStoreOwnerToTheMarket(StoreOwner storeOwner) {
-        storeOwnerRepository.add(storeOwner);
+        storeOwnerRepository.save(storeOwner);
     }
 
     public void addNewStoreManagerToTheMarketForTests(StoreManager storeManager) {
@@ -129,7 +129,7 @@ public class RoleFacade {
 
     public void addNewStoreOwnerToTheMarketForTests(StoreOwner storeOwner) {
         if(!verifyStoreOwner(storeOwner.getStore_ID(), storeOwner.getMember_ID()))
-            storeOwnerRepository.add(storeOwner);
+            storeOwnerRepository.save(storeOwner);
     }
 
 
@@ -241,7 +241,7 @@ public class RoleFacade {
                 fireStoreManager(storeManager, storeID);
             }
         }
-        storeOwnerRepository.remove(storeOwnerRepository.get(storeID, memberIdToFire));
+        storeOwnerRepository.delete(storeOwnerRepository.get(storeID, memberIdToFire));
     }
 
     public void fireStoreManager(String memberIdToFire, String storeID){

@@ -1,10 +1,7 @@
 package DomainLayer.User;
 
 
-import DomainLayer.Repositories.MemberMemoryRepository;
-import DomainLayer.Repositories.MemberRepository;
-import DomainLayer.Repositories.UserDBRepository;
-import DomainLayer.Repositories.UserRepository;
+import DomainLayer.Repositories.*;
 import Util.CartDTO;
 import Util.ExceptionsEnum;
 import Util.UserDTO;
@@ -39,7 +36,7 @@ public class UserFacade {
         //allUserLock = new Object();
 
         //membersLock = new Object();
-        userRepository = new UserDBRepository();
+        userRepository = new UserMemoryRepository();
         //userRepository = new UserMemoryRepository();
         members = new MemberMemoryRepository();
 
@@ -80,7 +77,7 @@ public class UserFacade {
 
 
     public User getUserByID(String userID){
-        return userRepository.get(userID);
+        return userRepository.getById(userID);
     }
 
     public void errorIfUserNotExist(String userID) throws Exception {
@@ -138,8 +135,8 @@ public class UserFacade {
 
     public void exitMarketSystem(String userID){
 
-        userRepository.get(userID).exitMarketSystem();
-        userRepository.remove(userID); //todo do i need to remove the user from the list of users ?
+        userRepository.getById(userID).exitMarketSystem();
+        userRepository.deleteById(userID); //todo do i need to remove the user from the list of users ?
     }
 
 
@@ -180,7 +177,7 @@ public class UserFacade {
 
 
     public String register(String userID, UserDTO user,String password) throws Exception {
-        if(userRepository.contain(userID)&& getUserByID(userID).isMember()) {
+        if(userRepository.existsById(userID)&& getUserByID(userID).isMember()) {
             throw new Exception(ExceptionsEnum.memberCannotRegister.toString());
         }
         else {
@@ -356,7 +353,7 @@ public class UserFacade {
     }
 
     public void removeUser(String userId){
-        userRepository.remove(userId);
+        userRepository.deleteById(userId);
     }
 
     public CartDTO getCartDTO(String userId){

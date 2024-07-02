@@ -40,11 +40,11 @@ public class UserFacadeTest {
         mockMemberRepository = mock(MemberRepository.class);
         mockUserRepository = mock(UserRepository.class);
         mockMember = mock(Member.class);
-        userFacade.userRepository.clear();
+        userFacade.userRepository.deleteAll();
         userFacade.members.clear();
 
         // Insert the mockUser into the UserFacade for userId = 1
-        userFacade.userRepository.add("1", mockUser);  // Assuming userId = 1
+        userFacade.userRepository.save(mockUser);  // Assuming userId = 1
     }
 
     @Test

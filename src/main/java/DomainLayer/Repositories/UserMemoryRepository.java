@@ -4,15 +4,18 @@ import java.util.*;
 import java.util.function.Function;
 
 import DomainLayer.User.User;
+import org.springframework.context.annotation.Profile;
 import org.springframework.data.domain.Example;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.repository.query.FluentQuery;
 import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Repository;
 
 
-@Component
+@Repository
+@Profile("memory")
 public class UserMemoryRepository implements UserRepository{
 
     Map<String, User> allUsers;
@@ -24,44 +27,42 @@ public class UserMemoryRepository implements UserRepository{
     }
 
     @Override
-    public User get(String i) {
+    public void deleteById(String s) {
         synchronized (allUsersLock) {
-            return allUsers.get(i);
+            allUsers.remove(s);
         }
     }
 
-//    @Override
-//    public void add(String userId , User to_add) {
-//        synchronized (allUsersLock) {
-//            allUsers.put(userId, to_add);
-//        }
-//    }
+    @Override
+    public void delete(User entity) {
+
+    }
 
     @Override
-    public void remove(String userId) {
+    public <S extends User> List<S> findAll(Example<S> example) {
+        List<S> getAllUsers;
         synchronized (allUsersLock) {
+            getAllUsers = new ArrayList<S>((Collection<? extends S>) allUsers.values());
+        }
+        return getAllUsers;
+    }
 
-        allUsers.remove(userId);
+    @Override
+    public User getById(String s) {
+        synchronized (allUsersLock) {
+            return allUsers.get(s);
         }
     }
 
-//    @Override
-//    public List<User> getAll() {
-//        synchronized (allUsersLock) {
-//            return new ArrayList<User>(allUsers.values());
-//        }
-//    }
+    @Override
+    public Optional<User> findById(String s) {
+        return Optional.empty();
+    }
 
     @Override
-    public boolean contain(String userId) {
+    public boolean existsById(String s) {
         synchronized (allUsersLock) {
             return allUsers.containsKey(allUsers);
-        }
-    }
-
-    public void clear(){
-        synchronized (allUsersLock) {
-            allUsers.clear();
         }
     }
 
@@ -72,6 +73,7 @@ public class UserMemoryRepository implements UserRepository{
         }
         return null;
     }
+
 
     @Override
     public void flush() {
@@ -100,16 +102,13 @@ public class UserMemoryRepository implements UserRepository{
 
     @Override
     public void deleteAllInBatch() {
-
+        synchronized (allUsersLock) {
+            allUsers.clear();
+        }
     }
 
     @Override
     public User getOne(String s) {
-        return null;
-    }
-
-    @Override
-    public User getById(String s) {
         return null;
     }
 
@@ -121,15 +120,6 @@ public class UserMemoryRepository implements UserRepository{
     @Override
     public <S extends User> Optional<S> findOne(Example<S> example) {
         return Optional.empty();
-    }
-
-    @Override
-    public <S extends User> List<S> findAll(Example<S> example) {
-        List<S> getAllUsers;
-        synchronized (allUsersLock) {
-            getAllUsers = new ArrayList<S>((Collection<? extends S>) allUsers.values());
-        }
-        return getAllUsers;
     }
 
     @Override
@@ -163,16 +153,6 @@ public class UserMemoryRepository implements UserRepository{
     }
 
     @Override
-    public Optional<User> findById(String s) {
-        return Optional.empty();
-    }
-
-    @Override
-    public boolean existsById(String s) {
-        return false;
-    }
-
-    @Override
     public List<User> findAll() {
         return List.of();
     }
@@ -185,16 +165,6 @@ public class UserMemoryRepository implements UserRepository{
     @Override
     public long count() {
         return 0;
-    }
-
-    @Override
-    public void deleteById(String s) {
-
-    }
-
-    @Override
-    public void delete(User entity) {
-
     }
 
     @Override
