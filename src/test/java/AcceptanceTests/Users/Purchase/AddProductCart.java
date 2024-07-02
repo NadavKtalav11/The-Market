@@ -5,6 +5,7 @@ import AcceptanceTests.ProxyToTest;
 import ServiceLayer.Response;
 import Util.ExceptionsEnum;
 import Util.ProductDTO;
+import Util.TestRuleDTO;
 import Util.UserDTO;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
@@ -137,7 +138,8 @@ public class AddProductCart {
     @Test
     public void purchasePolicyInvalidTest()
     {
-        impl.addPurchaseRuleToStore(List.of(5), new ArrayList<>(), userId0, storeId0);
+        TestRuleDTO rule = new TestRuleDTO("Amount", "Above", null, "corn", "Basket must contain at least 2 corns", true, null, 2, null, null, null);
+        impl.addPurchaseRuleToStore(List.of(rule), new ArrayList<>(), userId0, storeId0);
         Response<String> response = impl.addProductToBasket("Milk", 2, storeId0, userId0);
         assertFalse(response.isSuccess());
         assertEquals(ExceptionsEnum.purchasePolicyIsNotMet.toString(), response.getDescription());

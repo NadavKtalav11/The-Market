@@ -7,8 +7,7 @@ import DomainLayer.Notifications.NotificationFacade;
 import DomainLayer.PaymentServices.PaymentServicesFacade;
 import DomainLayer.Role.RoleFacade;
 import DomainLayer.Store.Product;
-import DomainLayer.Store.StoreDiscountPolicy.DiscountRulesRepository;
-import DomainLayer.Store.StorePurchasePolicy.PurchaseRulesRepository;
+
 //import PresentationLayer.Vaadin.NotificationsEndPoint;
 //import PresentationLayer.WAF.NotificationService;
 import PresentationLayer.Vaadin.MyWebSocketHandler;
@@ -696,7 +695,7 @@ public class Market {
             List<ProductDTO> productDTOS = this.storeFacade.getProductsDTOSByProductsNames(products, store_ID);
             for(String productName: products.keySet()) {
                 quantity = products.get(productName).get(0);
-                this.storeFacade.checkQuantity(productName, quantity, store_ID);
+                this.storeFacade.checkQuantityAndPrice(productName, quantity, store_ID);
             }
 
 //            this.storeFacade.checkPurchasePolicy(userDTO, productDTOS, store_ID);
@@ -808,7 +807,7 @@ public class Market {
             }
         }
 
-        storeFacade.checkQuantity(productName, quantity, storeId);
+        storeFacade.checkQuantityAndPrice(productName, quantity, storeId);
         Map<String, List<Integer>> products = this.userFacade.getCartProductsByStoreAndUser(storeId, userId);
         products.put(productName, new ArrayList<>(Arrays.asList(quantity)));
         List<ProductDTO> productDTOS = storeFacade.getProductsDTOSByProductsNames(products, storeId);
@@ -1225,7 +1224,7 @@ public class Market {
         else
         {
             userFacade.checkIfCanRemove(productName, storeId, userId);
-            storeFacade.checkQuantity(productName, quantity, storeId);
+            storeFacade.checkQuantityAndPrice(productName, quantity, storeId);
             Map<String, List<Integer>> products = this.userFacade.getCartProductsByStoreAndUser(storeId, userId);
             int totalPrice = storeFacade.calcPrice(productName, quantity, storeId, userId);
             products.put(productName, new ArrayList<>(Arrays.asList(quantity, totalPrice)));
@@ -1300,7 +1299,7 @@ public class Market {
             while(var10.hasNext()) {
                 availableExternalSupplyService = (String)var10.next();
                 int quantity = (Integer)((List)products.get(availableExternalSupplyService)).get(0);
-                this.storeFacade.checkQuantity(availableExternalSupplyService, quantity, store_ID);
+                this.storeFacade.checkQuantityAndPrice(availableExternalSupplyService, quantity, store_ID);
             }
 
             this.storeFacade.checkPurchasePolicy(userDTO, productDTOS, store_ID);
@@ -1340,7 +1339,7 @@ public class Market {
             while(var10.hasNext()) {
                 availableExternalSupplyService = (String)var10.next();
                 int quantity = (Integer)((List)products.get(availableExternalSupplyService)).get(0);
-                this.storeFacade.checkQuantity(availableExternalSupplyService, quantity, store_ID);
+                this.storeFacade.checkQuantityAndPrice(availableExternalSupplyService, quantity, store_ID);
             }
 
             this.storeFacade.checkPurchasePolicy(userDTO, productDTOS, store_ID);
@@ -1560,22 +1559,7 @@ public class Market {
             throw new IllegalArgumentException(ExceptionsEnum.storeRateInvalid.toString());
     }
 
-    public Map<Integer,String> getAllPurchaseRules(String userId, String storeId) throws Exception {
-        if (userFacade.isMember(userId)){
-            String memberId = userFacade.getMemberIdByUserId(userId);
-            boolean succeeded = authenticationAndSecurityFacade.validateToken(authenticationAndSecurityFacade.getToken(memberId));
-            if (!succeeded) {
-                logout(userId);
-                throw new IllegalArgumentException(ExceptionsEnum.sessionOver.toString());
-            }
-        }
-        String member_ID = this.userFacade.getMemberIdByUserId(userId);
-        storeFacade.verifyStoreExistError(storeId);
-        roleFacade.verifyStoreOwnerError(storeId, member_ID);
-        return PurchaseRulesRepository.getAllRules();
-    }
-
-    public void addPurchaseRuleToStore(List<Integer> ruleNums, List<String> operators, String userId, String storeId) throws Exception {
+    public void addPurchaseRuleToStore(List<TestRuleDTO> testRules, List<String> operators, String userId, String storeId) throws Exception {
         if (userFacade.isMember(userId)){
             String memberId = userFacade.getMemberIdByUserId(userId);
             boolean succeeded = authenticationAndSecurityFacade.validateToken(authenticationAndSecurityFacade.getToken(memberId));
@@ -1585,11 +1569,12 @@ public class Market {
             }
         }
 
-        checkLogicalRulesAndOperators(ruleNums, operators);
+        checkLogicalRulesAndOperators(testRules, operators);
         String member_ID = this.userFacade.getMemberIdByUserId(userId);
+        //TODO: check testrules
         storeFacade.verifyStoreExistError(storeId);
         roleFacade.verifyStoreOwnerError(storeId, member_ID);
-        storeFacade.addPurchaseRuleToStore(ruleNums, operators, storeId);
+        storeFacade.addPurchaseRuleToStore(testRules, operators, storeId);
     }
 
     public void removePurchaseRuleFromStore(int ruleNum,  String userId, String storeId) throws Exception {
@@ -1608,7 +1593,7 @@ public class Market {
         storeFacade.removePurchaseRuleFromStore(ruleNum, storeId);
     }
 
-    public Map<Integer,String> getAllCondDiscountRules(String userId, String storeId) throws Exception {
+    public void addDiscountCondRuleToStore(List<TestRuleDTO> testRules, List<String> logicOperators, List<DiscountValueDTO> discDetails, List<String> numericalOperators, String userId ,String storeId) throws Exception {
         if (userFacade.isMember(userId)){
             String memberId = userFacade.getMemberIdByUserId(userId);
             boolean succeeded = authenticationAndSecurityFacade.validateToken(authenticationAndSecurityFacade.getToken(memberId));
@@ -1618,29 +1603,13 @@ public class Market {
             }
         }
 
-        String member_ID = this.userFacade.getMemberIdByUserId(userId);
-        storeFacade.verifyStoreExistError(storeId);
-        roleFacade.verifyStoreOwnerError(storeId, member_ID);
-        return DiscountRulesRepository.getAllRules();
-    }
-
-    public void addDiscountCondRuleToStore(List<Integer> ruleNums, List<String> logicOperators, List<DiscountValueDTO> discDetails, List<String> numericalOperators, String userId ,String storeId) throws Exception {
-        if (userFacade.isMember(userId)){
-            String memberId = userFacade.getMemberIdByUserId(userId);
-            boolean succeeded = authenticationAndSecurityFacade.validateToken(authenticationAndSecurityFacade.getToken(memberId));
-            if (!succeeded) {
-                logout(userId);
-                throw new IllegalArgumentException(ExceptionsEnum.sessionOver.toString());
-            }
-        }
-
-        checkLogicalRulesAndOperators(ruleNums, logicOperators);
+        checkLogicalRulesAndOperators(testRules, logicOperators);
         checkNumericalRulesAndOperators(discDetails, numericalOperators);
         checkProductDiscountDetails(discDetails);
         String member_ID = this.userFacade.getMemberIdByUserId(userId);
         storeFacade.verifyStoreExistError(storeId);
         roleFacade.verifyStoreOwnerError(storeId, member_ID);
-        storeFacade.addDiscountCondRuleToStore(ruleNums, logicOperators, discDetails, numericalOperators, storeId);
+        storeFacade.addDiscountCondRuleToStore(testRules, logicOperators, discDetails, numericalOperators, storeId);
     }
 
 
@@ -1680,6 +1649,9 @@ public class Market {
 
     private void checkProductDiscountDetails(List<DiscountValueDTO> discDetails) {
         for (DiscountValueDTO discountValueDTO : discDetails) {
+            if (discountValueDTO.getPercentage() < 0 || discountValueDTO.getPercentage() > 100) {
+                throw new IllegalArgumentException(ExceptionsEnum.InvalidDiscountValueParameters.toString());
+            }
             int count = 0;
             if (discountValueDTO.getCategory() != null) {
                 count++;
@@ -1696,12 +1668,12 @@ public class Market {
         }
     }
 
-    public void checkLogicalRulesAndOperators(List<Integer> ruleNums, List<String> operators) throws Exception {
+    public void checkLogicalRulesAndOperators(List<TestRuleDTO> ruleNums, List<String> operators) throws Exception {
         if (ruleNums.size() != operators.size() + 1) {
             throw new IllegalArgumentException(ExceptionsEnum.rulesNotMatchOpeators.toString());
         }
         for (int i = 0; i < operators.size(); i++) {
-            if (!operators.get(i).equals("AND") && !operators.get(i).equals("OR") && !operators.get(i).equals("COND") && !operators.get(i).equals("XOR")) {
+            if (!operators.get(i).equals("AND") && !operators.get(i).equals("OR") && !operators.get(i).equals("ONLY IF") && !operators.get(i).equals("XOR")) {
                 throw new IllegalArgumentException(ExceptionsEnum.InvalidOperator.toString());
             }
         }
@@ -1775,4 +1747,94 @@ public class Market {
     }
 
 
+    public void composeCurrentPurchaseRules(int ruleIndex1, int ruleIndex2, String operator, String userId, String storeId) throws Exception {
+        if (userFacade.isMember(userId)){
+            String memberId = userFacade.getMemberIdByUserId(userId);
+            boolean succeeded = authenticationAndSecurityFacade.validateToken(authenticationAndSecurityFacade.getToken(memberId));
+            if (!succeeded) {
+                logout(userId);
+            }
+        }
+
+        if (!operator.equals("AND") && !operator.equals("OR") && !operator.equals("ONLY IF")) {
+            throw new IllegalArgumentException(ExceptionsEnum.InvalidOperator.toString());
+        }
+
+        String member_ID = this.userFacade.getMemberIdByUserId(userId);
+        storeFacade.verifyStoreExistError(storeId);
+        roleFacade.verifyStoreOwnerError(storeId, member_ID);
+        storeFacade.composeCurrentPurchaseRules(ruleIndex1, ruleIndex2, operator, storeId);
+    }
+
+    public void composeCurrentSimpleDiscountRules(int ruleIndex1, int ruleIndex2, String numericalOperator, String userId, String storeId) throws Exception {
+        if (userFacade.isMember(userId)){
+            String memberId = userFacade.getMemberIdByUserId(userId);
+            boolean succeeded = authenticationAndSecurityFacade.validateToken(authenticationAndSecurityFacade.getToken(memberId));
+            if (!succeeded) {
+                logout(userId);
+            }
+        }
+
+        if (!numericalOperator.equals("MAX") && !numericalOperator.equals("ADD")) {
+            throw new IllegalArgumentException(ExceptionsEnum.InvalidOperator.toString());
+        }
+
+        String member_ID = this.userFacade.getMemberIdByUserId(userId);
+        storeFacade.verifyStoreExistError(storeId);
+        roleFacade.verifyStoreOwnerError(storeId, member_ID);
+        storeFacade.composeCurrentSimpleDiscountRules(ruleIndex1, ruleIndex2, numericalOperator, storeId);
+    }
+
+    public void composeCurrentCondDiscountRules(int ruleIndex1, int ruleIndex2, String logicalOperator, String numericalOperator, String userId, String storeId) throws Exception {
+        if (userFacade.isMember(userId)){
+            String memberId = userFacade.getMemberIdByUserId(userId);
+            boolean succeeded = authenticationAndSecurityFacade.validateToken(authenticationAndSecurityFacade.getToken(memberId));
+            if (!succeeded) {
+                logout(userId);
+            }
+        }
+
+        if (!logicalOperator.equals("AND") && !logicalOperator.equals("OR") && !logicalOperator.equals("XOR")) {
+            throw new IllegalArgumentException(ExceptionsEnum.InvalidOperator.toString());
+        }
+
+        if (!numericalOperator.equals("MAX") && !numericalOperator.equals("ADD")) {
+            throw new IllegalArgumentException(ExceptionsEnum.InvalidOperator.toString());
+        }
+
+        String member_ID = this.userFacade.getMemberIdByUserId(userId);
+        storeFacade.verifyStoreExistError(storeId);
+        roleFacade.verifyStoreOwnerError(storeId, member_ID);
+        storeFacade.composeCurrentCondDiscountRules(ruleIndex1, ruleIndex2, logicalOperator, numericalOperator, storeId);
+    }
+
+    public List<String> getStoreCurrentSimpleDiscountRules(String userId, String storeId) throws Exception {
+        if (userFacade.isMember(userId)){
+            String memberId = userFacade.getMemberIdByUserId(userId);
+            boolean succeeded = authenticationAndSecurityFacade.validateToken(authenticationAndSecurityFacade.getToken(memberId));
+            if (!succeeded) {
+                logout(userId);
+            }
+        }
+
+        String member_ID = this.userFacade.getMemberIdByUserId(userId);
+        storeFacade.verifyStoreExistError(storeId);
+        roleFacade.verifyStoreOwnerError(storeId, member_ID);
+        return storeFacade.getStoreCurrentSimpleDiscountRules(storeId);
+    }
+
+    public List<String> getStoreCurrentCondDiscountRules(String userId, String storeId) throws Exception {
+        if (userFacade.isMember(userId)){
+            String memberId = userFacade.getMemberIdByUserId(userId);
+            boolean succeeded = authenticationAndSecurityFacade.validateToken(authenticationAndSecurityFacade.getToken(memberId));
+            if (!succeeded) {
+                logout(userId);
+            }
+        }
+
+        String member_ID = this.userFacade.getMemberIdByUserId(userId);
+        storeFacade.verifyStoreExistError(storeId);
+        roleFacade.verifyStoreOwnerError(storeId, member_ID);
+        return storeFacade.getStoreCurrentCondDiscountRules(storeId);
+    }
 }

@@ -141,7 +141,8 @@ public class PurchaseTest {
 
      @Test
      public void purchasePolicyInvalidTest() {
-         impl.addPurchaseRuleToStore(new ArrayList<>(Arrays.asList(5)), new ArrayList<>(), userID1, storeID);
+         TestRuleDTO rule = new TestRuleDTO("Amount", "Above", null, "corn", "Basket must contain at least 2 corns", true, null, 2, null, null, null);
+         impl.addPurchaseRuleToStore(new ArrayList<>(Arrays.asList(rule)), new ArrayList<>(), userID1, storeID);
          impl.setUserConfirmationPurchase(userID2);
          impl.setUserConfirmationPurchase(userID2);
          Response<Integer> response = impl.checkingCartValidationBeforePurchase(userID2, userDTO.getUserName(), userDTO.getBirthday(),

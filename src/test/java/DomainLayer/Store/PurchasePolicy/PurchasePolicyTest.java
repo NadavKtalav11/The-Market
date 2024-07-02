@@ -16,9 +16,9 @@ import java.util.List;
 class PurchasePolicyTest {
 
     private PurchasePolicy purchasePolicy;
-    private Rule<UserDTO, List<ProductDTO>> rule1;
-    private Rule<UserDTO, List<ProductDTO>> rule2;
-    private Rule<UserDTO, List<ProductDTO>> rule3;
+    private Rule rule1;
+    private Rule rule2;
+    private Rule rule3;
 
     @BeforeEach
     void setUp() {
@@ -83,7 +83,7 @@ class PurchasePolicyTest {
     @Test
     void addRule_WithCondCondition() {
         // Arrange
-        purchasePolicy.addRule(List.of(rule1, rule2), List.of("COND"));
+        purchasePolicy.addRule(List.of(rule1, rule2), List.of("ONLY IF"));
 
         // Act
         List<String> descriptions = purchasePolicy.getRulesDescriptions();
@@ -120,5 +120,65 @@ class PurchasePolicyTest {
         // Assert
         assertEquals(1, descriptions.size());
         assertNotEquals("Rule 1", descriptions.get(0)); // Ensure the first rule was removed
+    }
+
+    @Test
+    void composeCurrentStoreRules_AndCondition() {
+        // Arrange
+        purchasePolicy.addRule(List.of(rule1), new ArrayList<>());
+        purchasePolicy.addRule(List.of(rule2), new ArrayList<>());
+        when(rule1.getDescription()).thenReturn("Rule 1");
+        when(rule2.getDescription()).thenReturn("Rule 2");
+
+        // Act
+        purchasePolicy.composeCurrentStoreRules(0, 1, "AND");
+        List<String> descriptions = purchasePolicy.getRulesDescriptions();
+
+        // Assert
+        assertEquals(1, descriptions.size());
+        assertTrue(descriptions.get(0).contains("(Rule 1 and Rule 2)"));
+    }
+
+    @Test
+    void composeCurrentStoreRules_OrCondition() {
+        // Arrange
+        purchasePolicy.addRule(List.of(rule1), new ArrayList<>());
+        purchasePolicy.addRule(List.of(rule2), new ArrayList<>());
+        when(rule1.getDescription()).thenReturn("Rule 1");
+        when(rule2.getDescription()).thenReturn("Rule 2");
+
+        // Act
+        purchasePolicy.composeCurrentStoreRules(0, 1, "OR");
+        List<String> descriptions = purchasePolicy.getRulesDescriptions();
+
+        // Assert
+        assertEquals(1, descriptions.size());
+        assertTrue(descriptions.get(0).contains("(Rule 1 or Rule 2)"));
+    }
+
+    @Test
+    void composeCurrentStoreRules_CondCondition() {
+        // Arrange
+        purchasePolicy.addRule(List.of(rule1), new ArrayList<>());
+        purchasePolicy.addRule(List.of(rule2), new ArrayList<>());
+
+        when(rule1.getDescription()).thenReturn("Rule 1");
+        when(rule2.getDescription()).thenReturn("Rule 2");
+
+        // Act
+        purchasePolicy.composeCurrentStoreRules(0, 1, "ONLY IF");
+        List<String> descriptions = purchasePolicy.getRulesDescriptions();
+
+        // Assert
+        assertEquals(1, descriptions.size());
+        assertTrue(descriptions.get(0).contains("(Rule 1 only if Rule 2)"));
+    }
+
+    @Test
+    void composeCurrentStoreRules_InvalidIndex() {
+        // Arrange
+
+        // Act & Assert
+        assertThrows(IllegalArgumentException.class, () -> purchasePolicy.composeCurrentStoreRules(0, 1, "INVALID"));
     }
 }
