@@ -40,6 +40,25 @@ public class StoreController {
         }
     }
 
+    @GetMapping("/getStore/{storeId}")
+    public ResponseEntity<APIResponse<String>> getStore(@PathVariable String storeId) {
+        try {
+            ObjectMapper objectMapper= new ObjectMapper();
+            StoreDTO store = storeService.getStore(storeId);
+            HttpHeaders headers = new HttpHeaders();
+            headers.add("accept", "*/*");
+            //String dtosRes = new ArrayList<>();
+            //for (StoreDTO storeDTO : allStores ){
+            String res = objectMapper.writeValueAsString(store);
+            //}
+            return ResponseEntity.status(HttpStatus.OK).headers(headers)
+                    .body(new APIResponse<>(res, null));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new APIResponse<>(null, e.getMessage()));
+        }
+    }
+
 
 
     @GetMapping("/getAllStores")
