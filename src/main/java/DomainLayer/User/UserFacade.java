@@ -107,6 +107,15 @@ public class UserFacade {
         return userDTOList;
     }
 
+    public String getUserIdByMemberId(String memberId){
+        Member curr  = members.get(memberId);
+        if (curr!=null){
+            return curr.getUserId();
+        }
+        return null;
+    }
+
+
     public boolean isMember(String userId){
         if(getUserByID(userId) == null){
             return false;
