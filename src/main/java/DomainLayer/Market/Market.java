@@ -1578,6 +1578,11 @@ public class Market {
                 throw new IllegalArgumentException(ExceptionsEnum.sessionOver.toString());
             }
         }
+        for (TestRuleDTO curr : testRules){
+            if (curr.isContains()==null){
+                curr.setContains(false);
+            }
+        }
 
         checkLogicalRulesAndOperators(testRules, operators);
         String member_ID = this.userFacade.getMemberIdByUserId(userId);

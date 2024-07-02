@@ -2,6 +2,7 @@ package PresentationLayer.WAF;
 
 import ServiceLayer.Response;
 import Util.*;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
@@ -925,9 +926,18 @@ public class MarketController {
             String operators = params.get("operators");
             String userId = params.get("userId");
             String storeId = params.get("storeId");
-            List<TestRuleDTO> Rules = objectMapper.readValue(testRules, objectMapper.getTypeFactory().constructCollectionType(List.class, TestRuleDTO.class));
-            List<String> logicOperators = objectMapper.readValue(operators, objectMapper.getTypeFactory().constructCollectionType(List.class, String.class));
-            Response<String> response = serviceLayer.addPurchaseRuleToStore(Rules, logicOperators, userId, storeId);
+            List<TestRuleDTO> rules= null;
+            //List<TestRuleDTO> logicOperators= null;
+            TestRuleDTO[] dtosRule = null;
+            List<String> stringRules = objectMapper.readValue(testRules, new TypeReference<List<String>>() {});
+                // Deserialize each JSON string into a TestRuleDTO object
+            rules = new ArrayList<>();
+            for (String stringRule : stringRules) {
+                TestRuleDTO rule = objectMapper.readValue(stringRule, TestRuleDTO.class);
+                rules.add(rule);
+            }
+            List<String> logicOperators = objectMapper.readValue(operators, new TypeReference<List<String>>() {});
+            Response<String> response = serviceLayer.addPurchaseRuleToStore(rules, logicOperators, userId, storeId);
             if (response.isSuccess()) {
                 String data = response.getData();
                 HttpHeaders headers = new HttpHeaders();
