@@ -107,6 +107,15 @@ public class UserFacade {
         return userDTOList;
     }
 
+    public String getUserIdByMemberId(String memberId){
+        Member curr  = members.get(memberId);
+        if (curr!=null){
+            return curr.getUserId();
+        }
+        return null;
+    }
+
+
     public boolean isMember(String userId){
         if(getUserByID(userId) == null){
             return false;
@@ -186,6 +195,7 @@ public class UserFacade {
 
             Member newMember = new Member(userID, memberId,user.getUserName(), user.getAddress(), user.getName(), password, user.getBirthday(), user.getCountry(), user.getCity());
             members.add(memberId, newMember);
+            getUserByID(userID).addInfo(user);
             //todo pass the user to login page.
             return memberId;
         }
