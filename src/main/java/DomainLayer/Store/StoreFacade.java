@@ -51,6 +51,14 @@ public class StoreFacade {
     }
 
 
+    public boolean isStoreOpen(String storeId){
+        if (getStoreByID(storeId)==null){
+            return false;
+        }
+        return getStoreByID(storeId).getIsOpened();
+    }
+
+
     public String getStoreName(String storeId){
         return allStores.get(storeId).getStoreName();
     }

@@ -110,4 +110,22 @@ public class MemberController {
         }
     }
 
+
+    @GetMapping("/isAdmin/{memberId}")
+    public ResponseEntity<APIResponse<Boolean>> hasPurchasePermission(@PathVariable String memberId) {
+        try {
+            boolean hasPurchasePermission = memberService.isAdmin(memberId);
+            HttpHeaders headers = new HttpHeaders();
+            headers.add("accept", "*/*");
+
+            return ResponseEntity.status(HttpStatus.OK).headers(headers)
+                    .body(new APIResponse<Boolean>(hasPurchasePermission, null));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new APIResponse<>(null, e.getMessage()));
+        }
+    }
+
+
+
 }

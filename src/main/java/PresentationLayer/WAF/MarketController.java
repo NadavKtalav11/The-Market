@@ -1049,6 +1049,80 @@ public class MarketController {
         }
     }
 
+
+    @PostMapping("/reopenStore/{userId}/{storeId}")
+    public ResponseEntity<APIResponse<String>> reopenStore(@PathVariable String userId, @PathVariable String storeId) {
+        try {
+            Response<String> response = serviceLayer.reopenStore(userId, storeId);
+            if (response.isSuccess()) {
+                String result = response.getResult();
+                HttpHeaders headers = new HttpHeaders();
+                headers.add("accept", "*/*");
+
+                return ResponseEntity.status(HttpStatus.OK).headers(headers)
+                        .body(new APIResponse<String>(result, null));
+            } else {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                        .body(new APIResponse<>(null, response.getDescription()));
+            }
+        }  catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new APIResponse<>(null, e.getMessage()));
+
+        }
+    }
+
+    @PostMapping("/fireStoreManager/{nominatorUserId}/{nominatedUsername}/{storeID}")
+    public ResponseEntity<APIResponse<String>> fireStoreManager(@PathVariable String nominatorUserId,@PathVariable String nominatedUsername,@PathVariable String storeID) {
+        try {
+            Response<String> response = serviceLayer.fireStoreManager(nominatorUserId,nominatedUsername ,storeID);
+            if (response.isSuccess()) {
+                String result = response.getResult();
+                HttpHeaders headers = new HttpHeaders();
+                headers.add("accept", "*/*");
+
+                return ResponseEntity.status(HttpStatus.OK).headers(headers)
+                        .body(new APIResponse<String>(result, null));
+            } else {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                        .body(new APIResponse<>(null, response.getDescription()));
+            }
+        }  catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new APIResponse<>(null, e.getMessage()));
+
+        }
+    }
+
+
+    @PostMapping("/fireStoreOwner/{nominatorUserId}/{nominatedUsername}/{storeID}")
+    public ResponseEntity<APIResponse<String>> fireStoreOwner(@PathVariable String nominatorUserId,@PathVariable String nominatedUsername,@PathVariable String storeID) {
+        try {
+            Response<String> response = serviceLayer.fireStoreOwner(nominatorUserId,nominatedUsername ,storeID);
+            if (response.isSuccess()) {
+                String result = response.getResult();
+                HttpHeaders headers = new HttpHeaders();
+                headers.add("accept", "*/*");
+
+                return ResponseEntity.status(HttpStatus.OK).headers(headers)
+                        .body(new APIResponse<String>(result, null));
+            } else {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                        .body(new APIResponse<>(null, response.getDescription()));
+            }
+        }  catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new APIResponse<>(null, e.getMessage()));
+
+        }
+    }
+
+
+
+
+
+
+
     @PostMapping("/composeCurrentSimpleDiscountRules/{ruleIndex1}/{ruleIndex2}/{numericalOperator}/{userId}/{storeId}")
     public ResponseEntity<APIResponse<String>> composeCurrentSimpleDiscountRules(@PathVariable int ruleIndex1, @PathVariable int ruleIndex2, @PathVariable String numericalOperator, @PathVariable String userId, @PathVariable String storeId ) {
 
