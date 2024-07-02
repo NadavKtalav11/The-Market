@@ -31,6 +31,10 @@ public class TestRuleDTO {
         this.time = time;
     }
 
+    public TestRuleDTO(){
+
+    }
+
     public String getType() {
         return type;
     }
