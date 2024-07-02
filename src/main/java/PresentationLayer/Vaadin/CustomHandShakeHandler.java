@@ -1,6 +1,10 @@
 package PresentationLayer.Vaadin;
 
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.server.ServerHttpRequest;
+import org.springframework.http.server.ServerHttpResponse;
+import org.springframework.http.server.ServletServerHttpRequest;
+import org.springframework.web.socket.server.HandshakeInterceptor;
 import org.springframework.web.socket.server.standard.TomcatRequestUpgradeStrategy;
 import org.springframework.web.socket.server.support.DefaultHandshakeHandler;
 import org.springframework.web.socket.WebSocketHandler;
@@ -9,18 +13,24 @@ import java.security.Principal;
 import java.util.Map;
 import java.util.UUID;
 
-public class CustomHandShakeHandler extends DefaultHandshakeHandler {
+public class CustomHandShakeHandler implements HandshakeInterceptor {
 
-//    public CustomHandShakeHandler (TomcatRequestUpgradeStrategy tomcatRequestUpgradeStrategy){
-//        super(tomcatRequestUpgradeStrategy);
-//    }
 
     @Override
-    public Principal determineUser(ServerHttpRequest request,
-                                      WebSocketHandler wsHandler,
-                                      Map<String, Object> attributes) {
-        // generate user name by UUID
-        return new StompPrincipal(UUID.randomUUID().toString());
+    public boolean beforeHandshake(ServerHttpRequest request, ServerHttpResponse response, WebSocketHandler wsHandler, Map<String, Object> attributes) throws Exception {
+        if (request instanceof ServletServerHttpRequest) {
+            HttpServletRequest servletRequest = ((ServletServerHttpRequest) request).getServletRequest();
+            String userId = servletRequest.getParameter("userID");
+            if (userId != null) {
+                attributes.put("userID", userId);
+            }
+        }
+        return true;
+    }
+
+    @Override
+    public void afterHandshake(ServerHttpRequest request, ServerHttpResponse response, WebSocketHandler wsHandler, Exception exception) {
+        return;
     }
 }
 

@@ -1,13 +1,16 @@
 package DomainLayer.Market;
 
 import DomainLayer.AuthenticationAndSecurity.AuthenticationAndSecurityFacade;
-import DomainLayer.Notifications.Notification;
+//import DomainLayer.Notifications.Notification;
 import DomainLayer.Notifications.NotificationFacade;
-import DomainLayer.Notifications.StoreNotification;
+//import DomainLayer.Notifications.StoreNotification;
 import DomainLayer.PaymentServices.PaymentServicesFacade;
 import DomainLayer.Role.RoleFacade;
 import DomainLayer.Store.Product;
 
+//import PresentationLayer.Vaadin.NotificationsEndPoint;
+//import PresentationLayer.WAF.NotificationService;
+import PresentationLayer.Vaadin.MyWebSocketHandler;
 import Util.ExceptionsEnum;
 
 import DomainLayer.Store.StoreFacade;
@@ -17,6 +20,7 @@ import Util.*;
 
 import org.yaml.snakeyaml.Yaml;
 import java.io.FileInputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.Map;
 
@@ -42,6 +46,9 @@ public class Market {
     private final Object validationLock;
     private NotificationFacade notificationFacade;
 
+   // private NotificationsEndPoint notificationService;
+    private MyWebSocketHandler myWebSocketHandler;
+
     public synchronized static Market getInstance() {
         if (MarketInstance == null) {
             MarketInstance = new Market();
@@ -61,6 +68,9 @@ public class Market {
         managersLock = new Object();
         validationLock = new Object();
         notificationFacade = new NotificationFacade();
+        //notificationService = new NotificationsEndPoint();
+        myWebSocketHandler =  MyWebSocketHandler.getInstance();
+        //init(new PaymentServiceDTO(" ds","f f" , "  ee"), new SupplyServiceDTO(" vv", "  vvv" , new HashSet<>(), new HashSet<>()));
     }
 
 
@@ -78,6 +88,9 @@ public class Market {
         validationLock = new Object();
         notificationFacade = new NotificationFacade();
 
+        //notificationService = new NotificationsEndPoint();
+        myWebSocketHandler =  MyWebSocketHandler.getInstance();
+
     }
 
     public Market(UserFacade userFacade, AuthenticationAndSecurityFacade authenticationAndSecurityFacade,
@@ -94,10 +107,31 @@ public class Market {
         validationLock = new Object();
         notificationFacade = new NotificationFacade();
 
+        //notificationService = new NotificationsEndPoint();
+        myWebSocketHandler =  MyWebSocketHandler.getInstance();
+
     }
 
     public Market(UserFacade userFacade){
         this.storeFacade = StoreFacade.getInstance();
+        this.userFacade = userFacade;
+        this.roleFacade = RoleFacade.getInstance();
+        this.paymentServicesFacade = PaymentServicesFacade.getInstance();
+        this.authenticationAndSecurityFacade = AuthenticationAndSecurityFacade.getInstance();
+        this.supplyServicesFacade= SupplyServicesFacade.getInstance();
+        initializedLock= new Object();
+        this.systemManagerIds = new HashSet<>();
+        managersLock = new Object();
+        validationLock = new Object();
+        notificationFacade = new NotificationFacade();
+
+        //notificationService = new NotificationsEndPoint();
+        myWebSocketHandler =  MyWebSocketHandler.getInstance();
+
+    }
+
+    public Market(UserFacade userFacade, StoreFacade storeFacade){
+        this.storeFacade = storeFacade;
         this.userFacade = userFacade;
         this.roleFacade = RoleFacade.getInstance();
         this.paymentServicesFacade = PaymentServicesFacade.getInstance();
@@ -127,13 +161,18 @@ public class Market {
         paymentServicesFacade = paymentServicesFacade1;
         supplyServicesFacade = supplyServicesFacade1;
         notificationFacade = new NotificationFacade();
+
+
+        //notificationService = new NotificationsEndPoint();
+        myWebSocketHandler =  MyWebSocketHandler.getInstance();
+
         return MarketInstance;
+
 
 
     }
 
-    public Map<String, Object> loadAdminConfiguration() throws Exception {
-        String configFilePath = "src/main/resources/ConfigurationFile.yaml";
+    public Map<String, Object> loadAdminConfiguration(String configFilePath) throws Exception {
         try (InputStream inputStream = new FileInputStream(configFilePath)) {
             Yaml yaml = new Yaml();
             Map<String, Object> config = yaml.load(inputStream);
@@ -146,6 +185,8 @@ public class Market {
     public String init( PaymentServiceDTO paymentServiceDTO,  SupplyServiceDTO supplyServiceDTO) throws Exception {
         Map<String, Object> initConfig = null; // Declare initConfig here
         Map<String, Object> adminConfig = null; // Declare adminConfig here
+        String configFilePath = "src/main/resources/ConfigurationFile.yaml";
+
 
         String adminPassword = "";
 
@@ -165,7 +206,7 @@ public class Market {
             }
 
 
-             initConfig = loadAdminConfiguration();
+             initConfig = loadAdminConfiguration(configFilePath);
              adminConfig = (Map<String, Object>) initConfig.get("admin");
              adminPassword = (String) adminConfig.get("password");
             validateAdminPassword1(adminPassword);
@@ -200,10 +241,9 @@ public class Market {
             synchronized (initializedLock) {
                 initialized = true;
             }
+
+            startStateInitialization();
             return firstUserID; // Return the generated user ID
-
-
-
         }
 
     public void validateAdminPassword1(String adminPassword) throws Exception {
@@ -215,6 +255,222 @@ public class Market {
             throw new Exception("Password must contain at least one digit, one lowercase letter, one uppercase letter, and be at least 8 characters long.");
         }
     }
+
+    private void registerUsersInitState(List<String> usersToRegister, Map<String, Object> usersData) throws Exception {
+        for (Map.Entry<String, Object> entry : usersData.entrySet()) {
+            String username = entry.getKey();
+            if (usersToRegister.contains(username)) {
+                Map<String, Object> userData = (Map<String, Object>) entry.getValue();
+//
+                // Extract user details
+                String username1 = (String) userData.get("username");
+                String password = (String) userData.get("password");
+                String birthday = (String) userData.get("birthday");
+                String country = (String) userData.get("country");
+                String city = (String) userData.get("city");
+                String address = (String) userData.get("address");
+                String name = (String) userData.get("name");
+
+                String encryptedPassword = authenticationAndSecurityFacade.encodePassword(password);
+                // Register user and retrieve system manager ID
+                String userId = enterMarketSystem();
+                UserDTO userDTO1 = new UserDTO(userId, username1, birthday, country, city, address, name);
+                String memberId = userFacade.register(userId, userDTO1, encryptedPassword);
+            }
+        }
+    }
+
+    private Map<String, String> loginUsersInitState(List<String> userToLogin, Map<String, Object> users) throws Exception {
+        Map<String, String> usernameToUserIdMap = new HashMap<>();
+        for (String username : userToLogin) {
+            if(userFacade.getMembers().getByUserName(username) !=null){
+                Map<String, Object> userData = (Map<String, Object>) users.get(username);
+                String password = (String) userData.get("password");
+                String userId = enterMarketSystem();
+               Login(userId, username, password);
+                usernameToUserIdMap.put(username, userId);
+            }
+        }
+        return usernameToUserIdMap;
+    }
+
+    private void openStoresInitState( Map<String, Object> stores, Map<String, String> usernameToUserIdMap ) throws Exception {
+
+        for (Map.Entry<String, Object> entry : stores.entrySet()) {
+            Map<String, Object> storeData = (Map<String, Object>) entry.getValue();
+//
+//            // Extract store details
+            String usernameFounder = (String) storeData.get("userNameFounder");
+            String founderId = usernameToUserIdMap.get(usernameFounder);
+            String storeName = (String) storeData.get("storeName");
+            String storeDescription = (String) storeData.get("description");
+            openStore(founderId,storeName, storeDescription);
+        }
+    }
+
+    private void appointManagerToStoreInitState( Map<String, Object> actionData, Map<String, String> usernameToUserIdMap) throws Exception {
+        String storeName=  (String) actionData.get("store");
+        String storeId=  storeFacade.getStoreId(storeName);
+        String userNameNominator=  (String) actionData.get("nominatorUser");
+        List<String> nominatedUsers=  (List<String>) actionData.get("nominatedUsers");
+        Boolean inventoryPermissions=  (Boolean) actionData.get("inventoryPermissions");
+        Boolean purchasePermissions=  (Boolean) actionData.get("purchasePermissions");
+        String nominatorId = usernameToUserIdMap.get(userNameNominator);
+        for(String userName : nominatedUsers){
+            appointStoreManager(nominatorId, userName, storeId,inventoryPermissions ,purchasePermissions);
+        }
+    }
+
+    private void appointOwnerToStoreInitState( Map<String, Object> actionData, Map<String, String> usernameToUserIdMap) throws Exception {
+        String storeName=  (String) actionData.get("store");
+        String storeId=  storeFacade.getStoreId(storeName);
+        String userNameNominator=  (String) actionData.get("nominatorUser");
+        List<String> nominatedUsers=  (List<String>) actionData.get("nominatedUsers");
+        String nominatorId = usernameToUserIdMap.get(userNameNominator);
+        for(String userName : nominatedUsers){
+            appointStoreOwner(nominatorId, userName, storeId);
+        }
+    }
+
+    private void addProductToStoreInitState(Map<String, Object> products, Map<String, Object> actionData, Map<String, String> usernameToUserIdMap) throws Exception {
+        List<String> productToAdd = (List<String>) actionData.get("productName");
+        String storeName=  (String) actionData.get("store");
+        String userName=  (String) actionData.get("user");
+
+        for (Map.Entry<String, Object> entry : products.entrySet()) {
+            Map<String, Object> productData = (Map<String, Object>) entry.getValue();
+            String productName=  (String) productData.get("productName");
+
+//            // Extract store details
+            if(productToAdd.contains(productName)){
+                int productPrice=  (int) productData.get("price");
+                int productQuantity=  (int) productData.get("quantity");
+                String productDescription=  (String) productData.get("description");
+                String productCategory=  (String) productData.get("categoryStr");
+                ProductDTO productDTO = new ProductDTO(productName,productPrice, productQuantity,productDescription ,productCategory);
+
+                String userId = usernameToUserIdMap.get(userName);
+                String storeId=  storeFacade.getStoreId(storeName);
+                addProductToStore(userId,  storeId, productDTO);
+            }
+        }
+    }
+
+    private void logOutInitState(List<String> usersToLogout, Map<String, String> usernameToUserIdMap) throws Exception {
+        for (String username : usersToLogout) {
+            String userId = usernameToUserIdMap.get(username);
+            logout(userId);
+        }
+    }
+
+        public void startStateInitialization() throws Exception {
+        String configFilePath = "src/main/resources/stateAfterInit.yaml";
+        Map<String, String> usernameToUserIdMap = new HashMap<>();
+        Map<String, Object> stateConfig = loadAdminConfiguration(configFilePath);
+        Map<String, Object> actions = (Map<String, Object>) stateConfig.get("actions");
+        Map<String, Object> users = (Map<String, Object>) stateConfig.get("users");
+        Map<String, Object> stores = (Map<String, Object>) stateConfig.get("stores");
+        Map<String, Object> products = (Map<String, Object>) stateConfig.get("products");
+
+
+            for (Map.Entry<String, Object> entry : actions.entrySet()) {
+            String actionType = entry.getKey();
+            Map<String, Object> actionData = (Map<String, Object>) entry.getValue();
+
+            switch (actionType) {
+                case "register_users":
+                    List<String> userToRegister = (List<String>) actionData.get("users");
+                    registerUsersInitState(userToRegister, users);
+                    break;
+                case "login_user":
+                    List<String> userToLogin = (List<String>) actionData.get("users");
+                    usernameToUserIdMap = loginUsersInitState(userToLogin, users);
+                    break;
+                case "open_store":
+                    openStoresInitState(stores, usernameToUserIdMap);
+                    break;
+                case "add_product_to_store":
+                    addProductToStoreInitState(products,actionData, usernameToUserIdMap);
+                    break;
+                case "set_manager_permission":
+                    appointManagerToStoreInitState(actionData, usernameToUserIdMap);
+                    break;
+                case "set_Store_Owner":
+                    appointOwnerToStoreInitState(actionData, usernameToUserIdMap);
+                    break;
+                case "LogOut":
+                    List<String> logOutUsers=  (List<String>) actionData.get("users");
+                    logOutInitState(logOutUsers, usernameToUserIdMap);
+                    break;
+            }
+        }
+    }
+
+
+
+
+
+//        Map<String, Object> users = (Map<String, Object>) stateConfig.get("users");
+//        String memberIdu2 ="";
+//        String store_ID ="";
+//        // Iterate over each user entry
+//        for (Map.Entry<String, Object> entry : users.entrySet()) {
+//            String username = entry.getKey();
+//            Map<String, Object> userData = (Map<String, Object>) entry.getValue();
+//
+//            // Extract user details
+//            String username1 = (String) userData.get("username");
+//            String password = (String) userData.get("password");
+//            String birthday = (String) userData.get("birthday");
+//            String country = (String) userData.get("country");
+//            String city = (String) userData.get("city");
+//            String address = (String) userData.get("address");
+//            String name = (String) userData.get("name");
+//
+//            String encryptedPassword = authenticationAndSecurityFacade.encodePassword(password);
+//            // Register user and retrieve system manager ID
+//            String userId = enterMarketSystem();
+//            UserDTO userDTO1 = new UserDTO(userId, username1, birthday, country, city, address, name);
+//            String memberId = userFacade.register(userId, userDTO1, encryptedPassword);
+//            if (username1 == "u2") {
+//                Login(userId, username1, password);
+//                memberIdu2 = memberId;
+//            }
+//        }
+//
+//
+//        Map<String, Object> stores = (Map<String, Object>) stateConfig.get("stores");
+//        for (Map.Entry<String, Object> entry : stores.entrySet()) {
+//            String store1 = entry.getKey();
+//            Map<String, Object> storeData = (Map<String, Object>) entry.getValue();
+//
+//            // Extract store details
+//            String storeName = (String) storeData.get("storeName");
+//            String storeDescription = (String) storeData.get("description");
+//            store_ID = openStore(memberIdu2, storeName, storeDescription);
+//        }
+//
+//        Map<String, Object> products = (Map<String, Object>) stateConfig.get("products");
+//        for (Map.Entry<String, Object> entry : products.entrySet()) {
+//            String products1 = entry.getKey();
+//            Map<String, Object> storeData = (Map<String, Object>) entry.getValue();
+//
+//            // Extract products details
+//            String productName = (String) storeData.get("productName");
+//            int price = (int) storeData.get("price");
+//            int quantity = (int) storeData.get("quantity");
+//            String description = (String) storeData.get("description");
+//            String categoryStr = (String) storeData.get("categoryStr");
+//            ProductDTO productDTO = new ProductDTO(productName,price,quantity,description,categoryStr);
+//
+//            addProductToStore(memberIdu2, store_ID, productDTO);
+//        }
+//
+//
+
+
+
+
 
 
 
@@ -339,12 +595,32 @@ public class Market {
     }
 
 
-    public void sendMessagesOnPurchaseToStoreOwners(CartDTO cartDTO){
-        for (String storeId : cartDTO.getStoreToProducts().keySet()){
+//    public void sendMessagesOnPurchaseToStoreOwners(CartDTO cartDTO){
+//        for (String storeId : cartDTO.getStoreToProducts().keySet()){
+//            List<String> storeOwnerIds = roleFacade.getAllStoreOwners(storeId);
+//            String storeName = storeFacade.getStoreName(storeId);
+//            for (String memberId: storeOwnerIds) {
+//                notificationFacade.sendLateMessage(memberId , "A purchase was made from your store - "+ storeName);
+//            }
+//        }
+//    }
+
+    public void sendMessagesOnPurchaseToStoreOwners(CartDTO cartDTO) throws Exception { // Inject VaadinUserService and NotificationService
+
+        for (String storeId : cartDTO.getStoreToProducts().keySet()) {
             List<String> storeOwnerIds = roleFacade.getAllStoreOwners(storeId);
             String storeName = storeFacade.getStoreName(storeId);
-            for (String memberId: storeOwnerIds) {
-                notificationFacade.sendLateMessage(memberId , "A purchase was made from your store - "+ storeName);
+
+            for (String memberId : storeOwnerIds) {
+                String message = "A purchase was made from your store - " + storeName;
+                //try {
+                myWebSocketHandler.handleStringMessage(memberId, message); // Send real-time notification via WebSocket
+                //}
+//                catch (IOException e) {
+//                    // Handle exception (log error or send late notification)
+//                    System.err.println("Failed to send real-time notification: " + e.getMessage());
+//                    notificationFacade.sendLateMessage(memberId, message); // Fallback to late notification
+//                }
             }
         }
     }
@@ -516,6 +792,8 @@ public class Market {
         String encryptedPassword = authenticationAndSecurityFacade.encodePassword(password);
         String memberId = userFacade.Login(userId, username,encryptedPassword);
         authenticationAndSecurityFacade.generateToken(memberId);
+        //notificationService.sendNotification("user" + userId + "logged in successfully");
+        //myWebSocketHandler.handleStringMessage(userId, "Hello from server!");
         return memberId;
     }
 
@@ -816,7 +1094,7 @@ public class Market {
         storeFacade.reopenStore(store_ID);
     }
 
-    public void sendMessageToStaffOfStore(Notification notification, String member_ID) {
+ /*   public void sendMessageToStaffOfStore(Notification notification, String member_ID) {
         userFacade.getUserByID(member_ID).notifyObserver(notification);
 //       // founder.notifyObserver(notification);
 //        for (User u : getOwnersOfStore())
@@ -824,6 +1102,9 @@ public class Market {
 //        for (User u : getManagersOfStore())
 //            u.notifyObserver(notification);
     }
+    */
+
+
 
 
 

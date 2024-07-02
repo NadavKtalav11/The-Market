@@ -12,7 +12,7 @@ import Util.ProductDTO;
 import java.util.*;
 import java.util.ArrayList;
 import java.util.stream.Collectors;
-import  DomainLayer.Notifications.Notification;
+//import  DomainLayer.Notifications.Notification;
 import Util.UserDTO;
 
 
@@ -62,6 +62,11 @@ public class Store {
         }
     }
 
+    public Map<String, Product> getStoreProducts() {
+        synchronized (storeProductLock) {
+            return storeProducts;
+        }
+    }
     public String getStoreID()
     {
         synchronized (storeIdLock) {
@@ -172,13 +177,13 @@ public class Store {
 
     }
 
-    public void sendMessageToStaffOfStore(Notification notification) {
+  //  public void sendMessageToStaffOfStore(Notification notification) {
 //        founder.notifyObserver(notification);
 //        for (User u : getOwnersOfStore())
 //            u.notifyObserver(notification);
 //        for (User u : getManagersOfStore())
 //            u.notifyObserver(notification);
-    }
+  //  }
 
 
     public boolean getIsOpened()
