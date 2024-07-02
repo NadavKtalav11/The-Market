@@ -134,7 +134,7 @@ public class StoreFacadeTest {
     }
 
     @Test
-    public void testCheckQuantity() {
+    public void testCheckQuantity() throws Exception {
         String storeId = storeFacade.openStore("Test Store", "A store for testing");
         ProductDTO product = new ProductDTO("Product1", 10, 5, "A product", "TOYS");
         try {
@@ -143,7 +143,7 @@ public class StoreFacadeTest {
             fail("Exception should not be thrown");
         }
 
-        storeFacade.checkQuantity("Product1", 5, storeId);
+        storeFacade.checkQuantityAndPrice("Product1", 5, storeId);
 
         // If no exception is thrown, the test passes
     }

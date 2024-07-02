@@ -223,7 +223,7 @@ public class StoreTest {
 
     @Test
     public void testAddPurchaseRule() {
-        List<Rule<UserDTO, List<ProductDTO>>> rules = new ArrayList<>();
+        List<Rule> rules = new ArrayList<>();
         List<String> operators = new ArrayList<>();
         store.addPurchaseRule(rules, operators);
 
@@ -239,7 +239,7 @@ public class StoreTest {
 
     @Test
     public void testAddDiscountCondRule() {
-        List<Rule<UserDTO, List<ProductDTO>>> rules = new ArrayList<>();
+        List<Rule> rules = new ArrayList<>();
         List<String> logicalOperators = new ArrayList<>();
         List<DiscountValue> discDetails = new ArrayList<>();
         List<String> numericalOperators = new ArrayList<>();
