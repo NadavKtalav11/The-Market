@@ -13,8 +13,7 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class RemovePurchaseRuleTest {
-
+public class ComposePurchaseRulesTest {
     private static BridgeToTests impl;
     static String saarUserID;
     static String storeId;
@@ -42,16 +41,19 @@ public class RemovePurchaseRuleTest {
     }
 
     @Test
-    public void successfulRemoveTest() {
-        //remove rule 1
-        assertTrue(impl.removePurchaseRuleFromStore(0, saarUserID, storeId).isSuccess());
-        //remove rule 2
-        assertTrue(impl.removePurchaseRuleFromStore(0, saarUserID, storeId).isSuccess());
+    public void successfulComposeTest() {
+        assertTrue(impl.composeCurrentPurchaseRules(0, 1, "AND", saarUserID, storeId).isSuccess());
+    }
+
+    @Test
+    public void logicalOperatorDontExist() {
+        assertFalse(impl.composeCurrentPurchaseRules(0, 1, "NOR", saarUserID, storeId).isSuccess());
+        assertEquals(impl.composeCurrentPurchaseRules(0, 1, "NOR", saarUserID, storeId).getDescription(), ExceptionsEnum.InvalidOperator.toString());
     }
 
     @Test
     public void ruleNumDontExist() {
-        assertFalse(impl.removePurchaseRuleFromStore(100, saarUserID, storeId).isSuccess());
-        assertEquals(impl.removePurchaseRuleFromStore(100, saarUserID, storeId).getDescription(), ExceptionsEnum.InvalidRuleIndex.toString());
+        assertFalse(impl.composeCurrentPurchaseRules(2, 1, "AND", saarUserID, storeId).isSuccess());
+        assertEquals(impl.composeCurrentPurchaseRules(2, 1, "AND", saarUserID, storeId).getDescription(), ExceptionsEnum.InvalidRuleIndex.toString());
     }
 }
