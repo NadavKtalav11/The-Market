@@ -5,6 +5,7 @@
       <driver-ref>mysql.8</driver-ref>
       <synchronize>true</synchronize>
       <imported>true</imported>
+      <remarks>$PROJECT_DIR$/src/main/resources/application.properties</remarks>
       <jdbc-driver>com.mysql.cj.jdbc.Driver</jdbc-driver>
       <jdbc-url>jdbc:mysql://themarketdb.ch0ca4qkkybz.eu-north-1.rds.amazonaws.com:3306/themarketdb</jdbc-url>
       <jdbc-additional-properties>

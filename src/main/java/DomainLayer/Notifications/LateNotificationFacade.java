@@ -2,14 +2,16 @@ package DomainLayer.Notifications;
 
 import java.util.*;
 
-public class NotificationFacade {
+public class LateNotificationFacade {
 
     private final int QUEUESIZE= 20;
 
     private Map<String, ArrayDeque<String>> lateNotifications ; //memberId--queue(last 20 massages)
 
     //private final Object lock = new Object();
-    public NotificationFacade(){
+
+
+    public LateNotificationFacade(){
         lateNotifications = new HashMap<>();
     }
 

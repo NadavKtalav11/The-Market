@@ -53,6 +53,10 @@ public class MemberService {
         return roleFacade.managerHasPurchasePermissions(memberID, storeId);
     }
 
-
+    public boolean isAdmin(String memberId){
+        return roleFacade.verifyMemberIsSystemManager(memberId);
     }
+
+
+}
 

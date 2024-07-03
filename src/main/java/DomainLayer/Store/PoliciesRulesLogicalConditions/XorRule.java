@@ -1,19 +1,32 @@
 package DomainLayer.Store.PoliciesRulesLogicalConditions;
 
-public class XorRule<T, U> extends CompositeRule<T, U>  {
+import Util.ProductDTO;
+import Util.UserDTO;
 
-    public XorRule(Rule<T, U> rule1, Rule<T, U> rule2) {
+import java.util.List;
+
+public class XorRule extends CompositeRule  {
+
+    public XorRule(Rule rule1, Rule rule2) {
         super(rule1, rule2);
     }
 
     @Override
-    public boolean checkRule(T user, U products) {
-        return rule1.checkRule(user, products) ^ rule2.checkRule(user, products);
+    public boolean checkRule(UserDTO user, List<ProductDTO> products) {
+        synchronized (rule1Lock) {
+            synchronized (rule2Lock) {
+                return rule1.checkRule(user, products) ^ rule2.checkRule(user, products);
+            }
+        }
     }
 
     @Override
     public String getDescription() {
-        return " (" + rule1.getDescription() + " xor " + rule2.getDescription() + ") ";
+        synchronized (rule1Lock) {
+            synchronized (rule2Lock) {
+                return " (" + rule1.getDescription() + " xor " + rule2.getDescription() + ") ";
+            }
+        }
     }
 
 }

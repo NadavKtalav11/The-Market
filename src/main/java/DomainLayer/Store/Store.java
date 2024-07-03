@@ -12,7 +12,7 @@ import Util.ProductDTO;
 import java.util.*;
 import java.util.ArrayList;
 import java.util.stream.Collectors;
-import  DomainLayer.Notifications.Notification;
+//import  DomainLayer.Notifications.Notification;
 import Util.UserDTO;
 
 
@@ -177,13 +177,13 @@ public class Store {
 
     }
 
-    public void sendMessageToStaffOfStore(Notification notification) {
+  //  public void sendMessageToStaffOfStore(Notification notification) {
 //        founder.notifyObserver(notification);
 //        for (User u : getOwnersOfStore())
 //            u.notifyObserver(notification);
 //        for (User u : getManagersOfStore())
 //            u.notifyObserver(notification);
-    }
+  //  }
 
 
     public boolean getIsOpened()
@@ -298,7 +298,7 @@ public class Store {
         return description;
     }
 
-    public void addPurchaseRule(List<Rule<UserDTO, List<ProductDTO>>> rules, List<String> operators) {
+    public void addPurchaseRule(List<Rule> rules, List<String> operators) {
         purchasePolicy.addRule(rules, operators);
     }
 
@@ -306,7 +306,7 @@ public class Store {
         purchasePolicy.removeRule(ruleNum);
     }
 
-    public void addDiscountCondRule(List<Rule<UserDTO, List<ProductDTO>>> rules, List<String> logicalOperators, List<DiscountValue> discDetails, List<String> numericalOperators) {
+    public void addDiscountCondRule(List<Rule> rules, List<String> logicalOperators, List<DiscountValue> discDetails, List<String> numericalOperators) {
         discountPolicy.addCondRule(rules, logicalOperators, discDetails, numericalOperators);
     }
 
@@ -332,5 +332,25 @@ public class Store {
 
     public List<String> getStoreCurrentDiscountRules() {
         return discountPolicy.getRulesDescriptions();
+    }
+
+    public void composeCurrentPurchaseRules(int ruleIndex1, int ruleIndex2, String operator) {
+        purchasePolicy.composeCurrentStoreRules(ruleIndex1, ruleIndex2, operator);
+    }
+
+    public void composeCurrentSimpleDiscountRules(int ruleIndex1, int ruleIndex2, String numericalOperator) {
+        discountPolicy.composeCurrentSimpleDiscountRules(ruleIndex1, ruleIndex2, List.of(numericalOperator));
+    }
+
+    public void composeCurrentCondDiscountRules(int ruleIndex1, int ruleIndex2, String logicalOperator, String numericalOperator) {
+        discountPolicy.composeCurrentCondDiscountRules(ruleIndex1, ruleIndex2, List.of(logicalOperator), List.of(numericalOperator));
+    }
+
+    public List<String> getStoreCurrentSimpleDiscountRules() {
+        return discountPolicy.getSimpleDiscountRulesDescriptions();
+    }
+
+    public List<String> getStoreCurrentCondDiscountRules() {
+        return discountPolicy.getCondDiscountRulesDescriptions();
     }
 }

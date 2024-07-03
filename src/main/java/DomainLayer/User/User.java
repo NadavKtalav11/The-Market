@@ -1,30 +1,28 @@
 package DomainLayer.User;
-import  DomainLayer.Notifications.Observable;
-import  DomainLayer.Notifications.Observer;
-import  DomainLayer.Notifications.Notification;
+//import  DomainLayer.Notifications.Observable;
+//import  DomainLayer.Notifications.Observer;
+//import  DomainLayer.Notifications.Notification;
 
 
-import jakarta.persistence.*;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.ElementCollection;
+import javax.persistence.Transient;
 
 import Util.CartDTO;
 import Util.UserDTO;
 import org.bouncycastle.crypto.generators.BaseKDFBytesGenerator;
-import org.springframework.stereotype.Component;
 
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+public class User   {
 
-
-@Entity
-@Table(name = "user", schema = "themarketdb")
-public class User implements Observable {
-
-    @Id
     private String userID;
-    @Transient
     private State state;
     private String birthday;
     private String country;
@@ -33,12 +31,12 @@ public class User implements Observable {
     private String name;
     private boolean readyToPay;
 
-    @Transient
-    private Observer observer;
+    //@Transient
+    //private Observer observer;
     // maps notification to a bool value: true - if was published to user, false - if wasn't
 
-    @ElementCollection
-    private Map<Notification,Boolean> notifications;
+    //@ElementCollection
+   // private Map<Notification,Boolean> notifications;
 
     public User(String userID){
         this.userID = userID;
@@ -53,10 +51,6 @@ public class User implements Observable {
 
     }
 
-    public User() {
-
-    }
-
     public void updateByDTO(UserDTO userDTO){
         //this.userID = userDTO.getUserId();
         this.birthday = userDTO.getBirthday();
@@ -66,7 +60,7 @@ public class User implements Observable {
         this.name = userDTO.getName();
     }
 
-    @Override
+    /*@Override
     public void registerObserver(Observer observer) {
         this.observer=observer;
         notifyObserver();
@@ -88,8 +82,8 @@ public class User implements Observable {
         }
         return false;
         //DAO.getInstance().merge(this);
-    }
-
+    }*/
+/*
     @Override
     public void notifyObserver() {
         LinkedList<Notification> published=new LinkedList<>();
@@ -104,6 +98,8 @@ public class User implements Observable {
       //  if(published.size()>0)
           //  DAO.getInstance().merge(this);
     }
+
+ */
 
 
 
@@ -160,6 +156,11 @@ public class User implements Observable {
     public void Login(Member loginMember) throws Exception {
         state.Login();
         setState(loginMember);
+        this.birthday = loginMember.getBirthday();
+        this.city = loginMember.getCity();
+        this.name = loginMember.getName();
+        this.country = loginMember.getCountry();
+        this.address = loginMember.getAddress();
     }
 
     public State getState()
@@ -182,6 +183,16 @@ public class User implements Observable {
 
     public Cart getCart() {
         return state.getCart();
+    }
+
+
+    public void addInfo(UserDTO userDTO){
+        this.name = userDTO.getName();
+        this.address = userDTO.getAddress();
+        this.city = userDTO.getCity();
+        this.country = userDTO.getCountry();
+        this.birthday = userDTO.getBirthday();
+
     }
 
 

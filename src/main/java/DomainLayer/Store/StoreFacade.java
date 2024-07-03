@@ -1,12 +1,10 @@
 package DomainLayer.Store;
 
-import DomainLayer.Store.StoreDiscountPolicy.DiscountRulesRepository;
 import DomainLayer.Store.StoreDiscountPolicy.DiscountValue;
 import DomainLayer.Store.StoreDiscountPolicy.SimpleDiscountValue;
 import Util.*;
 import DomainLayer.Store.PoliciesRulesLogicalConditions.Rule;
 import DomainLayer.Store.PoliciesRulesLogicalConditions.SimpleRule;
-import DomainLayer.Store.StorePurchasePolicy.PurchaseRulesRepository;
 
 import java.util.*;
 
@@ -50,6 +48,14 @@ public class StoreFacade {
     public StoreFacade newForTest(){
         storeFacadeInstance= new StoreFacade();
         return storeFacadeInstance;
+    }
+
+
+    public boolean isStoreOpen(String storeId){
+        if (getStoreByID(storeId)==null){
+            return false;
+        }
+        return getStoreByID(storeId).getIsOpened();
     }
 
 
@@ -129,11 +135,12 @@ public class StoreFacade {
     }
 
 
-    public void checkQuantity(String productName, int quantity, String storeId)
-    {
+    public void checkQuantityAndPrice(String productName, int quantity, String storeId) throws Exception {
         this.checkIfProductExists(productName, storeId);
         this.checkProductQuantityAvailability(productName, storeId, quantity);
         this.checkIfProductQuantityIsPositive(quantity);
+        Store store = getStoreByID(storeId);
+        checkProductPrice(store.getProductDTOByName(productName, quantity));
     }
 
     public void checkIfProductExists(String productName, String storeId){
@@ -197,6 +204,7 @@ public class StoreFacade {
 
     public void addProductToStore(String storeId, ProductDTO product) throws Exception {
 
+        checkProductPrice(product);
         if (!checkProductExistInStore(product.getName(), storeId)) {
             if (product.getQuantity() >= 0) {
                 allStores.get(storeId).addProduct(product);
@@ -207,6 +215,12 @@ public class StoreFacade {
             throw new Exception(ExceptionsEnum.productAlreadyExistInStore.toString());
         }
     }
+
+    private void checkProductPrice(ProductDTO product) {
+        if (product.getPrice() < 0)
+            throw new IllegalArgumentException(ExceptionsEnum.NegativePrice.toString());
+    }
+
 
     public void removeProductFromStore(String storeId, String productName) throws Exception {
         if (checkProductExistInStore(productName, storeId)) {
@@ -219,6 +233,7 @@ public class StoreFacade {
 
     public void updateProductInStore(String storeId, ProductDTO product) throws Exception {
 
+        checkProductPrice(product);
         if (checkProductExistInStore(product.getName(), storeId)) {
             if (product.getQuantity() >= 0) {
                 allStores.get(storeId).updateProduct(product);
@@ -331,10 +346,10 @@ public class StoreFacade {
         allStores.get(storeId).addReceipt(receiptId, userId);
     }
 
-    public void addPurchaseRuleToStore(List<Integer> ruleNums, List<String> operators, String storeId) {
-        List<Rule<UserDTO, List<ProductDTO>>> rules = new ArrayList<>();
-        for (int ruleNum : ruleNums) {
-            rules.add(new SimpleRule<>(PurchaseRulesRepository.getByRuleNumber(ruleNum)));
+    public void addPurchaseRuleToStore(List<TestRuleDTO> testRules, List<String> operators, String storeId) {
+        List<Rule> rules = new ArrayList<>();
+        for (TestRuleDTO testRule : testRules) {
+            rules.add(new SimpleRule(testRule));
         }
         allStores.get(storeId).addPurchaseRule(rules, operators);
     }
@@ -344,13 +359,13 @@ public class StoreFacade {
         allStores.get(storeId).removePurchaseRule(ruleNum);
     }
 
-    public void addDiscountCondRuleToStore(List<Integer> ruleNums, List<String> operators, List<DiscountValueDTO> discDetails, List<String> numericalOperators, String storeId) {
+    public void addDiscountCondRuleToStore(List<TestRuleDTO> testRules, List<String> operators, List<DiscountValueDTO> discDetails, List<String> numericalOperators, String storeId) {
 
         List<DiscountValue> discountValue = getDiscountValuesList(discDetails);
 
-        List<Rule<UserDTO, List<ProductDTO>>> rules = new ArrayList<>();
-        for (int ruleNum : ruleNums) {
-            rules.add(new SimpleRule<>(DiscountRulesRepository.getByRuleNumber(ruleNum)));
+        List<Rule> rules = new ArrayList<>();
+        for (TestRuleDTO testRule : testRules) {
+            rules.add(new SimpleRule(testRule));
         }
 
         allStores.get(storeId).addDiscountCondRule(rules, operators, discountValue, numericalOperators);
@@ -381,5 +396,25 @@ public class StoreFacade {
 
     public List<String> getStoreCurrentDiscountRules(String storeId) {
         return allStores.get(storeId).getStoreCurrentDiscountRules();
+    }
+
+    public void composeCurrentPurchaseRules(int ruleIndex1, int ruleIndex2, String operator, String storeId) {
+        allStores.get(storeId).composeCurrentPurchaseRules(ruleIndex1, ruleIndex2, operator);
+    }
+
+    public void composeCurrentSimpleDiscountRules(int ruleIndex1, int ruleIndex2, String numericalOperator, String storeId) {
+        allStores.get(storeId).composeCurrentSimpleDiscountRules(ruleIndex1, ruleIndex2, numericalOperator);
+    }
+
+    public void composeCurrentCondDiscountRules(int ruleIndex1, int ruleIndex2, String logicalOperator, String numericalOperator, String storeId) {
+        allStores.get(storeId).composeCurrentCondDiscountRules(ruleIndex1, ruleIndex2, logicalOperator, numericalOperator);
+    }
+
+    public List<String> getStoreCurrentSimpleDiscountRules(String storeId) {
+        return allStores.get(storeId).getStoreCurrentSimpleDiscountRules();
+    }
+
+    public List<String> getStoreCurrentCondDiscountRules(String storeId) {
+        return allStores.get(storeId).getStoreCurrentCondDiscountRules();
     }
 }

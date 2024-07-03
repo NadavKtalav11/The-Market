@@ -16,21 +16,33 @@ import static org.junit.jupiter.api.Assertions.*;
 public class MaxDiscountTest {
 
     private List<ProductDTO> products;
+    private int percentage1;
+    private int percentage2;
+    private int product1Price;
+    private int product2Price;
+    private int product3Price;
 
     @BeforeEach
     public void setUp() {
+        //initialize percentage and product prices
+        percentage1 = 50;
+        percentage2 = 20;
+        product1Price = 100;
+        product2Price = 200;
+        product3Price = 300;
+
         // Initialize products for testing
         products = new ArrayList<>();
-        products.add(new ProductDTO("product1", 100, 2, "desc1", "TOYS"));
-        products.add(new ProductDTO("product2", 200, 3, "desc2", "BOOKS"));
-        products.add(new ProductDTO("product3", 300, 4, "desc3", "TOYS"));
+        products.add(new ProductDTO("product1", product1Price, 2, "desc1", "TOYS"));
+        products.add(new ProductDTO("product2", product2Price, 3, "desc2", "BOOKS"));
+        products.add(new ProductDTO("product3", product3Price, 4, "desc3", "TOYS"));
     }
 
     @Test
     public void testCalcDiscount() {
         // Create a MaxDiscount with specific discount values
-        DiscountValue discountValue1 = new SimpleDiscountValue(50, Category.TOYS, false, null);
-        DiscountValue discountValue2 = new SimpleDiscountValue(20, Category.BOOKS, false, null);
+        DiscountValue discountValue1 = new SimpleDiscountValue(percentage1, Category.TOYS, false, null);
+        DiscountValue discountValue2 = new SimpleDiscountValue(percentage2, Category.BOOKS, false, null);
         MaxDiscount maxDiscount = new MaxDiscount(discountValue1, discountValue2);
 
         // Calculate discount
@@ -38,16 +50,19 @@ public class MaxDiscountTest {
 
         // Expected discount calculation:
         // TOYS category discount: (100 + 300) * 0.5 = 200
+        int expectedToyDiscount = (product1Price + product3Price) * percentage1 / 100;
         // BOOKS category discount: 200 * 0.2 = 40
+        int expectedBookDiscount = product2Price * percentage2 / 100;
         // Maximum discount: max(200, 40) = 200
-        assertEquals(200, totalDiscount);
+        int maxDiscountValue = Math.max(expectedToyDiscount, expectedBookDiscount);
+        assertEquals(maxDiscountValue, totalDiscount);
     }
 
     @Test
     public void testCalcDiscountNoMatchingProducts() {
         // Create a MaxDiscount with discount values that won't match any products
-        DiscountValue discountValue1 = new SimpleDiscountValue(50, Category.ELECTRONICS, false, null);
-        DiscountValue discountValue2 = new SimpleDiscountValue(20, Category.FOOD, false, null);
+        DiscountValue discountValue1 = new SimpleDiscountValue(percentage1, Category.ELECTRONICS, false, null);
+        DiscountValue discountValue2 = new SimpleDiscountValue(percentage2, Category.FOOD, false, null);
         MaxDiscount maxDiscount = new MaxDiscount(discountValue1, discountValue2);
 
         // Calculate discount

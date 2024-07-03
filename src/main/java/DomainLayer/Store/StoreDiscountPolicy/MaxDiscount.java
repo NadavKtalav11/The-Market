@@ -16,13 +16,21 @@ public class MaxDiscount extends CompositeNumericalDiscount {
     @Override
     public int calcDiscount(List<ProductDTO> basketProducts) {
         //check which discount is bigger and return it
-        int discount1 = discountValue1.calcDiscount(basketProducts);
-        int discount2 = discountValue2.calcDiscount(basketProducts);
-        return Math.max(discount1, discount2);
+        synchronized (discountValue1Lock) {
+            synchronized (discountValue2Lock) {
+                int discount1 = discountValue1.calcDiscount(basketProducts);
+                int discount2 = discountValue2.calcDiscount(basketProducts);
+                return Math.max(discount1, discount2);
+            }
+        }
     }
 
     @Override
     public String getDescription() {
-        return " (Max between " + discountValue1.getDescription() + " and " + discountValue2.getDescription() + ") ";
+        synchronized (discountValue1Lock) {
+            synchronized (discountValue2Lock) {
+                return " (Max between " + discountValue1.getDescription() + " and " + discountValue2.getDescription() + ") ";
+            }
+        }
     }
 }
