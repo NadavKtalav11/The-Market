@@ -117,7 +117,7 @@ public class RoleFacade {
     }
 
     private void addNewStoreManagerToTheMarket(StoreManager storeManager) {
-        storeManagerRepository.add(storeManager);
+        storeManagerRepository.save(storeManager);
     }
 
     private void addNewStoreOwnerToTheMarket(StoreOwner storeOwner) {
@@ -126,7 +126,7 @@ public class RoleFacade {
 
     public void addNewStoreManagerToTheMarketForTests(StoreManager storeManager) {
         if(!verifyStoreManager(storeManager.getStore_ID(), storeManager.getMember_ID()))
-            storeManagerRepository.add(storeManager);
+            storeManagerRepository.save(storeManager);
     }
 
     public void addNewStoreOwnerToTheMarketForTests(StoreOwner storeOwner) {
@@ -155,7 +155,7 @@ public class RoleFacade {
     public Map<String, List<Integer>> getStoreManagersAuthorizations(String storeID) {
         Map<String, List<Integer>> managersAuthorizations = new HashMap<>();
         for (String memberId : storeManagerRepository.getAllMemberId()) {
-            for (StoreManager currStoreManager : storeManagerRepository.getAllMemberIdOwners(memberId)) {
+            for (StoreManager currStoreManager : storeManagerRepository.getAllMemberIdManagers(memberId)) {
                 if (currStoreManager.getStore_ID().equals(storeID)) {
                     managersAuthorizations.put(memberId, currStoreManager.getAuthorizations());
                 }
@@ -167,7 +167,7 @@ public class RoleFacade {
     public List<String> getAllStoreManagers(String storeID) {
         List<String> storeManagers = new ArrayList<>();
         for (String memberId : storeManagerRepository.getAllMemberId()) {
-            for (StoreManager currStoreManager : storeManagerRepository.getAllMemberIdOwners(memberId)) {
+            for (StoreManager currStoreManager : storeManagerRepository.getAllMemberIdManagers(memberId)) {
                 if (currStoreManager.getStore_ID().equals(storeID)) {
                     storeManagers.add(currStoreManager.getMember_ID());
                 }
@@ -247,7 +247,7 @@ public class RoleFacade {
     }
 
     public void fireStoreManager(String memberIdToFire, String storeID){
-        storeManagerRepository.remove(storeManagerRepository.get(storeID, memberIdToFire));
+        storeManagerRepository.delete(storeManagerRepository.get(storeID, memberIdToFire));
     }
 }
 
