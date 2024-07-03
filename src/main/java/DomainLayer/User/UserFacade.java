@@ -7,6 +7,7 @@ import Util.ExceptionsEnum;
 import Util.UserDTO;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
+import DomainLayer.Repositories.UserMemoryRepository;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -48,7 +49,7 @@ public class UserFacade {
     }
 
     public String getMemberName(String memberId){
-        return members.get(memberId).getUsername();
+        return members.getById(memberId).getUsername();
     }
 
     public synchronized static UserFacade getInstance() {
@@ -103,13 +104,13 @@ public class UserFacade {
     public List<UserDTO> getUserDTOByMemberId(List<String> memberIdList){
         List<UserDTO> userDTOList = new ArrayList<>();
         for (String memberID : memberIdList){
-            userDTOList.add(getUserDTOById(members.get(memberID).getUserId()));
+            userDTOList.add(getUserDTOById(members.getById(memberID).getUserId()));
         }
         return userDTOList;
     }
 
     public String getUserIdByMemberId(String memberId){
-        Member curr  = members.get(memberId);
+        Member curr  = members.getById(memberId);
         if (curr!=null){
             return curr.getUserId();
         }
@@ -195,7 +196,7 @@ public class UserFacade {
 
 
             Member newMember = new Member(userID, memberId,user.getUserName(), user.getAddress(), user.getName(), password, user.getBirthday(), user.getCountry(), user.getCity());
-            members.add(memberId, newMember);
+            members.save(newMember);
             getUserByID(userID).addInfo(user);
             //todo pass the user to login page.
             return memberId;

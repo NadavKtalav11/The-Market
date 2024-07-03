@@ -24,7 +24,7 @@ public class UserFacadeTest {
         // Reset the UserFacade singleton for each test
         userFacade = UserFacade.getInstance();
         userFacade.getUserRepository().deleteAll();
-        userFacade.getMembers().clear();
+        userFacade.getMembers().deleteAllInBatch();
 
         // Create a new user and add to the UserFacade
         User user = new User(userId);

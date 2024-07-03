@@ -55,12 +55,12 @@ public class  SystemStartup {
         String memberID = market.getSystemManagerIds().iterator().next();
 
         // assert the system manager details match the details in the config file
-        assertEquals("u1", userFacade.getMembers().get(memberID).getUsername());
-        assertEquals("19/09/1996", userFacade.getMembers().get(memberID).getBirthday());
-        assertEquals("Israel", userFacade.getMembers().get(memberID).getCountry());
-        assertEquals("Ashdod", userFacade.getMembers().get(memberID).getCity());
-        assertEquals("Elul", userFacade.getMembers().get(memberID).getAddress());
-        assertEquals("David Volodarsky", userFacade.getMembers().get(memberID).getName());
+        assertEquals("u1", userFacade.getMembers().getById(memberID).getUsername());
+        assertEquals("19/09/1996", userFacade.getMembers().getById(memberID).getBirthday());
+        assertEquals("Israel", userFacade.getMembers().getById(memberID).getCountry());
+        assertEquals("Ashdod", userFacade.getMembers().getById(memberID).getCity());
+        assertEquals("Elul", userFacade.getMembers().getById(memberID).getAddress());
+        assertEquals("David Volodarsky", userFacade.getMembers().getById(memberID).getName());
 
     }
 
