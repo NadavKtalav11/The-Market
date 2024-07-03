@@ -5,6 +5,7 @@ import DomainLayer.Store.StoreFacade;
 import DomainLayer.User.UserFacade;
 import Util.StoreDTO;
 import Util.UserDTO;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Service;
@@ -19,10 +20,10 @@ public class StoreService {
     private final StoreFacade storeFacade;
     private final Market market;
 
-
-    public StoreService() {
-        this.storeFacade = StoreFacade.getInstance();
-        market = Market.getInstance();
+    @Autowired
+    public StoreService(StoreFacade storeFacade, Market market) {
+        this.storeFacade = storeFacade;
+        this.market = market;
     }
 
     @Bean
