@@ -2,9 +2,11 @@ package DomainLayer.PaymentServices;
 
 
 import Util.*;
+import org.springframework.stereotype.Service;
 
 import java.util.*;
 
+@Service
 public class PaymentServicesFacade {
     private static PaymentServicesFacade paymentServicesFacadeInstance;
     private Map<String, ExternalPaymentService>  allPaymentServices = new HashMap<String, ExternalPaymentService>();

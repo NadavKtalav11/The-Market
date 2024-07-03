@@ -1,5 +1,6 @@
 package AcceptanceTests;
 
+import DomainLayer.Market.Market;
 import ServiceLayer.Response;
 import PresentationLayer.WAF.Service_layer;
 import Util.*;
@@ -13,8 +14,8 @@ public class RealToTest implements BridgeToTests {
 
     public RealToTest()
     {
-        //this.service = new Service_layer();
-        service = new Service_layer(1);
+        Market market = new Market();
+        this.service = new Service_layer(1, market);
 
     }
 

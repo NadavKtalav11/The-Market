@@ -5,6 +5,7 @@ import DomainLayer.Repositories.*;
 import Util.CartDTO;
 import Util.ExceptionsEnum;
 import Util.UserDTO;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import DomainLayer.Repositories.UserMemoryRepository;
@@ -30,22 +31,16 @@ public class UserFacade {
     //private Object memberIdLock;
     //Map<Integer, User> allUsers = new HashMap<Integer, User>(); //userID-User
 
-    private UserFacade()
+    @Autowired
+    public UserFacade(UserRepository userRepository, MemberRepository members) {
+        this.userRepository = userRepository;
+        this.members = members;
+    }
+
+    public UserFacade()
     {
-        //this.currentUserID = 0;
-        //this.currentMemberID = 0;
-        //allUserLock = new Object();
-
-        //membersLock = new Object();
         userRepository = new UserMemoryRepository();
-        //userRepository = new UserMemoryRepository();
         members = new MemberMemoryRepository();
-
-        //userIdLock = new Object();
-        //memberIdLock = new Object();
-
-        //memberIdPrefix = "member";
-        //memberIdPrefix = "user";
     }
 
     public String getMemberName(String memberId){

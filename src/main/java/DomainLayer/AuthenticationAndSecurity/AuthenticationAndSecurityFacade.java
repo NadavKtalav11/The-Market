@@ -13,7 +13,7 @@ public class AuthenticationAndSecurityFacade {
         }
         return instance;
     }
-    private AuthenticationAndSecurityFacade() {
+    public AuthenticationAndSecurityFacade() {
         passwordEncryptor = new PasswordEncryptor();
         tokensService = new TokensService();
     }

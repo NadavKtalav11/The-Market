@@ -5,9 +5,12 @@ import DomainLayer.Store.StoreDiscountPolicy.SimpleDiscountValue;
 import Util.*;
 import DomainLayer.Store.PoliciesRulesLogicalConditions.Rule;
 import DomainLayer.Store.PoliciesRulesLogicalConditions.SimpleRule;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.util.*;
 
+@Service
 public class StoreFacade {
     private static StoreFacade storeFacadeInstance;
 
@@ -20,8 +23,8 @@ public class StoreFacade {
     //private Object storeIdLock;
     //Map<Integer, Store> allStores = new HashMap<Integer, Store>();
 
-
-    private StoreFacade()
+    // Added for testing purposes
+    public StoreFacade()
     {
 
         allStores = new StoreMemoryRepository();
@@ -39,7 +42,7 @@ public class StoreFacade {
         return storeFacadeInstance;
     }
 
-    // Added for testing purposes
+    @Autowired
     public StoreFacade(StoreRepository storeRepository) {
         this.allStores = storeRepository;
     }
