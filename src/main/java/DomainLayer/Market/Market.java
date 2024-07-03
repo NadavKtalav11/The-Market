@@ -19,7 +19,9 @@ import DomainLayer.User.UserFacade;
 import DomainLayer.SupplyServices.SupplyServicesFacade;
 import Util.*;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 import org.yaml.snakeyaml.Yaml;
 import java.io.FileInputStream;
 import java.io.InputStream;
@@ -31,7 +33,7 @@ import java.util.regex.Pattern;
 import java.util.concurrent.*;
 
 
-@Component
+@Service
 public class Market {
     private static Market MarketInstance;
     private PaymentServicesFacade paymentServicesFacade;
@@ -56,6 +58,7 @@ public class Market {
         return MarketInstance;
     }
 
+    @Autowired
     private Market(StoreFacade storeFacade, UserFacade userFacade, RoleFacade roleFacade, PaymentServicesFacade paymentServicesFacade, AuthenticationAndSecurityFacade authenticationAndSecurityFacade, SupplyServicesFacade supplyServicesFacade){
         this.storeFacade = storeFacade;
         this.userFacade = userFacade;

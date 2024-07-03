@@ -1,10 +1,15 @@
 package DomainLayer.Store;
 
+import org.springframework.context.annotation.Profile;
+import org.springframework.stereotype.Repository;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+@Repository
+@Profile("memory")
 public class StoreMemoryRepository implements StoreRepository{
 
     private Map<String, Store> allStores ;
