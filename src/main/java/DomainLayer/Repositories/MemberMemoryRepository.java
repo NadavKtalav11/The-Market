@@ -41,7 +41,9 @@ public class MemberMemoryRepository implements MemberRepository {
 
     @Override
     public void deleteAllInBatch(Iterable<Member> entities) {
-
+        synchronized (allMembersLock) {
+            allMembers.clear();
+        }
     }
 
     @Override

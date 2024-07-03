@@ -61,7 +61,7 @@ public class StateInit {
     public void successfulInitTest() throws Exception {
         assertFalse(market.isInitialized());
         assertEquals(0, market.getSystemManagerIds().size());
-        assertEquals(0, userFacade.getMembers().getAll().size());
+        assertEquals(0, userFacade.getMembers().findAll().size());
         assertEquals(0, storeFacade.getStores().size());
 
 
@@ -76,14 +76,14 @@ public class StateInit {
         String memberID = market.getSystemManagerIds().iterator().next();
 
         // assert the system manager details match the details in the config file
-        assertEquals("u1", userFacade.getMembers().get(memberID).getUsername());
-        assertEquals("19/09/1996", userFacade.getMembers().get(memberID).getBirthday());
-        assertEquals("Israel", userFacade.getMembers().get(memberID).getCountry());
-        assertEquals("Ashdod", userFacade.getMembers().get(memberID).getCity());
-        assertEquals("Elul", userFacade.getMembers().get(memberID).getAddress());
-        assertEquals("David Volodarsky", userFacade.getMembers().get(memberID).getName());
+        assertEquals("u1", userFacade.getMembers().getById(memberID).getUsername());
+        assertEquals("19/09/1996", userFacade.getMembers().getById(memberID).getBirthday());
+        assertEquals("Israel", userFacade.getMembers().getById(memberID).getCountry());
+        assertEquals("Ashdod", userFacade.getMembers().getById(memberID).getCity());
+        assertEquals("Elul", userFacade.getMembers().getById(memberID).getAddress());
+        assertEquals("David Volodarsky", userFacade.getMembers().getById(memberID).getName());
 
-        assertEquals(6, userFacade.getMembers().getAll().size());
+        assertEquals(6, userFacade.getMembers().findAll().size());
         assertEquals(1, storeFacade.getStores().size());
         String storeID = storeFacade.getStores().iterator().next();
         assertTrue( storeFacade.getStoreByID(storeID).getStoreProducts().containsKey("Bamba"));
