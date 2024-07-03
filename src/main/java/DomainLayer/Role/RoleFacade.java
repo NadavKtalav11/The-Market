@@ -3,12 +3,14 @@ package DomainLayer.Role;
 import Util.ExceptionsEnum;
 import Util.UserDTO;
 import com.fasterxml.jackson.databind.JsonSerializer;
+import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+@Service
 public class RoleFacade {
 
     private static RoleFacade roleFacadeInstance;
@@ -21,7 +23,7 @@ public class RoleFacade {
     StoreManagerRepository storeManagerRepository;
 
 
-    private RoleFacade() {
+    public RoleFacade() {
         systemManagers = new ArrayList<>();
 
         storeManagerRepository = new MemoryStoreManagerRepository();
