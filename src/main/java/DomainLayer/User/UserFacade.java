@@ -1,21 +1,21 @@
 package DomainLayer.User;
 
 
+import DomainLayer.Repositories.*;
 import Util.CartDTO;
 import Util.ExceptionsEnum;
 import Util.UserDTO;
 import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
-import java.util.stream.Collectors;
 
-
-@Component
+@Service
 public class UserFacade {
     private static UserFacade userFacadeInstance;
-    UserRepository<User> userRepository;
+    UserRepository userRepository;
     MemberRepository members;
     //private Object membersLock;
     //Map<String, Member> members = new HashMap<>(); //memberID-Member
@@ -36,7 +36,8 @@ public class UserFacade {
         //allUserLock = new Object();
 
         //membersLock = new Object();
-        userRepository = new UserMemoryRepository<>();
+        userRepository = new UserMemoryRepository();
+        //userRepository = new UserMemoryRepository();
         members = new MemberMemoryRepository();
 
         //userIdLock = new Object();
@@ -76,7 +77,7 @@ public class UserFacade {
 
 
     public User getUserByID(String userID){
-        return userRepository.get(userID);
+        return userRepository.getById(userID);
     }
 
     public void errorIfUserNotExist(String userID) throws Exception {
@@ -143,15 +144,15 @@ public class UserFacade {
 
     public void exitMarketSystem(String userID){
 
-        userRepository.get(userID).exitMarketSystem();
-        userRepository.remove(userID); //todo do i need to remove the user from the list of users ?
+        userRepository.getById(userID).exitMarketSystem();
+        userRepository.deleteById(userID); //todo do i need to remove the user from the list of users ?
     }
 
 
     public String addUser(){
         String userId;
         userId = getCurrentUserID();
-        userRepository.add(userId, new User(userId));
+        userRepository.save(new User(userId));
         return userId;
     }
 
@@ -185,7 +186,7 @@ public class UserFacade {
 
 
     public String register(String userID, UserDTO user,String password) throws Exception {
-        if(userRepository.contain(userID)&& getUserByID(userID).isMember()) {
+        if(userRepository.existsById(userID)&& getUserByID(userID).isMember()) {
             throw new Exception(ExceptionsEnum.memberCannotRegister.toString());
         }
         else {
@@ -342,7 +343,7 @@ public class UserFacade {
     }
 
     public List<UserDTO> getAllUsers(){
-        List<User> users = userRepository.getAll();
+        List<User> users = userRepository.findAll();
         List<UserDTO> userDTOList = new ArrayList<>();
         for (User user:users ){
             userDTOList.add(new UserDTO(user));
@@ -362,7 +363,7 @@ public class UserFacade {
     }
 
     public void removeUser(String userId){
-        userRepository.remove(userId);
+        userRepository.deleteById(userId);
     }
 
     public CartDTO getCartDTO(String userId){
@@ -373,7 +374,7 @@ public class UserFacade {
         return members;
     }
 
-    public UserRepository<User> getUserRepository() {
+    public UserRepository getUserRepository() {
         return userRepository;
     }
 

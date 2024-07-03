@@ -42,4 +42,18 @@
         <appender-ref ref="CONSOLE" />
         <appender-ref ref="ERROR_FILE" />
     </root>
+
+    <!-- Hibernate SQL Logger -->
+    <logger name="org.hibernate.SQL" level="DEBUG">
+        <appender-ref ref="CONSOLE" />
+    </logger>
+
+    <!-- Hibernate Type Binding Logger -->
+    <logger name="org.hibernate.type.descriptor.sql.BasicBinder" level="TRACE">
+        <appender-ref ref="CONSOLE" />
+    </logger>
+
+    <root level="DEBUG">
+        <appender-ref ref="CONSOLE" />
+    </root>
 </configuration>

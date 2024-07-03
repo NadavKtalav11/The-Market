@@ -19,6 +19,7 @@ import DomainLayer.User.UserFacade;
 import DomainLayer.SupplyServices.SupplyServicesFacade;
 import Util.*;
 
+import org.springframework.stereotype.Component;
 import org.yaml.snakeyaml.Yaml;
 import java.io.FileInputStream;
 import java.io.InputStream;
@@ -30,7 +31,7 @@ import java.util.regex.Pattern;
 import java.util.concurrent.*;
 
 
-
+@Component
 public class Market {
     private static Market MarketInstance;
     private PaymentServicesFacade paymentServicesFacade;
