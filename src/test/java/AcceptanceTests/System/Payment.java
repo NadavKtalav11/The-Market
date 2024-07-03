@@ -79,8 +79,10 @@ public class Payment {
         int month = 12;
         int year = 2024;
         String holderID = "123456789";
-        String userID = "77";
-        userFacade.register(userID,  new UserDTO(userID, "username", "19/09/1996", "country",  "city", "address",  "name"), "password");
+        //String userID = "77";
+        String newUserId = userFacade.addUser();
+        UserDTO userDTO = new UserDTO(newUserId, "username", "19/09/1996", "country",  "city", "address",  "name");
+        userFacade.register(newUserId, userDTO , "password");
 
         String systemMangerId = "77";
 
@@ -182,8 +184,10 @@ public class Payment {
         int month = 12;
         int year = 2024;
         String holderID = "123456789";
-        String userID = "77";
-        userFacade.register(userID,  new UserDTO(userID, "username", "19/09/1996", "country",  "city", "address",  "name"), "password");
+        //String userID = "77";
+        String newUserId = userFacade.addUser();
+        UserDTO userDTO = new UserDTO(newUserId, "username", "19/09/1996", "country",  "city", "address",  "name");
+        userFacade.register(newUserId,  userDTO, "password");
 
         String systemMangerId = "77";
 
