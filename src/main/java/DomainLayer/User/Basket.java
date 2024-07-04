@@ -107,7 +107,7 @@ public class Basket {
             //todo: check if it is actually changing the values
             ProductDetails productDetails  = products.get(productName);
             productDetails.setQuantity(quantity);
-            productDetails.setQuantity(totalPrice);
+            productDetails.setTotalPrice(totalPrice);
             products.put(productName, productDetails);
         }
     }
