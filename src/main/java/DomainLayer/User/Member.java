@@ -4,8 +4,8 @@ import DomainLayer.Store.StoreFacade;
 import DomainLayer.Role.RoleFacade;
 import Util.ExceptionsEnum;
 import Util.UserDTO;
+import jakarta.persistence.*;
 
-import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -58,6 +58,10 @@ public class Member extends State{
         this.name = name;
         this.productIdCounter = 0;
         this.acquisitionIds = new ArrayList<>();
+    }
+
+    public Member() {
+
     }
 
 

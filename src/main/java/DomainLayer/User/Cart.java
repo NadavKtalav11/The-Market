@@ -1,14 +1,33 @@
 package DomainLayer.User;
 
 import Util.CartDTO;
-
+import jakarta.persistence.Entity;
+import jakarta.persistence.Table;
+import jakarta.persistence.Id;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.*;
 import java.util.*;
 
+@Entity
+@Table(name = "cart")
 public class Cart {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    // One-to-many relationship with Basket
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "cart_id") // This will create a cart_id column in the Basket table
+    @MapKeyColumn(name = "store_id") // Column in the Basket table for store_id
     Map<String, Basket> baskets ; //key = storeID
+
+    @Column(name = "cart_price")
     private int cartPrice;
 
+    @Transient
     private final Object basketsLock;
+    @Transient
     private final Object priceLock;
 
     public Cart() {

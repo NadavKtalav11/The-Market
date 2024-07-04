@@ -1,5 +1,8 @@
 package DomainLayer.AuthenticationAndSecurity;
 
+import org.springframework.stereotype.Service;
+
+@Service
 public class AuthenticationAndSecurityFacade {
 
 
