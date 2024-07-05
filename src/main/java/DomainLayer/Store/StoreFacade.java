@@ -23,7 +23,7 @@ public class StoreFacade {
     //private Object storeIdLock;
     //Map<Integer, Store> allStores = new HashMap<Integer, Store>();
 
-    // Added for testing purposes
+
     public StoreFacade()
     {
 
@@ -42,7 +42,8 @@ public class StoreFacade {
         return storeFacadeInstance;
     }
 
-    @Autowired
+
+    // Added for testing purposes
     public StoreFacade(StoreRepository storeRepository) {
         this.allStores = storeRepository;
     }
@@ -116,11 +117,11 @@ public class StoreFacade {
     }
 
     public List<String> getStoreCategories(){
-       List<String> categories = new ArrayList<>();
-       for (Category cat : EnumSet.allOf(Category.class)){
-           categories.add(cat.toString());
-       }
-       return categories;
+        List<String> categories = new ArrayList<>();
+        for (Category cat : EnumSet.allOf(Category.class)){
+            categories.add(cat.toString());
+        }
+        return categories;
     }
 
     public String getNewStoreId(){
@@ -275,12 +276,12 @@ public class StoreFacade {
     public List<String> getInformationAboutOpenStores()
     {
         List<String> openStoreInformation = new ArrayList<>();
-            for (Store store : allStores.getAll()) {
-                //int storeId = entry.getKey();
-                //Store store = entry.getValue();
-                if (store.getIsOpened())
-                    openStoreInformation.add(store.getStoreID());
-            }
+        for (Store store : allStores.getAll()) {
+            //int storeId = entry.getKey();
+            //Store store = entry.getValue();
+            if (store.getIsOpened())
+                openStoreInformation.add(store.getStoreID());
+        }
         return openStoreInformation;
     }
 
@@ -341,8 +342,8 @@ public class StoreFacade {
 
     public List<String> getStores() {
 
-            return allStores.getAllIds();
-        }
+        return allStores.getAllIds();
+    }
 
     public void addReceiptToStore(String storeId, String  receiptId, String userId)
     {

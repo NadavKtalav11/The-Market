@@ -4,7 +4,7 @@ package DomainLayer.User;
 //import  DomainLayer.Notifications.Notification;
 
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 
 import Util.CartDTO;
 import Util.UserDTO;
@@ -16,11 +16,14 @@ import java.util.List;
 import java.util.Map;
 
 @Entity
+@Table(name = "user")
 public class User   {
 
     @Id
     private String userID;
 
+    //TODO: CHANGE THE ANNOTATION
+    @Transient
     private State state;
 
     @Column(name = "birthday")
@@ -58,6 +61,10 @@ public class User   {
         this.name = null;
         this.readyToPay = false;
         //this.cart = new Cart();
+
+    }
+
+    public User() {
 
     }
 

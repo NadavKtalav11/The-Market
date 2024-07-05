@@ -35,6 +35,10 @@ public class UserFacade {
     public UserFacade(UserRepository userRepository, MemberRepository members) {
         this.userRepository = userRepository;
         this.members = members;
+
+        //CHECK IF INSERTION AND CLEARING DB WORKS
+        //userRepository.deleteAllInBatch();
+        //userRepository.save(new User("user-1"));
     }
 
     public UserFacade()
