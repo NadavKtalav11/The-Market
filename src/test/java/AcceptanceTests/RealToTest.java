@@ -178,8 +178,8 @@ public class RealToTest implements BridgeToTests {
     }
 
 
-    public Response<String> addPurchaseRuleToStore(List<Integer> ruleNums, List<String> operators, String userId, String storeId) {
-        return service.addPurchaseRuleToStore(ruleNums, operators, userId, storeId);
+    public Response<String> addPurchaseRuleToStore(List<TestRuleDTO> testRules, List<String> operators, String userId, String storeId) {
+        return service.addPurchaseRuleToStore(testRules, operators, userId, storeId);
     }
 
 
@@ -188,8 +188,8 @@ public class RealToTest implements BridgeToTests {
     }
 
 
-    public Response<String> addDiscountCondRuleToStore(List<Integer> ruleNums, List<String> logicOperators, List<DiscountValueDTO> discDetails, List<String> numericalOperators, String userId, String storeId) {
-        return service.addDiscountCondRuleToStore(ruleNums, logicOperators, discDetails, numericalOperators, userId, storeId);
+    public Response<String> addDiscountCondRuleToStore(List<TestRuleDTO> testRules, List<String> logicOperators, List<DiscountValueDTO> discDetails, List<String> numericalOperators, String userId, String storeId) {
+        return service.addDiscountCondRuleToStore(testRules, logicOperators, discDetails, numericalOperators, userId, storeId);
     }
 
 
@@ -204,6 +204,21 @@ public class RealToTest implements BridgeToTests {
 
     public Response<String> setUserConfirmationPurchase(String userID) {
         return service.setUserConfirmationPurchase(userID);
+    }
+
+    @Override
+    public Response<String> composeCurrentPurchaseRules(int ruleIndex1, int ruleIndex2, String operator, String userId, String storeId) {
+        return service.composeCurrentPurchaseRules(ruleIndex1, ruleIndex2, operator, userId, storeId);
+    }
+
+    @Override
+    public Response<String> composeCurrentSimpleDiscountRules(int ruleIndex1, int ruleIndex2, String numericalOperator, String userId, String storeId) {
+        return service.composeCurrentSimpleDiscountRules(ruleIndex1, ruleIndex2, numericalOperator, userId, storeId);
+    }
+
+    @Override
+    public Response<String> composeCurrentCondDiscountRules(int ruleIndex1, int ruleIndex2, String logicalOperator, String numericalOperator, String userId, String storeId) {
+        return service.composeCurrentCondDiscountRules(ruleIndex1, ruleIndex2, logicalOperator, numericalOperator, userId, storeId);
     }
 
 }

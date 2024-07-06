@@ -156,6 +156,11 @@ public class User   {
     public void Login(Member loginMember) throws Exception {
         state.Login();
         setState(loginMember);
+        this.birthday = loginMember.getBirthday();
+        this.city = loginMember.getCity();
+        this.name = loginMember.getName();
+        this.country = loginMember.getCountry();
+        this.address = loginMember.getAddress();
     }
 
     public State getState()
@@ -178,6 +183,16 @@ public class User   {
 
     public Cart getCart() {
         return state.getCart();
+    }
+
+
+    public void addInfo(UserDTO userDTO){
+        this.name = userDTO.getName();
+        this.address = userDTO.getAddress();
+        this.city = userDTO.getCity();
+        this.country = userDTO.getCountry();
+        this.birthday = userDTO.getBirthday();
+
     }
 
 

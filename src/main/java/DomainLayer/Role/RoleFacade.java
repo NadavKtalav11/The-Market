@@ -3,12 +3,14 @@ package DomainLayer.Role;
 import Util.ExceptionsEnum;
 import Util.UserDTO;
 import com.fasterxml.jackson.databind.JsonSerializer;
+import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+@Service
 public class RoleFacade {
 
     private static RoleFacade roleFacadeInstance;
@@ -21,7 +23,7 @@ public class RoleFacade {
     StoreManagerRepository storeManagerRepository;
 
 
-    private RoleFacade() {
+    public RoleFacade() {
         systemManagers = new ArrayList<>();
 
         storeManagerRepository = new MemoryStoreManagerRepository();
@@ -41,6 +43,8 @@ public class RoleFacade {
         roleFacadeInstance = new RoleFacade();
         return roleFacadeInstance;
     }
+
+
 
 
     public boolean verifyStoreOwner(String storeID, String memberID) {
@@ -115,21 +119,21 @@ public class RoleFacade {
     }
 
     private void addNewStoreManagerToTheMarket(StoreManager storeManager) {
-        storeManagerRepository.add(storeManager);
+        storeManagerRepository.save(storeManager);
     }
 
     private void addNewStoreOwnerToTheMarket(StoreOwner storeOwner) {
-        storeOwnerRepository.add(storeOwner);
+        storeOwnerRepository.save(storeOwner);
     }
 
     public void addNewStoreManagerToTheMarketForTests(StoreManager storeManager) {
         if(!verifyStoreManager(storeManager.getStore_ID(), storeManager.getMember_ID()))
-            storeManagerRepository.add(storeManager);
+            storeManagerRepository.save(storeManager);
     }
 
     public void addNewStoreOwnerToTheMarketForTests(StoreOwner storeOwner) {
         if(!verifyStoreOwner(storeOwner.getStore_ID(), storeOwner.getMember_ID()))
-            storeOwnerRepository.add(storeOwner);
+            storeOwnerRepository.save(storeOwner);
     }
 
 
@@ -153,7 +157,7 @@ public class RoleFacade {
     public Map<String, List<Integer>> getStoreManagersAuthorizations(String storeID) {
         Map<String, List<Integer>> managersAuthorizations = new HashMap<>();
         for (String memberId : storeManagerRepository.getAllMemberId()) {
-            for (StoreManager currStoreManager : storeManagerRepository.getAllMemberIdOwners(memberId)) {
+            for (StoreManager currStoreManager : storeManagerRepository.getAllMemberIdManagers(memberId)) {
                 if (currStoreManager.getStore_ID().equals(storeID)) {
                     managersAuthorizations.put(memberId, currStoreManager.getAuthorizations());
                 }
@@ -165,7 +169,7 @@ public class RoleFacade {
     public List<String> getAllStoreManagers(String storeID) {
         List<String> storeManagers = new ArrayList<>();
         for (String memberId : storeManagerRepository.getAllMemberId()) {
-            for (StoreManager currStoreManager : storeManagerRepository.getAllMemberIdOwners(memberId)) {
+            for (StoreManager currStoreManager : storeManagerRepository.getAllMemberIdManagers(memberId)) {
                 if (currStoreManager.getStore_ID().equals(storeID)) {
                     storeManagers.add(currStoreManager.getMember_ID());
                 }
@@ -241,11 +245,11 @@ public class RoleFacade {
                 fireStoreManager(storeManager, storeID);
             }
         }
-        storeOwnerRepository.remove(storeOwnerRepository.get(storeID, memberIdToFire));
+        storeOwnerRepository.delete(storeOwnerRepository.get(storeID, memberIdToFire));
     }
 
     public void fireStoreManager(String memberIdToFire, String storeID){
-        storeManagerRepository.remove(storeManagerRepository.get(storeID, memberIdToFire));
+        storeManagerRepository.delete(storeManagerRepository.get(storeID, memberIdToFire));
     }
 }
 

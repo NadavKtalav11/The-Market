@@ -2,13 +2,13 @@ package DomainLayer.Market;
 
 import DomainLayer.AuthenticationAndSecurity.AuthenticationAndSecurityFacade;
 //import DomainLayer.Notifications.Notification;
-import DomainLayer.Notifications.NotificationFacade;
+import DomainLayer.Notifications.LateNotificationFacade;
 //import DomainLayer.Notifications.StoreNotification;
 import DomainLayer.PaymentServices.PaymentServicesFacade;
 import DomainLayer.Role.RoleFacade;
+
 import DomainLayer.Store.Product;
-import DomainLayer.Store.StoreDiscountPolicy.DiscountRulesRepository;
-import DomainLayer.Store.StorePurchasePolicy.PurchaseRulesRepository;
+
 //import PresentationLayer.Vaadin.NotificationsEndPoint;
 //import PresentationLayer.WAF.NotificationService;
 import PresentationLayer.Vaadin.MyWebSocketHandler;
@@ -19,9 +19,9 @@ import DomainLayer.User.UserFacade;
 import DomainLayer.SupplyServices.SupplyServicesFacade;
 import Util.*;
 
+import org.springframework.stereotype.Component;
 import org.yaml.snakeyaml.Yaml;
 import java.io.FileInputStream;
-import java.io.IOException;
 import java.io.InputStream;
 import java.util.Map;
 
@@ -31,7 +31,7 @@ import java.util.regex.Pattern;
 import java.util.concurrent.*;
 
 
-
+@Component
 public class Market {
     private static Market MarketInstance;
     private PaymentServicesFacade paymentServicesFacade;
@@ -45,9 +45,8 @@ public class Market {
     private final Object initializedLock;
     private final Object managersLock;
     private final Object validationLock;
-    private NotificationFacade notificationFacade;
+    //private LateNotificationFacade lateNotificationFacade;
 
-   // private NotificationsEndPoint notificationService;
     private MyWebSocketHandler myWebSocketHandler;
 
     public synchronized static Market getInstance() {
@@ -68,8 +67,8 @@ public class Market {
         this.systemManagerIds = new HashSet<>();
         managersLock = new Object();
         validationLock = new Object();
-        notificationFacade = new NotificationFacade();
-        //notificationService = new NotificationsEndPoint();
+        //lateNotificationFacade = new LateNotificationFacade();
+
         myWebSocketHandler =  MyWebSocketHandler.getInstance();
         //init(new PaymentServiceDTO(" ds","f f" , "  ee"), new SupplyServiceDTO(" vv", "  vvv" , new HashSet<>(), new HashSet<>()));
     }
@@ -87,7 +86,7 @@ public class Market {
         this.systemManagerIds = new HashSet<>();
         managersLock = new Object();
         validationLock = new Object();
-        notificationFacade = new NotificationFacade();
+        //lateNotificationFacade = new LateNotificationFacade();
 
         //notificationService = new NotificationsEndPoint();
         myWebSocketHandler =  MyWebSocketHandler.getInstance();
@@ -125,7 +124,7 @@ public class Market {
         this.systemManagerIds = new HashSet<>();
         managersLock = new Object();
         validationLock = new Object();
-        notificationFacade = new NotificationFacade();
+        //lateNotificationFacade = new LateNotificationFacade();
 
         //notificationService = new NotificationsEndPoint();
         myWebSocketHandler =  MyWebSocketHandler.getInstance();
@@ -143,7 +142,7 @@ public class Market {
         this.systemManagerIds = new HashSet<>();
         managersLock = new Object();
         validationLock = new Object();
-        notificationFacade = new NotificationFacade();
+        //lateNotificationFacade = new LateNotificationFacade();
 
         //notificationService = new NotificationsEndPoint();
         myWebSocketHandler =  MyWebSocketHandler.getInstance();
@@ -161,7 +160,9 @@ public class Market {
         this.systemManagerIds = new HashSet<>();
         managersLock = new Object();
         validationLock = new Object();
-        notificationFacade = new NotificationFacade();
+        //lateNotificationFacade = new LateNotificationFacade();
+
+        myWebSocketHandler =  MyWebSocketHandler.getInstance();
 
     }
 
@@ -188,7 +189,7 @@ public class Market {
         authenticationAndSecurityFacade = authenticationAndSecurityFacade1;
         paymentServicesFacade = paymentServicesFacade1;
         supplyServicesFacade = supplyServicesFacade1;
-        notificationFacade = new NotificationFacade();
+        //lateNotificationFacade = new LateNotificationFacade();
 
 
         //notificationService = new NotificationsEndPoint();
@@ -618,8 +619,8 @@ public class Market {
 
             //Todo: we call payWithExternalPaymentService twice, check if needed
             //this.payWithExternalPaymentService(cartDTO, paymentDTO, userDTO.getUserId());
-            sendMessagesOnPurchaseToStoreOwners(cartDTO);
             String acquisitionIdID = this.payWithExternalPaymentService(cartDTO, paymentDTO, userDTO.getUserId());
+            sendMessagesOnPurchaseToStoreOwners(cartDTO);
             return acquisitionIdID;
         } catch (Exception var11) {
             Exception e = var11;
@@ -639,15 +640,24 @@ public class Market {
     }
 
 
-//    public void sendMessagesOnPurchaseToStoreOwners(CartDTO cartDTO){
-//        for (String storeId : cartDTO.getStoreToProducts().keySet()){
-//            List<String> storeOwnerIds = roleFacade.getAllStoreOwners(storeId);
-//            String storeName = storeFacade.getStoreName(storeId);
-//            for (String memberId: storeOwnerIds) {
-//                notificationFacade.sendLateMessage(memberId , "A purchase was made from your store - "+ storeName);
-//            }
-//        }
-//    }
+    public void sendMessagesToOwnersAndManagers(String storeId , String message) throws Exception { // Inject VaadinUserService and NotificationService
+
+
+        List<String> storeOwnerIds = roleFacade.getAllStoreOwners(storeId);
+        //String storeName = storeFacade.getStoreName(storeId);
+
+        List<String> storeManagersIds = roleFacade.getAllStoreManagers(storeId);
+        Set<String> hasJob = new HashSet<>();
+        hasJob.addAll(storeManagersIds);
+        hasJob.addAll(storeOwnerIds);
+        for (String memberId : hasJob) {
+                //String message = "A purchase was made from your store - " + storeName;
+            myWebSocketHandler.handleStringMessage(userFacade.getUserIdByMemberId(memberId), message); // Send real-time notification via WebSocket
+        }
+    }
+
+
+
 
     public void sendMessagesOnPurchaseToStoreOwners(CartDTO cartDTO) throws Exception { // Inject VaadinUserService and NotificationService
 
@@ -657,14 +667,9 @@ public class Market {
 
             for (String memberId : storeOwnerIds) {
                 String message = "A purchase was made from your store - " + storeName;
-                //try {
+
                 myWebSocketHandler.handleStringMessage(memberId, message); // Send real-time notification via WebSocket
-                //}
-//                catch (IOException e) {
-//                    // Handle exception (log error or send late notification)
-//                    System.err.println("Failed to send real-time notification: " + e.getMessage());
-//                    notificationFacade.sendLateMessage(memberId, message); // Fallback to late notification
-//                }
+
             }
         }
     }
@@ -717,7 +722,7 @@ public class Market {
     }
 
     public List<String> getUserNotifications(String memberId){
-        return notificationFacade.getUserNotifications(memberId);
+        return myWebSocketHandler.getUserNotifications(memberId);
     }
 
     public CartDTO checkingCartValidationBeforePurchase1(String user_ID,UserDTO userDTO) throws Exception {
@@ -739,7 +744,7 @@ public class Market {
             List<ProductDTO> productDTOS = this.storeFacade.getProductsDTOSByProductsNames(products, store_ID);
             for(String productName: products.keySet()) {
                 quantity = products.get(productName).get(0);
-                this.storeFacade.checkQuantity(productName, quantity, store_ID);
+                this.storeFacade.checkQuantityAndPrice(productName, quantity, store_ID);
             }
 
 //            this.storeFacade.checkPurchasePolicy(userDTO, productDTOS, store_ID);
@@ -837,7 +842,7 @@ public class Market {
         String memberId = userFacade.Login(userId, username,encryptedPassword);
         authenticationAndSecurityFacade.generateToken(memberId);
         //notificationService.sendNotification("user" + userId + "logged in successfully");
-        //myWebSocketHandler.handleStringMessage(userId, "Hello from server!");
+        //myWebSocketHandler.sendMassageToEveryOne( "Hello from server!");
         return memberId;
     }
 
@@ -851,7 +856,7 @@ public class Market {
             }
         }
 
-        storeFacade.checkQuantity(productName, quantity, storeId);
+        storeFacade.checkQuantityAndPrice(productName, quantity, storeId);
         Map<String, List<Integer>> products = this.userFacade.getCartProductsByStoreAndUser(storeId, userId);
         products.put(productName, new ArrayList<>(Arrays.asList(quantity)));
         List<ProductDTO> productDTOS = storeFacade.getProductsDTOSByProductsNames(products, storeId);
@@ -988,6 +993,8 @@ public class Market {
         String nominatedMemberID = userFacade.getMemberByUsername(nominatedUsername).getMemberID();
         roleFacade.verifyNominatorError(nominatorMemberID, nominatedMemberID, storeId);
         roleFacade.fireStoreOwner(nominatedMemberID, storeId);
+
+        myWebSocketHandler.handleStringMessage(nominatedMemberID , "you fired as store owner of store -by " + userFacade.getMemberName(nominatorMemberID));
     }
 
     public void appointStoreManager(String nominatorUserId, String nominatedUsername, String storeId,
@@ -1105,12 +1112,12 @@ public class Market {
         List<String> storeManagers = roleFacade.getAllStoreManagers(store_ID);
         List<String> storeOwners = roleFacade.getAllStoreOwners(store_ID);
         //todo: add function which send notification to all store roles (notification component).
-        String message = "store" + storeFacade.getStoreName(store_ID) + "closed by " + userFacade.getMemberName(member_ID);
+        String message = "store " + storeFacade.getStoreName(store_ID) + " closed by " + userFacade.getMemberName(member_ID);
         for (String currMemId : storeManagers) {
-            notificationFacade.sendLateMessage(currMemId, message);
+            myWebSocketHandler.handleStringMessage(currMemId, message);
         }
         for (String currMemId : storeOwners) {
-            notificationFacade.sendLateMessage(currMemId, message);
+            myWebSocketHandler.handleStringMessage(currMemId, message);
         }
        /* String storeName = storeFacade.getStoreByID(store_ID).getStoreName();
 
@@ -1136,6 +1143,9 @@ public class Market {
         roleFacade.verifyStoreOwnerIsFounder(store_ID, member_ID);
         storeFacade.verifyStoreExistError(store_ID);
         storeFacade.reopenStore(store_ID);
+
+        sendMessagesToOwnersAndManagers(store_ID , "your store - " + storeFacade.getStoreName(store_ID) +" has reopen");
+
     }
 
  /*   public void sendMessageToStaffOfStore(Notification notification, String member_ID) {
@@ -1268,7 +1278,7 @@ public class Market {
         else
         {
             userFacade.checkIfCanRemove(productName, storeId, userId);
-            storeFacade.checkQuantity(productName, quantity, storeId);
+            storeFacade.checkQuantityAndPrice(productName, quantity, storeId);
             Map<String, List<Integer>> products = this.userFacade.getCartProductsByStoreAndUser(storeId, userId);
             int totalPrice = storeFacade.calcPrice(productName, quantity, storeId, userId);
             products.put(productName, new ArrayList<>(Arrays.asList(quantity, totalPrice)));
@@ -1343,7 +1353,7 @@ public class Market {
             while(var10.hasNext()) {
                 availableExternalSupplyService = (String)var10.next();
                 int quantity = (Integer)((List)products.get(availableExternalSupplyService)).get(0);
-                this.storeFacade.checkQuantity(availableExternalSupplyService, quantity, store_ID);
+                this.storeFacade.checkQuantityAndPrice(availableExternalSupplyService, quantity, store_ID);
             }
 
             this.storeFacade.checkPurchasePolicy(userDTO, productDTOS, store_ID);
@@ -1383,7 +1393,7 @@ public class Market {
             while(var10.hasNext()) {
                 availableExternalSupplyService = (String)var10.next();
                 int quantity = (Integer)((List)products.get(availableExternalSupplyService)).get(0);
-                this.storeFacade.checkQuantity(availableExternalSupplyService, quantity, store_ID);
+                this.storeFacade.checkQuantityAndPrice(availableExternalSupplyService, quantity, store_ID);
             }
 
             this.storeFacade.checkPurchasePolicy(userDTO, productDTOS, store_ID);
@@ -1603,7 +1613,7 @@ public class Market {
             throw new IllegalArgumentException(ExceptionsEnum.storeRateInvalid.toString());
     }
 
-    public Map<Integer,String> getAllPurchaseRules(String userId, String storeId) throws Exception {
+    public void addPurchaseRuleToStore(List<TestRuleDTO> testRules, List<String> operators, String userId, String storeId) throws Exception {
         if (userFacade.isMember(userId)){
             String memberId = userFacade.getMemberIdByUserId(userId);
             boolean succeeded = authenticationAndSecurityFacade.validateToken(authenticationAndSecurityFacade.getToken(memberId));
@@ -1612,27 +1622,18 @@ public class Market {
                 throw new IllegalArgumentException(ExceptionsEnum.sessionOver.toString());
             }
         }
-        String member_ID = this.userFacade.getMemberIdByUserId(userId);
-        storeFacade.verifyStoreExistError(storeId);
-        roleFacade.verifyStoreOwnerError(storeId, member_ID);
-        return PurchaseRulesRepository.getAllRules();
-    }
-
-    public void addPurchaseRuleToStore(List<Integer> ruleNums, List<String> operators, String userId, String storeId) throws Exception {
-        if (userFacade.isMember(userId)){
-            String memberId = userFacade.getMemberIdByUserId(userId);
-            boolean succeeded = authenticationAndSecurityFacade.validateToken(authenticationAndSecurityFacade.getToken(memberId));
-            if (!succeeded) {
-                logout(userId);
-                throw new IllegalArgumentException(ExceptionsEnum.sessionOver.toString());
+        for (TestRuleDTO curr : testRules){
+            if (curr.isContains()==null){
+                curr.setContains(false);
             }
         }
 
-        checkLogicalRulesAndOperators(ruleNums, operators);
+        checkLogicalRulesAndOperators(testRules, operators);
         String member_ID = this.userFacade.getMemberIdByUserId(userId);
+        //TODO: check testrules
         storeFacade.verifyStoreExistError(storeId);
         roleFacade.verifyStoreOwnerError(storeId, member_ID);
-        storeFacade.addPurchaseRuleToStore(ruleNums, operators, storeId);
+        storeFacade.addPurchaseRuleToStore(testRules, operators, storeId);
     }
 
     public void removePurchaseRuleFromStore(int ruleNum,  String userId, String storeId) throws Exception {
@@ -1651,7 +1652,7 @@ public class Market {
         storeFacade.removePurchaseRuleFromStore(ruleNum, storeId);
     }
 
-    public Map<Integer,String> getAllCondDiscountRules(String userId, String storeId) throws Exception {
+    public void addDiscountCondRuleToStore(List<TestRuleDTO> testRules, List<String> logicOperators, List<DiscountValueDTO> discDetails, List<String> numericalOperators, String userId ,String storeId) throws Exception {
         if (userFacade.isMember(userId)){
             String memberId = userFacade.getMemberIdByUserId(userId);
             boolean succeeded = authenticationAndSecurityFacade.validateToken(authenticationAndSecurityFacade.getToken(memberId));
@@ -1661,29 +1662,13 @@ public class Market {
             }
         }
 
-        String member_ID = this.userFacade.getMemberIdByUserId(userId);
-        storeFacade.verifyStoreExistError(storeId);
-        roleFacade.verifyStoreOwnerError(storeId, member_ID);
-        return DiscountRulesRepository.getAllRules();
-    }
-
-    public void addDiscountCondRuleToStore(List<Integer> ruleNums, List<String> logicOperators, List<DiscountValueDTO> discDetails, List<String> numericalOperators, String userId ,String storeId) throws Exception {
-        if (userFacade.isMember(userId)){
-            String memberId = userFacade.getMemberIdByUserId(userId);
-            boolean succeeded = authenticationAndSecurityFacade.validateToken(authenticationAndSecurityFacade.getToken(memberId));
-            if (!succeeded) {
-                logout(userId);
-                throw new IllegalArgumentException(ExceptionsEnum.sessionOver.toString());
-            }
-        }
-
-        checkLogicalRulesAndOperators(ruleNums, logicOperators);
+        checkLogicalRulesAndOperators(testRules, logicOperators);
         checkNumericalRulesAndOperators(discDetails, numericalOperators);
         checkProductDiscountDetails(discDetails);
         String member_ID = this.userFacade.getMemberIdByUserId(userId);
         storeFacade.verifyStoreExistError(storeId);
         roleFacade.verifyStoreOwnerError(storeId, member_ID);
-        storeFacade.addDiscountCondRuleToStore(ruleNums, logicOperators, discDetails, numericalOperators, storeId);
+        storeFacade.addDiscountCondRuleToStore(testRules, logicOperators, discDetails, numericalOperators, storeId);
     }
 
 
@@ -1723,6 +1708,9 @@ public class Market {
 
     private void checkProductDiscountDetails(List<DiscountValueDTO> discDetails) {
         for (DiscountValueDTO discountValueDTO : discDetails) {
+            if (discountValueDTO.getPercentage() < 0 || discountValueDTO.getPercentage() > 100) {
+                throw new IllegalArgumentException(ExceptionsEnum.InvalidDiscountValueParameters.toString());
+            }
             int count = 0;
             if (discountValueDTO.getCategory() != null) {
                 count++;
@@ -1739,12 +1727,12 @@ public class Market {
         }
     }
 
-    public void checkLogicalRulesAndOperators(List<Integer> ruleNums, List<String> operators) throws Exception {
+    public void checkLogicalRulesAndOperators(List<TestRuleDTO> ruleNums, List<String> operators) throws Exception {
         if (ruleNums.size() != operators.size() + 1) {
             throw new IllegalArgumentException(ExceptionsEnum.rulesNotMatchOpeators.toString());
         }
         for (int i = 0; i < operators.size(); i++) {
-            if (!operators.get(i).equals("AND") && !operators.get(i).equals("OR") && !operators.get(i).equals("COND") && !operators.get(i).equals("XOR")) {
+            if (!operators.get(i).equals("AND") && !operators.get(i).equals("OR") && !operators.get(i).equals("ONLY IF") && !operators.get(i).equals("XOR")) {
                 throw new IllegalArgumentException(ExceptionsEnum.InvalidOperator.toString());
             }
         }
@@ -1818,4 +1806,94 @@ public class Market {
     }
 
 
+    public void composeCurrentPurchaseRules(int ruleIndex1, int ruleIndex2, String operator, String userId, String storeId) throws Exception {
+        if (userFacade.isMember(userId)){
+            String memberId = userFacade.getMemberIdByUserId(userId);
+            boolean succeeded = authenticationAndSecurityFacade.validateToken(authenticationAndSecurityFacade.getToken(memberId));
+            if (!succeeded) {
+                logout(userId);
+            }
+        }
+
+        if (!operator.equals("AND") && !operator.equals("OR") && !operator.equals("ONLY IF")) {
+            throw new IllegalArgumentException(ExceptionsEnum.InvalidOperator.toString());
+        }
+
+        String member_ID = this.userFacade.getMemberIdByUserId(userId);
+        storeFacade.verifyStoreExistError(storeId);
+        roleFacade.verifyStoreOwnerError(storeId, member_ID);
+        storeFacade.composeCurrentPurchaseRules(ruleIndex1, ruleIndex2, operator, storeId);
+    }
+
+    public void composeCurrentSimpleDiscountRules(int ruleIndex1, int ruleIndex2, String numericalOperator, String userId, String storeId) throws Exception {
+        if (userFacade.isMember(userId)){
+            String memberId = userFacade.getMemberIdByUserId(userId);
+            boolean succeeded = authenticationAndSecurityFacade.validateToken(authenticationAndSecurityFacade.getToken(memberId));
+            if (!succeeded) {
+                logout(userId);
+            }
+        }
+
+        if (!numericalOperator.equals("MAX") && !numericalOperator.equals("ADD")) {
+            throw new IllegalArgumentException(ExceptionsEnum.InvalidOperator.toString());
+        }
+
+        String member_ID = this.userFacade.getMemberIdByUserId(userId);
+        storeFacade.verifyStoreExistError(storeId);
+        roleFacade.verifyStoreOwnerError(storeId, member_ID);
+        storeFacade.composeCurrentSimpleDiscountRules(ruleIndex1, ruleIndex2, numericalOperator, storeId);
+    }
+
+    public void composeCurrentCondDiscountRules(int ruleIndex1, int ruleIndex2, String logicalOperator, String numericalOperator, String userId, String storeId) throws Exception {
+        if (userFacade.isMember(userId)){
+            String memberId = userFacade.getMemberIdByUserId(userId);
+            boolean succeeded = authenticationAndSecurityFacade.validateToken(authenticationAndSecurityFacade.getToken(memberId));
+            if (!succeeded) {
+                logout(userId);
+            }
+        }
+
+        if (!logicalOperator.equals("AND") && !logicalOperator.equals("OR") && !logicalOperator.equals("XOR")) {
+            throw new IllegalArgumentException(ExceptionsEnum.InvalidOperator.toString());
+        }
+
+        if (!numericalOperator.equals("MAX") && !numericalOperator.equals("ADD")) {
+            throw new IllegalArgumentException(ExceptionsEnum.InvalidOperator.toString());
+        }
+
+        String member_ID = this.userFacade.getMemberIdByUserId(userId);
+        storeFacade.verifyStoreExistError(storeId);
+        roleFacade.verifyStoreOwnerError(storeId, member_ID);
+        storeFacade.composeCurrentCondDiscountRules(ruleIndex1, ruleIndex2, logicalOperator, numericalOperator, storeId);
+    }
+
+    public List<String> getStoreCurrentSimpleDiscountRules(String userId, String storeId) throws Exception {
+        if (userFacade.isMember(userId)){
+            String memberId = userFacade.getMemberIdByUserId(userId);
+            boolean succeeded = authenticationAndSecurityFacade.validateToken(authenticationAndSecurityFacade.getToken(memberId));
+            if (!succeeded) {
+                logout(userId);
+            }
+        }
+
+        String member_ID = this.userFacade.getMemberIdByUserId(userId);
+        storeFacade.verifyStoreExistError(storeId);
+        roleFacade.verifyStoreOwnerError(storeId, member_ID);
+        return storeFacade.getStoreCurrentSimpleDiscountRules(storeId);
+    }
+
+    public List<String> getStoreCurrentCondDiscountRules(String userId, String storeId) throws Exception {
+        if (userFacade.isMember(userId)){
+            String memberId = userFacade.getMemberIdByUserId(userId);
+            boolean succeeded = authenticationAndSecurityFacade.validateToken(authenticationAndSecurityFacade.getToken(memberId));
+            if (!succeeded) {
+                logout(userId);
+            }
+        }
+
+        String member_ID = this.userFacade.getMemberIdByUserId(userId);
+        storeFacade.verifyStoreExistError(storeId);
+        roleFacade.verifyStoreOwnerError(storeId, member_ID);
+        return storeFacade.getStoreCurrentCondDiscountRules(storeId);
+    }
 }

@@ -1,25 +1,41 @@
 package DomainLayer.Role;
 
+import jakarta.persistence.*;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+@Entity
+@Table(name = "storeManager", schema = "themarketdb")
 public class StoreManager implements Role {
 
-    private String member_ID;
-    private String store_ID;
+    @EmbeddedId
+    private StoreManagerId id;
+
+    @ElementCollection
     private List<Integer> authorizations;
+
+    @Column(name = "inventoryPermissions")
     private boolean inventoryPermissions;
+
+    @Column(name = "purchasePermissions")
     private boolean purchasePermissions;
+
+    @Column(name = "nominatorMemberId")
     private String nominatorMemberId;
+
 
     StoreManager(String member_ID, String store_ID, boolean inventoryPermissions, boolean purchasePermissions, String nominatorMemberId)
     {
-        this.member_ID = member_ID;
-        this.store_ID = store_ID;
+        this.id = new StoreManagerId(member_ID, store_ID);
         this.inventoryPermissions = inventoryPermissions;
         this.purchasePermissions = purchasePermissions;
         this.nominatorMemberId = nominatorMemberId;
+    }
+
+    public StoreManager() {
+
     }
 
     public void setPermissions(boolean inventoryPermissions, boolean purchasePermissions){
@@ -34,12 +50,12 @@ public class StoreManager implements Role {
 
     public String getStore_ID()
     {
-        return this.store_ID;
+        return this.id.getStore_ID();
     }
 
     public String getMember_ID()
     {
-        return this.member_ID;
+        return this.id.getMember_ID();
     }
 
     public String getNominatorId() {
