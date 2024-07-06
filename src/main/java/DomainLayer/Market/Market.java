@@ -105,7 +105,7 @@ public class Market {
         this.systemManagerIds = new HashSet<>();
         managersLock = new Object();
         validationLock = new Object();
-        notificationFacade = new NotificationFacade();
+        //notificationFacade = new NotificationFacade();
 
         //notificationService = new NotificationsEndPoint();
         myWebSocketHandler =  MyWebSocketHandler.getInstance();
