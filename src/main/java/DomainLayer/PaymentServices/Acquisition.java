@@ -9,14 +9,23 @@ import java.util.*;
 @Table(name = "acquisition")
 public class Acquisition {
     @Id
+    @Column(name = "acquisition_id")
     private String acquisitionId;
+    @Column(name = "user_id")
     private String userId;
+    @Column(name = "total_price")
     private int totalPrice;
+    @Column(name = "holder_id")
     private String holderId;
+    @Column(name = "credit_card_number")
     private String creditCardNumber;
+    @Column(name = "cvv")
     private int cvv;
+    @Column(name = "month")  // Specify the column name explicitly
     private int month;
+    @Column(name = "year")
     private int year;
+    @Column(name = "date")
     private Date date;
 
     // One-to-many relationship with Receipt
