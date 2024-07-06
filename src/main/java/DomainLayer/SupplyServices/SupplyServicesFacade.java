@@ -52,6 +52,12 @@ public class SupplyServicesFacade {
         return externalSupplyService1.cancelSupply(transactionID);
     }
 
+    public void clearSupplyServices() {
+        synchronized (externalSupplyServiceLock) {
+            externalSupplyService.clear();
+        }
+    }
+
 //    public boolean addExternalService(String licensedDealerNumber, String supplyServiceName, HashSet<String> countries, HashSet<String> cities){
 //        synchronized (externalSupplyServiceLock) {
 //            int size_before = externalSupplyService.size();

@@ -5,7 +5,9 @@ import AcceptanceTests.ProxyToTest;
 import DomainLayer.Market.Market;
 import static org.junit.jupiter.api.Assertions.*;
 
+import DomainLayer.PaymentServices.PaymentServicesFacade;
 import DomainLayer.Store.StoreFacade;
+import DomainLayer.SupplyServices.SupplyServicesFacade;
 import DomainLayer.User.UserFacade;
 import Util.ExceptionsEnum;
 import Util.PaymentServiceDTO;
@@ -36,6 +38,9 @@ public class StateInit {
     private Market market;
     private UserFacade userFacade;
     private StoreFacade storeFacade;
+    private PaymentServicesFacade paymentServicesFacade;
+    private SupplyServicesFacade supplyServicesFacade;
+
 
     String licensedDealerNumber = "12345";
     String paymentServiceName = "PayPal";
@@ -51,9 +56,12 @@ public class StateInit {
         impl = new ProxyToTest("Real");
         this.userFacade = UserFacade.getInstance();
         this.storeFacade = StoreFacade.getInstance();
+        this.paymentServicesFacade = PaymentServicesFacade.getInstance();
+        this.supplyServicesFacade = SupplyServicesFacade.getInstance();
 
-        this.market = new Market(userFacade, storeFacade);
 
+
+        this.market = new Market(userFacade, storeFacade, paymentServicesFacade, supplyServicesFacade);
 
     }
 
@@ -63,13 +71,11 @@ public class StateInit {
         assertEquals(0, market.getSystemManagerIds().size());
         assertEquals(0, userFacade.getMembers().findAll().size());
         assertEquals(0, storeFacade.getStores().size());
+        assertEquals(0, paymentServicesFacade.getAllPaymentServices().size());
+        assertEquals(0, supplyServicesFacade.getAllSupplyServices().size());
 
-
-
-        // Act
         market.init();
 
-        // Assuming there's a method isInitialized() that returns whether the system is initialized
         assertTrue(market.isInitialized());
         assertEquals(1, market.getSystemManagerIds().size());
         String memberID = market.getSystemManagerIds().iterator().next();
@@ -86,6 +92,8 @@ public class StateInit {
         assertEquals(1, storeFacade.getStores().size());
         String storeID = storeFacade.getStores().iterator().next();
         assertTrue( storeFacade.getStoreByID(storeID).getStoreProducts().containsKey("Bamba"));
+        assertEquals(1, paymentServicesFacade.getAllPaymentServices().size());
+        assertEquals(1, supplyServicesFacade.getAllSupplyServices().size());
 
     }
 }

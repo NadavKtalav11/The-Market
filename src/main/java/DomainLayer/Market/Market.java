@@ -73,6 +73,7 @@ public class Market {
     }
 
 
+
     public Market(UserFacade userFacade, AuthenticationAndSecurityFacade authenticationAndSecurityFacade,
                   StoreFacade storeFacade){
         this.storeFacade = storeFacade;
@@ -127,6 +128,27 @@ public class Market {
         myWebSocketHandler =  MyWebSocketHandler.getInstance();
 
     }
+    public Market(UserFacade userFacade,  StoreFacade storeFacade ,
+                  PaymentServicesFacade paymentServicesFacade, SupplyServicesFacade supplyServicesFacade){
+        this.storeFacade = storeFacade;
+        this.userFacade = userFacade;
+        this.roleFacade = RoleFacade.getInstance();
+        this.paymentServicesFacade = paymentServicesFacade;
+        this.authenticationAndSecurityFacade = AuthenticationAndSecurityFacade.getInstance();
+        this.supplyServicesFacade= supplyServicesFacade;
+        initializedLock= new Object();
+        this.systemManagerIds = new HashSet<>();
+        managersLock = new Object();
+        validationLock = new Object();
+        //lateNotificationFacade = new LateNotificationFacade();
+
+        //notificationService = new NotificationsEndPoint();
+        myWebSocketHandler =  MyWebSocketHandler.getInstance();
+
+    }
+
+
+
 
     public Market(UserFacade userFacade){
         this.storeFacade = StoreFacade.getInstance();
@@ -225,7 +247,7 @@ public class Market {
 
         synchronized (initializedLock) {
             if (initialized == true) {
-                return null;
+                return "null";
             }
         }
         try {
