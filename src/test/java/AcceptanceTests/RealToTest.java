@@ -19,9 +19,9 @@ public class RealToTest implements BridgeToTests {
     }
 
     @Override
-    public Response<String> init( PaymentServiceDTO paymentServiceDTO, SupplyServiceDTO supplyServiceDTO) {
+    public Response<String> init( ) {
 
-        return service.init( paymentServiceDTO,supplyServiceDTO);
+        return service.init( );
 
     }
 
@@ -171,8 +171,9 @@ public class RealToTest implements BridgeToTests {
     }
 
     @Override
-    public Response<String> purchase(String user_ID, String country, String city, String address, String cardNumber, int cvv, int month, int year, String holderID, int price, Map<String,Map<String, List<Integer>>> products) {
-        return service.purchase(new UserDTO(user_ID,null, null, country, city, address, null) , new PaymentDTO(holderID,cardNumber,  cvv, month, year), new CartDTO(user_ID,price, products));
+    public Response<String> purchase(String user_ID, String country, String city, String address, String cardNumber,String currency, String holderName, int cvv, int month, int year, String holderID, int price, Map<String,Map<String, List<Integer>>> products) {
+        return service.purchase(new UserDTO(user_ID,null, null, country, city, address, null) ,
+                new PaymentDTO(holderName, holderID,currency, cardNumber,  cvv, month, year), new CartDTO(user_ID,price, products));
 
     }
 

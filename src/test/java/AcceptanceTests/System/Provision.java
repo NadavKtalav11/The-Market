@@ -122,10 +122,10 @@ public class Provision {
         countries.add("Israel");
         cities.add("Ashdod");
 
-        supplyServicesFacade1.addExternalService(new SupplyServiceDTO("123","supply", countries,cities));
+        supplyServicesFacade1.addExternalService("supply.com");
         assertEquals(1, supplyServicesFacade1.getAllSupplyServices().size());
 
-        PaymentDTO paymentDTO = new PaymentDTO("holder", "12334", 334, 11, 2027);
+        PaymentDTO paymentDTO = new PaymentDTO("130", "david", "USD","98767576576", 986, 6,2030);
         UserDTO userDTO = new UserDTO("testUser", "birth", "israel", "Israel", "Ashdod", "David", "testUser");
         assertDoesNotThrow(() -> {market1.purchaseForTest(paymentDTO, userDTO);
         });
@@ -134,7 +134,7 @@ public class Provision {
     //
     @Test
     public void noExternalSupplyServiceForCityTest() throws Exception {
-        PaymentDTO paymentDTO = new PaymentDTO("holder", "12334", 334, 11, 2027);
+        PaymentDTO paymentDTO = new PaymentDTO("130", "david", "USD","98767576576", 986, 6,2030);
         UserDTO userDTO = new UserDTO("testUser", "birth", "srael", "Israel", "bash", "David", "testUser");
 
 
@@ -168,7 +168,7 @@ public class Provision {
         countries.add("Israel");
         cities.add("Ashdod");
 
-        supplyServicesFacade1.addExternalService(new SupplyServiceDTO("123","supply", countries,cities));
+        supplyServicesFacade1.addExternalService("supply.com");
         assertEquals(1, supplyServicesFacade1.getAllSupplyServices().size());
 
 
@@ -180,7 +180,7 @@ public class Provision {
 
     @Test
     public void noExternalSupplyServiceForCountryTest() throws Exception {
-        PaymentDTO paymentDTO = new PaymentDTO("holder", "12334", 334, 11, 2027);
+        PaymentDTO paymentDTO = new PaymentDTO("130", "david", "USD","98767576576", 986, 6,2030);
         UserDTO userDTO = new UserDTO("testUser", "birth", "srael", "Israel", "bash", "David", "testUser");
 
         // Mock the necessary methods
@@ -213,7 +213,7 @@ public class Provision {
         countries.add("France");
         cities.add("Ashdod");
 
-        supplyServicesFacade1.addExternalService(new SupplyServiceDTO("123","supply", countries,cities));
+        supplyServicesFacade1.addExternalService("supply.com");
         assertEquals(1, supplyServicesFacade1.getAllSupplyServices().size());
 
 
@@ -227,7 +227,7 @@ public class Provision {
 
     @Test
     public void notExitingSupplyServiceTest() throws Exception {
-        PaymentDTO paymentDTO = new PaymentDTO("holder", "12334", 334, 11, 2027);
+        PaymentDTO paymentDTO = new PaymentDTO("130", "david", "USD","98767576576", 986, 6,2030);
         UserDTO userDTO = new UserDTO("testUser", "birth", "israel", "bash", "bash", "David", "testUser");
         // Mock the necessary methods
         UserFacade userFacade = Mockito.mock(UserFacade.class);

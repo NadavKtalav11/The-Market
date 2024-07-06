@@ -14,3 +14,9 @@ admin:
     city: Ashdod
     address: Elul
     name: David Volodarsky
+
+paymentService:
+  url: https://damp-lynna-wsep-1984852e.koyeb.app/
+
+supplyService:
+  url: https://damp-lynna-wsep-1984852e.koyeb.app/

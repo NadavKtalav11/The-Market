@@ -31,12 +31,12 @@ public class RemoveExternalSupplyServices {
         HashSet<String> cities = new HashSet<>();
         countries.add("Israel");
         cities.add("Bash");
-        market.addExternalSupplyService(new SupplyServiceDTO("12345", "Hovalot", countries,cities), "77");
-        market.addExternalSupplyService(new SupplyServiceDTO("67890", "Hovalot1", countries,cities),"77");
+        market.addExternalSupplyService("supply.com", "77");
+        market.addExternalSupplyService("supply1.com", "77");
 
         // Act and Assert
         assertDoesNotThrow(() -> {
-            market.removeExternalSupplyService("12345", "77");
+            market.removeExternalSupplyService("supply.com", "77");
         });
     }
 
@@ -47,11 +47,11 @@ public class RemoveExternalSupplyServices {
         HashSet<String> cities = new HashSet<>();
         countries.add("Israel");
         cities.add("Bash");
-        market.addExternalSupplyService(new SupplyServiceDTO("12345", "Hovalat", countries,cities),"77");
+        market.addExternalSupplyService("supply.com","77");
 
         // Act and Assert
         Exception exception = assertThrows(Exception.class, () -> {
-            market.removeExternalSupplyService("12345", "2"); // 2 is not a system manager ID
+            market.removeExternalSupplyService("supply.com", "2"); // 2 is not a system manager ID
         });
 
         // Optionally check the exception message
@@ -65,11 +65,11 @@ public class RemoveExternalSupplyServices {
         HashSet<String> cities = new HashSet<>();
         countries.add("Israel");
         cities.add("Bash");
-        market.addExternalSupplyService(new SupplyServiceDTO("12345", "Hovalot", countries,cities),"77");
+        market.addExternalSupplyService("supply.com","77");
 
         // Act and Assert
         Exception exception = assertThrows(Exception.class, () -> {
-            market.removeExternalSupplyService("12345", "77");
+            market.removeExternalSupplyService("supply.com", "77");
         });
 
         // Optionally check the exception message
