@@ -1,10 +1,14 @@
 package DomainLayer.User;
 
+import jakarta.persistence.*;
+
 import java.util.List;
 import java.util.Map;
 
 public abstract class State {
 
+    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "cart_id")
     protected Cart cart;
 
     protected State(){

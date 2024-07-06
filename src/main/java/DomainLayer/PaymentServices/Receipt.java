@@ -1,28 +1,42 @@
 package DomainLayer.PaymentServices;
 
+import jakarta.persistence.*;
+
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+@Entity
+@Table(name = "receipt")
 public class Receipt {
+
+    @Id
     private String receiptId;
+
+    @Column(name = "store_id") // Specify the column name explicitly
     private String storeId;
+
     private String userId;
-    private Map<String, List<Integer>> productList = new HashMap<>(); //<productName, price>
 
-    private final Object productListLock;
+    @Transient
+    private Map<String, List<Integer>> productList = new HashMap<>(); //<productName, {quantity, price}>
 
-    public Receipt(String receiptId, String storeId, String userId, Map<String, List<Integer>> productList)
-    {
+    @Transient
+    private Object productListLock = new Object();
+
+    public Receipt(String receiptId, String storeId, String userId, Map<String, List<Integer>> productList) {
         this.receiptId = receiptId;
         this.storeId = storeId;
         this.userId = userId;
-        this. productList = productList;
-        productListLock= new Object();
+        this.productList = productList;
     }
 
-    public int getTotalPriceOfStoreReceipt()
-    {
+    public Receipt() {
+        productListLock = new Object();
+    }
+
+    public int getTotalPriceOfStoreReceipt() {
         synchronized (productListLock) {
             int storePrice = 0;
             for (String productName : productList.keySet()) {
@@ -32,8 +46,7 @@ public class Receipt {
         }
     }
 
-    public String getStoreId()
-    {
+    public String getStoreId() {
         return storeId;
     }
 

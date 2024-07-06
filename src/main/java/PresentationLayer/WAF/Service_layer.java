@@ -34,8 +34,9 @@ public class Service_layer {
 
     //private final SimpMessagingTemplate messagingTemplate;
 
-    public Service_layer() {
-        this.market = Market.getInstance();
+    @Autowired
+    public Service_layer(Market market) {
+        this.market = market;
         //this.messagingTemplate = messagingTemplate;
         // Initialize the Market instance
 
@@ -59,11 +60,8 @@ public class Service_layer {
 
 
 
-    public Service_layer(int i) {
-        //this.messagingTemplate = messagingTemplate;
-        market = Market.getInstance();
-        Market market1 = market.newForTests();
-        market=market1;
+    public Service_layer(int i, Market market) {
+        this.market = market;
         // Initialize the Market instance
     }
 

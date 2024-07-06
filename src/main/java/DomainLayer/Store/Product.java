@@ -1,15 +1,38 @@
 package DomainLayer.Store;
 
 import Util.ProductDTO;
+import jakarta.persistence.*;
 
+@Entity
+@Table(name = "product")
 public class Product {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "product_id")
     private String productName;
+
+    @Column(name = "price")
     private int price;
+
+    @Column(name = "quantity")
     private int quantity;
+
+    @Column(name = "rating")
     private double rating;
+
+    @Column(name = "num_of_ratings")
     private int numOfRatings;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "category")
     private Category category;
+
+    @Column(name = "description")
     private String description;
+
+    public Product() {
+    }
 
     public void setDescription(String description) {
         this.description = description;

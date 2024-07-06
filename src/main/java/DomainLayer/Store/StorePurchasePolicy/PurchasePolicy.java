@@ -1,11 +1,9 @@
 package DomainLayer.Store.StorePurchasePolicy;
 
-import DomainLayer.Store.PoliciesRulesLogicalConditions.CondRule;
-import DomainLayer.Store.PoliciesRulesLogicalConditions.AndRule;
-import DomainLayer.Store.PoliciesRulesLogicalConditions.OrRule;
-import DomainLayer.Store.PoliciesRulesLogicalConditions.Rule;
+import DomainLayer.Store.PoliciesRulesLogicalConditions.*;
 import Util.ProductDTO;
 import Util.UserDTO;
+import jakarta.persistence.*;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -14,10 +12,20 @@ import java.util.List;
 
 import static Util.ExceptionsEnum.*;
 
+@Entity
+@Table(name = "purchase_policies")
 public class PurchasePolicy {
 
+    @Transient
     private final Object purchaseRulesLock;
+
+    @ElementCollection
+    @CollectionTable(name = "purchase_policy_rules")
     private List<Rule> purchaseRules;
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
     public PurchasePolicy()
     {
@@ -86,5 +94,13 @@ public class PurchasePolicy {
         synchronized (purchaseRulesLock) {
             return purchaseRules;
         }
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public Long getId() {
+        return id;
     }
 }

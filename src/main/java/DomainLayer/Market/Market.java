@@ -19,7 +19,9 @@ import DomainLayer.User.UserFacade;
 import DomainLayer.SupplyServices.SupplyServicesFacade;
 import Util.*;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 import org.yaml.snakeyaml.Yaml;
 import java.io.FileInputStream;
 import java.io.InputStream;
@@ -31,7 +33,7 @@ import java.util.regex.Pattern;
 import java.util.concurrent.*;
 
 
-@Component
+@Service
 public class Market {
     private static Market MarketInstance;
     private PaymentServicesFacade paymentServicesFacade;
@@ -50,20 +52,20 @@ public class Market {
     private MyWebSocketHandler myWebSocketHandler;
 
     public synchronized static Market getInstance() {
-        if (MarketInstance == null) {
-            MarketInstance = new Market();
-        }
+//        if (MarketInstance == null) {
+//            MarketInstance = new Market();
+//        }
         return MarketInstance;
     }
 
-    public Market(){
-        this.storeFacade = StoreFacade.getInstance();
-        this.userFacade = UserFacade.getInstance();
-        this.roleFacade = RoleFacade.getInstance();
-        this.paymentServicesFacade = PaymentServicesFacade.getInstance();
-        this.authenticationAndSecurityFacade = AuthenticationAndSecurityFacade.getInstance();
-        supplyServicesFacade= SupplyServicesFacade.getInstance();
-        initializedLock= new Object();
+    private Market(StoreFacade storeFacade, UserFacade userFacade, RoleFacade roleFacade, PaymentServicesFacade paymentServicesFacade, AuthenticationAndSecurityFacade authenticationAndSecurityFacade, SupplyServicesFacade supplyServicesFacade){
+        this.storeFacade = storeFacade;
+        this.userFacade = userFacade;
+        this.roleFacade = roleFacade;
+        this.paymentServicesFacade = paymentServicesFacade;
+        this.authenticationAndSecurityFacade = authenticationAndSecurityFacade;
+        this.supplyServicesFacade= supplyServicesFacade;
+        this.initializedLock= new Object();
         this.systemManagerIds = new HashSet<>();
         managersLock = new Object();
         validationLock = new Object();
@@ -105,7 +107,7 @@ public class Market {
         this.systemManagerIds = new HashSet<>();
         managersLock = new Object();
         validationLock = new Object();
-        notificationFacade = new NotificationFacade();
+        //notificationFacade = new NotificationFacade();
 
         //notificationService = new NotificationsEndPoint();
         myWebSocketHandler =  MyWebSocketHandler.getInstance();
@@ -131,6 +133,7 @@ public class Market {
 
     }
 
+
     public Market(UserFacade userFacade){
         this.storeFacade = StoreFacade.getInstance();
         this.userFacade = userFacade;
@@ -149,6 +152,7 @@ public class Market {
 
     }
 
+    @Autowired
     public Market(UserFacade userFacade, StoreFacade storeFacade){
         this.storeFacade = storeFacade;
         this.userFacade = userFacade;
@@ -160,6 +164,7 @@ public class Market {
         this.systemManagerIds = new HashSet<>();
         managersLock = new Object();
         validationLock = new Object();
+        systemManagerIds = new HashSet<>();
         //lateNotificationFacade = new LateNotificationFacade();
 
         myWebSocketHandler =  MyWebSocketHandler.getInstance();
@@ -175,30 +180,30 @@ public class Market {
     }
 
 
-    public synchronized Market newForTests(){
-        MarketInstance = new Market();
-        StoreFacade storeFacade1 =  storeFacade.newForTest();
-        UserFacade userFacade1 =  userFacade.newForTest();
-        RoleFacade roleFacade1 =  roleFacade.newForTest();
-        AuthenticationAndSecurityFacade authenticationAndSecurityFacade1 =  authenticationAndSecurityFacade.newForTest();
-        PaymentServicesFacade paymentServicesFacade1 =  paymentServicesFacade.newForTest();
-        SupplyServicesFacade supplyServicesFacade1 = supplyServicesFacade.newForTest();
+    public Market(){
+
+        StoreFacade storeFacade1 =  new StoreFacade();
+        UserFacade userFacade1 =  new UserFacade();
+        RoleFacade roleFacade1 =  new RoleFacade();
+        AuthenticationAndSecurityFacade authenticationAndSecurityFacade1 =  new AuthenticationAndSecurityFacade();
+        PaymentServicesFacade paymentServicesFacade1 =  new PaymentServicesFacade();
+        SupplyServicesFacade supplyServicesFacade1 = new SupplyServicesFacade();
         storeFacade=storeFacade1;
         userFacade = userFacade1;
         roleFacade = roleFacade1;
         authenticationAndSecurityFacade = authenticationAndSecurityFacade1;
         paymentServicesFacade = paymentServicesFacade1;
         supplyServicesFacade = supplyServicesFacade1;
+        initializedLock= new Object();
+        systemManagerIds = new HashSet<>();
+        managersLock = new Object();
+        validationLock = new Object();
         //lateNotificationFacade = new LateNotificationFacade();
 
+        MarketInstance = this;
 
         //notificationService = new NotificationsEndPoint();
         myWebSocketHandler =  MyWebSocketHandler.getInstance();
-
-        return MarketInstance;
-
-
-
     }
 
     public Map<String, Object> loadAdminConfiguration(String configFilePath) throws Exception {

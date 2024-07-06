@@ -4,19 +4,20 @@ package DomainLayer.SupplyServices;
 import DomainLayer.PaymentServices.ExternalPaymentService;
 import DomainLayer.Role.RoleFacade;
 import Util.SupplyServiceDTO;
+import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 
+@Service
 public class SupplyServicesFacade {
     private static SupplyServicesFacade supplyServicesFacade;
     private Map<String, ExternalSupplyService>  externalSupplyService;
    // private Map<Integer, Receipt> IdAndReceipt = new HashMap<>();
     private final Object externalSupplyServiceLock;
 
-
-    private SupplyServicesFacade(){
+    public SupplyServicesFacade(){
         externalSupplyServiceLock = new Object();
         externalSupplyService=  new HashMap<String, ExternalSupplyService>();
     }

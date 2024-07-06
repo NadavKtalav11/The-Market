@@ -1,5 +1,8 @@
 package DomainLayer.AuthenticationAndSecurity;
 
+import org.springframework.stereotype.Service;
+
+@Service
 public class AuthenticationAndSecurityFacade {
 
 
@@ -13,7 +16,7 @@ public class AuthenticationAndSecurityFacade {
         }
         return instance;
     }
-    private AuthenticationAndSecurityFacade() {
+    public AuthenticationAndSecurityFacade() {
         passwordEncryptor = new PasswordEncryptor();
         tokensService = new TokensService();
     }

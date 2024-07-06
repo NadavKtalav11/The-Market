@@ -20,10 +20,10 @@ public class UserService {
     private final UserFacade userFacade;
     private final Market market;
 
-
-    public UserService (){
-        this.userFacade = UserFacade.getInstance();
-        market = Market.getInstance();
+    @Autowired
+    public UserService (UserFacade userFacade, Market market){
+        this.userFacade = userFacade;
+        this.market = market;
     }
 
 
