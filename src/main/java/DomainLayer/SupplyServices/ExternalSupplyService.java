@@ -186,6 +186,8 @@ public class ExternalSupplyService {
             {
                 throw new Exception(ExceptionsEnum.cancelFailed.toString());
             }
+
+            this.shiftIdAndDetails.remove(transactionID);
             return cancelRes;
         }
 
