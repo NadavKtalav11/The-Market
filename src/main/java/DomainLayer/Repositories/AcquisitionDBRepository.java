@@ -5,5 +5,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 @Profile("db")
-public interface ExternalPaymentDBRepository extends ExternalPaymentRepository {
+public interface AcquisitionDBRepository extends AcquisitionRepository {
 }

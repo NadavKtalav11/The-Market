@@ -1,7 +1,12 @@
 package DomainLayer.PaymentServices;
 
 
+import DomainLayer.Repositories.AcquisitionMemoryRepository;
+import DomainLayer.Repositories.AcquisitionRepository;
+import DomainLayer.Repositories.ExternalPaymentMemoryRepository;
+import DomainLayer.Repositories.ExternalPaymentRepository;
 import Util.*;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -9,23 +14,25 @@ import java.util.*;
 @Service
 public class PaymentServicesFacade {
     private static PaymentServicesFacade paymentServicesFacadeInstance;
-    private Map<String, ExternalPaymentService>  allPaymentServices = new HashMap<String, ExternalPaymentService>();
-    private Map<String, Acquisition> IdAndAcquisition = new HashMap<>();
+    private ExternalPaymentRepository externalPaymentRepository;
+    private AcquisitionRepository acquisitionRepository;
 
-    private final Object paymentServiceLock;
-    private final Object acquisitionLock;
 
-    public PaymentServicesFacade(){
-        paymentServiceLock =new Object();
-        acquisitionLock = new Object();
+    //db constructor
+    @Autowired
+    public PaymentServicesFacade(ExternalPaymentRepository externalPaymentRepository, AcquisitionRepository acquisitionRepository){
+        this.externalPaymentRepository = externalPaymentRepository;
+        this.acquisitionRepository = acquisitionRepository;
     }
 
-
+    //memory constructor
+    public PaymentServicesFacade(){
+        this.externalPaymentRepository = new ExternalPaymentMemoryRepository();
+        this.acquisitionRepository = new AcquisitionMemoryRepository();
+    }
 
     //private int acquisitionIdCounter = 1;
     //private int receiptIdCounter = 1;
-
-
 
     public synchronized static PaymentServicesFacade getInstance() {
         if (paymentServicesFacadeInstance == null) {
@@ -40,17 +47,17 @@ public class PaymentServicesFacade {
     }
 
     public void removeExternalService(String paymentId){
-        synchronized (paymentServiceLock) {
-            allPaymentServices.remove(paymentId);
-        }
+        externalPaymentRepository.deleteById(paymentId);
     }
 
     public boolean checkHandShake(){
-        ExternalPaymentService externalPaymentService = allPaymentServices.get("https://damp-lynna-wsep-1984852e.koyeb.app/");
-        return externalPaymentService.checkHandShake();
+        Optional<ExternalPaymentService> externalPaymentService = externalPaymentRepository.findById("https://damp-lynna-wsep-1984852e.koyeb.app/");
+        ExternalPaymentService externalPaymentService1 = externalPaymentService.orElse(null);
+        if (externalPaymentService1 != null){
+            return externalPaymentService1.checkHandShake();
+        }
+        return false;
     }
-
-
 
 //    public boolean addExternalService(String licensedDealerNumber, String paymentServiceName, String url){
 //        synchronized (paymentServiceLock) {
@@ -62,12 +69,12 @@ public class PaymentServicesFacade {
 //    }
 
     public boolean addExternalService(String paymentURL){
-        synchronized (paymentServiceLock) {
-            int size_before = allPaymentServices.size();
-            ExternalPaymentService externalPaymentService = new ExternalPaymentService(paymentURL);
-            allPaymentServices.put(paymentURL, externalPaymentService);
-            return allPaymentServices.size() == size_before + 1;
-        }
+        List<ExternalPaymentService> externalPaymentServices = externalPaymentRepository.findAll();
+        int size_before = externalPaymentServices.size();
+        ExternalPaymentService externalPaymentService = new ExternalPaymentService(paymentURL);
+        externalPaymentRepository.save(externalPaymentService);
+        return externalPaymentRepository.findAll().size() == size_before + 1;
+
     }
 
 //    public boolean addExternalService(PaymentServiceDTO paymentServiceDTO, HttpClient httpClient){
@@ -80,47 +87,35 @@ public class PaymentServicesFacade {
 //    }
 
     public void clearPaymentServices() {
-        synchronized (paymentServiceLock) {
-            allPaymentServices.clear();
-        }
+        externalPaymentRepository.deleteAll();
     }
 
     public String pay(int price, PaymentDTO payment, String userId, Map<String, Map<String, List<Integer>>> productList) throws Exception{
        
         String acquisitionId  = getNewAcquisitionId();
-        ExternalPaymentService externalPaymentService;
-        synchronized (paymentServiceLock) {
-            externalPaymentService = allPaymentServices.values().iterator().next();
-        }
+        ExternalPaymentService externalPaymentService = getPaymentServiceByURL("https://damp-lynna-wsep-1984852e.koyeb.app/");
        int transactionId  = externalPaymentService.payWithCard(price, payment, userId, productList, acquisitionId);
         System.out.println("transactionId is " + transactionId);
         Acquisition acquisition = new Acquisition(String.valueOf(transactionId), userId, price, payment, productList);
-        synchronized (acquisitionLock) {
-            IdAndAcquisition.put(String.valueOf(transactionId), acquisition);
-        }
-
+        acquisitionRepository.save(acquisition);
         externalPaymentService.addAcquisition(String.valueOf(transactionId), acquisition);
         return acquisition.getAcquisitionId();
 
     }
 
     public int cancelPayment(int transactionID) throws Exception {
-        ExternalPaymentService externalPaymentService;
-        synchronized (paymentServiceLock) {
-            externalPaymentService = allPaymentServices.values().iterator().next();
-        }
+        ExternalPaymentService externalPaymentService = getPaymentServiceByURL("https://damp-lynna-wsep-1984852e.koyeb.app/");
          return externalPaymentService.cancelPayment(transactionID);
     }
 
     public Map<String, String> getAcquisitionReceipts(String acquisitionId){
-        Acquisition acquisition;
-        synchronized (acquisitionLock) {
-            acquisition = IdAndAcquisition.get(acquisitionId);
+        Optional<Acquisition> acquisition = acquisitionRepository.findById(acquisitionId);
+        Acquisition acquisition1 = acquisition.orElse(null);
+        if(acquisition1 != null){
+            return acquisition1.getReceiptIdAndStoreIdMap();
         }
-        if(acquisition == null){
-            throw new IllegalArgumentException(ExceptionsEnum.AcquisitionNotExist.toString());
-        }
-        return acquisition.getReceiptIdAndStoreIdMap();
+        throw new IllegalArgumentException(ExceptionsEnum.AcquisitionNotExist.toString());
+
     }
 
     public String getNewAcquisitionId(){
@@ -130,9 +125,14 @@ public class PaymentServicesFacade {
     }
 
     public Map<String, ExternalPaymentService> getAllPaymentServices(){
-        synchronized (allPaymentServices) {
-            return this.allPaymentServices;
+        List<ExternalPaymentService> externalPaymentServices = externalPaymentRepository.findAll();
+        Map<String,ExternalPaymentService> externalPaymentServiceMap = new HashMap<>();
+        for(ExternalPaymentService externalPaymentService: externalPaymentServices){
+            externalPaymentServiceMap.put(externalPaymentService.getUrl(), externalPaymentService);
         }
+        return externalPaymentServiceMap;
+
+
     }
 
 
@@ -151,26 +151,21 @@ public class PaymentServicesFacade {
 //    }
 
     public ExternalPaymentService getPaymentServiceByURL(String paymentURL){
-        if(allPaymentServices.containsKey(paymentURL)){
-            return allPaymentServices.get(paymentURL);
-        }
-        else {
-            return null;
-        }
+        Optional<ExternalPaymentService> externalPaymentService = externalPaymentRepository.findById(paymentURL);
+        return externalPaymentService.orElse(null);
     }
 
     public Map<String, Integer> getStorePurchaseInfo()
     {
         Map<String, Integer> storePurchaseStats = new HashMap<>();
-        synchronized (acquisitionLock) {
-            for (String acqId : IdAndAcquisition.keySet()) {
-                Map<String, Receipt> acqReceipts = IdAndAcquisition.get(acqId).getStoreIdAndReceipt();
+        List<Acquisition> acquisitions = acquisitionRepository.findAll();
+            for (Acquisition acquisition : acquisitions) {
+                Map<String, Receipt> acqReceipts = acquisition.getStoreIdAndReceipt();
                 for (String receiptId : acqReceipts.keySet()) {
                     String storeId = acqReceipts.get(receiptId).getStoreId();
                     storePurchaseStats.put(storeId, storePurchaseStats.getOrDefault(storeId, 0) + 1);
                 }
             }
-        }
         return storePurchaseStats;
     }
 
@@ -178,46 +173,46 @@ public class PaymentServicesFacade {
     public Map<String, Integer> getStoreReceiptsAndTotalAmount(String storeId)
     {
         Map<String, Integer> receiptAndTotalPrice = new HashMap<>();
-        synchronized (acquisitionLock) {
-            for (String acqId : IdAndAcquisition.keySet()) {
-                Acquisition acq = IdAndAcquisition.get(acqId);
-                if (acq.getStoreIdAndReceipt().containsKey(storeId)) {
-                    receiptAndTotalPrice.put(acq.getReceiptIdByStoreId(storeId), acq.getTotalPriceOfStoreInAcquisition(storeId));
+        List<Acquisition> acquisitions = acquisitionRepository.findAll();
+            for (Acquisition acquisition : acquisitions) {
+                if (acquisition.getStoreIdAndReceipt().containsKey(storeId)) {
+                    receiptAndTotalPrice.put(acquisition.getReceiptIdByStoreId(storeId), acquisition.getTotalPriceOfStoreInAcquisition(storeId));
                 }
             }
-        }
+
 
         return receiptAndTotalPrice;
     }
 
     public Map<String, Acquisition> getIdAndAcquisition() {
-        synchronized (acquisitionLock) {
-            return IdAndAcquisition;
+        List<Acquisition> acquisitions = acquisitionRepository.findAll();
+        Map<String, Acquisition> acquisitionMap = new HashMap<>();
+        for (Acquisition acquisition: acquisitions){
+            acquisitionMap.put(acquisition.getAcquisitionId(),acquisition);
         }
+        return acquisitionMap;
     }
 
     public List<AcquisitionDTO> getAcquisitionsDTO(List<String> acquisitions) {
         List<AcquisitionDTO> acquisitionsDTO = new LinkedList<>();
-        synchronized (acquisitionLock) {
-            for (String acqId : acquisitions) {
-                Acquisition acq = IdAndAcquisition.get(acqId);
-                if (acq != null) {
-                    acquisitionsDTO.add(new AcquisitionDTO(acq.getAcquisitionId(), acq.getUserId(), acq.getTotalPrice(), acq.getDate()));
-                }
+        for (String acqId : acquisitions) {
+            Optional<Acquisition> acq = acquisitionRepository.findById(acqId);
+            Acquisition acq1 = acq.orElse(null);
+            if (acq1 != null) {
+                acquisitionsDTO.add(new AcquisitionDTO(acq1.getAcquisitionId(), acq1.getUserId(), acq1.getTotalPrice(), acq1.getDate()));
             }
         }
+
         return acquisitionsDTO;
     }
 
     public Map<String, ReceiptDTO> getReceiptsDTOByAcquisition(String acquisitionId) {
 
         Map<String, ReceiptDTO> receiptsDTO = new HashMap<>();
-        Acquisition acq;
-        synchronized (acquisitionLock) {
-            acq = IdAndAcquisition.get(acquisitionId);
-        }
-        if (acq != null) {
-            Map<String, Receipt> storeReceipts = acq.getStoreIdAndReceipt();
+        Optional<Acquisition> acq = acquisitionRepository.findById(acquisitionId);
+        Acquisition acq1 = acq.orElse(null);
+        if (acq1 != null) {
+            Map<String, Receipt> storeReceipts = acq1.getStoreIdAndReceipt();
             for (String storeId : storeReceipts.keySet()) {
                 Receipt receipt = storeReceipts.get(storeId);
                 receiptsDTO.put(receipt.getReceiptId(), new ReceiptDTO(receipt.getReceiptId(), receipt.getStoreId(), receipt.getUserId(), receipt.getProductList()));
