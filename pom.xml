@@ -192,5 +192,11 @@
             <artifactId>snakeyaml</artifactId>
             <version>1.29</version> <!-- Replace with the latest version -->
         </dependency>
+
+        <dependency>
+            <groupId>org.json</groupId>
+            <artifactId>json</artifactId>
+            <version>20210307</version> <!-- Replace with the latest version -->
+        </dependency>
     </dependencies>
 </project>

@@ -106,7 +106,7 @@ public class MarketController {
             coutries.add(countriesSet);
             Set<String> cities = new HashSet();
             cities.add(citiesSet);
-            Response<String> response = serviceLayer.init(objectMapper.readValue(paymentServiceDTO, PaymentServiceDTO.class), new SupplyServiceDTO(supplyDealerNumberField, supplyServiceName, coutries ,cities ));
+            Response<String> response = serviceLayer.init();
             if (response.isSuccess()) {
                 String userId = response.getData();
                 HttpHeaders headers = new HttpHeaders();
@@ -191,9 +191,9 @@ public class MarketController {
     @PostMapping("/addExternalPaymentService")
     public ResponseEntity<APIResponse<String>> addExternalPaymentService(@RequestParam Map<String,String> params) {
         try {
-            String paymentServiceDTO =params.get("paymentServiceDTO");
+            String paymentUrl =params.get("paymentServiceDTO");
             String managerId = params.get("memberId");
-            Response<String> response = serviceLayer.addExternalPaymentService(objectMapper.readValue(paymentServiceDTO,PaymentServiceDTO.class), managerId);
+            Response<String> response = serviceLayer.addExternalPaymentService(paymentUrl, managerId);
             if (response.isSuccess()) {
                 String result = response.getResult();
                 HttpHeaders headers = new HttpHeaders();
@@ -237,9 +237,9 @@ public class MarketController {
     @PostMapping("/addExternalSupplyService")
     public ResponseEntity<APIResponse<String>> addExternalSupplyService(@RequestParam Map<String,String> params) {
         try {
-            String supplyServiceDTO = params.get("supplyServiceDTO");
+            String supplyURL = params.get("supplyServiceDTO");
             String managerId= params.get("managerId");
-            Response<String> response = serviceLayer.addExternalSupplyService(objectMapper.readValue(supplyServiceDTO,SupplyServiceDTO.class), managerId);
+            Response<String> response = serviceLayer.addExternalSupplyService(supplyURL, managerId);
             if (response.isSuccess()) {
                 String result = response.getResult();
                 HttpHeaders headers = new HttpHeaders();

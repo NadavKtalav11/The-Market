@@ -67,8 +67,7 @@ public class StateInit {
 
 
         // Act
-        market.init(new PaymentServiceDTO(licensedDealerNumber,
-                paymentServiceName, url), new SupplyServiceDTO(licensedDealerNumber1, supplyServiceName, countries, cities));
+        market.init();
 
         // Assuming there's a method isInitialized() that returns whether the system is initialized
         assertTrue(market.isInitialized());

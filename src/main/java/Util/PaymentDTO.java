@@ -2,13 +2,17 @@ package Util;
 
 public class PaymentDTO {
     private String holderId;
+    private String holderName;
+    private String currency;
     private String creditCardNumber;
     private int cvv;
     private int month;
     private int year;
 
-    public PaymentDTO(String holderId, String creditCardNumber, int cvv, int month, int year) {
+    public PaymentDTO(String holderId,String holderName, String currency, String creditCardNumber, int cvv, int month, int year) {
         this.holderId = holderId;
+        this.holderName = holderName;
+        this.currency = currency;
         this.creditCardNumber = creditCardNumber;
         this.cvv = cvv;
         this.month = month;
@@ -18,6 +22,9 @@ public class PaymentDTO {
     public String getHolderId() {
         return holderId;
     }
+    public String getHolderName() {
+        return holderName;
+    }
 
     public String getCreditCardNumber() {
         return creditCardNumber;
@@ -26,6 +33,10 @@ public class PaymentDTO {
     public int getCvv() {
         return cvv;
     }
+    public String getCurrency() {
+        return currency;
+    }
+
 
     public int getMonth() {
         return month;

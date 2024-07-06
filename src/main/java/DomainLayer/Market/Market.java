@@ -57,7 +57,7 @@ public class Market {
         return MarketInstance;
     }
 
-    private Market(){
+    public Market(){
         this.storeFacade = StoreFacade.getInstance();
         this.userFacade = UserFacade.getInstance();
         this.roleFacade = RoleFacade.getInstance();
@@ -83,6 +83,25 @@ public class Market {
         this.paymentServicesFacade = PaymentServicesFacade.getInstance();
         this.authenticationAndSecurityFacade = authenticationAndSecurityFacade;
         supplyServicesFacade= SupplyServicesFacade.getInstance();
+        initializedLock= new Object();
+        this.systemManagerIds = new HashSet<>();
+        managersLock = new Object();
+        validationLock = new Object();
+        notificationFacade = new NotificationFacade();
+
+        //notificationService = new NotificationsEndPoint();
+        myWebSocketHandler =  MyWebSocketHandler.getInstance();
+
+    }
+
+    public Market(UserFacade userFacade, PaymentServicesFacade paymentServicesFacade,
+                  SupplyServicesFacade supplyServicesFacade){
+        this.storeFacade = StoreFacade.getInstance();
+        this.userFacade = userFacade;
+        this.roleFacade = RoleFacade.getInstance();
+        this.paymentServicesFacade = paymentServicesFacade;
+        this.authenticationAndSecurityFacade = AuthenticationAndSecurityFacade.getInstance();
+        this.supplyServicesFacade= supplyServicesFacade;
         initializedLock= new Object();
         this.systemManagerIds = new HashSet<>();
         managersLock = new Object();
@@ -146,6 +165,14 @@ public class Market {
 
     }
 
+    public PaymentServicesFacade getPaymentServicesFacade(){
+        return this.paymentServicesFacade;
+    }
+
+    public SupplyServicesFacade getSupplyServicesFacade(){
+        return this.supplyServicesFacade;
+    }
+
 
     public synchronized Market newForTests(){
         MarketInstance = new Market();
@@ -181,13 +208,20 @@ public class Market {
         }
     }
 
+    public boolean checkHandShake(){
+        return paymentServicesFacade.checkHandShake();
+    }
 
 
-    public String init( PaymentServiceDTO paymentServiceDTO,  SupplyServiceDTO supplyServiceDTO) throws Exception {
-        Map<String, Object> initConfig = null; // Declare initConfig here
+
+    public String init() throws Exception {
         Map<String, Object> adminConfig = null; // Declare adminConfig here
         String configFilePath = "src/main/resources/ConfigurationFile.yaml";
-
+        Map<String, Object> initConfig = loadAdminConfiguration(configFilePath);
+        Map<String, Object> paymentConfig  = (Map<String, Object>) initConfig.get("paymentService");
+        String paymentURL = (String) paymentConfig.get("url");
+        Map<String, Object> serviceConfig  = (Map<String, Object>) initConfig.get("supplyService");
+        String supplyURL = (String) serviceConfig.get("url");
 
         String adminPassword = "";
 
@@ -198,16 +232,15 @@ public class Market {
         }
         try {
             // Check for supply service
-            if (supplyServiceDTO.getSupplyServiceName() == null || supplyServiceDTO.getLicensedDealerNumber().length()<0 || supplyServiceDTO.getCountries()==null || supplyServiceDTO.getCities()==null ) {
+            if (supplyURL == null) {
                 throw new IllegalArgumentException(ExceptionsEnum.InvalidSupplyServiceDetails.toString());
             }
             // Check for payment service
-            if (paymentServiceDTO.getPaymentServiceName() == null || paymentServiceDTO.getUrl()==null || paymentServiceDTO.getLicensedDealerNumber() ==null) {
+            if (paymentURL == null) {
                 throw new IllegalArgumentException(ExceptionsEnum.InvalidPaymentServiceDetails.toString());
             }
 
 
-             initConfig = loadAdminConfiguration(configFilePath);
              adminConfig = (Map<String, Object>) initConfig.get("admin");
              adminPassword = (String) adminConfig.get("password");
             validateAdminPassword1(adminPassword);
@@ -237,8 +270,8 @@ public class Market {
             synchronized (managersLock) {
                 systemManagerIds.add(systemManagerId);
             }
-            paymentServicesFacade.addExternalService(paymentServiceDTO);
-            supplyServicesFacade.addExternalService(supplyServiceDTO);
+            paymentServicesFacade.addExternalService(paymentURL);
+            supplyServicesFacade.addExternalService(supplyURL);
             synchronized (initializedLock) {
                 initialized = true;
             }
@@ -279,6 +312,16 @@ public class Market {
                 String memberId = userFacade.register(userId, userDTO1, encryptedPassword);
             }
         }
+    }
+
+    public int cancelPayment(int transactionID) throws Exception {
+        return  paymentServicesFacade.cancelPayment(transactionID);
+
+    }
+
+    public int cancelSupply(int transactionID) throws Exception {
+        return  supplyServicesFacade.cancelSupply(transactionID);
+
     }
 
     private Map<String, String> loginUsersInitState(List<String> userToLogin, Map<String, Object> users) throws Exception {
@@ -479,21 +522,21 @@ public class Market {
         return initialized;
     }
 
-    public void addExternalPaymentService(PaymentServiceDTO paymentServiceDTO, String systemMangerId) throws Exception {
+    public void addExternalPaymentService(String paymentURL, String systemMangerId) throws Exception {
         try {
             synchronized (managersLock) {
                 if (!systemManagerIds.contains(systemMangerId)) {
                     throw new Exception(ExceptionsEnum.SystemManagerPaymentAuthorization.toString());
                 }
             }
-            if (paymentServiceDTO.getPaymentServiceName() == null || paymentServiceDTO.getLicensedDealerNumber()==null || paymentServiceDTO.getUrl()==null ) {
+            if (paymentURL== null  ) {
                 throw new IllegalArgumentException(ExceptionsEnum.InvalidPaymentServiceParameters.toString());
             }
         } catch (Exception e) {
             // Log the error or handle it as needed
             throw e;  // Re-throwing the exception to be handled by the caller
         }
-        paymentServicesFacade.addExternalService(paymentServiceDTO);
+        paymentServicesFacade.addExternalService(paymentURL);
     }
 
     public void removeExternalPaymentService(String licensedDealerNumber, String systemMangerId) throws Exception {
@@ -515,24 +558,24 @@ public class Market {
 
     }
 
-    public void addExternalSupplyService(SupplyServiceDTO supplyServiceDTO, String systemManagerId) throws Exception {
+    public void addExternalSupplyService(String SupplyURL, String systemManagerId) throws Exception {
         try {
             synchronized (managersLock) {
                 if (!systemManagerIds.contains(systemManagerId)) {
                     throw new Exception(ExceptionsEnum.SystemManagerSupplyAuthorization.toString());
                 }
             }
-            if (supplyServiceDTO.getSupplyServiceName() == null || supplyServiceDTO.getCountries() ==null || supplyServiceDTO.getCities() ==null || Integer.parseInt(supplyServiceDTO.getLicensedDealerNumber())< 0  ) {
+            if (SupplyURL == null   ) {
                 throw new IllegalArgumentException(ExceptionsEnum.InvalidSupplyServiceParameters.toString());
             }
         } catch (Exception e) {
             throw e;  // Re-throwing the exception to be handled by the caller
         }
-        supplyServicesFacade.addExternalService(supplyServiceDTO);
+        supplyServicesFacade.addExternalService(SupplyURL);
 
     }
 
-    public void removeExternalSupplyService(String licensedDealerNumber, String systemManagerId) throws Exception {
+    public void removeExternalSupplyService(String supplyURL, String systemManagerId) throws Exception {
 
             try {
                 synchronized (managersLock) {
@@ -543,7 +586,7 @@ public class Market {
                 if (supplyServicesFacade.getAllSupplyServices().size() <= 1) {
                     throw new Exception(ExceptionsEnum.OnlySupplyService.toString());
                 }
-                supplyServicesFacade.removeExternalService(licensedDealerNumber);
+                supplyServicesFacade.removeExternalService(supplyURL);
             } catch (Exception e) {
                 throw e;  // Re-throwing the exception to be handled by the caller
             }
@@ -719,7 +762,7 @@ public class Market {
 
 
     public String payWithExternalPaymentService(CartDTO cartDTO,PaymentDTO payment, String userId) throws Exception{
-        if(cartDTO.getCartPrice()<= 0 || payment.getMonth()> 12 || payment.getMonth()<1 || payment.getYear() < 2020 ||payment.getHolderId()==null ||cartDTO.getStoreToProducts()==null) {
+        if(cartDTO.getCartPrice()<= 0 || payment.getMonth()> 12 || payment.getMonth()<1 || payment.getYear() < 2023 ||payment.getHolderId()==null ||cartDTO.getStoreToProducts()==null) {
             throw new IllegalArgumentException(ExceptionsEnum.InvalidCreditCardParameters.toString());
         }
         if(paymentServicesFacade.getAllPaymentServices().size()<1){

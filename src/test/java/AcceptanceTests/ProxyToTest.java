@@ -20,9 +20,9 @@ public class ProxyToTest implements BridgeToTests {
 
 
     @Override
-    public Response<String> init( PaymentServiceDTO paymentServiceDTO, SupplyServiceDTO supplyServiceDTO) {
+    public Response<String> init() {
         if (realServiceAdaptor != null)
-            return realServiceAdaptor.init( paymentServiceDTO, supplyServiceDTO);
+            return realServiceAdaptor.init();
 
         else
             return new Response<>(null, "Not Implemented yet");
@@ -246,9 +246,9 @@ public class ProxyToTest implements BridgeToTests {
     }
 
     @Override
-    public Response<String> purchase(String user_ID, String country, String city, String address, String cardNumber, int cvv, int month, int year, String holderID, int price, Map<String, Map<String, List<Integer>>> products) {
+    public Response<String> purchase(String user_ID, String country, String city, String address, String cardNumber,String currency, String holderName, int cvv, int month, int year, String holderID, int price, Map<String, Map<String, List<Integer>>> products) {
         if (realServiceAdaptor != null)
-            return realServiceAdaptor.purchase(user_ID, country, city, address, cardNumber ,cvv,month,year,holderID, price,products);
+            return realServiceAdaptor.purchase(user_ID, country, city, address, cardNumber,currency,holderName ,cvv,month,year,holderID, price,products);
         else
             return new Response<>(null, "Not Implemented yet");
     }

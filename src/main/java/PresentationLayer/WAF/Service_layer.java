@@ -68,10 +68,10 @@ public class Service_layer {
     }
 
 
-    public Response<String> init(PaymentServiceDTO paymentDTO, SupplyServiceDTO supplyServiceDTO){
+    public Response<String> init(){
         logger.info("Starting the initialization of the system.");
         try {
-            String userId = market.init( paymentDTO, supplyServiceDTO );
+            String userId = market.init();
             logger.info("System initialized successfully.");
             return new Response<>("Initialization successful", "System initialized successfully.",userId);
 
@@ -81,10 +81,37 @@ public class Service_layer {
         }
     }
 
-    public Response<String> addExternalPaymentService(PaymentServiceDTO paymentServiceDTO , String managerId) throws Exception {
+    public Response<String> cancelPayment(int transactionID){
+        logger.info("Cancelling the payment for transactionID: {} .");
+        try {
+            int res = market.cancelPayment(transactionID);
+            logger.info("The payment has been cancelled.");
+            return new Response<>("Successful", "The payment has been cancelled.");
+
+        } catch (Exception e) {
+            logger.error("Error occurred during the payment cancellation: {}", e.getMessage(), e);
+            return new Response<>(null, e.getMessage());
+        }
+    }
+
+    public Response<String> cancelSupply(int transactionID){
+        logger.info("Cancelling the supply for transactionID: {} .");
+        try {
+            int res = market.cancelSupply(transactionID);
+            logger.info("The supply has been cancelled.");
+            return new Response<>("Successful", "The supply has been cancelled.");
+
+        } catch (Exception e) {
+            logger.error("Error occurred during the supply cancellation: {}", e.getMessage(), e);
+            return new Response<>(null, e.getMessage());
+        }
+    }
+
+
+    public Response<String> addExternalPaymentService(String paymentURL , String managerId) throws Exception {
         logger.info("Trying to add a new external payment service");
         try {
-            market.addExternalPaymentService(paymentServiceDTO ,managerId );
+            market.addExternalPaymentService(paymentURL ,managerId );
             logger.info("Adding new external payment service have been done successfully.");
             return new Response<>("Successful adding", "Adding new external payment service have been done successfully.");
 
@@ -108,10 +135,10 @@ public class Service_layer {
 
     }
 
-    public Response<String> addExternalSupplyService(SupplyServiceDTO supplyServiceDTO, String systemManagerId) throws Exception {
+    public Response<String> addExternalSupplyService(String supplyURL, String systemManagerId) throws Exception {
         logger.info("Trying to add a new external supply service");
         try {
-            market.addExternalSupplyService(supplyServiceDTO, systemManagerId);
+            market.addExternalSupplyService(supplyURL, systemManagerId);
             logger.info("Adding new external supply service has been done successfully.");
             return new Response<>("Successful adding", "Adding new external supply service has been done successfully.");
         } catch (Exception e) {
@@ -132,11 +159,11 @@ public class Service_layer {
         }
     }
 
-    public Response<String> removeExternalSupplyService(String licensedDealerNumber, String systemManagerId) {
-        logger.info("Trying to remove the supply service number: {}", licensedDealerNumber);
+    public Response<String> removeExternalSupplyService(String supplyURL, String systemManagerId) {
+        logger.info("Trying to remove the supply : {}", supplyURL);
         try {
-            market.removeExternalSupplyService(licensedDealerNumber, systemManagerId);
-            logger.info("Removing the external supply service number: {} has been done successfully.", licensedDealerNumber);
+            market.removeExternalSupplyService(supplyURL, systemManagerId);
+            logger.info("Removing the external supply : {} has been done successfully.", supplyURL);
             return new Response<>("Successful removal", "Removing external supply service has been done successfully.");
         } catch (Exception e) {
             logger.error("Error occurred during the removing: {}", e.getMessage(), e);

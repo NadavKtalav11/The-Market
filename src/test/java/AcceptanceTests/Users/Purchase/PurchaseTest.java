@@ -37,8 +37,7 @@ public class PurchaseTest {
          countries.add("Israel");
          HashSet<String> cities = new HashSet<>();
          cities.add("BeerSheva");
-         impl.init(
-                 new PaymentServiceDTO("1", "payementService", "kobi@gmail.com"),new SupplyServiceDTO("2", "supplyService", countries, cities));
+         impl.init();
 
 
         userID1 = impl.enterMarketSystem().getData();
@@ -56,7 +55,7 @@ public class PurchaseTest {
         impl.addProductToBasket("Cheese", 4, storeID, userID2);
         impl.addProductToBasket("Yogurt", 5, storeID, userID2);
         // Initialize paymentDTO and userDTO
-        paymentDTO = new PaymentDTO("holderName", "1111222233334444", 1, 12, 2025);
+        paymentDTO = new PaymentDTO("130", "david", "USD","98767576576", 986, 6,2030);
         userDTO = new UserDTO(userID2, "newUser2", "12/12/2000", "Israel", "BeerSheva", "bialik", "noa");
         products = new HashMap<>();
         Map<String, List<Integer>> basketProducts = new HashMap<>();
@@ -83,7 +82,7 @@ public class PurchaseTest {
         CartDTO cartDTO = new CartDTO(userID2,price,products);
 
         Response<String> result = impl.purchase(userID2, userDTO.getCountry(), userDTO.getCity(), userDTO.getAddress(),
-                paymentDTO.getCreditCardNumber(), paymentDTO.getCvv(), paymentDTO.getMonth(), paymentDTO.getYear(),
+                paymentDTO.getCreditCardNumber(),paymentDTO.getCurrency(),paymentDTO.getHolderName(), paymentDTO.getCvv(), paymentDTO.getMonth(), paymentDTO.getYear(),
                 paymentDTO.getHolderId(), cartDTO.getCartPrice(), cartDTO.getStoreToProducts());
 
         assertTrue(result.isSuccess());
@@ -95,8 +94,8 @@ public class PurchaseTest {
         int price = impl.checkingCartValidationBeforePurchase(userID2, userDTO.getUserName(), userDTO.getBirthday(),
                 userDTO.getName(), userDTO.getCountry(), userDTO.getCity(), userDTO.getAddress()).getResult();
         CartDTO cartDTO = new CartDTO(userID2,price,products);
-        Response<String> response = impl.purchase(userID2,userDTO.getCountry(), userDTO.getCity(),userDTO.getAddress(),
-                paymentDTO.getCreditCardNumber(),paymentDTO.getCvv(),paymentDTO.getMonth(), paymentDTO.getYear(),
+        Response<String> response = impl.purchase(userID2, userDTO.getCountry(), userDTO.getCity(), userDTO.getAddress(),
+                paymentDTO.getCreditCardNumber(),paymentDTO.getCurrency(),paymentDTO.getHolderName(), paymentDTO.getCvv(), paymentDTO.getMonth(), paymentDTO.getYear(),
                 paymentDTO.getHolderId(), cartDTO.getCartPrice(), cartDTO.getStoreToProducts());
         assertEquals(ExceptionsEnum.TimeExpired.toString(), response.getDescription());
     }

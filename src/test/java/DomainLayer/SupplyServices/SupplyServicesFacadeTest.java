@@ -24,7 +24,7 @@ public class SupplyServicesFacadeTest {
     @Test
     public void testAddExternalService() {
         // Create mocks for parameters
-        String licensedDealerNumber = "12345";
+        String url = "supply.com";
         String supplyServiceName = "MockService";
         HashSet<String> countries =new HashSet<>();
         HashSet<String> cities =new HashSet<>();
@@ -38,7 +38,7 @@ public class SupplyServicesFacadeTest {
       //  doReturn(externalSupplyServiceMapMock).when(supplyServicesFacadeSpy).getExternalSupplyServiceMap();
 
         // Call method
-        boolean result = supplyServicesFacadeSpy.addExternalService(licensedDealerNumber, supplyServiceName, countries, cities);
+        boolean result = supplyServicesFacadeSpy.addExternalService( url);
 
         // Verify that externalSupplyService is called correctly
 //        verify(externalSupplyServiceMapMock).put(licensedDealerNumber, new ExternalSupplyService(licensedDealerNumber, supplyServiceName, countries, cities));
@@ -61,24 +61,17 @@ public class SupplyServicesFacadeTest {
         countries.add("Israel");
         cities.add("Bash");
 
-      supplyServicesFacadeSpy.addExternalService(licensedDealerNumber, supplyServiceName, countries, cities);
+      supplyServicesFacadeSpy.addExternalService("supply.com");
 
         //    doReturn(externalSupplyServiceMapMock).when(supplyServicesFacadeSpy).getExternalSupplyServiceMap();
 
         // Call method
         String result = supplyServicesFacadeSpy.checkAvailableExternalSupplyService("Israel", "Bash");
-        assertEquals("12345", result);
+        assertEquals("supply.com", result);
 
-        String result1 = supplyServicesFacadeSpy.checkAvailableExternalSupplyService("Israel", "Ashdod");
-        assertEquals("-2", result1);
-        ExternalSupplyService externalSupplyService = supplyServicesFacadeSpy.getExternalSupplyServiceById("12345");
-        HashSet<String> cities1 =new HashSet<>();
-        cities1.add("Ashdod");
-        cities1.add("Haifa");
-        externalSupplyService.addCities(cities1);
-        String result2 = supplyServicesFacadeSpy.checkAvailableExternalSupplyService("Israel", "Ashdod");
-        assertEquals("12345", result2);
-
+//        String result1 = supplyServicesFacadeSpy.checkAvailableExternalSupplyService("Israel", "Ashdod");
+//        assertEquals("-2", result1);
+//
 
     }
 

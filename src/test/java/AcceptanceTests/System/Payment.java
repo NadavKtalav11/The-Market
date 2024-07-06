@@ -75,7 +75,7 @@ public class Payment {
         Mockito.when(cartDTO.getCartPrice()).thenReturn(100);
         int price = 100;
         String cardNumber = "12345678";
-        int cvv = 123;
+        int cvv = 947;
         int month = 12;
         int year = 2024;
         String holderID = "123456789";
@@ -86,11 +86,9 @@ public class Payment {
 
         //  int systemMangerId1 = userFacade.registerSystemAdmin("david", "password", "birthday","country","city","address","name");
         market.getSystemManagerIds().add(systemMangerId);
-        String licensedDealerNumber = "12345";
-        String paymentServiceName = "PayPal";
         String url = "http://paypal.com";
-        paymentServicesFacade.addExternalService(new PaymentServiceDTO(licensedDealerNumber, paymentServiceName, url));
-        ExternalPaymentService externalPaymentService = paymentServicesFacade.getAllPaymentServices().get(licensedDealerNumber);
+        paymentServicesFacade.addExternalService( url);
+        ExternalPaymentService externalPaymentService = paymentServicesFacade.getAllPaymentServices().get(url);
 
         int result = externalPaymentService.getIdAndAcquisition().size();
         assertEquals(0, result);
@@ -98,7 +96,7 @@ public class Payment {
         Map<Integer, Map<String, Integer>> productList = new HashMap<>();
 
         // Act and Assert
-        assertDoesNotThrow(() -> {paymentServicesFacade.pay(cartDTO.getCartPrice(), new PaymentDTO(holderID, cardNumber, cvv, month, year), cartDTO.getUserID(),cartDTO.getStoreToProducts());
+        assertDoesNotThrow(() -> {paymentServicesFacade.pay(cartDTO.getCartPrice(), new PaymentDTO("DDDD",holderID, "USD",cardNumber, cvv, month, year), cartDTO.getUserID(),cartDTO.getStoreToProducts());
         });
         int result1 = externalPaymentService.getIdAndAcquisition().size();
         assertEquals(1, result1);
@@ -119,11 +117,11 @@ public class Payment {
 
         String systemManagerId = "77";
         market.getSystemManagerIds().add(systemManagerId);
-        String licensedDealerNumber = "12345";
-        String paymentServiceName = "PayPal";
+//        String licensedDealerNumber = "12345";
+//        String paymentServiceName = "PayPal";
         String url = "http://paypal.com";
-        paymentServicesFacade.addExternalService(new PaymentServiceDTO(licensedDealerNumber, paymentServiceName, url));
-        ExternalPaymentService externalPaymentService = paymentServicesFacade.getAllPaymentServices().get(licensedDealerNumber);
+        paymentServicesFacade.addExternalService(url);
+        ExternalPaymentService externalPaymentService = paymentServicesFacade.getAllPaymentServices().get(url);
         int result = externalPaymentService.getIdAndAcquisition().size();
         assertEquals(0, result);
         Map<String, Map<String, List<Integer>>> productList = new HashMap<>();
@@ -132,7 +130,7 @@ public class Payment {
         // Mocking User and UserFacade
 //
         Exception exception = assertThrows(Exception.class, () -> {
-            market.payWithExternalPaymentService(new CartDTO(userID,price,productList), new PaymentDTO(holderID, cardNumber, cvv, month, year), userID);
+            market.payWithExternalPaymentService(new CartDTO(userID,price,productList), new PaymentDTO("d",holderID,"USD", cardNumber, cvv, month, year), userID);
         });
         int result1 = externalPaymentService.getIdAndAcquisition().size();
         assertEquals(0, result1);
@@ -145,7 +143,7 @@ public class Payment {
 
         int price = 100;
         String cardNumber = "12345678";
-        int cvv = 123;
+        int cvv = 996;
         int month = 12;
         int year = 20244;
         String holderID = "123456789";
@@ -161,7 +159,7 @@ public class Payment {
 //
 
         Exception exception = assertThrows(Exception.class, () -> {
-            market.payWithExternalPaymentService(new CartDTO(userID,price,productList), new PaymentDTO(holderID, cardNumber, cvv, month, year), userID);
+            market.payWithExternalPaymentService(new CartDTO(userID,price,productList), new PaymentDTO("D",holderID,"USD", cardNumber, cvv, month, year), userID);
         });
 
         assertEquals(ExceptionsEnum.noAvailableExternalPaymentService.toString(), exception.getMessage());
@@ -178,7 +176,7 @@ public class Payment {
         Mockito.when(cartDTO.getCartPrice()).thenReturn(100);
         int price = 100;
         String cardNumber = "12345678";
-        int cvv = 123;
+        int cvv = 988;
         int month = 12;
         int year = 2024;
         String holderID = "123456789";
@@ -189,14 +187,14 @@ public class Payment {
 
         //  int systemMangerId1 = userFacade.registerSystemAdmin("david", "password", "birthday","country","city","address","name");
         market.getSystemManagerIds().add(systemMangerId);
-        String licensedDealerNumber = "12345";
-        String paymentServiceName = "PayPal";
+//        String licensedDealerNumber = "12345";
+//        String paymentServiceName = "PayPal";
         String url = "http://paypal.com";
         HttpClient mockHttpClient = Mockito.mock(HttpClient.class);
         Mockito.when(mockHttpClient.checkCreditCard(Mockito.eq(url), Mockito.any(PaymentDTO.class))).thenReturn(false);
 
-        paymentServicesFacade.addExternalService(new PaymentServiceDTO(licensedDealerNumber, paymentServiceName, url),mockHttpClient);
-        ExternalPaymentService externalPaymentService = paymentServicesFacade.getAllPaymentServices().get(licensedDealerNumber);
+        paymentServicesFacade.addExternalService(url);
+        ExternalPaymentService externalPaymentService = paymentServicesFacade.getAllPaymentServices().get(url);
 
         int result = externalPaymentService.getIdAndAcquisition().size();
         assertEquals(0, result);
@@ -206,7 +204,7 @@ public class Payment {
 
 
         Exception exception = assertThrows(Exception.class, () -> {
-            paymentServicesFacade.pay(cartDTO.getCartPrice(), new PaymentDTO(holderID, cardNumber, cvv, month, year), cartDTO.getUserID(),cartDTO.getStoreToProducts());
+            paymentServicesFacade.pay(cartDTO.getCartPrice(), new PaymentDTO("dd",holderID,"USD", cardNumber, cvv, month, year), cartDTO.getUserID(),cartDTO.getStoreToProducts());
         });
 
         assertEquals(ExceptionsEnum.CreditCardIssue.toString(), exception.getMessage());

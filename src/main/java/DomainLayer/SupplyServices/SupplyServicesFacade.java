@@ -1,6 +1,7 @@
 package DomainLayer.SupplyServices;
 
 
+import DomainLayer.PaymentServices.ExternalPaymentService;
 import DomainLayer.Role.RoleFacade;
 import Util.SupplyServiceDTO;
 
@@ -13,6 +14,7 @@ public class SupplyServicesFacade {
     private Map<String, ExternalSupplyService>  externalSupplyService;
    // private Map<Integer, Receipt> IdAndReceipt = new HashMap<>();
     private final Object externalSupplyServiceLock;
+
 
     private SupplyServicesFacade(){
         externalSupplyServiceLock = new Object();
@@ -42,20 +44,28 @@ public class SupplyServicesFacade {
         }
     }
 
-    public boolean addExternalService(String licensedDealerNumber, String supplyServiceName, HashSet<String> countries, HashSet<String> cities){
+    public int cancelSupply(int transactionID) throws Exception {
+        ExternalSupplyService externalSupplyService1;
         synchronized (externalSupplyServiceLock) {
-            int size_before = externalSupplyService.size();
-            ExternalSupplyService externalPaymentService = new ExternalSupplyService(licensedDealerNumber, supplyServiceName, countries, cities);
-            externalSupplyService.put(licensedDealerNumber, externalPaymentService);
-            return externalSupplyService.size() == size_before + 1;
+            externalSupplyService1 = externalSupplyService.values().iterator().next();
         }
+        return externalSupplyService1.cancelSupply(transactionID);
     }
 
-    public boolean addExternalService(SupplyServiceDTO supplyServiceDTO){
+//    public boolean addExternalService(String licensedDealerNumber, String supplyServiceName, HashSet<String> countries, HashSet<String> cities){
+//        synchronized (externalSupplyServiceLock) {
+//            int size_before = externalSupplyService.size();
+//            ExternalSupplyService externalPaymentService = new ExternalSupplyService(licensedDealerNumber, supplyServiceName, countries, cities);
+//            externalSupplyService.put(licensedDealerNumber, externalPaymentService);
+//            return externalSupplyService.size() == size_before + 1;
+//        }
+//    }
+
+    public boolean addExternalService(String supplyURL){
         synchronized (externalSupplyServiceLock) {
             int size_before = externalSupplyService.size();
-            ExternalSupplyService externalPaymentService = new ExternalSupplyService(supplyServiceDTO);
-            externalSupplyService.put(supplyServiceDTO.getLicensedDealerNumber(), externalPaymentService);
+            ExternalSupplyService externalPaymentService = new ExternalSupplyService(supplyURL);
+            externalSupplyService.put(supplyURL, externalPaymentService);
             return externalSupplyService.size() == size_before + 1;
         }
     }
@@ -70,7 +80,7 @@ public class SupplyServicesFacade {
             for (Map.Entry<String, ExternalSupplyService> entry : externalSupplyService.entrySet()) {
                 ExternalSupplyService externalSupplyService1 = entry.getValue();
                 if (externalSupplyService1.checkAreaAvailability(country, city)) {
-                    return externalSupplyService1.getLicensedDealerNumber();
+                    return externalSupplyService1.getSupplyURL();
                     }
             }
         }
@@ -82,6 +92,13 @@ public class SupplyServicesFacade {
             return externalSupplyService.get(externalSupplyServiceId);
         }
     }
+    public ExternalSupplyService getExternalSupplyServiceByURL(String supplyURL){
+        synchronized (externalSupplyServiceLock) {
+            return externalSupplyService.get(supplyURL);
+        }
+    }
+
+
     public void reset() {
         synchronized (externalSupplyServiceLock) {
             externalSupplyService.clear();
@@ -89,9 +106,13 @@ public class SupplyServicesFacade {
     }
 
 
-   public boolean createShiftingDetails(String externalSupplyServiceId,String userName,String country,String city,String address){
+   public boolean createShiftingDetails(String externalSupplyServiceId,String userName,String country,String city,String address) throws Exception {
         ExternalSupplyService externalSupplyService = getExternalSupplyServiceById(externalSupplyServiceId);
-        return externalSupplyService.createShiftingDetails(userName,country ,city, address);
+        int res = externalSupplyService.createSupply(userName,country ,city, address);
+        if(res>= 10000 & res<= 100000){
+            return true;
+        }
+        return false;
         // Check if the product exists in the instance's map and if the amount is sufficient
     }
 }
