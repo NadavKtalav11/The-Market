@@ -1,5 +1,10 @@
 package DomainLayer.PaymentServices;
 
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -8,8 +13,9 @@ public class Receipt {
     private String receiptId;
     private String storeId;
     private String userId;
-    private Map<String, List<Integer>> productList = new HashMap<>(); //<productName, price>
+    private Map<String, List<Integer>> productList = new HashMap<>(); //<productName, {quantity, price}>
 
+    @Transient
     private final Object productListLock;
 
     public Receipt(String receiptId, String storeId, String userId, Map<String, List<Integer>> productList)
@@ -18,6 +24,10 @@ public class Receipt {
         this.storeId = storeId;
         this.userId = userId;
         this. productList = productList;
+        productListLock= new Object();
+    }
+
+    public Receipt() {
         productListLock= new Object();
     }
 

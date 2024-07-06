@@ -1,10 +1,14 @@
 package DomainLayer.PaymentServices;
 
 import Util.PaymentDTO;
+import jakarta.persistence.*;
 
 import java.util.*;
 
+@Entity
+@Table(name = "acquisition")
 public class Acquisition {
+    @Id
     private String acquisitionId;
     private String userId;
     private int totalPrice;
@@ -14,8 +18,14 @@ public class Acquisition {
     private int month;
     private int year;
     private Date date;
+
+    // One-to-many relationship with Receipt
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "acquisition_id") // This will create an acquisition_id column in the Receipt table
+    @MapKeyColumn(name = "store_id") // Column in the Receipt table for store_id
     private Map<String, Receipt> storeIdAndReceipt= new HashMap<>(); //<storeId, Receipt>
 
+    @Transient
     private final Object storeReceiptLock;
 
     public Acquisition(String acquisitionId, String userId, int totalPrice, PaymentDTO payment, Map<String, Map<String, List<Integer>>> productList) {
@@ -35,6 +45,10 @@ public class Acquisition {
             storeIdAndReceipt.put(storeId, new Receipt(getNewReceiptId(), storeId, userId, productList.get(storeId)));
 
         }
+    }
+
+    public Acquisition() {
+        this.storeReceiptLock = new Object();
     }
 
     public String getAcquisitionId() {
