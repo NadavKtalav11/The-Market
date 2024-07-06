@@ -45,7 +45,7 @@ public class Market {
     private final Object initializedLock;
     private final Object managersLock;
     private final Object validationLock;
-    //private LateNotificationFacade lateNotificationFacade;
+
 
     private MyWebSocketHandler myWebSocketHandler;
 
@@ -67,7 +67,6 @@ public class Market {
         this.systemManagerIds = new HashSet<>();
         managersLock = new Object();
         validationLock = new Object();
-        //lateNotificationFacade = new LateNotificationFacade();
 
         myWebSocketHandler =  MyWebSocketHandler.getInstance();
         //init(new PaymentServiceDTO(" ds","f f" , "  ee"), new SupplyServiceDTO(" vv", "  vvv" , new HashSet<>(), new HashSet<>()));
@@ -86,7 +85,7 @@ public class Market {
         this.systemManagerIds = new HashSet<>();
         managersLock = new Object();
         validationLock = new Object();
-        //lateNotificationFacade = new LateNotificationFacade();
+
 
         //notificationService = new NotificationsEndPoint();
         myWebSocketHandler =  MyWebSocketHandler.getInstance();
@@ -105,9 +104,7 @@ public class Market {
         this.systemManagerIds = new HashSet<>();
         managersLock = new Object();
         validationLock = new Object();
-        notificationFacade = new NotificationFacade();
 
-        //notificationService = new NotificationsEndPoint();
         myWebSocketHandler =  MyWebSocketHandler.getInstance();
 
     }
