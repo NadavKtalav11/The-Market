@@ -939,12 +939,12 @@ public class MarketController {
             List<String> logicOperators = objectMapper.readValue(operators, new TypeReference<List<String>>() {});
             Response<String> response = serviceLayer.addPurchaseRuleToStore(rules, logicOperators, userId, storeId);
             if (response.isSuccess()) {
-                String data = response.getData();
+                String result = response.getResult();
                 HttpHeaders headers = new HttpHeaders();
                 headers.add("accept", "*/*");
 
                 return ResponseEntity.status(HttpStatus.OK).headers(headers)
-                        .body(new APIResponse<String>(data, null));
+                        .body(new APIResponse<String>(result, null));
             } else {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                         .body(new APIResponse<String>(null, response.getDescription()));

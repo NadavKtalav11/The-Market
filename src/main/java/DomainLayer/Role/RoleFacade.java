@@ -57,8 +57,13 @@ public class RoleFacade {
             throw new Exception(ExceptionsEnum.userIsNotStoreOwner.toString());
     }
 
-    public void verifyNominatorError(String nominatorMemberID, String nominated, String storeID) throws Exception {
-        if (storeManagerRepository.get(storeID, nominated).getNominatorMemberId() != nominatorMemberID)
+    public void verifyMangerNominatorError(String nominatorMemberID, String nominatedMemberID, String storeID) throws Exception {
+        if (storeManagerRepository.get(storeID, nominatedMemberID).getNominatorMemberId() != nominatorMemberID)
+            throw new Exception(ExceptionsEnum.notNominatorOfThisEmployee.toString());
+    }
+
+    public void verifyOwnerNominatorError(String nominatorMemberID, String nominatedMemberID, String storeID) throws Exception {
+        if (storeOwnerRepository.get(storeID, nominatedMemberID).getNominatorId() != nominatorMemberID)
             throw new Exception(ExceptionsEnum.notNominatorOfThisEmployee.toString());
     }
 
