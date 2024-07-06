@@ -8,7 +8,7 @@ import java.util.Map;
 
 public interface BridgeToTests {
 
-    Response<String> init( PaymentServiceDTO paymentServiceDTO, SupplyServiceDTO supplyServiceDTO);
+    Response<String> init();
 
 
 //    Response<String> payWithExternalPaymentService(int price,String cardNumber, int cvv, int month, int year, String holderID, String userID);
@@ -68,13 +68,13 @@ public interface BridgeToTests {
 
     Response<List<String>> inStoreProductSearch(String userId, String productName, String categoryStr, List<String> keywords, String storeId);
 
-    Response<String> purchase(String user_ID, String country, String city, String address, String cardNumber, int cvv, int month, int year, String holderID, int price, Map<String, Map<String,List<Integer>>> products);
+    Response<String> purchase(String user_ID, String country, String city, String address, String cardNumber,String currency, String holderName, int cvv, int month, int year, String holderID, int price, Map<String,Map<String, List<Integer>>> products) ;
 
-    Response<String> addPurchaseRuleToStore(List<Integer> ruleNums, List<String> operators, String userId, String storeId);
+    Response<String> addPurchaseRuleToStore(List<TestRuleDTO> testRules, List<String> operators, String userId, String storeId);
 
     Response<String> removePurchaseRuleFromStore(int ruleNum, String userId, String storeId);
 
-    Response<String> addDiscountCondRuleToStore(List<Integer> ruleNums, List<String> logicOperators, List<DiscountValueDTO> discDetails, List<String> numericalOperators,String userId, String storeId);
+    Response<String> addDiscountCondRuleToStore(List<TestRuleDTO> testRules, List<String> logicOperators, List<DiscountValueDTO> discDetails, List<String> numericalOperators,String userId, String storeId);
 
     Response<String> addDiscountSimpleRuleToStore(List<DiscountValueDTO> discDetails, List<String> discountValueOperators, String userId, String storeId);
 
@@ -82,5 +82,10 @@ public interface BridgeToTests {
 
     Response<String> setUserConfirmationPurchase(String userID);
 
+    Response<String> composeCurrentPurchaseRules(int ruleIndex1, int ruleIndex2, String operator, String userId, String storeId);
+
+    Response<String> composeCurrentSimpleDiscountRules(int ruleIndex1, int ruleIndex2, String numericalOperator, String userId, String storeId);
+
+    Response<String> composeCurrentCondDiscountRules(int ruleIndex1, int ruleIndex2, String logicalOperator, String numericalOperator, String userId, String storeId);
 
 }

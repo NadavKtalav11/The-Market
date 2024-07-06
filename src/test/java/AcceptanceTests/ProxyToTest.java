@@ -20,9 +20,9 @@ public class ProxyToTest implements BridgeToTests {
 
 
     @Override
-    public Response<String> init( PaymentServiceDTO paymentServiceDTO, SupplyServiceDTO supplyServiceDTO) {
+    public Response<String> init() {
         if (realServiceAdaptor != null)
-            return realServiceAdaptor.init( paymentServiceDTO, supplyServiceDTO);
+            return realServiceAdaptor.init();
 
         else
             return new Response<>(null, "Not Implemented yet");
@@ -246,17 +246,17 @@ public class ProxyToTest implements BridgeToTests {
     }
 
     @Override
-    public Response<String> purchase(String user_ID, String country, String city, String address, String cardNumber, int cvv, int month, int year, String holderID, int price, Map<String, Map<String, List<Integer>>> products) {
+    public Response<String> purchase(String user_ID, String country, String city, String address, String cardNumber,String currency, String holderName, int cvv, int month, int year, String holderID, int price, Map<String, Map<String, List<Integer>>> products) {
         if (realServiceAdaptor != null)
-            return realServiceAdaptor.purchase(user_ID, country, city, address, cardNumber ,cvv,month,year,holderID, price,products);
+            return realServiceAdaptor.purchase(user_ID, country, city, address, cardNumber,currency,holderName ,cvv,month,year,holderID, price,products);
         else
             return new Response<>(null, "Not Implemented yet");
     }
 
     @Override
-    public Response<String> addPurchaseRuleToStore(List<Integer> ruleNums, List<String> operators, String userId, String storeId) {
+    public Response<String> addPurchaseRuleToStore(List<TestRuleDTO> testRules, List<String> operators, String userId, String storeId) {
         if (realServiceAdaptor != null)
-            return realServiceAdaptor.addPurchaseRuleToStore(ruleNums, operators, userId, storeId);
+            return realServiceAdaptor.addPurchaseRuleToStore(testRules, operators, userId, storeId);
         else
             return new Response<>(null, "Not Implemented yet");
     }
@@ -270,9 +270,9 @@ public class ProxyToTest implements BridgeToTests {
     }
 
     @Override
-    public Response<String> addDiscountCondRuleToStore(List<Integer> ruleNums, List<String> logicOperators, List<DiscountValueDTO> discDetails, List<String> numericalOperators, String userId, String storeId) {
+    public Response<String> addDiscountCondRuleToStore(List<TestRuleDTO> testRules, List<String> logicOperators, List<DiscountValueDTO> discDetails, List<String> numericalOperators, String userId, String storeId) {
         if (realServiceAdaptor != null)
-            return realServiceAdaptor.addDiscountCondRuleToStore(ruleNums, logicOperators, discDetails, numericalOperators, userId, storeId);
+            return realServiceAdaptor.addDiscountCondRuleToStore(testRules, logicOperators, discDetails, numericalOperators, userId, storeId);
         else
             return new Response<>(null, "Not Implemented yet");
     }
@@ -297,6 +297,30 @@ public class ProxyToTest implements BridgeToTests {
     public Response<String> setUserConfirmationPurchase(String userID) {
         if (realServiceAdaptor != null)
             return realServiceAdaptor.setUserConfirmationPurchase(userID);
+        else
+            return new Response<>(null, "Not Implemented yet");
+    }
+
+    @Override
+    public Response<String> composeCurrentPurchaseRules(int ruleIndex1, int ruleIndex2, String operator, String userId, String storeId) {
+        if (realServiceAdaptor != null)
+            return realServiceAdaptor.composeCurrentPurchaseRules(ruleIndex1, ruleIndex2, operator, userId, storeId);
+        else
+            return new Response<>(null, "Not Implemented yet");
+    }
+
+    @Override
+    public Response<String> composeCurrentSimpleDiscountRules(int ruleIndex1, int ruleIndex2, String numericalOperator, String userId, String storeId) {
+        if (realServiceAdaptor != null)
+            return realServiceAdaptor.composeCurrentSimpleDiscountRules(ruleIndex1, ruleIndex2, numericalOperator, userId, storeId);
+        else
+            return new Response<>(null, "Not Implemented yet");
+    }
+
+    @Override
+    public Response<String> composeCurrentCondDiscountRules(int ruleIndex1, int ruleIndex2, String logicalOperator, String numericalOperator, String userId, String storeId) {
+        if (realServiceAdaptor != null)
+            return realServiceAdaptor.composeCurrentCondDiscountRules(ruleIndex1, ruleIndex2, logicalOperator, numericalOperator, userId, storeId);
         else
             return new Response<>(null, "Not Implemented yet");
     }

@@ -1,6 +1,8 @@
 package DomainLayer.User;
 
 
+import DomainLayer.Repositories.MemberRepository;
+import DomainLayer.Repositories.UserRepository;
 import Util.UserDTO;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -38,11 +40,11 @@ public class UserFacadeTest {
         mockMemberRepository = mock(MemberRepository.class);
         mockUserRepository = mock(UserRepository.class);
         mockMember = mock(Member.class);
-        userFacade.userRepository.clear();
-        userFacade.members.clear();
+        userFacade.userRepository.deleteAll();
+        userFacade.members.deleteAllInBatch();
 
         // Insert the mockUser into the UserFacade for userId = 1
-        userFacade.userRepository.add("1", mockUser);  // Assuming userId = 1
+        userFacade.userRepository.save(mockUser);  // Assuming userId = 1
     }
 
     @Test

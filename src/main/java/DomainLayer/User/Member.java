@@ -5,15 +5,19 @@ import DomainLayer.Role.RoleFacade;
 import Util.ExceptionsEnum;
 import Util.UserDTO;
 
+import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.zip.CheckedOutputStream;
 
+@Entity
+@Table(name = "member", schema = "themarketdb")
 public class Member extends State{
-
+    @Id
     private String userId;
+    @Transient
     private String member_ID;
     private String name;
     private String username;
@@ -23,6 +27,7 @@ public class Member extends State{
     private String city;
     private String address;
     private int productIdCounter;
+    @ElementCollection
     private List<String> acquisitionIds;
     //private boolean isLogin;
 

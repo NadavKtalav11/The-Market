@@ -1,20 +1,31 @@
 package DomainLayer.Store.PoliciesRulesLogicalConditions;
 
+import Util.ProductDTO;
+import Util.UserDTO;
+
 import java.util.List;
 
-public class AndRule<T, U> extends CompositeRule<T, U> {
+public class AndRule extends CompositeRule {
 
-    public AndRule(Rule<T, U> rule1, Rule<T, U> rule2) {
+    public AndRule(Rule rule1, Rule rule2) {
         super(rule1, rule2);
     }
 
     @Override
-    public boolean checkRule(T user, U products) {
-        return rule1.checkRule(user, products) && rule2.checkRule(user, products);
+    public boolean checkRule(UserDTO user, List<ProductDTO> products) {
+        synchronized (rule1Lock){
+            synchronized (rule2Lock){
+                return rule1.checkRule(user, products) && rule2.checkRule(user, products);
+            }
+        }
     }
 
     @Override
     public String getDescription() {
-         return " (" + rule1.getDescription() + " and " + rule2.getDescription() + ") ";
+        synchronized (rule1Lock){
+            synchronized (rule2Lock) {
+                return " (" + rule1.getDescription() + " and " + rule2.getDescription() + ") ";
+            }
+        }
     }
 }

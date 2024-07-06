@@ -20,9 +20,9 @@ public class CustomHandShakeHandler implements HandshakeInterceptor {
     public boolean beforeHandshake(ServerHttpRequest request, ServerHttpResponse response, WebSocketHandler wsHandler, Map<String, Object> attributes) throws Exception {
         if (request instanceof ServletServerHttpRequest) {
             HttpServletRequest servletRequest = ((ServletServerHttpRequest) request).getServletRequest();
-            String userId = servletRequest.getParameter("userID");
+            String userId = servletRequest.getParameter("memberID");
             if (userId != null) {
-                attributes.put("userID", userId);
+                attributes.put("memberID", userId);
             }
         }
         return true;

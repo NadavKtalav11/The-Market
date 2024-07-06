@@ -31,11 +31,9 @@ public class PurhcaseHistoryInfo {
         countries.add("Israel");
         HashSet<String> cities = new HashSet<>();
         cities.add("BeerSheva");
-        impl.init(
-                new PaymentServiceDTO("1", "payementService", "kobi@gmail.com"),new SupplyServiceDTO("2", "supplyService", countries, cities));
+        impl.init();
 
-
-        userID1 = impl.enterMarketSystem().getData();
+       userID1 = impl.enterMarketSystem().getData();
         userID2 = impl.enterMarketSystem().getData();
         impl.register(userID1, "newUser1", "12/12/2000", "Israel", "BeerSheva", "bialik", "noa", "Password123");
         impl.login(userID1, "newUser1", "Password123");
@@ -67,14 +65,14 @@ public class PurhcaseHistoryInfo {
         products.put(storeID, basketProducts);
 
         // Initialize paymentDTO, userDTO and cartDTO
-        paymentDTO = new PaymentDTO("holderName", "1111222233334444", 1, 12, 2025);
+        paymentDTO = new PaymentDTO("holderId", "holderName","USD","1111222233334444", 1, 12, 2025);
         userDTO = new UserDTO(userID1, "newUser1", "12/12/2000", "Israel", "BeerSheva", "bialik", "noa");
         int price = impl.checkingCartValidationBeforePurchase(userID2, userDTO.getUserName(), userDTO.getBirthday(), userDTO.getName()
         , userDTO.getCountry(),userDTO.getCity(), userDTO.getAddress()).getResult();
         CartDTO cartDTO = new CartDTO(userID2,price,products);
         impl.setUserConfirmationPurchase(userID2);
         impl.purchase(userID2,userDTO.getCountry(), userDTO.getCity(),userDTO.getAddress(),
-                paymentDTO.getCreditCardNumber(),paymentDTO.getCvv(),paymentDTO.getMonth(), paymentDTO.getYear(),paymentDTO.getHolderId(),
+                paymentDTO.getCreditCardNumber(),paymentDTO.getCurrency(),paymentDTO.getHolderName(),paymentDTO.getCvv(),paymentDTO.getMonth(), paymentDTO.getYear(),paymentDTO.getHolderId(),
                 cartDTO.getCartPrice(), cartDTO.getStoreToProducts()).isSuccess();
     }
 

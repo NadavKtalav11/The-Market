@@ -42,6 +42,11 @@ public class StoreService {
         return storeFacade.getStoreDTOById(storeId);
     }
 
+
+    public boolean isStoreOpen(String storeID){
+        return storeFacade.isStoreOpen(storeID);
+    }
+
 }
 
 

@@ -28,6 +28,7 @@ public class AddingExternalSupplyServices {
     @Test
     public void testAddExternalSupplyServiceSuccess() {
         // Arrange
+        String url = ".com";
         String systemManagerId = "user77";
         market.getSystemManagerIds().add(systemManagerId);
         String licensedDealerNumber = "12345";
@@ -38,13 +39,14 @@ public class AddingExternalSupplyServices {
         cities.add("Bash");
         // Act and Assert
         assertDoesNotThrow(() -> {
-            market.addExternalSupplyService(new SupplyServiceDTO(licensedDealerNumber, supplyServiceName, countries,cities), systemManagerId);
+            market.addExternalSupplyService(url, systemManagerId);
         });
     }
 
     @Test
     public void testAddExternalSupplyServiceFailureNotSystemManager() {
         // Arrange
+        String url = ".com";
         String systemManagerId = "user77";
         String nonManagerId = "user2";
         market.getSystemManagerIds().add(systemManagerId);
@@ -58,7 +60,7 @@ public class AddingExternalSupplyServices {
 
         // Act and Assert
         Exception exception = assertThrows(Exception.class, () -> {
-            market.addExternalSupplyService(new SupplyServiceDTO(licensedDealerNumber, supplyServiceName, countries,cities), nonManagerId);
+            market.addExternalSupplyService(url, nonManagerId);
         });
 
         // Optionally check the exception message
@@ -68,6 +70,8 @@ public class AddingExternalSupplyServices {
     @Test
     public void testAddExternalSupplyServiceFailureInvalidDetails() {
         // Arrange
+        String url = null;
+
         String systemManagerId = "user77";
         market.getSystemManagerIds().add(systemManagerId);
         String licensedDealerNumber = "-1";
@@ -80,7 +84,7 @@ public class AddingExternalSupplyServices {
 
         // Act and Assert
         Exception exception = assertThrows(Exception.class, () -> {
-            market.addExternalSupplyService(new SupplyServiceDTO(licensedDealerNumber, supplyServiceName, countries,cities), systemManagerId);
+            market.addExternalSupplyService(url, systemManagerId);
         });
 
         // Optionally check the exception message

@@ -17,7 +17,7 @@ public class AcquisitionTest {
     @BeforeEach
     public void setUp() {
         // Create PaymentDTO instance with test data
-        PaymentDTO payment = new PaymentDTO("123456789", "1234567812345678", 123, 12, 2024);
+        PaymentDTO paymentDTO = new PaymentDTO("130", "david", "USD","98767576576", 986, 6,2030);
 
         // Create product list with test data
         Map<String, Map<String, List<Integer>>> productList = new HashMap<>();
@@ -26,7 +26,7 @@ public class AcquisitionTest {
         productList.get("store1").put("Product2", Arrays.asList(1, 50));
 
         // Create Acquisition instance
-        acquisition = new Acquisition("acq-1", "user-1", 150, payment, productList);
+        acquisition = new Acquisition("acq-1", "user-1", 150, paymentDTO, productList);
     }
 
     @Test

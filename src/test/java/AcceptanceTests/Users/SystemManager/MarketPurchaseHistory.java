@@ -33,9 +33,7 @@ public class MarketPurchaseHistory {
         countries.add("Israel");
         HashSet<String> cities = new HashSet<>();
         cities.add("BeerSheva");
-        managerID1 = impl.init(
-                new PaymentServiceDTO("1", "payementService", "kobi@gmail.com"),new SupplyServiceDTO("2", "supplyService", countries, cities)).getData();
-        impl.login(managerID1, "KobiM", "Password123");
+        managerID1 = impl.init().getData();
 
 
         userID1 = impl.enterMarketSystem().getData();
@@ -71,14 +69,14 @@ public class MarketPurchaseHistory {
         //Map<String, Map<String, List<Integer>>> prod
 
         // Initialize paymentDTO, userDTO, cartDTO
-        paymentDTO = new PaymentDTO("holderName", "1111222233334444", 1, 12, 2025);
+        paymentDTO = new PaymentDTO("userId","holderName", "USD","1111222233334444", 986, 12, 2025);
         userDTO = new UserDTO(userID1, "newUser1", "12/12/2000", "Israel", "BeerSheva", "bialik", "noa");
         int price = impl.checkingCartValidationBeforePurchase(userID2, userDTO.getUserName(), userDTO.getBirthday(), userDTO.getName()
                 , userDTO.getCountry(),userDTO.getCity(), userDTO.getAddress()).getResult();
         CartDTO cartDTO = new CartDTO(userID2,price,products);
         impl.setUserConfirmationPurchase(userID2);
         impl.purchase(userID2,userDTO.getCountry(), userDTO.getCity(),userDTO.getAddress(),
-                paymentDTO.getCreditCardNumber(),paymentDTO.getCvv(),paymentDTO.getMonth(), paymentDTO.getYear(),paymentDTO.getHolderId(),
+                paymentDTO.getCreditCardNumber(),paymentDTO.getCurrency(),paymentDTO.getHolderName(),paymentDTO.getCvv(),paymentDTO.getMonth(), paymentDTO.getYear(),paymentDTO.getHolderId(),
                 cartDTO.getCartPrice(), cartDTO.getStoreToProducts()).isSuccess();
     }
 

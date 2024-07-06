@@ -160,7 +160,7 @@ package Util;
             public String toString(){ return "The number of operators must be one less than the number of rules"; }
         },
         InvalidOperator{
-            public String toString(){ return "The operator must be 'AND' or 'OR' or 'COND'"; }
+            public String toString(){ return "The operator you entered is invalid"; }
         },
         InvalidDiscountValueParameters{
             public String toString(){ return "The discount must apply to the basket or some of store's the products or to a category"; }
@@ -214,6 +214,21 @@ package Util;
                 return "There is no available external payment system";}
         },
 
+        checkHandShake{
+            public String toString(){
+                return "HandShake failed, can't make the action.";}
+        },
+
+        noPayment{
+            public String toString(){
+                return "Payment was never done, cant abort.";}
+        },
+
+        cancelFailed{
+            public String toString(){
+                return "The cancellation has been failed.";}
+        },
+
         CreditCardIssue{
             public String toString(){
                 return "The external payment service detected a problem with your credit card";
@@ -256,6 +271,34 @@ package Util;
         AcquisitionNotExist{
             public String toString(){
                 return "Acquisition does not exist";
+            }
+        },
+
+        InvalidRuleType{
+            public String toString(){
+                return "Invalid rule type";
+            }
+        },
+
+        IllegalProductName{
+            public String toString(){
+                return "Illegal product name. Product name is empty.";
+            }
+        },
+
+        NegativePrice{
+            public String toString(){
+                return "The price you entered is negative";
+            }
+        },
+        UserCannotBeNull{
+            public String toString(){
+                return "User cannot be null";
+            }
+        },
+        InvalidRangeType{
+            public String toString(){
+                return "Invalid range type";
             }
         };
     }

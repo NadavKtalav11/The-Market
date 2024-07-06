@@ -2,17 +2,19 @@ package IntegrationTests.Store.DiscountPolicy;
 
 import DomainLayer.Store.PoliciesRulesLogicalConditions.Rule;
 import DomainLayer.Store.PoliciesRulesLogicalConditions.SimpleRule;
+import DomainLayer.Store.PoliciesRulesLogicalConditions.TestRule;
 import DomainLayer.Store.StoreDiscountPolicy.CondDiscount;
 import DomainLayer.Store.StoreDiscountPolicy.DiscountValue;
 import DomainLayer.Store.StoreDiscountPolicy.SimpleDiscountValue;
 import Util.ProductDTO;
+import Util.TestRuleDTO;
 import Util.UserDTO;
-import DomainLayer.Store.StoreDiscountPolicy.DiscountRulesRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.time.Clock;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
@@ -23,28 +25,55 @@ public class CondDiscountTest {
 
     private List<ProductDTO> products;
     private UserDTO user;
+    private TestRuleDTO testRule1;
+    private TestRuleDTO testRule2;
+    private TestRuleDTO testRule3;
+    private int percentage1;
+    private int percentage2;
+    private int percentage3;
+    private int product1Price;
+    private int bunPrice;
+    private int pastaPrice;
+    private int breadPrice;
+
+    private int totalPrice;
 
     @BeforeEach
     public void setUp() {
+        //initialize percentage and product prices
+        percentage1 = 50;
+        percentage2 = 20;
+        percentage3 = 30;
+        product1Price = 100;
+        bunPrice = 10;
+        pastaPrice = 10;
+        breadPrice = 20;
+        totalPrice = product1Price + bunPrice + pastaPrice + breadPrice;
+
         // Initialize products for testing
         products = new ArrayList<>();
-        products.add(new ProductDTO("product1", 100, 2, "desc1", "TOYS"));
-        products.add(new ProductDTO("bun", 10, 6, "desc2", "FOOD"));
-        products.add(new ProductDTO("pasta", 10, 4, "desc3", "FOOD"));
-        products.add(new ProductDTO("bread", 20, 3, "desc4", "FOOD"));
+        products.add(new ProductDTO("product1", product1Price, 2, "desc1", "TOYS"));
+        products.add(new ProductDTO("bun", bunPrice, 6, "desc2", "FOOD"));
+        products.add(new ProductDTO("pasta", pastaPrice, 4, "desc3", "FOOD"));
+        products.add(new ProductDTO("bread", breadPrice, 3, "desc4", "FOOD"));
 
         // Initialize user for testing
         user = new UserDTO();
+
+        //initialize testRule
+        testRule1 = new TestRuleDTO("Amount", "Above", null, "bun", "Basket must contain more than 5 buns", true, null, 5, null, null, null);
+        testRule2 = new TestRuleDTO("Amount", "Above", null, "pasta", "Basket must contain more than 3 pasta", true, null, 3, null, null, null);
+        testRule3 = new TestRuleDTO("Time", "Above", null, null, "Discount after 23:00", true, null, null, null, null, LocalTime.of(23, 0));
     }
 
     @Test
     public void testCalcDiscountWithValidRule() {
         // Arrange
         List<DiscountValue> discDetails = new ArrayList<>();
-        discDetails.add(new SimpleDiscountValue(50, null, true, null));
+        discDetails.add(new SimpleDiscountValue(percentage1, null, true, null));
 
-        List<Rule<UserDTO, List<ProductDTO>>> rules = new ArrayList<>();
-        rules.add(new SimpleRule<>(DiscountRulesRepository.BASKET_CONTAINS_5_BUNS));
+        List<Rule> rules = new ArrayList<>();
+        rules.add(new SimpleRule(testRule1));
 
         List<String> discountValueOperators = new ArrayList<>();
         List<String> discountRuleOperators = new ArrayList<>();
@@ -58,18 +87,20 @@ public class CondDiscountTest {
         // Assert
         // Expected discount calculation:
         // Total price of products: 100 + 10 + 10 + 20 = 140
-        // 50% discount: 145 * 0.5 = 70
-        assertEquals(70, totalDiscount);
+        // 50% discount: 140 * 0.5 = 70
+
+        int expectedDiscount = (int) Math.round(totalPrice * percentage1 / 100.0);
+        assertEquals(expectedDiscount, totalDiscount);
     }
 
     @Test
     public void testCalcDiscountWithInvalidRule() {
         // Arrange
         List<DiscountValue> discDetails = new ArrayList<>();
-        discDetails.add(new SimpleDiscountValue(50, null, true, null));
+        discDetails.add(new SimpleDiscountValue(percentage1, null, true, null));
 
-        List<Rule<UserDTO, List<ProductDTO>>> rules = new ArrayList<>();
-        rules.add(new SimpleRule<>(DiscountRulesRepository.BASKET_CONTAINS_5_BUNS));
+        List<Rule> rules = new ArrayList<>();
+        rules.add(new SimpleRule(testRule1));
 
         List<String> discountValueOperators = new ArrayList<>();
         List<String> discountRuleOperators = new ArrayList<>();
@@ -92,11 +123,11 @@ public class CondDiscountTest {
     public void testCalcDiscountWithMultipleRules() {
         // Arrange
         List<DiscountValue> discDetails = new ArrayList<>();
-        discDetails.add(new SimpleDiscountValue(20, null, true, null));
+        discDetails.add(new SimpleDiscountValue(percentage2, null, true, null));
 
-        List<Rule<UserDTO, List<ProductDTO>>> rules = new ArrayList<>();
-        rules.add(new SimpleRule<>(DiscountRulesRepository.BASKET_CONTAINS_5_BUNS));
-        rules.add(new SimpleRule<>(DiscountRulesRepository.BASKET_CONTAINS_3_PASTA));
+        List<Rule> rules = new ArrayList<>();
+        rules.add(new SimpleRule(testRule1));
+        rules.add(new SimpleRule(testRule2));
 
         List<String> discountValueOperators = new ArrayList<>();
         List<String> discountRuleOperators = new ArrayList<>();
@@ -112,7 +143,8 @@ public class CondDiscountTest {
         // Expected discount calculation:
         // Total price of products: 100 + 10 + 10 + 20 = 140
         // 20% discount: 140 * 0.2 = 28
-        assertEquals(28, totalDiscount);
+        int expectedDiscount = (int) Math.round(totalPrice * percentage2 / 100.0);
+        assertEquals(expectedDiscount, totalDiscount);
     }
 
     @Test
@@ -120,13 +152,13 @@ public class CondDiscountTest {
         // Arrange
         // Set the clock to a specific time after 23:00
         Clock fixedClock = Clock.fixed(LocalDateTime.of(2023, 6, 15, 23, 30).atZone(ZoneId.systemDefault()).toInstant(), ZoneId.systemDefault());
-        DiscountRulesRepository.setClock(fixedClock);
 
         List<DiscountValue> discDetails = new ArrayList<>();
         discDetails.add(new SimpleDiscountValue(30, null, true, null));
 
-        List<Rule<UserDTO, List<ProductDTO>>> rules = new ArrayList<>();
-        rules.add(new SimpleRule<>(DiscountRulesRepository.AFTER_2300_DISCOUNT));
+        List<Rule> rules = new ArrayList<>();
+        TestRule.setClock(fixedClock);
+        rules.add(new SimpleRule(testRule3));
 
         List<String> discountValueOperators = new ArrayList<>();
         List<String> discountRuleOperators = new ArrayList<>();
@@ -141,7 +173,9 @@ public class CondDiscountTest {
         // Expected discount calculation:
         // Total price of products: 100 + 10 + 10 + 20 = 140
         // 30% discount: 140 * 0.3 = 42
-        assertEquals(42, totalDiscount);
+
+        int expectedDiscount = (int) Math.round(totalPrice * percentage3 / 100.0);
+        assertEquals(expectedDiscount, totalDiscount);
     }
 
     @Test
@@ -149,13 +183,13 @@ public class CondDiscountTest {
         // Arrange
         // Set the clock to a specific time before 23:00
         Clock fixedClock = Clock.fixed(LocalDateTime.of(2023, 6, 15, 22, 30).atZone(ZoneId.systemDefault()).toInstant(), ZoneId.systemDefault());
-        DiscountRulesRepository.setClock(fixedClock);
 
         List<DiscountValue> discDetails = new ArrayList<>();
-        discDetails.add(new SimpleDiscountValue(30, null, true, null));
+        discDetails.add(new SimpleDiscountValue(percentage3, null, true, null));
 
-        List<Rule<UserDTO, List<ProductDTO>>> rules = new ArrayList<>();
-        rules.add(new SimpleRule<>(DiscountRulesRepository.AFTER_2300_DISCOUNT));
+        List<Rule> rules = new ArrayList<>();
+        rules.add(new SimpleRule(testRule3));
+        TestRule.setClock(fixedClock);
 
         List<String> discountValueOperators = new ArrayList<>();
         List<String> discountRuleOperators = new ArrayList<>();

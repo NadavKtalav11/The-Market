@@ -68,10 +68,10 @@ public class Service_layer {
     }
 
 
-    public Response<String> init(PaymentServiceDTO paymentDTO, SupplyServiceDTO supplyServiceDTO){
+    public Response<String> init(){
         logger.info("Starting the initialization of the system.");
         try {
-            String userId = market.init( paymentDTO, supplyServiceDTO );
+            String userId = market.init();
             logger.info("System initialized successfully.");
             return new Response<>("Initialization successful", "System initialized successfully.",userId);
 
@@ -81,10 +81,37 @@ public class Service_layer {
         }
     }
 
-    public Response<String> addExternalPaymentService(PaymentServiceDTO paymentServiceDTO , String managerId) throws Exception {
+    public Response<String> cancelPayment(int transactionID){
+        logger.info("Cancelling the payment for transactionID: {} .");
+        try {
+            int res = market.cancelPayment(transactionID);
+            logger.info("The payment has been cancelled.");
+            return new Response<>("Successful", "The payment has been cancelled.");
+
+        } catch (Exception e) {
+            logger.error("Error occurred during the payment cancellation: {}", e.getMessage(), e);
+            return new Response<>(null, e.getMessage());
+        }
+    }
+
+    public Response<String> cancelSupply(int transactionID){
+        logger.info("Cancelling the supply for transactionID: {} .");
+        try {
+            int res = market.cancelSupply(transactionID);
+            logger.info("The supply has been cancelled.");
+            return new Response<>("Successful", "The supply has been cancelled.");
+
+        } catch (Exception e) {
+            logger.error("Error occurred during the supply cancellation: {}", e.getMessage(), e);
+            return new Response<>(null, e.getMessage());
+        }
+    }
+
+
+    public Response<String> addExternalPaymentService(String paymentURL , String managerId) throws Exception {
         logger.info("Trying to add a new external payment service");
         try {
-            market.addExternalPaymentService(paymentServiceDTO ,managerId );
+            market.addExternalPaymentService(paymentURL ,managerId );
             logger.info("Adding new external payment service have been done successfully.");
             return new Response<>("Successful adding", "Adding new external payment service have been done successfully.");
 
@@ -108,10 +135,10 @@ public class Service_layer {
 
     }
 
-    public Response<String> addExternalSupplyService(SupplyServiceDTO supplyServiceDTO, String systemManagerId) throws Exception {
+    public Response<String> addExternalSupplyService(String supplyURL, String systemManagerId) throws Exception {
         logger.info("Trying to add a new external supply service");
         try {
-            market.addExternalSupplyService(supplyServiceDTO, systemManagerId);
+            market.addExternalSupplyService(supplyURL, systemManagerId);
             logger.info("Adding new external supply service has been done successfully.");
             return new Response<>("Successful adding", "Adding new external supply service has been done successfully.");
         } catch (Exception e) {
@@ -132,11 +159,11 @@ public class Service_layer {
         }
     }
 
-    public Response<String> removeExternalSupplyService(String licensedDealerNumber, String systemManagerId) {
-        logger.info("Trying to remove the supply service number: {}", licensedDealerNumber);
+    public Response<String> removeExternalSupplyService(String supplyURL, String systemManagerId) {
+        logger.info("Trying to remove the supply : {}", supplyURL);
         try {
-            market.removeExternalSupplyService(licensedDealerNumber, systemManagerId);
-            logger.info("Removing the external supply service number: {} has been done successfully.", licensedDealerNumber);
+            market.removeExternalSupplyService(supplyURL, systemManagerId);
+            logger.info("Removing the external supply : {} has been done successfully.", supplyURL);
             return new Response<>("Successful removal", "Removing external supply service has been done successfully.");
         } catch (Exception e) {
             logger.error("Error occurred during the removing: {}", e.getMessage(), e);
@@ -658,24 +685,11 @@ public class Service_layer {
     }
 
 
-    public Response<Map<Integer, String>> getAllPurchaseRules(String userId, String storeId)
-    {
-        logger.info("returns all possible purchase rules descriptions to the store owner");
-
-        try {
-            Map<Integer, String> rules = market.getAllPurchaseRules(userId, storeId);
-            return new Response<>(rules, "All purchase rules descriptions returned successfully.");
-        } catch (Exception e) {
-            logger.error("Error occurred during getting purchase rules description: {}", e.getMessage(), e);
-            return new Response<>(null, e.getMessage());
-        }
-    }
-
-    public Response<String> addPurchaseRuleToStore(List<Integer> ruleNums, List<String> operators, String userId, String storeId) {
+    public Response<String> addPurchaseRuleToStore(List<TestRuleDTO> testRules, List<String> operators, String userId, String storeId) {
         logger.info("Adding purchase rule to store");
 
         try {
-            market.addPurchaseRuleToStore(ruleNums, operators, userId, storeId);
+            market.addPurchaseRuleToStore(testRules, operators, userId, storeId);
             return new Response<>("Purchase rule added successfully", "Purchase rule added to store successfully.");
         } catch (Exception e) {
             logger.error("Error occurred during adding purchase rule to store: {}", e.getMessage(), e);
@@ -696,25 +710,23 @@ public class Service_layer {
         }
     }
 
-
-    public Response<Map<Integer, String>> getAllCondDiscountRules(String userId, String storeId)
-    {
-        logger.info("returns all possible conditional discount rules descriptions to the store owner");
+    public Response<String> composeCurrentPurchaseRules(int ruleIndex1, int ruleIndex2, String operator, String userId, String storeId) {
+        logger.info("Composing purchase rules");
 
         try {
-            Map<Integer, String> rules = market.getAllCondDiscountRules(userId, storeId);
-            return new Response<>(rules, "All conditional discount rules descriptions returned successfully.");
+            market.composeCurrentPurchaseRules(ruleIndex1, ruleIndex2, operator, userId, storeId);
+            return new Response<>("Purchase rules composed successfully", "Purchase rules composed successfully.");
         } catch (Exception e) {
-            logger.error("Error occurred during getting conditional discount rules description: {}", e.getMessage(), e);
+            logger.error("Error occurred during composing purchase rules: {}", e.getMessage(), e);
             return new Response<>(null, e.getMessage());
         }
     }
 
-    public Response<String> addDiscountCondRuleToStore(List<Integer> ruleNums, List<String> logicOperators, List<DiscountValueDTO> discDetails, List<String> numericalOperators, String userId, String storeId) {
+    public Response<String> addDiscountCondRuleToStore(List<TestRuleDTO> testRules, List<String> logicOperators, List<DiscountValueDTO> discDetails, List<String> numericalOperators, String userId, String storeId) {
         logger.info("Adding conditional discount rule to store");
 
         try {
-            market.addDiscountCondRuleToStore(ruleNums, logicOperators, discDetails, numericalOperators, userId, storeId);
+            market.addDiscountCondRuleToStore(testRules, logicOperators, discDetails, numericalOperators, userId, storeId);
             return new Response<>("Discount conditional rule added successfully", "Discount conditional rule added to store successfully.");
         } catch (Exception e) {
             logger.error("Error occurred during adding conditional discount rule to store: {}", e.getMessage(), e);
@@ -743,6 +755,54 @@ public class Service_layer {
             return new Response<>("Discount rule removed successfully", "Discount rule removed from store successfully.");
         } catch (Exception e) {
             logger.error("Error occurred during removing discount rule from store: {}", e.getMessage(), e);
+            return new Response<>(null, e.getMessage());
+        }
+    }
+
+    public Response<String> composeCurrentSimpleDiscountRules(int ruleIndex1, int ruleIndex2, String numericalOperator, String userId, String storeId) {
+        logger.info("Composing simple discount rules");
+
+        try {
+            market.composeCurrentSimpleDiscountRules(ruleIndex1, ruleIndex2, numericalOperator, userId, storeId);
+            return new Response<>("Simple discount rules composed successfully", "Simple discount rules composed successfully.");
+        } catch (Exception e) {
+            logger.error("Error occurred during composing simple discount rules: {}", e.getMessage(), e);
+            return new Response<>(null, e.getMessage());
+        }
+    }
+
+    public Response<String> composeCurrentCondDiscountRules(int ruleIndex1, int ruleIndex2, String logicalOperator, String numericalOperator, String userId, String storeId) {
+        logger.info("Composing discount rules");
+
+        try {
+            market.composeCurrentCondDiscountRules(ruleIndex1, ruleIndex2, logicalOperator, numericalOperator, userId, storeId);
+            return new Response<>("Discount rules composed successfully", "Discount rules composed successfully.");
+        } catch (Exception e) {
+            logger.error("Error occurred during composing discount rules: {}", e.getMessage(), e);
+            return new Response<>(null, e.getMessage());
+        }
+    }
+
+    public Response<List<String>> getStoreCurrentSimpleDiscountRules(String userId, String storeId) {
+        logger.info("Getting store current simple rules");
+
+        try {
+            List<String> storeRules = market.getStoreCurrentSimpleDiscountRules(userId, storeId);
+            return new Response<>(storeRules, "Store current simple rules retrieved successfully.");
+        } catch (Exception e) {
+            logger.error("Error occurred during getting store current simple rules: {}", e.getMessage(), e);
+            return new Response<>(null, e.getMessage());
+        }
+    }
+
+    public Response<List<String>> getStoreCurrentCondDiscountRules(String userId, String storeId) {
+        logger.info("Getting store current rules");
+
+        try {
+            List<String> storeRules = market.getStoreCurrentCondDiscountRules(userId, storeId);
+            return new Response<>(storeRules, "Store current rules retrieved successfully.");
+        } catch (Exception e) {
+            logger.error("Error occurred during getting store current rules: {}", e.getMessage(), e);
             return new Response<>(null, e.getMessage());
         }
     }
