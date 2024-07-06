@@ -18,9 +18,9 @@ public class ExternalPaymentServiceService {
         paymentServicesFacade = new PaymentServicesFacade();
     }
 
-    public PaymentServiceDTO getPaymentServiceDTOById(String paymentServiceId){
-        return paymentServicesFacade.getPaymentServiceDTOById(paymentServiceId);
-    }
+//    public PaymentServiceDTO getPaymentServiceDTOById(String paymentServiceId){
+//        return paymentServicesFacade.getPaymentServiceDTOById(paymentServiceId);
+//    }
 
 
 

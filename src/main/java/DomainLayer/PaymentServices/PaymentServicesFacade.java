@@ -45,32 +45,39 @@ public class PaymentServicesFacade {
         }
     }
 
-    public boolean addExternalService(String licensedDealerNumber, String paymentServiceName, String url){
+    public boolean checkHandShake(){
+        ExternalPaymentService externalPaymentService = allPaymentServices.get("https://damp-lynna-wsep-1984852e.koyeb.app/");
+        return externalPaymentService.checkHandShake();
+    }
+
+
+
+//    public boolean addExternalService(String licensedDealerNumber, String paymentServiceName, String url){
+//        synchronized (paymentServiceLock) {
+//            int size_before = allPaymentServices.size();
+//            ExternalPaymentService externalPaymentService = new ExternalPaymentService(licensedDealerNumber, paymentServiceName, url);
+//            allPaymentServices.put(licensedDealerNumber, externalPaymentService);
+//            return allPaymentServices.size() == size_before + 1;
+//        }
+//    }
+
+    public boolean addExternalService(String paymentURL){
         synchronized (paymentServiceLock) {
             int size_before = allPaymentServices.size();
-            ExternalPaymentService externalPaymentService = new ExternalPaymentService(licensedDealerNumber, paymentServiceName, url);
-            allPaymentServices.put(licensedDealerNumber, externalPaymentService);
+            ExternalPaymentService externalPaymentService = new ExternalPaymentService(paymentURL);
+            allPaymentServices.put(paymentURL, externalPaymentService);
             return allPaymentServices.size() == size_before + 1;
         }
     }
 
-    public boolean addExternalService(PaymentServiceDTO paymentServiceDTO){
-        synchronized (paymentServiceLock) {
-            int size_before = allPaymentServices.size();
-            ExternalPaymentService externalPaymentService = new ExternalPaymentService(paymentServiceDTO);
-            allPaymentServices.put(paymentServiceDTO.getLicensedDealerNumber(), externalPaymentService);
-            return allPaymentServices.size() == size_before + 1;
-        }
-    }
-
-    public boolean addExternalService(PaymentServiceDTO paymentServiceDTO, HttpClient httpClient){
-        synchronized (paymentServiceLock) {
-            int size_before = allPaymentServices.size();
-            ExternalPaymentService externalPaymentService = new ExternalPaymentService(paymentServiceDTO, httpClient);
-            allPaymentServices.put(paymentServiceDTO.getLicensedDealerNumber(), externalPaymentService);
-            return allPaymentServices.size() == size_before + 1;
-        }
-    }
+//    public boolean addExternalService(PaymentServiceDTO paymentServiceDTO, HttpClient httpClient){
+//        synchronized (paymentServiceLock) {
+//            int size_before = allPaymentServices.size();
+//            ExternalPaymentService externalPaymentService = new ExternalPaymentService(paymentServiceDTO, httpClient);
+//            allPaymentServices.put(paymentServiceDTO.getLicensedDealerNumber(), externalPaymentService);
+//            return allPaymentServices.size() == size_before + 1;
+//        }
+//    }
 
     public void clearPaymentServices() {
         synchronized (paymentServiceLock) {
@@ -85,16 +92,24 @@ public class PaymentServicesFacade {
         synchronized (paymentServiceLock) {
             externalPaymentService = allPaymentServices.values().iterator().next();
         }
-        externalPaymentService.payWithCard(price, payment, userId, productList, acquisitionId);
-
-        Acquisition acquisition = new Acquisition(acquisitionId, userId, price, payment, productList);
+       int transactionId  = externalPaymentService.payWithCard(price, payment, userId, productList, acquisitionId);
+        System.out.println("transactionId is " + transactionId);
+        Acquisition acquisition = new Acquisition(String.valueOf(transactionId), userId, price, payment, productList);
         synchronized (acquisitionLock) {
-            IdAndAcquisition.put(acquisitionId, acquisition);
+            IdAndAcquisition.put(String.valueOf(transactionId), acquisition);
         }
 
-        externalPaymentService.addAcquisition(acquisitionId, acquisition);
+        externalPaymentService.addAcquisition(String.valueOf(transactionId), acquisition);
         return acquisition.getAcquisitionId();
 
+    }
+
+    public int cancelPayment(int transactionID) throws Exception {
+        ExternalPaymentService externalPaymentService;
+        synchronized (paymentServiceLock) {
+            externalPaymentService = allPaymentServices.values().iterator().next();
+        }
+         return externalPaymentService.cancelPayment(transactionID);
     }
 
     public Map<String, String> getAcquisitionReceipts(String acquisitionId){
@@ -121,14 +136,23 @@ public class PaymentServicesFacade {
     }
 
 
-    public PaymentServiceDTO getPaymentServiceDTOById(String paymentServiceId){
-        ExternalPaymentService externalPaymentService = getPaymentServiceById(paymentServiceId);
-        return new PaymentServiceDTO(externalPaymentService.getLicensedDealerNumber(), externalPaymentService.getPaymentServiceName(), externalPaymentService.getUrl());
-    }
+//    public PaymentServiceDTO getPaymentServiceDTOById(String paymentServiceId){
+//        ExternalPaymentService externalPaymentService = getPaymentServiceById(paymentServiceId);
+//        return new PaymentServiceDTO(externalPaymentService.getLicensedDealerNumber(), externalPaymentService.getPaymentServiceName(), externalPaymentService.getUrl());
+//    }
 
-    public ExternalPaymentService getPaymentServiceById(String paymentServiceId){
-        if(allPaymentServices.containsKey(paymentServiceId)){
-            return allPaymentServices.get(paymentServiceId);
+//    public ExternalPaymentService getPaymentServiceById(String paymentServiceId){
+//        if(allPaymentServices.containsKey(paymentServiceId)){
+//            return allPaymentServices.get(paymentServiceId);
+//        }
+//        else {
+//            return null;
+//        }
+//    }
+
+    public ExternalPaymentService getPaymentServiceByURL(String paymentURL){
+        if(allPaymentServices.containsKey(paymentURL)){
+            return allPaymentServices.get(paymentURL);
         }
         else {
             return null;

@@ -214,6 +214,21 @@ package Util;
                 return "There is no available external payment system";}
         },
 
+        checkHandShake{
+            public String toString(){
+                return "HandShake failed, can't make the action.";}
+        },
+
+        noPayment{
+            public String toString(){
+                return "Payment was never done, cant abort.";}
+        },
+
+        cancelFailed{
+            public String toString(){
+                return "The cancellation has been failed.";}
+        },
+
         CreditCardIssue{
             public String toString(){
                 return "The external payment service detected a problem with your credit card";
