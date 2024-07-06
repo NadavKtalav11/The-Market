@@ -1,38 +1,42 @@
 package DomainLayer.PaymentServices;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
-import jakarta.persistence.Transient;
+import jakarta.persistence.*;
+
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+@Entity
+@Table(name = "receipt")
 public class Receipt {
+
+    @Id
     private String receiptId;
+
+    @Column(name = "store_id") // Specify the column name explicitly
     private String storeId;
+
     private String userId;
+
+    @Transient
     private Map<String, List<Integer>> productList = new HashMap<>(); //<productName, {quantity, price}>
 
     @Transient
-    private final Object productListLock;
+    private Object productListLock = new Object();
 
-    public Receipt(String receiptId, String storeId, String userId, Map<String, List<Integer>> productList)
-    {
+    public Receipt(String receiptId, String storeId, String userId, Map<String, List<Integer>> productList) {
         this.receiptId = receiptId;
         this.storeId = storeId;
         this.userId = userId;
-        this. productList = productList;
-        productListLock= new Object();
+        this.productList = productList;
     }
 
     public Receipt() {
-        productListLock= new Object();
+        productListLock = new Object();
     }
 
-    public int getTotalPriceOfStoreReceipt()
-    {
+    public int getTotalPriceOfStoreReceipt() {
         synchronized (productListLock) {
             int storePrice = 0;
             for (String productName : productList.keySet()) {
@@ -42,8 +46,7 @@ public class Receipt {
         }
     }
 
-    public String getStoreId()
-    {
+    public String getStoreId() {
         return storeId;
     }
 

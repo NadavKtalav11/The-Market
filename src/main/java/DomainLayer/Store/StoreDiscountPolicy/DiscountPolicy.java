@@ -5,6 +5,7 @@ import DomainLayer.Store.PoliciesRulesLogicalConditions.Rule;
 import Util.DiscountValueDTO;
 import Util.ProductDTO;
 import Util.UserDTO;
+import jakarta.persistence.*;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -13,9 +14,20 @@ import java.util.List;
 
 import static Util.ExceptionsEnum.InvalidRuleIndex;
 
+@Entity
+@Table(name = "discount_policies")
 public class DiscountPolicy {
+
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @JoinColumn(name = "discount_policy_id")
     private List<Discount> discountRules;
+    
+    @Transient
     private final Object discountRulesLock;
+    
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
     public DiscountPolicy()
     {
@@ -127,5 +139,13 @@ public class DiscountPolicy {
             }
         }
         return rulesDescriptions;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public Long getId() {
+        return id;
     }
 }

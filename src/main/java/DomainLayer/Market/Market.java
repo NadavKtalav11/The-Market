@@ -114,7 +114,7 @@ public class Market {
 
     }
 
-    @Autowired
+
     public Market(UserFacade userFacade){
         this.storeFacade = StoreFacade.getInstance();
         this.userFacade = userFacade;
@@ -133,6 +133,7 @@ public class Market {
 
     }
 
+    @Autowired
     public Market(UserFacade userFacade, StoreFacade storeFacade){
         this.storeFacade = storeFacade;
         this.userFacade = userFacade;

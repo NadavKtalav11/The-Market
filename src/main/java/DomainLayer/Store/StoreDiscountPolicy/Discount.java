@@ -6,16 +6,32 @@ import DomainLayer.Store.PoliciesRulesLogicalConditions.OrRule;
 import DomainLayer.Store.PoliciesRulesLogicalConditions.Rule;
 import Util.ProductDTO;
 import Util.UserDTO;
+import jakarta.persistence.*;
+
 
 import java.util.List;
 
+@Entity
+@Table(name = "discounts")
 public class Discount {
+
+    @Transient
     protected DiscountValue discountValue;
+
+    @Transient
     private final Object discountValueLock;
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
     public Discount(List<DiscountValue> discountValue, List<String> operators) {
         discountValueLock = new Object();
         setDiscountValue(discountValue, operators);
+    }
+
+    public Discount() {
+        discountValueLock = new Object();
     }
 
     public void setDiscountValue(List<DiscountValue> discountValues, List<String> operators) {
