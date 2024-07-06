@@ -25,7 +25,8 @@ public class SupplyServicesFacade {
     public SupplyServicesFacade(ExternalSupplyRepository externalSupplyRepository){
         this.externalSupplyRepository = externalSupplyRepository;
         //externalSupplyService=  new HashMap<String, ExternalSupplyService>();
-        externalSupplyRepository.save(new ExternalSupplyService("www.noaaboody.co.il"));
+        //TEST FOR SAVING
+        //externalSupplyRepository.save(new ExternalSupplyService("www.noaaboody.co.il"));
     }
 
     //memory constructor
