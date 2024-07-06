@@ -153,13 +153,13 @@ public class Market {
     }
 
     @Autowired
-    public Market(UserFacade userFacade, StoreFacade storeFacade){
+    public Market(UserFacade userFacade, StoreFacade storeFacade, SupplyServicesFacade supplyServicesFacade){
         this.storeFacade = storeFacade;
         this.userFacade = userFacade;
         this.roleFacade = RoleFacade.getInstance();
         this.paymentServicesFacade = PaymentServicesFacade.getInstance();
         this.authenticationAndSecurityFacade = AuthenticationAndSecurityFacade.getInstance();
-        this.supplyServicesFacade= SupplyServicesFacade.getInstance();
+        this.supplyServicesFacade= supplyServicesFacade;
         initializedLock= new Object();
         this.systemManagerIds = new HashSet<>();
         managersLock = new Object();
