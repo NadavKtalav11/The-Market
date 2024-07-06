@@ -988,7 +988,7 @@ public class Market {
         roleFacade.verifyStoreOwnerError(storeId, nominatorMemberID);
         userFacade.errorIfUsernameNotFound(nominatedUsername);
         String nominatedMemberID = userFacade.getMemberByUsername(nominatedUsername).getMemberID();
-        roleFacade.verifyNominatorError(nominatorMemberID, nominatedMemberID, storeId);
+        roleFacade.verifyOwnerNominatorError(nominatorMemberID, nominatedMemberID, storeId);
         roleFacade.fireStoreOwner(nominatedMemberID, storeId);
 
         myWebSocketHandler.handleStringMessage(nominatedMemberID , "you fired as store owner of store -by " + userFacade.getMemberName(nominatorMemberID));
@@ -1024,7 +1024,7 @@ public class Market {
         roleFacade.verifyStoreOwnerError(storeId, nominatorMemberID);
         userFacade.errorIfUsernameNotFound(nominatedUsername);
         String nominatedMemberID = userFacade.getMemberByUsername(nominatedUsername).getMemberID();
-        roleFacade.verifyNominatorError(nominatorMemberID, nominatedMemberID, storeId);
+        roleFacade.verifyMangerNominatorError(nominatorMemberID, nominatedMemberID, storeId);
         roleFacade.fireStoreManager(nominatedMemberID, storeId);
     }
 
@@ -1043,6 +1043,7 @@ public class Market {
         roleFacade.verifyStoreOwnerError(storeId, nominatorMemberID);
         userFacade.errorIfUsernameNotFound(nominatedUsername);
         String nominatedMemberID = userFacade.getMemberByUsername(nominatedUsername).getMemberID();
+        roleFacade.verifyMangerNominatorError(nominatorMemberID, nominatedMemberID, storeId);
         roleFacade.updateStoreManagerPermissions(nominatedMemberID, storeId, inventoryPermissions, purchasePermissions, nominatorMemberID);
     }
 
