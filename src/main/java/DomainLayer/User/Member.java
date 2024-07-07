@@ -16,17 +16,28 @@ import java.util.zip.CheckedOutputStream;
 @Entity
 @Table(name = "member", schema = "themarketdb")
 public class Member extends State{
-    @Id
+    @Column(name = "user_id")
     private String userId;
-    @Transient
+
+    @Id
+    @Column(name = "member_id")
     private String member_ID;
+
+    @Column(name = "name")
     private String name;
+    @Column(name = "username")
     private String username;
+    @Column(name = "password")
     private String password;
+    @Column(name = "birthday")
     private String birthday;
+    @Column(name = "country")
     private String country;
+    @Column(name = "city")
     private String city;
+    @Column(name = "address")
     private String address;
+    @Column(name = "product_id_counter")
     private int productIdCounter;
     @ElementCollection
     private List<String> acquisitionIds;
