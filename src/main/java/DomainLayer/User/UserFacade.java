@@ -304,6 +304,12 @@ public class UserFacade {
         return loginMember.getMemberID();
     }
 
+    public void logout(String userID) {
+        User user = getUserByID(userID);
+        user.Logout();
+        this.userRepository.save(user);
+    }
+
     public Member getMemberByUsername(String userName) {
         return members.getByUserName(userName);
     }

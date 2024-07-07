@@ -820,8 +820,8 @@ public class Market {
         }
     }
 
-    public void logout(String userId){
-        userFacade.getUserByID(userId).Logout();
+    public void logout(String userId) {
+        userFacade.logout(userId);
         authenticationAndSecurityFacade.removeToken(userId);
     }
 

@@ -158,6 +158,7 @@ public class User   {
     public void Logout() {
         state.Logout();
         state = new Guest();
+        this.isGuest = !state.isMember();
     }
 
     public void exitMarketSystem() {
