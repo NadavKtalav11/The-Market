@@ -1135,6 +1135,29 @@ public class MarketController {
         }
     }
 
+    @PostMapping("/cancelAcquisition/{acquisitionId}")
+    public ResponseEntity<APIResponse<String>> cancel(@PathVariable String acquisitionId) {
+        try {
+            Response<String> response = serviceLayer.cancelPayment(acquisitionId);
+            if (response.isSuccess()) {
+                String result = response.getResult();
+                HttpHeaders headers = new HttpHeaders();
+                headers.add("accept", "*/*");
+
+                return ResponseEntity.status(HttpStatus.OK).headers(headers)
+                        .body(new APIResponse<String>(result, null));
+            } else {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                        .body(new APIResponse<>(null, response.getDescription()));
+            }
+        }  catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new APIResponse<>(null, e.getMessage()));
+
+        }
+    }
+
+
 
     @PostMapping("/fireStoreOwner/{nominatorUserId}/{nominatedUsername}/{storeID}")
     public ResponseEntity<APIResponse<String>> fireStoreOwner(@PathVariable String nominatorUserId,@PathVariable String nominatedUsername,@PathVariable String storeID) {

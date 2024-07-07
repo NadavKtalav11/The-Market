@@ -339,7 +339,6 @@ public class Market {
 
     public int cancelPayment(int transactionID) throws Exception {
         return  paymentServicesFacade.cancelPayment(transactionID);
-
     }
 
     public int cancelSupply(int transactionID) throws Exception {

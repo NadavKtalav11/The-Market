@@ -81,10 +81,10 @@ public class Service_layer {
         }
     }
 
-    public Response<String> cancelPayment(int transactionID){
+    public Response<String> cancelPayment(String transactionID){
         logger.info("Cancelling the payment for transactionID: {} .");
         try {
-            int res = market.cancelPayment(transactionID);
+            int res = market.cancelPayment(Integer.parseInt(transactionID));
             logger.info("The payment has been cancelled.");
             return new Response<>("Successful", "The payment has been cancelled.");
 

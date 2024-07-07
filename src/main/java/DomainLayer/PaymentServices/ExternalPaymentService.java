@@ -141,6 +141,7 @@ public  class ExternalPaymentService {
         {
             throw new Exception(ExceptionsEnum.cancelFailed.toString());
         }
+        removeAcquisition(String.valueOf(transactionID));
         return cancelRes;
     }
 
@@ -152,6 +153,12 @@ public  class ExternalPaymentService {
     public Map<String, Acquisition> getIdAndAcquisition() {
         synchronized (acquisitionLock) {
             return idAndAcquisition;
+        }
+    }
+
+    public void removeAcquisition(String acquisitionId){
+        synchronized (acquisitionLock){
+            idAndAcquisition.remove(acquisitionId);
         }
     }
 
