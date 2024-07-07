@@ -28,8 +28,6 @@ public class AddingExternalPaymentServices {
         // Arrange
         String systemManagerId = "user77";
         market.getSystemManagerIds().add(systemManagerId);
-        String licensedDealerNumber = "12345";
-        String paymentServiceName = "PayPal";
         String url = "http://paypal.com";
 
         // Act and Assert
@@ -45,8 +43,7 @@ public class AddingExternalPaymentServices {
         String systemManagerId = "USER1";
         String nonManagerId = "user2";
         market.getSystemManagerIds().add(systemManagerId);
-        String licensedDealerNumber = "12345";
-        String paymentServiceName = "PayPal";
+
         String url = "http://paypal.com";
 
         // Act and Assert

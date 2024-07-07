@@ -1,4 +1,5 @@
 package DomainLayer;
+import PresentationLayer.WAF.*;
 
 
 import AcceptanceTests.BridgeToTests;
@@ -7,6 +8,7 @@ import DomainLayer.Market.Market;
 import static org.junit.jupiter.api.Assertions.*;
 
 import DomainLayer.PaymentServices.ExternalPaymentService;
+import DomainLayer.PaymentServices.PaymentServicesFacade;
 import DomainLayer.Store.StoreFacade;
 import DomainLayer.SupplyServices.ExternalSupplyService;
 import DomainLayer.SupplyServices.SupplyServicesFacade;
@@ -37,27 +39,51 @@ import static org.mockito.Mockito.*;
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class externalConnections {
     private static BridgeToTests impl;
+    private static PaymentServicesFacade paymentServicesFacade;
+    private static StoreFacade storeFacade;
     private static Market market = new Market();
     private UserFacade userFacade;
-    private StoreFacade storeFacade;
+    private static Service_layer serviceLayer;
 
 
     @BeforeAll()
     public static void setUp() throws Exception {
-        market = new Market();
+        paymentServicesFacade= PaymentServicesFacade.getInstance();
+        storeFacade= StoreFacade.getInstance();
+
+        market = new Market(paymentServicesFacade, storeFacade);
         market.init();
+        serviceLayer = new Service_layer(market);
     }
 
 
     @Test
     @Order(1)
     public void checkHandShake() throws Exception {
+
         assertTrue(market.checkHandShake());
 
     }
 
     @Test
     @Order(2)
+    public void checkPurchase() throws Exception {
+//        PaymentDTO paymentDTO = new PaymentDTO("20444444", "David David", "USD", "2222333344445555", 982, 6, 2030);
+//        UserDTO userDTO = new UserDTO(market.enterMarketSystem());
+//        Map<String, Map<String, List<Integer>>> productList = new HashMap<>();
+//        List<Integer> priceQuantity = new ArrayList<>();
+//        priceQuantity.add(20);
+//        priceQuantity.add(20);
+//        Map<String, List<Integer>> productNames = new HashMap<>();
+//        productNames.put("Bamba", priceQuantity);
+//        String storeId = storeFacade.getStoreId("s1");
+//        productList.put(storeId,productNames);
+//        CartDTO cartDTO = new CartDTO(userDTO.getUserId(),1000, productList );
+//        serviceLayer.purchase(userDTO,paymentDTO,cartDTO);
+    }
+
+    @Test
+    @Order(3)
     public void checkPaymentSuccess() throws Exception {
         Map<String, Map<String, List<Integer>>> products = new HashMap<>();
         Map<String, List<Integer>> products1 = new HashMap<>();
@@ -76,7 +102,7 @@ public class externalConnections {
 
 
     @Test
-    @Order(3)
+    @Order(4)
     public void checkPaymentAndCancelSuccess() throws Exception {
 
         Map<String, Map<String, List<Integer>>> products = new HashMap<>();
@@ -89,6 +115,7 @@ public class externalConnections {
         CartDTO cartDTO = new CartDTO("130", 5500, products);
         PaymentDTO paymentDTO = new PaymentDTO("20444444", "David David", "USD", "2222333344445555", 982, 6, 2030);
         int res = externalPaymentService.payWithCard(1000, paymentDTO, "11", cartDTO.getStoreToProducts(), "4545");
+        System.out.println("transss is:" +  res);
         int res1= externalPaymentService.cancelPayment(res);
         assertEquals(1,res1);
 
@@ -96,7 +123,7 @@ public class externalConnections {
     }
 
     @Test
-    @Order(4)
+    @Order(5)
     public void checkSupplySuccess() throws Exception {
 
         ExternalSupplyService supplyServices = market.getSupplyServicesFacade().getAllSupplyServices().get("https://damp-lynna-wsep-1984852e.koyeb.app/");

@@ -6,6 +6,7 @@ import DomainLayer.Market.Market;
 import static org.junit.jupiter.api.Assertions.*;
 
 import DomainLayer.PaymentServices.PaymentServicesFacade;
+import DomainLayer.Role.RoleFacade;
 import DomainLayer.Store.StoreFacade;
 import DomainLayer.SupplyServices.SupplyServicesFacade;
 import DomainLayer.User.UserFacade;
@@ -38,17 +39,10 @@ public class StateInit {
     private Market market;
     private UserFacade userFacade;
     private StoreFacade storeFacade;
+    private RoleFacade roleFacade;
     private PaymentServicesFacade paymentServicesFacade;
     private SupplyServicesFacade supplyServicesFacade;
 
-
-    String licensedDealerNumber = "12345";
-    String paymentServiceName = "PayPal";
-    String url = "http://example.com";
-    String licensedDealerNumber1 = "67890";
-    String supplyServiceName = "SupplyService";
-    HashSet<String> countries = new HashSet<>(Arrays.asList("USA", "Canada"));
-    HashSet<String> cities = new HashSet<>(Arrays.asList("New York", "Los Angeles"));
 
 
     @BeforeEach
@@ -58,10 +52,11 @@ public class StateInit {
         this.storeFacade = StoreFacade.getInstance();
         this.paymentServicesFacade = PaymentServicesFacade.getInstance();
         this.supplyServicesFacade = SupplyServicesFacade.getInstance();
+        this.roleFacade = RoleFacade.getInstance();
 
 
 
-        this.market = new Market(userFacade, storeFacade, paymentServicesFacade, supplyServicesFacade);
+        this.market = new Market(userFacade, storeFacade, paymentServicesFacade, supplyServicesFacade,roleFacade);
 
     }
 
@@ -92,6 +87,8 @@ public class StateInit {
         assertEquals(1, storeFacade.getStores().size());
         String storeID = storeFacade.getStores().iterator().next();
         assertTrue( storeFacade.getStoreByID(storeID).getStoreProducts().containsKey("Bamba"));
+        String memberId = userFacade.getMemberByUsername("u1").getMemberID();
+        assertTrue(roleFacade.verifyMemberIsSystemManager(memberId));
         assertEquals(1, paymentServicesFacade.getAllPaymentServices().size());
         assertEquals(1, supplyServicesFacade.getAllSupplyServices().size());
 

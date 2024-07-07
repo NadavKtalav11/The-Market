@@ -41,6 +41,13 @@ public class Service_layer {
 
     }
 
+    public Service_layer(Market market) {
+        this.market = market;
+        //this.messagingTemplate = messagingTemplate;
+        // Initialize the Market instance
+
+    }
+
 
 
     @Bean
@@ -176,6 +183,7 @@ public class Service_layer {
         logger.info("Initiating purchase for user: {}", user_ID);
         try {
             String acquisitionID = market.purchase( paymentDTO,userDTO, cartDTO);
+            System.out.println("trans2: " + acquisitionID);
             logger.info("Purchase successful for user: {}", user_ID);
             return new Response<>("Purchase successful", "", acquisitionID);
         } catch (Exception e) {
