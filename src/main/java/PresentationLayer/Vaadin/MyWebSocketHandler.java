@@ -8,6 +8,12 @@ import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
 
+import java.sql.Timestamp;
+import java.text.DateFormat;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -45,13 +51,24 @@ public class MyWebSocketHandler extends TextWebSocketHandler {
     }
 
 
+    private String formatTimestamp(LocalDateTime timestamp) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        return timestamp.format(formatter);
+    }
 
 
-    public void handleStringMessage(String memberID, String message) throws Exception {
+
+
+
+    public void handleStringMessage(String memberID, String message) {
         // Handle incoming messages
+        LocalDateTime timestamp = LocalDateTime.now();
+        String formattedMessage = message + " at " + formatTimestamp(timestamp);
+
+
         WebSocketSession session = sessionsByMember.get(memberID);
         if (session==null){
-            lateNotificationFacade.sendLateMessage(memberID, message);
+            lateNotificationFacade.sendLateMessage(memberID, formattedMessage);
             return;
         }
         else {
@@ -59,7 +76,9 @@ public class MyWebSocketHandler extends TextWebSocketHandler {
                 session.sendMessage(new TextMessage(message));
             }
             catch (Exception e){
-                lateNotificationFacade.sendLateMessage(memberID, message);
+            }
+            finally {
+                lateNotificationFacade.sendLateMessage(memberID, formattedMessage);
             }
         }
     }
@@ -88,6 +107,7 @@ public class MyWebSocketHandler extends TextWebSocketHandler {
         }
     }
 
-
-
+    public void setLateNotificationFacadeForTest(LateNotificationFacade lateNotificationFacade) {
+        this.lateNotificationFacade = lateNotificationFacade;
+    }
 }

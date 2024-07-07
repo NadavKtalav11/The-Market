@@ -6,8 +6,8 @@ public class LateNotificationFacade {
 
     private final int QUEUESIZE= 20;
 
-    private Map<String, ArrayDeque<String>> lateNotifications ; //memberId--queue(last 20 massages)
-
+    private Map<String, ArrayDeque<String>> lateNotifications ;
+    //memberId--queue(last 20 massages)
     //private final Object lock = new Object();
 
 
@@ -31,7 +31,9 @@ public class LateNotificationFacade {
         if (lateNotifications.get(memberId)==null){
             return new ArrayList<>();
         }
-        return lateNotifications.get(memberId).stream().toList();
+        List<String> notifications = lateNotifications.get(memberId).stream().toList();
+        lateNotifications.put(memberId, new ArrayDeque<String>());
+        return notifications;
     }
 
 }
