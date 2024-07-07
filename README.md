@@ -19,5 +19,7 @@ The system state after running it should be according to this files.
   It has to be located at: src/main/resources/ConfigurationFile.yaml
 
   The file has to include the following details:
+  
     - Details of the default system manager:
-      * 
+    
+      * username: The user name of the default system manager.
