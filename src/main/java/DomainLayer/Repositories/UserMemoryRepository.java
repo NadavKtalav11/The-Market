@@ -56,7 +56,9 @@ public class UserMemoryRepository implements UserRepository{
 
     @Override
     public Optional<User> findById(String s) {
-        return Optional.empty();
+        synchronized (allUsersLock) {
+            return Optional.ofNullable(allUsers.get(s));
+        }
     }
 
     @Override

@@ -5,6 +5,9 @@ import DomainLayer.Repositories.*;
 import Util.CartDTO;
 import Util.ExceptionsEnum;
 import Util.UserDTO;
+import jakarta.transaction.Transactional;
+import org.hibernate.Session;
+import org.jose4j.jwk.Use;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
@@ -32,13 +35,9 @@ public class UserFacade {
     //Map<Integer, User> allUsers = new HashMap<Integer, User>(); //userID-User
 
     @Autowired
-    public UserFacade(UserRepository userRepository, MemberRepository members) {
+    public UserFacade(UserRepository userRepository, MemberRepository members) throws Exception {
         this.userRepository = userRepository;
         this.members = members;
-
-        //CHECK IF INSERTION AND CLEARING DB WORKS
-        //userRepository.deleteAllInBatch();
-        //userRepository.save(new User("user-1"));
     }
 
     public UserFacade()
@@ -75,9 +74,10 @@ public class UserFacade {
         return uniqueId;
     }
 
-
+    //@Transactional
     public User getUserByID(String userID){
-        return userRepository.getById(userID);
+        Optional<User> user = userRepository.findById(userID);
+        return user.orElse(null);
     }
 
     public void errorIfUserNotExist(String userID) throws Exception {
@@ -156,7 +156,7 @@ public class UserFacade {
         return userId;
     }
 
-
+    @Transactional
     public void addItemsToBasket(String productName, int quantity, String storeId, String userId, int totalPrice)
     {
         User user = getUserByID(userId);
@@ -185,6 +185,7 @@ public class UserFacade {
     }
 
 
+    @Transactional
     public String register(String userID, UserDTO user,String password) throws Exception {
         if(userRepository.existsById(userID)&& getUserByID(userID).isMember()) {
             throw new Exception(ExceptionsEnum.memberCannotRegister.toString());
@@ -193,10 +194,12 @@ public class UserFacade {
             validateRegistrationDetails(user, password);
             String memberId = getCurrentMemberID();
 
-
             Member newMember = new Member(userID, memberId,user.getUserName(), user.getAddress(), user.getName(), password, user.getBirthday(), user.getCountry(), user.getCity());
             members.save(newMember);
-            getUserByID(userID).addInfo(user);
+            User userToUpdate = getUserByID(userID);//.addInfo(user);
+            userToUpdate.addInfo(user);
+            //todo: nitzan verify if needed and if works well with memory
+            this.userRepository.save(userToUpdate);
             //todo pass the user to login page.
             return memberId;
         }
@@ -293,7 +296,9 @@ public class UserFacade {
             throw new Exception("Username or password is incorrect");
         }*/
         loginMember.validatePassword(password);
-        getUserByID(userID).Login(loginMember);
+        User user = getUserByID(userID);
+        user.Login(loginMember);
+        this.userRepository.save(user);
         return loginMember.getMemberID();
     }
 
