@@ -20,7 +20,7 @@ The system state after running it should be according to this files.
 
   The file has to include the following details:
   
-    - Details of the default system manager:
+    - # Details of the default system manager:
     
       * username: The user name of the default system manager.
       * password: The password of the default system manager.
