@@ -99,18 +99,18 @@ public class MarketController {
     @PostMapping("/initiate")
     public ResponseEntity<APIResponse<String>> initiate(@RequestParam Map<String,String> params) {
         try {
-            String userDTO = params.get("userDTO");
-            String password = params.get("password");
-            String paymentServiceDTO = params.get("paymentServiceDTO");
-            //String supplyServiceDTO = params.get("supplyServiceDTO");
-            String supplyDealerNumberField = params.get("supplyDealerNumberField");
-            String supplyServiceName = params.get("supplyServiceName");
-            String countriesSet = params.get("countriesSet");
-            String citiesSet = params.get("citiesSet");
-            Set<String> coutries = new HashSet();
-            coutries.add(countriesSet);
-            Set<String> cities = new HashSet();
-            cities.add(citiesSet);
+//            String userDTO = params.get("userDTO");
+//            String password = params.get("password");
+//            String paymentServiceDTO = params.get("paymentServiceDTO");
+//            //String supplyServiceDTO = params.get("supplyServiceDTO");
+//            String supplyDealerNumberField = params.get("supplyDealerNumberField");
+//            String supplyServiceName = params.get("supplyServiceName");
+//            String countriesSet = params.get("countriesSet");
+//            String citiesSet = params.get("citiesSet");
+//            Set<String> coutries = new HashSet();
+//            coutries.add(countriesSet);
+//            Set<String> cities = new HashSet();
+//            cities.add(citiesSet);
             Response<String> response = serviceLayer.init();
             if (response.isSuccess()) {
                 String userId = response.getData();
@@ -1231,18 +1231,6 @@ public class MarketController {
 
 
 }
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
