@@ -17,7 +17,7 @@ public class AgeRule extends TestRule {
     private int age;
     protected final Object ageLock;
 
-    public AgeRule(int age, String range, Category category, String productName, String description, boolean contains){
+    public AgeRule(int age, String range, Category category, String productName, String description, Boolean contains){
         super(range, category, productName, description, contains);
         this.age = age;
         this.ageLock = new Object();

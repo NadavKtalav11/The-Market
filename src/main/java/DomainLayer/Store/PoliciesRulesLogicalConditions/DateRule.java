@@ -14,7 +14,7 @@ public class DateRule extends TestRule {
     private LocalDate date;
     protected final Object dateLock;
 
-    public DateRule(LocalDate date, String range, Category category, String productName, String description, boolean contains) {
+    public DateRule(LocalDate date, String range, Category category, String productName, String description, Boolean contains) {
         super(range, category, productName, description, contains);
         this.date = date;
         this.dateLock = new Object();

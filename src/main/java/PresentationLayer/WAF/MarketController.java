@@ -141,18 +141,34 @@ public class MarketController {
             String numericalOperators = params.get("numericalOperators");
             String userId = params.get("userId");
             String storeId = params.get("storeId");
-            List<TestRuleDTO> testRulesList = objectMapper.readValue(testRules, objectMapper.getTypeFactory().constructCollectionType(List.class, TestRuleDTO.class));
-            List<String> logicOperatorsList = objectMapper.readValue(logicOperators, objectMapper.getTypeFactory().constructCollectionType(List.class, String.class));
-            List<DiscountValueDTO> discDetailsList = objectMapper.readValue(discDetails, objectMapper.getTypeFactory().constructCollectionType(List.class, DiscountValueDTO.class));
-            List<String> numericalOperatorsList = objectMapper.readValue(numericalOperators, objectMapper.getTypeFactory().constructCollectionType(List.class, String.class));
-            Response<String> response = serviceLayer.addDiscountCondRuleToStore(testRulesList, logicOperatorsList, discDetailsList, numericalOperatorsList, userId, storeId);
+            List<TestRuleDTO> rules= null;
+            //List<TestRuleDTO> logicOperators= null;
+            TestRuleDTO[] dtosRule = null;
+            List<String> stringRules = objectMapper.readValue(testRules, new TypeReference<List<String>>() {});
+            // Deserialize each JSON string into a TestRuleDTO object
+            rules = new ArrayList<>();
+            for (String stringRule : stringRules) {
+                TestRuleDTO rule = objectMapper.readValue(stringRule, TestRuleDTO.class);
+                rules.add(rule);
+            }
+            List<String> logicOperatorsList = objectMapper.readValue(logicOperators, new TypeReference<List<String>>() {});
+            List<DiscountValueDTO> discsList = null;
+            List<String> stringDiscs = objectMapper.readValue(discDetails, new TypeReference<List<String>>() {});
+            // Deserialize each JSON string into a TestRuleDTO object
+            discsList = new ArrayList<>();
+            for (String stringDisc : stringDiscs) {
+                DiscountValueDTO rule = objectMapper.readValue(stringDisc, DiscountValueDTO.class);
+                discsList.add(rule);
+            }
+            List<String> numericOperatorsList = objectMapper.readValue(numericalOperators, new TypeReference<List<String>>() {});
+            Response<String> response = serviceLayer.addDiscountCondRuleToStore(rules, logicOperatorsList, discsList, numericOperatorsList, userId, storeId);
             if (response.isSuccess()) {
-                String data = response.getData();
+                String result = response.getResult();
                 HttpHeaders headers = new HttpHeaders();
                 headers.add("accept", "*/*");
 
                 return ResponseEntity.status(HttpStatus.OK).headers(headers)
-                        .body(new APIResponse<String>(data, null));
+                        .body(new APIResponse<String>(result, null));
             } else {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                         .body(new APIResponse<String>(null, response.getDescription()));
@@ -171,16 +187,27 @@ public class MarketController {
             String numericalOperators = params.get("numericalOperators");
             String userId = params.get("userId");
             String storeId = params.get("storeId");
-            List<DiscountValueDTO> discDetailsList = objectMapper.readValue(discs, objectMapper.getTypeFactory().constructCollectionType(List.class, DiscountValueDTO.class));
-            List<String> numericalOperatorsList = objectMapper.readValue(numericalOperators, objectMapper.getTypeFactory().constructCollectionType(List.class, String.class));
-            Response<String> response = serviceLayer.addDiscountSimpleRuleToStore(discDetailsList, numericalOperatorsList, userId, storeId);
+//            List<DiscountValueDTO> discDetailsList = objectMapper.readValue(discs, objectMapper.getTypeFactory().constructCollectionType(List.class, DiscountValueDTO.class));
+//            List<String> numericalOperatorsList = objectMapper.readValue(numericalOperators, objectMapper.getTypeFactory().constructCollectionType(List.class, String.class));
+//            DiscountValueDTO[] dtosDiscs = null;
+            List<DiscountValueDTO> discsList = null;
+            List<String> stringDiscs = objectMapper.readValue(discs, new TypeReference<List<String>>() {});
+            // Deserialize each JSON string into a TestRuleDTO object
+            discsList = new ArrayList<>();
+            for (String stringDisc : stringDiscs) {
+                DiscountValueDTO rule = objectMapper.readValue(stringDisc, DiscountValueDTO.class);
+                discsList.add(rule);
+            }
+            List<String> numericOperatorsList = objectMapper.readValue(numericalOperators, new TypeReference<List<String>>() {});
+
+            Response<String> response = serviceLayer.addDiscountSimpleRuleToStore(discsList, numericOperatorsList, userId, storeId);
             if (response.isSuccess()) {
-                String data = response.getData();
+                String result = response.getResult();
                 HttpHeaders headers = new HttpHeaders();
                 headers.add("accept", "*/*");
 
                 return ResponseEntity.status(HttpStatus.OK).headers(headers)
-                        .body(new APIResponse<String>(data, null));
+                        .body(new APIResponse<String>(result, null));
             } else {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                         .body(new APIResponse<String>(null, response.getDescription()));

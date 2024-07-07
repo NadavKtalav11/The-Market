@@ -16,7 +16,7 @@ public class TimeRule extends TestRule {
     private LocalTime time;
     protected final Object timeLock;
 
-    public TimeRule(LocalTime time, String range, Category category, String productName, String description, boolean contains) {
+    public TimeRule(LocalTime time, String range, Category category, String productName, String description, Boolean contains) {
         super(range, category, productName, description, contains);
         this.time = time;
         this.timeLock = new Object();
