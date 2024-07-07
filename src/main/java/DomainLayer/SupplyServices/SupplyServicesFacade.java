@@ -71,9 +71,7 @@ public class SupplyServicesFacade {
     }
 
     public void clearSupplyServices() {
-        synchronized (externalSupplyServiceLock) {
-            externalSupplyService.clear();
-        }
+        externalSupplyRepository.deleteAll();
     }
 
 //    public boolean addExternalService(String licensedDealerNumber, String supplyServiceName, HashSet<String> countries, HashSet<String> cities){

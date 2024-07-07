@@ -1,14 +1,22 @@
 package AcceptanceTests;
 
 import DomainLayer.Market.Market;
+import DomainLayer.PaymentServices.PaymentServicesFacade;
+import DomainLayer.Role.RoleFacade;
+import DomainLayer.Store.StoreFacade;
+import DomainLayer.SupplyServices.SupplyServicesFacade;
+import DomainLayer.User.UserFacade;
 import ServiceLayer.Response;
 import PresentationLayer.WAF.Service_layer;
 import Util.*;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Map;
 
+@Service
 public class RealToTest implements BridgeToTests {
     private Service_layer service;
 
@@ -18,6 +26,15 @@ public class RealToTest implements BridgeToTests {
         this.service = new Service_layer(1, market);
 
     }
+
+//    @Autowired
+//    public RealToTest(UserFacade userFacade, StoreFacade storeFacade, RoleFacade roleFacade,
+//                      PaymentServicesFacade paymentServicesFacade, SupplyServicesFacade supplyServicesFacade)
+//    {
+//        Market market = new Market(userFacade,storeFacade,supplyServicesFacade,paymentServicesFacade,roleFacade);
+//        this.service = new Service_layer(1, market);
+//
+//    }
 
     @Override
     public Response<String> init( ) {
