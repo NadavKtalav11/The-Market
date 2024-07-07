@@ -38,4 +38,16 @@ The system state after running it should be according to this files.
 
       * url: The url address of the default external supply service.
 
+# How the StateAfterInit file should be written
+  First, it should be a yaml file called "stateAfterInit".
+  
+  It has to be located at: src/main/resources/stateAfterInit.yaml
+
+  The file has to include the following details:
+
+    - actios:
+      List of use cases that we wish to run automatically on our programs.
+
+      Each action has to be a referance to a function and has to be supported with the right arguments.
+
 
