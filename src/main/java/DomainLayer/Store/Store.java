@@ -21,15 +21,12 @@ import jakarta.persistence.*;
 @Table(name = "store", schema = "themarketdb")
 public class Store {
     @Id
+    @Column(name = "store_id")
     private String store_ID;
 
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @JoinTable(
-            name = "store_products",
-            joinColumns = @JoinColumn(name = "store_id"),
-            inverseJoinColumns = @JoinColumn(name = "product_id")
-    )
-    @MapKeyColumn(name = "product_name")
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @MapKey(name = "productName")
+    @JoinColumn(name = "store_id")
     private Map<String, Product> storeProducts = new HashMap<String, Product>();
 
     @Column(nullable = false)
@@ -49,10 +46,7 @@ public class Store {
     @Column(name = "num_of_ratings")
     private int numOfRatings;
 
-    @ElementCollection
-    @CollectionTable(name = "receipts", joinColumns = @JoinColumn(name = "store_id"))
-    @MapKeyColumn(name = "receipt_id")
-    @Column(name = "user_id")
+    @Transient
     private Map<String, String> receiptsIdsUserIds; //<receiptId, userId>
 
     @Column(name = "store_name")

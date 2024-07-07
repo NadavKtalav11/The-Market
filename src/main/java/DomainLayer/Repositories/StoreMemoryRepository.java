@@ -34,6 +34,11 @@ public class StoreMemoryRepository implements StoreRepository{
     }
 
     @Override
+    public void addProductToStore(String storeId, String productName, int price, int quantity, String category, String description) {
+
+    }
+
+    @Override
     public void flush() {
 
     }
