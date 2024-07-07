@@ -1,5 +1,6 @@
-package DomainLayer.Role;
+package DomainLayer.Repositories;
 
+import DomainLayer.Role.StoreManager;
 import org.springframework.context.annotation.Profile;
 import org.springframework.data.domain.Example;
 import org.springframework.data.domain.Page;
@@ -13,7 +14,7 @@ import java.util.function.Function;
 
 @Repository
 @Profile("memory")
-public class MemoryStoreManagerRepository implements StoreManagerRepository{
+public class MemoryStoreManagerRepository implements StoreManagerRepository {
 
     private Map<String,List<StoreManager>> memberId_storeManagerMap= new HashMap<>();
     private final Object storeManagerLock= new Object();
@@ -69,6 +70,13 @@ public class MemoryStoreManagerRepository implements StoreManagerRepository{
     public List<StoreManager> getAllMemberIdManagers(String memberId) {
         synchronized (storeManagerLock) {
             return memberId_storeManagerMap.get(memberId);
+        }
+    }
+
+    @Override
+    public void updateStoreManagerPermissions(String memberId, String storeId, boolean inventoryPermissions, boolean purchasePermissions, String nominatorMemberID) {
+        synchronized (storeManagerLock){
+            get(storeId,memberId).setPermissions(inventoryPermissions,purchasePermissions);
         }
     }
 

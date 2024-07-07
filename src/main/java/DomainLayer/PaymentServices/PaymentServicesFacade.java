@@ -6,6 +6,7 @@ import DomainLayer.Repositories.AcquisitionRepository;
 import DomainLayer.Repositories.ExternalPaymentMemoryRepository;
 import DomainLayer.Repositories.ExternalPaymentRepository;
 import Util.*;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -20,9 +21,20 @@ public class PaymentServicesFacade {
 
     //db constructor
     @Autowired
-    public PaymentServicesFacade(ExternalPaymentRepository externalPaymentRepository, AcquisitionRepository acquisitionRepository){
+    public PaymentServicesFacade(ExternalPaymentRepository externalPaymentRepository, AcquisitionRepository acquisitionRepository) throws Exception {
         this.externalPaymentRepository = externalPaymentRepository;
         this.acquisitionRepository = acquisitionRepository;
+
+//        //TEST
+//        Map<String, Map<String, List<Integer>>> productList = new HashMap<>();
+//        List<Integer> priceQuantity = new ArrayList<>();
+//        priceQuantity.add(12);
+//        priceQuantity.add(12);
+//        Map<String, List<Integer>> productNames = new HashMap<>();
+//        productNames.put("candle", priceQuantity);
+//        productList.put("candleStore", productNames);
+//        pay(99, new PaymentDTO("123", "noa", "curr", "123456789", 123,11,
+//                26),"userID", productList);
     }
 
     //memory constructor
@@ -90,6 +102,7 @@ public class PaymentServicesFacade {
         externalPaymentRepository.deleteAll();
     }
 
+    @Transactional
     public String pay(int price, PaymentDTO payment, String userId, Map<String, Map<String, List<Integer>>> productList) throws Exception{
        
         String acquisitionId  = getNewAcquisitionId();
@@ -151,8 +164,13 @@ public class PaymentServicesFacade {
 //    }
 
     public ExternalPaymentService getPaymentServiceByURL(String paymentURL){
+
         Optional<ExternalPaymentService> externalPaymentService = externalPaymentRepository.findById(paymentURL);
-        return externalPaymentService.orElse(null);
+        ExternalPaymentService externalPaymentService1 = externalPaymentService.orElse(null);
+        if (externalPaymentService1 != null){
+            return new ExternalPaymentService(externalPaymentService1.getUrl());
+        }
+        return null;
     }
 
     public Map<String, Integer> getStorePurchaseInfo()

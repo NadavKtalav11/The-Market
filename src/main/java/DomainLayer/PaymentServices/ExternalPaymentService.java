@@ -22,7 +22,7 @@ public  class ExternalPaymentService {
     @Transient
     private HttpRequestController httpReqCtrl;
 
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "external_payment_service_url") // This will create a foreign key column in the Acquisition table
     @MapKeyColumn(name = "acquisition_id") // Column in the Acquisition table for acquisition_id
     private Map<String, Acquisition> idAndAcquisition = new HashMap<>();
@@ -32,6 +32,14 @@ public  class ExternalPaymentService {
 
     public ExternalPaymentService() {
         // JPA requires a no-argument constructor
+        try
+        {
+            httpReqCtrl = new HttpRequestController(url);
+        }
+        catch (Exception e)
+        {
+            httpReqCtrl = null;
+        }
     }
 
     public ExternalPaymentService(String url) {

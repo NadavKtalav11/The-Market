@@ -77,7 +77,7 @@ public class Market {
 
 
     public Market(UserFacade userFacade, AuthenticationAndSecurityFacade authenticationAndSecurityFacade,
-                  StoreFacade storeFacade){
+                  StoreFacade storeFacade) {
         this.storeFacade = storeFacade;
         this.userFacade = userFacade;
         this.roleFacade = RoleFacade.getInstance();
@@ -96,7 +96,7 @@ public class Market {
     }
 
     public Market(UserFacade userFacade, PaymentServicesFacade paymentServicesFacade,
-                  SupplyServicesFacade supplyServicesFacade){
+                  SupplyServicesFacade supplyServicesFacade) {
         this.storeFacade = StoreFacade.getInstance();
         this.userFacade = userFacade;
         this.roleFacade = RoleFacade.getInstance();
@@ -115,7 +115,7 @@ public class Market {
     }
 
     public Market(UserFacade userFacade, AuthenticationAndSecurityFacade authenticationAndSecurityFacade,
-                  StoreFacade storeFacade, SupplyServicesFacade supplyServicesFacade){
+                  StoreFacade storeFacade, SupplyServicesFacade supplyServicesFacade) {
         this.storeFacade = storeFacade;
         this.userFacade = userFacade;
         this.roleFacade = RoleFacade.getInstance();
@@ -134,7 +134,7 @@ public class Market {
     }
 
 
-    public Market(UserFacade userFacade){
+    public Market(UserFacade userFacade) {
         this.storeFacade = StoreFacade.getInstance();
         this.userFacade = userFacade;
         this.roleFacade = RoleFacade.getInstance();
@@ -153,10 +153,11 @@ public class Market {
     }
 
     @Autowired
-    public Market(UserFacade userFacade, StoreFacade storeFacade, SupplyServicesFacade supplyServicesFacade, PaymentServicesFacade paymentServicesFacade){
+    public Market(UserFacade userFacade, StoreFacade storeFacade, SupplyServicesFacade supplyServicesFacade,
+                  PaymentServicesFacade paymentServicesFacade, RoleFacade roleFacade){
         this.storeFacade = storeFacade;
         this.userFacade = userFacade;
-        this.roleFacade = RoleFacade.getInstance();
+        this.roleFacade = roleFacade;
         this.paymentServicesFacade = paymentServicesFacade;
         this.authenticationAndSecurityFacade = AuthenticationAndSecurityFacade.getInstance();
         this.supplyServicesFacade= supplyServicesFacade;
@@ -180,7 +181,7 @@ public class Market {
     }
 
 
-    public Market(){
+    public Market() {
 
         StoreFacade storeFacade1 =  new StoreFacade();
         UserFacade userFacade1 =  new UserFacade();

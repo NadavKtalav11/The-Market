@@ -29,7 +29,7 @@ public class Acquisition {
     private Date date;
 
     // One-to-many relationship with Receipt
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "acquisition_id") // This will create an acquisition_id column in the Receipt table
     @MapKeyColumn(name = "store_id") // Column in the Receipt table for store_id
     private Map<String, Receipt> storeIdAndReceipt= new HashMap<>(); //<storeId, Receipt>
