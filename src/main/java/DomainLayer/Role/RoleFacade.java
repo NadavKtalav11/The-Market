@@ -71,6 +71,13 @@ public class RoleFacade {
         return storeOwnerRepository.get(storeID, memberID);
     }
 
+    public void addSystemManger(String memberId){
+        SystemManager systemManager = new SystemManager(memberId);
+        synchronized (systemManagers) {
+            systemManagers.add(systemManager);
+        }
+    }
+
     public boolean verifyStoreManager(String storeID, String memberID) {
         return getStoreManager(storeID, memberID) != null;
     }

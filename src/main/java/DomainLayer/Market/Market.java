@@ -287,6 +287,7 @@ public class Market {
             String firstUserID = enterMarketSystem();
             UserDTO userDTO1 = new UserDTO(firstUserID, adminUsername, adminBirthday, adminCountry, adminCity, adminAddress, adminName);
             String systemManagerId = userFacade.register(firstUserID, userDTO1, encryptedPassword);
+            roleFacade.addSystemManger(systemManagerId);
             synchronized (managersLock) {
                 systemManagerIds.add(systemManagerId);
             }
