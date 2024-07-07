@@ -118,7 +118,7 @@ public class Store {
             Product product = storeProducts.get(productName);
             if(product == null)
                 throw new Exception(ExceptionsEnum.productNotExistInStore.toString());
-            return new ProductDTO(productName, product.getPrice(), quantity, product.getDescription(), product.getCategoryName());
+            return new ProductDTO(productName, product.getPrice() * quantity, quantity, product.getDescription(), product.getCategoryName());
         }
     }
 
