@@ -389,6 +389,10 @@ public class UserFacade {
         return getUserByID(userId).getAcquisitionIds();
     }
 
+    public int cancelPaynmet(String userId, String acquisitionId){
+        return getUserByID(userId).cancelAcquisition(acquisitionId);
+    }
+
     public void checkIfUserHasAcquisition(String userId, String acquisitionId) {
         if(!getUserByID(userId).getAcquisitionIds().contains(acquisitionId))
             throw new IllegalArgumentException(ExceptionsEnum.AcquisitionNotExist.toString());

@@ -1135,10 +1135,10 @@ public class MarketController {
         }
     }
 
-    @PostMapping("/cancelAcquisition/{acquisitionId}")
-    public ResponseEntity<APIResponse<String>> cancel(@PathVariable String acquisitionId) {
+    @PostMapping("/cancelAcquisition/{userId}/{acquisitionId}")
+    public ResponseEntity<APIResponse<String>> cancel(@PathVariable String userId, @PathVariable String acquisitionId) {
         try {
-            Response<String> response = serviceLayer.cancelPayment(acquisitionId);
+            Response<String> response = serviceLayer.cancelPayment(userId, acquisitionId);
             if (response.isSuccess()) {
                 String result = response.getResult();
                 HttpHeaders headers = new HttpHeaders();

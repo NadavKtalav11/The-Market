@@ -337,8 +337,16 @@ public class Market {
         }
     }
 
-    public int cancelPayment(int transactionID) throws Exception {
-        return  paymentServicesFacade.cancelPayment(transactionID);
+    public int cancelPayment(String userId,  String transactionID) throws Exception {
+        if (userFacade.isMember(userId)) {
+            String memberId = userFacade.getMemberIdByUserId(userId);
+            boolean succeeded = authenticationAndSecurityFacade.validateToken(authenticationAndSecurityFacade.getToken(memberId));if (!succeeded) {
+                logout(userId);
+                throw new Exception(ExceptionsEnum.sessionOver.toString());
+            }
+        }
+
+        return userFacade.cancelPaynmet(userId , transactionID);
     }
 
     public int cancelSupply(int transactionID) throws Exception {

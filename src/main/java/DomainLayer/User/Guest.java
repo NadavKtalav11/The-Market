@@ -47,4 +47,8 @@ public class Guest extends State{
         return null;
     }
 
+    @Override
+    public int removeAcquisition(String acquisitionId)  {
+        return -1;
+    }
 }

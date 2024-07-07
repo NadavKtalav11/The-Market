@@ -139,5 +139,12 @@ public class Member extends State{
         return userId;
     }
 
-
+    @Override
+    public int removeAcquisition(String acquisitionId) {
+        if (acquisitionIds.contains(acquisitionId)) {
+            acquisitionIds.remove(acquisitionId);
+            return 1;
+        }
+        return -1;
+    }
 }
