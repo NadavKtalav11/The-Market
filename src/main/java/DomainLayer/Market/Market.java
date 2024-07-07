@@ -23,6 +23,8 @@ import org.springframework.stereotype.Component;
 import org.yaml.snakeyaml.Yaml;
 import java.io.FileInputStream;
 import java.io.InputStream;
+import java.sql.Time;
+import java.sql.Timestamp;
 import java.util.Map;
 
 import java.util.*;
@@ -352,7 +354,7 @@ public class Market {
                 Map<String, Object> userData = (Map<String, Object>) users.get(username);
                 String password = (String) userData.get("password");
                 String userId = enterMarketSystem();
-               Login(userId, username, password);
+                Login(userId, username, password);
                 usernameToUserIdMap.put(username, userId);
             }
         }
@@ -672,7 +674,7 @@ public class Market {
         hasJob.addAll(storeOwnerIds);
         for (String memberId : hasJob) {
                 //String message = "A purchase was made from your store - " + storeName;
-            myWebSocketHandler.handleStringMessage(userFacade.getUserIdByMemberId(memberId), message); // Send real-time notification via WebSocket
+            myWebSocketHandler.handleStringMessage(memberId, message); // Send real-time notification via WebSocket
         }
     }
 
@@ -687,7 +689,6 @@ public class Market {
 
             for (String memberId : storeOwnerIds) {
                 String message = "A purchase was made from your store - " + storeName;
-
                 myWebSocketHandler.handleStringMessage(memberId, message); // Send real-time notification via WebSocket
 
             }
@@ -861,8 +862,6 @@ public class Market {
         String encryptedPassword = authenticationAndSecurityFacade.encodePassword(password);
         String memberId = userFacade.Login(userId, username,encryptedPassword);
         authenticationAndSecurityFacade.generateToken(memberId);
-        //notificationService.sendNotification("user" + userId + "logged in successfully");
-        //myWebSocketHandler.sendMassageToEveryOne( "Hello from server!");
         return memberId;
     }
 
@@ -1049,6 +1048,7 @@ public class Market {
         String nominatedMemberID = userFacade.getMemberByUsername(nominatedUsername).getMemberID();
         roleFacade.verifyMangerNominatorError(nominatorMemberID, nominatedMemberID, storeId);
         roleFacade.fireStoreManager(nominatedMemberID, storeId);
+        myWebSocketHandler.handleStringMessage(nominatedMemberID , "you fired as store owner of store -by " + userFacade.getMemberName(nominatorMemberID));
     }
 
     public void updateStoreManagerPermissions(String nominatorUserId, String nominatedUsername, String storeId,
@@ -1165,7 +1165,7 @@ public class Market {
         storeFacade.verifyStoreExistError(store_ID);
         storeFacade.reopenStore(store_ID);
 
-        sendMessagesToOwnersAndManagers(store_ID , "your store - " + storeFacade.getStoreName(store_ID) +" has reopen");
+        sendMessagesToOwnersAndManagers(store_ID , "your store - " + storeFacade.getStoreName(store_ID) +" has been reopened");
 
     }
 
