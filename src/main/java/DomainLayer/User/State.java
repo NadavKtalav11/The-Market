@@ -66,6 +66,8 @@ public abstract class State {
 
 
 
+
+
     protected abstract void Logout();
     protected abstract void exitMarketSystem();
     //void Register(User user, String username, String password, String birthday, String address) throws Exception;
@@ -74,4 +76,5 @@ public abstract class State {
     public abstract String getUsername();
     public abstract void addAcquisition(String acquisitionId);
     public abstract List<String> getAcquisitionIds();
+    public abstract int removeAcquisition(String acquisitionId) ;
 }
