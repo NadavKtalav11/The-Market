@@ -7,3 +7,5 @@ Use-Cases docs sheet - https://docs.google.com/document/d/1lFxkYdhTieLjeW3Bd95Cn
 Glossary - https://docs.google.com/document/d/1cLOtKh-OQUaAp9FVlCy0EocshTjExcrV7qxI3wZly34/edit
 
 # How the Config file should be written
+  First, it should be yaml file called "ConfigurationFile".
+  It has to be located at: src/main/resources/ConfigurationFile.yaml
