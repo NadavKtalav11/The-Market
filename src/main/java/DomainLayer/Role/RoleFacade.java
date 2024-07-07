@@ -53,7 +53,7 @@ public class RoleFacade {
 
 
     public void verifyStoreOwnerError(String storeID, String memberID) throws Exception {
-        if (!verifyStoreOwner(storeID, memberID))
+        if (!verifyMemberIsSystemManager(memberID) && !verifyStoreOwner(storeID, memberID))
             throw new Exception(ExceptionsEnum.userIsNotStoreOwner.toString());
     }
 
@@ -88,7 +88,7 @@ public class RoleFacade {
 
     public boolean verifyStoreOwnerIsFounder(String storeID, String memberID) {
         StoreOwner storeOwner = getStoreOwner(storeID, memberID);
-        return storeOwner != null && storeOwner.verifyStoreOwnerIsFounder();
+        return verifyMemberIsSystemManager(memberID) && storeOwner != null && storeOwner.verifyStoreOwnerIsFounder();
     }
 
     public void createStoreOwner(String memberId, String storeId, boolean founder, String nominatorMemberId) throws Exception {
@@ -106,6 +106,13 @@ public class RoleFacade {
             addNewStoreManagerToTheMarket(newStoreManager);
         } else {
             throw new Exception(ExceptionsEnum.memberAlreadyHasRoleInThisStore.toString());
+        }
+    }
+
+    public void addSystemManger(String memberId) {
+        SystemManager systemManager = new SystemManager(memberId);
+        synchronized (systemManagers) {
+            systemManagers.add(systemManager);
         }
     }
 
