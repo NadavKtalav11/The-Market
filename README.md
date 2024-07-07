@@ -9,6 +9,10 @@ Glossary - https://docs.google.com/document/d/1cLOtKh-OQUaAp9FVlCy0EocshTjExcrV7
 # The program initialization:
 The program initialization is an automatic proeess that runs when the program is opned for the firt time. 
 
+The automatic proeess runs the command in the ConfigurationFile and stateAfterInit files.
+
+The system state after running it should be according to this files.
+
 # How the Config file should be written
   First, it should be yaml file called "ConfigurationFile".
   
