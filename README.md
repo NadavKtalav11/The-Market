@@ -8,4 +8,5 @@ Glossary - https://docs.google.com/document/d/1cLOtKh-OQUaAp9FVlCy0EocshTjExcrV7
 
 # How the Config file should be written
   First, it should be yaml file called "ConfigurationFile".
+  
   It has to be located at: src/main/resources/ConfigurationFile.yaml
