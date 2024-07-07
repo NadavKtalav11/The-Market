@@ -23,3 +23,11 @@ The system state after running it should be according to this files.
     - Details of the default system manager:
     
       * username: The user name of the default system manager.
+      * password: The password of the default system manager.
+      * birthday: The birthday of the default system manager.
+      * country: The country of the default system manager.
+      * city: The city of the default system manager.
+      * address: The address of the default system manager.
+      * name: The name of the default system manager.
+
+
