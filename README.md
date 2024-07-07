@@ -20,7 +20,7 @@ The system state after running it should be according to this files.
 
   The file has to include the following details:
   
-  *admin:
+    - admin:
     
       * username: The user name of the default system manager.
       * password: The password of the default system manager.
@@ -30,11 +30,11 @@ The system state after running it should be according to this files.
       * address: The address of the default system manager.
       * name: The name of the default system manager.
 
-    - Details of the default external payment service:
+    - paymentService:
 
       * url: The url address of the default external payment service.
 
-    - Details of the default external supply service:
+    - supplyService:
 
       * url: The url address of the default external supply service.
 
