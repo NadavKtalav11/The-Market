@@ -3,6 +3,8 @@ package DomainLayer.Store;
 import Util.ProductDTO;
 import jakarta.persistence.*;
 
+import java.awt.*;
+
 @Entity
 @Table(name = "product")
 public class Product {
@@ -10,6 +12,9 @@ public class Product {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "product_id")
+   // private Long id;
+
+  //  @Column(name = "product_name", unique = true)
     private String productName;
 
     @Column(name = "price")

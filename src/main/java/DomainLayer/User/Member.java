@@ -5,6 +5,7 @@ import DomainLayer.Role.RoleFacade;
 import Util.ExceptionsEnum;
 import Util.UserDTO;
 import jakarta.persistence.*;
+import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.HashMap;

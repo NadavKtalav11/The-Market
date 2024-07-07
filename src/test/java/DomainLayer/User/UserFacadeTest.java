@@ -1,6 +1,8 @@
 package DomainLayer.User;
 
+import DomainLayer.Repositories.MemberMemoryRepository;
 import DomainLayer.Repositories.MemberRepository;
+import DomainLayer.Repositories.UserMemoryRepository;
 import DomainLayer.Repositories.UserRepository;
 import Util.UserDTO;
 import org.junit.jupiter.api.BeforeEach;
@@ -30,7 +32,7 @@ public class UserFacadeTest {
     private final int totalPrice = 100;
 
     @BeforeEach
-    public void setUp() {
+    public void setUp() throws Exception {
         MockitoAnnotations.openMocks(this);
         userFacade = new UserFacade(mockUserRepository, mockMemberRepository);
 
@@ -41,6 +43,7 @@ public class UserFacadeTest {
             return user;
         });
 
+        when(mockUserRepository.findById(userId)).thenReturn(java.util.Optional.of(mockUser));
         when(mockUserRepository.getById(userId)).thenReturn(mockUser);
 
         // Configure mockMember to return specific values
@@ -56,12 +59,14 @@ public class UserFacadeTest {
     @Test
     public void testAddUser() {
         String userId = userFacade.addUser();
+        when(mockUserRepository.findById(userId)).thenReturn(java.util.Optional.of(mockUser));
         assertNotNull(userFacade.getUserByID(userId));
     }
 
     @Test
     public void testRegister() throws Exception {
         String userId = userFacade.addUser();
+        when(mockUserRepository.findById(userId)).thenReturn(java.util.Optional.of(mockUser));
         userFacade.register(userId, new UserDTO(userId, "testUser", "01/01/2000", "Test Country", "Test City", "123 Test St", "Test Name"), "testPass");
 
         when(mockMemberRepository.getByUserName("testUser")).thenReturn(mockMember);

@@ -30,7 +30,7 @@ public class UserTest {
         // Create the mocks
         mockCart = Mockito.mock(Cart.class);
         storeMock = Mockito.mock(Store.class);
-
+        mockState = Mockito.mock(State.class);
         // Initialize the user and set the user's cart
         user.setCart(mockCart);
     }

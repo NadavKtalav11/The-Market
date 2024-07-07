@@ -4,6 +4,8 @@ import ServiceLayer.Response;
 import Util.*;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -26,6 +28,8 @@ public class MarketController {
         //this.marketService = marketService;
         this.serviceLayer = serviceLayer;
         this.objectMapper =new ObjectMapper();
+        objectMapper.registerModule(new JavaTimeModule());
+        objectMapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
     }
 
     @GetMapping("/checkInitializedMarket")
@@ -95,18 +99,18 @@ public class MarketController {
     @PostMapping("/initiate")
     public ResponseEntity<APIResponse<String>> initiate(@RequestParam Map<String,String> params) {
         try {
-            String userDTO = params.get("userDTO");
-            String password = params.get("password");
-            String paymentServiceDTO = params.get("paymentServiceDTO");
-            //String supplyServiceDTO = params.get("supplyServiceDTO");
-            String supplyDealerNumberField = params.get("supplyDealerNumberField");
-            String supplyServiceName = params.get("supplyServiceName");
-            String countriesSet = params.get("countriesSet");
-            String citiesSet = params.get("citiesSet");
-            Set<String> coutries = new HashSet();
-            coutries.add(countriesSet);
-            Set<String> cities = new HashSet();
-            cities.add(citiesSet);
+//            String userDTO = params.get("userDTO");
+//            String password = params.get("password");
+//            String paymentServiceDTO = params.get("paymentServiceDTO");
+//            //String supplyServiceDTO = params.get("supplyServiceDTO");
+//            String supplyDealerNumberField = params.get("supplyDealerNumberField");
+//            String supplyServiceName = params.get("supplyServiceName");
+//            String countriesSet = params.get("countriesSet");
+//            String citiesSet = params.get("citiesSet");
+//            Set<String> coutries = new HashSet();
+//            coutries.add(countriesSet);
+//            Set<String> cities = new HashSet();
+//            cities.add(citiesSet);
             Response<String> response = serviceLayer.init();
             if (response.isSuccess()) {
                 String userId = response.getData();
@@ -939,12 +943,12 @@ public class MarketController {
             List<String> logicOperators = objectMapper.readValue(operators, new TypeReference<List<String>>() {});
             Response<String> response = serviceLayer.addPurchaseRuleToStore(rules, logicOperators, userId, storeId);
             if (response.isSuccess()) {
-                String data = response.getData();
+                String result = response.getResult();
                 HttpHeaders headers = new HttpHeaders();
                 headers.add("accept", "*/*");
 
                 return ResponseEntity.status(HttpStatus.OK).headers(headers)
-                        .body(new APIResponse<String>(data, null));
+                        .body(new APIResponse<String>(result, null));
             } else {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                         .body(new APIResponse<String>(null, response.getDescription()));
@@ -1227,18 +1231,6 @@ public class MarketController {
 
 
 }
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

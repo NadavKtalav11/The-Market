@@ -47,7 +47,7 @@ public class Market {
     private final Object initializedLock;
     private final Object managersLock;
     private final Object validationLock;
-    //private LateNotificationFacade lateNotificationFacade;
+
 
     private MyWebSocketHandler myWebSocketHandler;
 
@@ -69,11 +69,11 @@ public class Market {
         this.systemManagerIds = new HashSet<>();
         managersLock = new Object();
         validationLock = new Object();
-        //lateNotificationFacade = new LateNotificationFacade();
 
         myWebSocketHandler =  MyWebSocketHandler.getInstance();
         //init(new PaymentServiceDTO(" ds","f f" , "  ee"), new SupplyServiceDTO(" vv", "  vvv" , new HashSet<>(), new HashSet<>()));
     }
+
 
 
     public Market(UserFacade userFacade, AuthenticationAndSecurityFacade authenticationAndSecurityFacade,
@@ -88,7 +88,7 @@ public class Market {
         this.systemManagerIds = new HashSet<>();
         managersLock = new Object();
         validationLock = new Object();
-        //lateNotificationFacade = new LateNotificationFacade();
+
 
         //notificationService = new NotificationsEndPoint();
         myWebSocketHandler =  MyWebSocketHandler.getInstance();
@@ -109,7 +109,6 @@ public class Market {
         validationLock = new Object();
         //notificationFacade = new NotificationFacade();
 
-        //notificationService = new NotificationsEndPoint();
         myWebSocketHandler =  MyWebSocketHandler.getInstance();
 
     }
@@ -132,7 +131,24 @@ public class Market {
         myWebSocketHandler =  MyWebSocketHandler.getInstance();
 
     }
+    public Market(UserFacade userFacade,  StoreFacade storeFacade ,
+                  PaymentServicesFacade paymentServicesFacade, SupplyServicesFacade supplyServicesFacade){
+        this.storeFacade = storeFacade;
+        this.userFacade = userFacade;
+        this.roleFacade = RoleFacade.getInstance();
+        this.paymentServicesFacade = paymentServicesFacade;
+        this.authenticationAndSecurityFacade = AuthenticationAndSecurityFacade.getInstance();
+        this.supplyServicesFacade= supplyServicesFacade;
+        initializedLock= new Object();
+        this.systemManagerIds = new HashSet<>();
+        managersLock = new Object();
+        validationLock = new Object();
+        //lateNotificationFacade = new LateNotificationFacade();
 
+        //notificationService = new NotificationsEndPoint();
+        myWebSocketHandler =  MyWebSocketHandler.getInstance();
+
+    }
 
     public Market(UserFacade userFacade) {
         this.storeFacade = StoreFacade.getInstance();
@@ -234,7 +250,7 @@ public class Market {
 
         synchronized (initializedLock) {
             if (initialized == true) {
-                return null;
+                return "null";
             }
         }
         try {
@@ -274,6 +290,7 @@ public class Market {
             String firstUserID = enterMarketSystem();
             UserDTO userDTO1 = new UserDTO(firstUserID, adminUsername, adminBirthday, adminCountry, adminCity, adminAddress, adminName);
             String systemManagerId = userFacade.register(firstUserID, userDTO1, encryptedPassword);
+            roleFacade.addSystemManger(systemManagerId);
             synchronized (managersLock) {
                 systemManagerIds.add(systemManagerId);
             }
@@ -804,8 +821,8 @@ public class Market {
         }
     }
 
-    public void logout(String userId){
-        userFacade.getUserByID(userId).Logout();
+    public void logout(String userId) {
+        userFacade.logout(userId);
         authenticationAndSecurityFacade.removeToken(userId);
     }
 
@@ -997,7 +1014,7 @@ public class Market {
         roleFacade.verifyStoreOwnerError(storeId, nominatorMemberID);
         userFacade.errorIfUsernameNotFound(nominatedUsername);
         String nominatedMemberID = userFacade.getMemberByUsername(nominatedUsername).getMemberID();
-        roleFacade.verifyNominatorError(nominatorMemberID, nominatedMemberID, storeId);
+        roleFacade.verifyOwnerNominatorError(nominatorMemberID, nominatedMemberID, storeId);
         roleFacade.fireStoreOwner(nominatedMemberID, storeId);
 
         myWebSocketHandler.handleStringMessage(nominatedMemberID , "you fired as store owner of store -by " + userFacade.getMemberName(nominatorMemberID));
@@ -1033,7 +1050,7 @@ public class Market {
         roleFacade.verifyStoreOwnerError(storeId, nominatorMemberID);
         userFacade.errorIfUsernameNotFound(nominatedUsername);
         String nominatedMemberID = userFacade.getMemberByUsername(nominatedUsername).getMemberID();
-        roleFacade.verifyNominatorError(nominatorMemberID, nominatedMemberID, storeId);
+        roleFacade.verifyMangerNominatorError(nominatorMemberID, nominatedMemberID, storeId);
         roleFacade.fireStoreManager(nominatedMemberID, storeId);
     }
 
@@ -1052,6 +1069,7 @@ public class Market {
         roleFacade.verifyStoreOwnerError(storeId, nominatorMemberID);
         userFacade.errorIfUsernameNotFound(nominatedUsername);
         String nominatedMemberID = userFacade.getMemberByUsername(nominatedUsername).getMemberID();
+        roleFacade.verifyMangerNominatorError(nominatorMemberID, nominatedMemberID, storeId);
         roleFacade.updateStoreManagerPermissions(nominatedMemberID, storeId, inventoryPermissions, purchasePermissions, nominatorMemberID);
     }
 
