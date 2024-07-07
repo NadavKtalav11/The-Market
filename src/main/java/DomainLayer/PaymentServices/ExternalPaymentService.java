@@ -21,8 +21,7 @@ public  class ExternalPaymentService {
     private final Object acquisitionLock= new Object();
 
     public ExternalPaymentService(String url) {
-
-            this.url = url;
+        this.url = url;
             try
             {
                 httpReqCtrl = new HttpRequestController(url);
@@ -66,8 +65,7 @@ public  class ExternalPaymentService {
     public int payWithCard(int price, PaymentDTO payment, String id, Map<String, Map<String, List<Integer>>> productList,
                                              String acquisitionIdCounter) throws Exception {
         try {
-            if (httpReqCtrl == null) //If constructor failed
-            {
+            if (this.httpReqCtrl == null) {
                 return -1;
             }
             this.httpReqCtrl = new HttpRequestController(url);
@@ -82,10 +80,9 @@ public  class ExternalPaymentService {
             postContent.put("month", String.valueOf(payment.getMonth()));
             postContent.put("year", String.valueOf(payment.getYear()));
             postContent.put("holder", payment.getHolderName());
-            postContent.put("ccv", String.valueOf(payment.getCvv()));
+            postContent.put("cvv", String.valueOf(payment.getCvv()));
             postContent.put("id", payment.getHolderId());
             this.httpReqCtrl = new HttpRequestController(url);
-
             String response = this.httpReqCtrl.sendRequest(postContent);
             if (response == null) {
                 System.out.println("Payment request failed or returned null response.");
@@ -93,7 +90,6 @@ public  class ExternalPaymentService {
             }
             try {
                 int transactionId = Integer.parseInt(response);
-                System.out.println("trans id-"+ transactionId);
                 return transactionId;
             } catch (NumberFormatException e) {
                 System.out.println("Response format error: " + e.getMessage());

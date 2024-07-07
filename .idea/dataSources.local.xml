@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="dataSourceStorageLocal" created-in="IU-241.17011.79">
+    <data-source name="themarketdb@themarketdb.ch0ca4qkkybz.eu-north-1.rds.amazonaws.com" uuid="a37b8b58-3685-42ee-b4b4-3d21595fcbf6">
+      <database-info product="" version="" jdbc-version="" driver-name="" driver-version="" dbms="MYSQL" />
+      <schema-mapping />
+    </data-source>
+  </component>
+</project>
