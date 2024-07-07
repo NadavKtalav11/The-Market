@@ -1764,7 +1764,7 @@ public class Market {
             throw new IllegalArgumentException(ExceptionsEnum.rulesNotMatchOpeators.toString());
         }
         for (int i = 0; i < numericalOperators.size(); i++) {
-            if (!numericalOperators.get(i).equals("MAX") && !numericalOperators.get(i).equals("ADD")) {
+            if (!numericalOperators.get(i).equals("MAX") && !numericalOperators.get(i).equals("ADDITION")) {
                 throw new IllegalArgumentException(ExceptionsEnum.InvalidOperator.toString());
             }
         }
@@ -1855,7 +1855,7 @@ public class Market {
             }
         }
 
-        if (!numericalOperator.equals("MAX") && !numericalOperator.equals("ADD")) {
+        if (!numericalOperator.equals("MAX") && !numericalOperator.equals("ADDITION")) {
             throw new IllegalArgumentException(ExceptionsEnum.InvalidOperator.toString());
         }
 
@@ -1878,7 +1878,7 @@ public class Market {
             throw new IllegalArgumentException(ExceptionsEnum.InvalidOperator.toString());
         }
 
-        if (!numericalOperator.equals("MAX") && !numericalOperator.equals("ADD")) {
+        if (!numericalOperator.equals("MAX") && !numericalOperator.equals("ADDITION")) {
             throw new IllegalArgumentException(ExceptionsEnum.InvalidOperator.toString());
         }
 
