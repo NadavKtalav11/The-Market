@@ -1,6 +1,7 @@
 package DomainLayer.Market;
 
 import DomainLayer.AuthenticationAndSecurity.AuthenticationAndSecurityFacade;
+
 //import DomainLayer.Notifications.Notification;
 import DomainLayer.Notifications.LateNotificationFacade;
 //import DomainLayer.Notifications.StoreNotification;
@@ -111,7 +112,22 @@ public class Market {
         myWebSocketHandler =  MyWebSocketHandler.getInstance();
 
     }
+    public Market(  PaymentServicesFacade paymentServicesFacade,
+                  SupplyServicesFacade supplyServicesFacade,AuthenticationAndSecurityFacade authenticationAndSecurityFacade){
+        this.storeFacade = StoreFacade.getInstance();
+        this.userFacade = UserFacade.getInstance();
+        this.roleFacade = RoleFacade.getInstance();
+        this.paymentServicesFacade = paymentServicesFacade;
+        this.authenticationAndSecurityFacade = authenticationAndSecurityFacade;
+        this.supplyServicesFacade= supplyServicesFacade;
+        initializedLock= new Object();
+        this.systemManagerIds = new HashSet<>();
+        managersLock = new Object();
+        validationLock = new Object();
 
+        myWebSocketHandler =  MyWebSocketHandler.getInstance();
+
+    }
     public Market(UserFacade userFacade, AuthenticationAndSecurityFacade authenticationAndSecurityFacade,
                   StoreFacade storeFacade, SupplyServicesFacade supplyServicesFacade){
         this.storeFacade = storeFacade;
@@ -149,6 +165,24 @@ public class Market {
 
     }
 
+    public Market(UserFacade userFacade,  StoreFacade storeFacade ,
+                  PaymentServicesFacade paymentServicesFacade, SupplyServicesFacade supplyServicesFacade, RoleFacade roleFacade) {
+        this.storeFacade = storeFacade;
+        this.userFacade = userFacade;
+        this.roleFacade = roleFacade;
+        this.paymentServicesFacade = paymentServicesFacade;
+        this.authenticationAndSecurityFacade = AuthenticationAndSecurityFacade.getInstance();
+        this.supplyServicesFacade = supplyServicesFacade;
+        initializedLock = new Object();
+        this.systemManagerIds = new HashSet<>();
+        managersLock = new Object();
+        validationLock = new Object();
+        //lateNotificationFacade = new LateNotificationFacade();
+
+        //notificationService = new NotificationsEndPoint();
+        myWebSocketHandler = MyWebSocketHandler.getInstance();
+    }
+
 
 
 
@@ -175,6 +209,40 @@ public class Market {
         this.userFacade = userFacade;
         this.roleFacade = RoleFacade.getInstance();
         this.paymentServicesFacade = PaymentServicesFacade.getInstance();
+        this.authenticationAndSecurityFacade = AuthenticationAndSecurityFacade.getInstance();
+        this.supplyServicesFacade= SupplyServicesFacade.getInstance();
+        initializedLock= new Object();
+        this.systemManagerIds = new HashSet<>();
+        managersLock = new Object();
+        validationLock = new Object();
+        //lateNotificationFacade = new LateNotificationFacade();
+
+        myWebSocketHandler =  MyWebSocketHandler.getInstance();
+
+    }
+
+    public Market(UserFacade userFacade, PaymentServicesFacade paymentServicesFacade){
+        this.storeFacade = StoreFacade.getInstance();
+        this.userFacade = userFacade;
+        this.roleFacade = RoleFacade.getInstance();
+        this.paymentServicesFacade = paymentServicesFacade;
+        this.authenticationAndSecurityFacade = AuthenticationAndSecurityFacade.getInstance();
+        this.supplyServicesFacade= SupplyServicesFacade.getInstance();
+        initializedLock= new Object();
+        this.systemManagerIds = new HashSet<>();
+        managersLock = new Object();
+        validationLock = new Object();
+        //lateNotificationFacade = new LateNotificationFacade();
+
+        myWebSocketHandler =  MyWebSocketHandler.getInstance();
+
+    }
+
+    public Market(PaymentServicesFacade paymentServicesFacade, StoreFacade storeFacade){
+        this.storeFacade = storeFacade;
+        this.userFacade = UserFacade.getInstance();
+        this.roleFacade = RoleFacade.getInstance();
+        this.paymentServicesFacade = paymentServicesFacade;
         this.authenticationAndSecurityFacade = AuthenticationAndSecurityFacade.getInstance();
         this.supplyServicesFacade= SupplyServicesFacade.getInstance();
         initializedLock= new Object();
@@ -622,6 +690,7 @@ public class Market {
     }
 
     public String purchase(PaymentDTO paymentDTO, UserDTO userDTO, CartDTO cartDTO) throws Exception {
+
         ScheduledFuture<?> timeoutHandle = null;
         ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
         AtomicBoolean timeoutExpired = new AtomicBoolean(false);
@@ -642,6 +711,7 @@ public class Market {
             //Todo: we call payWithExternalPaymentService twice, check if needed
             //this.payWithExternalPaymentService(cartDTO, paymentDTO, userDTO.getUserId());
             String acquisitionIdID = this.payWithExternalPaymentService(cartDTO, paymentDTO, userDTO.getUserId());
+            System.out.println("transs id: " + acquisitionIdID);
             sendMessagesOnPurchaseToStoreOwners(cartDTO);
             return acquisitionIdID;
         } catch (Exception var11) {
@@ -788,7 +858,7 @@ public class Market {
 
 
     public String payWithExternalPaymentService(CartDTO cartDTO,PaymentDTO payment, String userId) throws Exception{
-        if(cartDTO.getCartPrice()<= 0 || payment.getMonth()> 12 || payment.getMonth()<1 || payment.getYear() < 2023 ||payment.getHolderId()==null ||cartDTO.getStoreToProducts()==null) {
+        if(cartDTO.getCartPrice()<= 0 || payment.getMonth()> 12 || payment.getMonth()<1 || payment.getYear() < 2023 ||payment.getHolderId()==null || payment.getCreditCardNumber().length()!=16 || cartDTO.getStoreToProducts()==null) {
             throw new IllegalArgumentException(ExceptionsEnum.InvalidCreditCardParameters.toString());
         }
         if(paymentServicesFacade.getAllPaymentServices().size()<1){

@@ -382,7 +382,8 @@ public class UserFacade {
     }
 
     public void addAcquisitionToUser(String userId, String acquisitionId) {
-        getUserByID(userId).addAcquisition(acquisitionId);
+
+         getUserByID(userId).addAcquisition(acquisitionId);
     }
 
     public List<String> getUserAcquisitionsHistory(String userId) {

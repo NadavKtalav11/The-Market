@@ -31,8 +31,6 @@ public class AddingExternalSupplyServices {
         String url = ".com";
         String systemManagerId = "user77";
         market.getSystemManagerIds().add(systemManagerId);
-        String licensedDealerNumber = "12345";
-        String supplyServiceName = "Hovalot";
         HashSet<String> countries = new HashSet<>();
         HashSet<String> cities = new HashSet<>();
         countries.add("Israel");
@@ -50,9 +48,7 @@ public class AddingExternalSupplyServices {
         String systemManagerId = "user77";
         String nonManagerId = "user2";
         market.getSystemManagerIds().add(systemManagerId);
-        String licensedDealerNumber = "12345";
         market.getSystemManagerIds().add(systemManagerId);
-        String supplyServiceName = "Hovalot";
         HashSet<String> countries = new HashSet<>();
         HashSet<String> cities = new HashSet<>();
         countries.add("Israel");
@@ -63,7 +59,7 @@ public class AddingExternalSupplyServices {
             market.addExternalSupplyService(url, nonManagerId);
         });
 
-        // Optionally check the exception message
+        //  check the exception message
         assertEquals(ExceptionsEnum.SystemManagerSupplyAuthorization.toString(), exception.getMessage());
     }
 
@@ -74,9 +70,7 @@ public class AddingExternalSupplyServices {
 
         String systemManagerId = "user77";
         market.getSystemManagerIds().add(systemManagerId);
-        String licensedDealerNumber = "-1";
         market.getSystemManagerIds().add(systemManagerId);
-        String supplyServiceName = "Hovalot";
         HashSet<String> countries = new HashSet<>();
         HashSet<String> cities = new HashSet<>();
         countries.add("Israel");
@@ -87,7 +81,7 @@ public class AddingExternalSupplyServices {
             market.addExternalSupplyService(url, systemManagerId);
         });
 
-        // Optionally check the exception message
+        //  check the exception message
         assertEquals(ExceptionsEnum.InvalidSupplyServiceParameters.toString(), exception.getMessage());
     }
 

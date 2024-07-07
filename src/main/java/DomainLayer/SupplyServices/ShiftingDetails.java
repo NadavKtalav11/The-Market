@@ -11,6 +11,7 @@ public class ShiftingDetails {
     private String zip;
     private Date date;
 
+
     // Constructor
     public ShiftingDetails(int shiftingId,String userName, String country, String city,
                            String address) {
@@ -20,6 +21,10 @@ public class ShiftingDetails {
         this.city = city;
         this.address = address;
         this.date = new Date(); // Current date and time
+    }
+
+    public int getShiftingId() {
+        return shiftingId;
     }
 
     // Getters

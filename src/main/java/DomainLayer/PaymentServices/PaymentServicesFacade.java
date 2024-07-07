@@ -91,7 +91,6 @@ public class PaymentServicesFacade {
             externalPaymentService = allPaymentServices.values().iterator().next();
         }
        int transactionId  = externalPaymentService.payWithCard(price, payment, userId, productList, acquisitionId);
-        System.out.println("transactionId is " + transactionId);
         Acquisition acquisition = new Acquisition(String.valueOf(transactionId), userId, price, payment, productList);
         synchronized (acquisitionLock) {
             IdAndAcquisition.put(String.valueOf(transactionId), acquisition);
