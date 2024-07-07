@@ -9,7 +9,7 @@ Glossary - https://docs.google.com/document/d/1cLOtKh-OQUaAp9FVlCy0EocshTjExcrV7
 # The program initialization:
 The program initialization is an automatic process that runs when the program is opned for the first time. 
 
-The automatic proeess runs the command in the ConfigurationFile and stateAfterInit files.
+The automatic process runs the commands in the Configuration and stateAfterInit files.
 
 The system state after running it should be according to this files.
 
