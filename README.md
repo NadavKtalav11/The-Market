@@ -13,7 +13,11 @@ The automatic process runs the commands in the Configuration and stateAfterInit 
 
 The system state after running it should be according to this files.
 
-# How the Config file should be written
-  First, it should be yaml file called "ConfigurationFile".
+# How the Configuration file should be written
+  First, it should be a yaml file called "ConfigurationFile".
   
   It has to be located at: src/main/resources/ConfigurationFile.yaml
+
+  The file has to include the following details:
+    - Details of the default system manager:
+      * 
