@@ -12,16 +12,11 @@ import java.util.Map;
 @Entity
 @Table(name = "basket")
 public class Basket {
-    //@Id
-    //@GeneratedValue(strategy = GenerationType.IDENTITY)
-    //private Long id;
-
     @Id
-    @Column(name = "store_id", nullable = false)
-    private final String storeId;
+    @Column(name = "storeId")
+    private String storeId;
 
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-    //MapKeyColumn(name = "product_name") // Optional: specify the column name for the map key
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     private Map<String, ProductDetails> products;
 
     //private Map<String, List<Integer>> products; //key = product name, value = [quantity, products total price]

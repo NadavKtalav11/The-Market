@@ -302,7 +302,7 @@ public class Service_layer {
         logger.info("Appoint store owner");
 
         try {
-            market.fireStoreOwner(nominatorUserId, nominatedUsername, storeID);
+            market.appointStoreOwner(nominatorUserId, nominatedUsername, storeID);
             return new Response<>("Store owner appointed successfully", "Store owner appointed successfully.");
         } catch (Exception e) {
 
@@ -316,7 +316,7 @@ public class Service_layer {
         logger.info("Fire store owner");
 
         try {
-            market.appointStoreOwner(nominatorUserId, nominatedUsername, storeID);
+            market.fireStoreOwner(nominatorUserId, nominatedUsername, storeID);
             return new Response<>("Store owner fired successfully", "Store owner fired successfully.");
         } catch (Exception e) {
 

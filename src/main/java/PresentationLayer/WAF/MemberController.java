@@ -112,7 +112,7 @@ public class MemberController {
 
 
     @GetMapping("/isAdmin/{memberId}")
-    public ResponseEntity<APIResponse<Boolean>> hasPurchasePermission(@PathVariable String memberId) {
+    public ResponseEntity<APIResponse<Boolean>> isAdmin(@PathVariable String memberId) {
         try {
             boolean hasPurchasePermission = memberService.isAdmin(memberId);
             HttpHeaders headers = new HttpHeaders();
