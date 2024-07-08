@@ -718,7 +718,9 @@ public class Market {
             //Todo: we call payWithExternalPaymentService twice, check if needed
             //this.payWithExternalPaymentService(cartDTO, paymentDTO, userDTO.getUserId());
             String acquisitionIdID = this.payWithExternalPaymentService(cartDTO, paymentDTO, userDTO.getUserId());
-            System.out.println("transs id: " + acquisitionIdID);
+            if(!isValidAcquisitionIdID(acquisitionIdID)){
+              //  throw new Exception(ExceptionsEnum.ExternalPaymentFailed.toString());
+            }
             sendMessagesOnPurchaseToStoreOwners(cartDTO);
             return acquisitionIdID;
         } catch (Exception var11) {
@@ -736,6 +738,13 @@ public class Market {
             scheduler.shutdown();
         }
 
+    }
+    public boolean isValidAcquisitionIdID(String acqId){
+        int ID = Integer.parseInt(acqId);
+        if(ID>=10000 && ID<=100000){
+            return true;
+        }
+        return false;
     }
 
 

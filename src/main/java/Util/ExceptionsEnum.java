@@ -263,6 +263,12 @@ package Util;
                 return "The time has been expired";
             }
         },
+
+        ExternalPaymentFailed{
+            public String toString(){
+                return "The payment with the external payment has failed";
+            }
+        },
         PaymentFailed{
             public String toString(){
                 return "Payment failed";

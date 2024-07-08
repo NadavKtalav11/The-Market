@@ -134,11 +134,25 @@ public class externalConnections {
     }
 
     @Test
-    @Order(5)
+    @Order(6)
     public void checkSupplyAndCancelSuccess() throws Exception {
         ExternalSupplyService supplyServices = market.getSupplyServicesFacade().getAllSupplyServices().get("https://damp-lynna-wsep-1984852e.koyeb.app/");
         int res = supplyServices.createSupply("david", "Israel", "Ashdod", "Elul");
         int res1= supplyServices.cancelSupply(res);
         assertEquals(1,res1);
+    }
+
+    @Test
+    @Order(7)
+    public void isValidAcquisitionIdID() throws Exception {
+        assertTrue(market.isValidAcquisitionIdID("54656"));
+        assertTrue(market.isValidAcquisitionIdID("84656"));
+        assertTrue(market.isValidAcquisitionIdID("99656"));
+        assertFalse(market.isValidAcquisitionIdID("-1"));
+        assertFalse(market.isValidAcquisitionIdID("155"));
+        assertFalse(market.isValidAcquisitionIdID("564646644"));
+
+
+
     }
 }
