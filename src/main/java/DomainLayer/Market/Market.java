@@ -719,7 +719,7 @@ public class Market {
             //this.payWithExternalPaymentService(cartDTO, paymentDTO, userDTO.getUserId());
             String acquisitionIdID = this.payWithExternalPaymentService(cartDTO, paymentDTO, userDTO.getUserId());
             if(!isValidAcquisitionIdID(acquisitionIdID)){
-              //  throw new Exception(ExceptionsEnum.ExternalPaymentFailed.toString());
+               throw new Exception(ExceptionsEnum.ExternalPaymentFailed.toString());
             }
             sendMessagesOnPurchaseToStoreOwners(cartDTO);
             return acquisitionIdID;
