@@ -170,7 +170,7 @@ public class Market {
 
     @Autowired
     public Market(UserFacade userFacade, StoreFacade storeFacade, SupplyServicesFacade supplyServicesFacade,
-                  PaymentServicesFacade paymentServicesFacade, RoleFacade roleFacade){
+                  PaymentServicesFacade paymentServicesFacade, RoleFacade roleFacade) throws Exception {
         this.storeFacade = storeFacade;
         this.userFacade = userFacade;
         this.roleFacade = roleFacade;
@@ -185,6 +185,17 @@ public class Market {
         //lateNotificationFacade = new LateNotificationFacade();
 
         myWebSocketHandler =  MyWebSocketHandler.getInstance();
+
+//        Map<String, Map<String, List<Integer>>> productList = new HashMap<>();
+//        List<Integer> priceQuantity = new ArrayList<>();
+//        priceQuantity.add(12);
+//        priceQuantity.add(12);
+//        Map<String, List<Integer>> productNames = new HashMap<>();
+//        productNames.put("candle", priceQuantity);
+//        productList.put("candleStore", productNames);
+//        paymentServicesFacade.addExternalService("https://damp-lynna-wsep-1984852e.koyeb.app/");
+//        paymentServicesFacade.pay(99, new PaymentDTO("123", "noa", "curr", "123456789", 123,11,
+//                26),"userID", productList);
 
     }
 

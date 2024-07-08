@@ -26,15 +26,19 @@ public class PaymentServicesFacade {
         this.acquisitionRepository = acquisitionRepository;
 
 //        //TEST
-//        Map<String, Map<String, List<Integer>>> productList = new HashMap<>();
-//        List<Integer> priceQuantity = new ArrayList<>();
-//        priceQuantity.add(12);
-//        priceQuantity.add(12);
-//        Map<String, List<Integer>> productNames = new HashMap<>();
-//        productNames.put("candle", priceQuantity);
-//        productList.put("candleStore", productNames);
+        Map<String, Map<String, List<Integer>>> productList = new HashMap<>();
+        List<Integer> priceQuantity = new ArrayList<>();
+        priceQuantity.add(12);
+        priceQuantity.add(12);
+        Map<String, List<Integer>> productNames = new HashMap<>();
+        productNames.put("candle", priceQuantity);
+        productList.put("candleStore", productNames);
 //        pay(99, new PaymentDTO("123", "noa", "curr", "123456789", 123,11,
 //                26),"userID", productList);
+//        addExternalService("noaaboody");
+//        Acquisition acquisition = new Acquisition("11", "usrt", 88, new PaymentDTO("1", "2","3", "4", 5,6,9), productList);
+//        acquisitionRepository.save(acquisition);
+
     }
 
     //memory constructor
@@ -233,7 +237,7 @@ public class PaymentServicesFacade {
             Map<String, Receipt> storeReceipts = acq1.getStoreIdAndReceipt();
             for (String storeId : storeReceipts.keySet()) {
                 Receipt receipt = storeReceipts.get(storeId);
-                receiptsDTO.put(receipt.getReceiptId(), new ReceiptDTO(receipt.getReceiptId(), receipt.getStoreId(), receipt.getUserId(), receipt.getProductList()));
+                receiptsDTO.put(receipt.getReceiptId(), new ReceiptDTO(receipt.getReceiptId(), receipt.getStoreId(), receipt.getUserId(), receipt.getProductListToMap()));
             }
         }
         return receiptsDTO;
