@@ -13,7 +13,7 @@ public class StoreOwner implements Role {
     @Column(name = "founder")
     private boolean founder;
 
-    @Transient
+    @Column(name = "nominatorId")
     private String nominatorId;
 
     public StoreOwner(String member_ID, String store_ID, boolean founder, String nominatorId) {
