@@ -3,10 +3,7 @@ package DomainLayer.PaymentServices;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -16,13 +13,13 @@ public class ReceiptTest {
     private final String receiptId = "receipt-123";
     private final String storeId = "store-456";
     private final String userId = "user-789";
-    private Map<String, List<Integer>> productList;
+    private List<ProductDetailReceipt> productList;
 
     @BeforeEach
     public void setUp() {
-        productList = new HashMap<>();
-        productList.put("Product1", Arrays.asList(2, 100)); // Quantity, Price
-        productList.put("Product2", Arrays.asList(1, 50));
+        productList = new ArrayList<>();
+        productList.add(new ProductDetailReceipt(new ProductDetailReceiptId(storeId,"Product1"), 2, 100)); // Quantity, Price
+        productList.add(new ProductDetailReceipt(new ProductDetailReceiptId(storeId,"Product2"),1, 50));
 
         receipt = new Receipt(receiptId, storeId, userId, productList);
     }

@@ -21,7 +21,6 @@ public interface StoreManagerRepository extends JpaRepository<StoreManager, Stri
     @Query("SELECT so FROM StoreManager so WHERE so.id.member_ID = :memberId")
     List<StoreManager> getAllMemberIdManagers(String memberId);
 
-    @Transactional
     @Modifying
     @Query("UPDATE StoreManager sm SET sm.inventoryPermissions = :inventoryPermissions, sm.purchasePermissions = :purchasePermissions WHERE sm.id.store_ID = :storeId AND sm.id.member_ID = :memberId AND sm.nominatorMemberId = :nominatorMemberID")
     void updateStoreManagerPermissions(@Param("memberId") String memberId,
