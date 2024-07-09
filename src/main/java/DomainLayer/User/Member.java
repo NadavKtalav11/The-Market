@@ -4,8 +4,9 @@ import DomainLayer.Store.StoreFacade;
 import DomainLayer.Role.RoleFacade;
 import Util.ExceptionsEnum;
 import Util.UserDTO;
+import jakarta.persistence.*;
+import org.springframework.stereotype.Component;
 
-import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -15,17 +16,28 @@ import java.util.zip.CheckedOutputStream;
 @Entity
 @Table(name = "member", schema = "themarketdb")
 public class Member extends State{
-    @Id
+    @Column(name = "user_id")
     private String userId;
-    @Transient
+
+    @Id
+    @Column(name = "member_id")
     private String member_ID;
+
+    @Column(name = "name")
     private String name;
+    @Column(name = "username")
     private String username;
+    @Column(name = "password")
     private String password;
+    @Column(name = "birthday")
     private String birthday;
+    @Column(name = "country")
     private String country;
+    @Column(name = "city")
     private String city;
+    @Column(name = "address")
     private String address;
+    @Column(name = "product_id_counter")
     private int productIdCounter;
     @ElementCollection
     private List<String> acquisitionIds;
@@ -58,6 +70,10 @@ public class Member extends State{
         this.name = name;
         this.productIdCounter = 0;
         this.acquisitionIds = new ArrayList<>();
+    }
+
+    public Member() {
+
     }
 
 

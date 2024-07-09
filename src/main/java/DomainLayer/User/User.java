@@ -4,12 +4,7 @@ package DomainLayer.User;
 //import  DomainLayer.Notifications.Notification;
 
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.ElementCollection;
-import javax.persistence.Transient;
+import jakarta.persistence.*;
 
 import Util.CartDTO;
 import Util.UserDTO;
@@ -20,16 +15,39 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+@Entity
+@Table(name = "user")
 public class User   {
 
+    @Id
     private String userID;
+
+    //TODO: CHANGE THE ANNOTATION
+    //@OneToOne(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+    //@JoinColumn(name = "state_id")
+    @Transient
     private State state;
+
+    @Column(name = "birthday")
     private String birthday;
+
+    @Column(name = "country")
     private String country;
+
+    @Column(name = "city")
     private String city;
+
+    @Column(name = "address")
     private String address;
+
+    @Column(name = "name")
     private String name;
+
+    @Column(name = "ready_to_pay")
     private boolean readyToPay;
+
+    @Column(name = "is_guest")
+    private boolean isGuest;
 
     //@Transient
     //private Observer observer;
@@ -47,8 +65,14 @@ public class User   {
         this.state = new Guest(); //default state
         this.name = null;
         this.readyToPay = false;
+        this.isGuest = !state.isMember();
         //this.cart = new Cart();
 
+    }
+
+    public User() {
+        this.state = new Guest();
+        this.isGuest = !state.isMember();
     }
 
     public void updateByDTO(UserDTO userDTO){
@@ -58,6 +82,7 @@ public class User   {
         this.city = userDTO.getCity();
         this.address = userDTO.getAddress();
         this.name = userDTO.getName();
+        this.isGuest = !state.isMember();
     }
 
     /*@Override
@@ -109,6 +134,7 @@ public class User   {
 
     public void setState(State state) {
         this.state = state;
+        this.isGuest = !state.isMember();
     }
 
     public String getCountry(){
@@ -132,6 +158,7 @@ public class User   {
     public void Logout() {
         state.Logout();
         state = new Guest();
+        this.isGuest = !state.isMember();
     }
 
     public void exitMarketSystem() {
@@ -192,7 +219,6 @@ public class User   {
         this.city = userDTO.getCity();
         this.country = userDTO.getCountry();
         this.birthday = userDTO.getBirthday();
-
     }
 
 

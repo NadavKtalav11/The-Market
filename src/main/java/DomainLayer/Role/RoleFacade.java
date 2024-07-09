@@ -1,8 +1,11 @@
 package DomainLayer.Role;
 
+import DomainLayer.Repositories.MemoryStoreManagerRepository;
+import DomainLayer.Repositories.MemoryStoreOwnerRepository;
+import DomainLayer.Repositories.StoreManagerRepository;
+import DomainLayer.Repositories.StoreOwnerRepository;
 import Util.ExceptionsEnum;
-import Util.UserDTO;
-import com.fasterxml.jackson.databind.JsonSerializer;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -30,6 +33,16 @@ public class RoleFacade {
         storeOwnerRepository = new MemoryStoreOwnerRepository();
         systemManagerLock = new Object();
 
+
+    }
+
+    @Autowired
+    public RoleFacade(StoreManagerRepository storeManagerRepository, StoreOwnerRepository storeOwnerRepository) {
+        systemManagers = new ArrayList<>();
+
+        this.storeManagerRepository = storeManagerRepository;
+        this.storeOwnerRepository = storeOwnerRepository;
+        systemManagerLock = new Object();
     }
 
     public static synchronized RoleFacade getInstance() {
@@ -39,7 +52,7 @@ public class RoleFacade {
         return roleFacadeInstance;
     }
 
-    public RoleFacade newForTest() {
+    public RoleFacade newForTest(){
         roleFacadeInstance = new RoleFacade();
         return roleFacadeInstance;
     }
@@ -115,7 +128,10 @@ public class RoleFacade {
                                               boolean inventoryPermissions, boolean purchasePermissions, String nominatorMemberID) throws Exception {
         if (verifyStoreManager(storeId, memberId)) {
             if (getStoreManager(storeId, memberId).getNominatorMemberId().equals(nominatorMemberID)) {
-                getStoreManager(storeId, memberId).setPermissions(inventoryPermissions, purchasePermissions);
+//                StoreManager storeManager = getStoreManager(storeId, memberId);
+//                storeManager.setPermissions(inventoryPermissions, purchasePermissions);
+//                storeManager = getStoreManager(storeId, memberId);
+                storeManagerRepository.updateStoreManagerPermissions(memberId,storeId,inventoryPermissions,purchasePermissions,nominatorMemberID);
             } else {
                 throw new Exception(ExceptionsEnum.notNominatorOfThisEmployee.toString());
             }

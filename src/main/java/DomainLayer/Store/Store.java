@@ -15,22 +15,68 @@ import java.util.stream.Collectors;
 //import  DomainLayer.Notifications.Notification;
 import Util.UserDTO;
 
+import jakarta.persistence.*;
 
+@Entity
+@Table(name = "store", schema = "themarketdb")
 public class Store {
+    @Id
+  //  @Column(name = "store_id")
     private String store_ID;
+
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JoinTable(
+            name = "store_products",
+            joinColumns = @JoinColumn(name = "store_id"),
+            inverseJoinColumns = @JoinColumn(name = "product_id")
+    )
+    @MapKeyColumn(name = "product_name")
+
+    //OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    //@MapKey(name = "productName")
+    //@JoinColumn(name = "store_id")
     private Map<String, Product> storeProducts = new HashMap<String, Product>();
+
+    @Column(nullable = false)
     private boolean isOpened;
+
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "discount_policy_id")
     private DiscountPolicy discountPolicy;
+
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "purchase_policy_id")
     private PurchasePolicy purchasePolicy;
+
+    @Column(name = "rating")
     private double rating;
+
+    @Column(name = "num_of_ratings")
     private int numOfRatings;
+
+    @ElementCollection
+    @CollectionTable(name = "receipts", joinColumns = @JoinColumn(name = "store_id"))
+    @MapKeyColumn(name = "receipt_id")
+    @Column(name = "user_id")
+    //@Transient
     private Map<String, String> receiptsIdsUserIds; //<receiptId, userId>
+
+    @Column(name = "store_name")
     private String storeName;
+
+    @Column(name = "description")
     private String description;
 
+    @Transient
     private final Object storeProductLock;
+
+    @Transient
     private final Object storeIdLock;
+
+    @Transient
     private final Object isOpenedLock;
+
+    @Transient
     private final Object receiptsLock;
 
     public Store(String store_ID, String storeName, String description)
@@ -48,6 +94,14 @@ public class Store {
         this.storeName = storeName;
         this.description = description;
         receiptsLock = new Object();
+    }
+
+    // No-argument constructor
+    public Store() {
+        this.storeProductLock = new Object();
+        this.storeIdLock = new Object();
+        this.isOpenedLock = new Object();
+        this.receiptsLock = new Object();
     }
 
     public String getStoreName(){
@@ -177,13 +231,13 @@ public class Store {
 
     }
 
-  //  public void sendMessageToStaffOfStore(Notification notification) {
+    //  public void sendMessageToStaffOfStore(Notification notification) {
 //        founder.notifyObserver(notification);
 //        for (User u : getOwnersOfStore())
 //            u.notifyObserver(notification);
 //        for (User u : getManagersOfStore())
 //            u.notifyObserver(notification);
-  //  }
+    //  }
 
 
     public boolean getIsOpened()
@@ -253,20 +307,20 @@ public class Store {
     {
         List<Product> products = new ArrayList<>();
 
-            for (String productName : productsFromSearch) {
-                synchronized (storeProductLock) {
-                    products.add(storeProducts.get(productName));
-                }
+        for (String productName : productsFromSearch) {
+            synchronized (storeProductLock) {
+                products.add(storeProducts.get(productName));
             }
-            return products.stream()
-                    .filter(product -> categoryStr == null || product.getCategoryName().equals(categoryStr.toUpperCase()))
-                    .filter(product -> keywords == null || keywords.stream().anyMatch(keyword -> product.getDescription().toLowerCase().contains(keyword.toLowerCase())))
-                    .filter(product -> minPrice == null || product.getPrice() >= minPrice)
-                    .filter(product -> maxPrice == null || product.getPrice() <= maxPrice)
-                    .filter(product -> minRating == null || product.getRating() >= minRating)
-                    .filter(product -> storeMinRating == null || this.rating >= storeMinRating)
-                    .map(Product::getProductName)
-                    .collect(Collectors.toList());
+        }
+        return products.stream()
+                .filter(product -> categoryStr == null || product.getCategoryName().equals(categoryStr.toUpperCase()))
+                .filter(product -> keywords == null || keywords.stream().anyMatch(keyword -> product.getDescription().toLowerCase().contains(keyword.toLowerCase())))
+                .filter(product -> minPrice == null || product.getPrice() >= minPrice)
+                .filter(product -> maxPrice == null || product.getPrice() <= maxPrice)
+                .filter(product -> minRating == null || product.getRating() >= minRating)
+                .filter(product -> storeMinRating == null || this.rating >= storeMinRating)
+                .map(Product::getProductName)
+                .collect(Collectors.toList());
 
     }
 
@@ -277,7 +331,7 @@ public class Store {
         }
     }
 
-  
+
     public String getStore_ID() {
         return store_ID;
     }

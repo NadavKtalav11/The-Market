@@ -1,5 +1,6 @@
-package DomainLayer.Role;
+package DomainLayer.Repositories;
 
+import DomainLayer.Role.StoreOwner;
 import org.springframework.context.annotation.Profile;
 import org.springframework.data.domain.Example;
 import org.springframework.data.domain.Page;
@@ -13,7 +14,7 @@ import java.util.function.Function;
 
 @Repository
 @Profile("memory")
-public class MemoryStoreOwnerRepository implements  StoreOwnerRepository {
+public class MemoryStoreOwnerRepository implements StoreOwnerRepository {
     private Map<String,List<StoreOwner>> memberId_storeOwnersMap = new HashMap<>();
     private final Object storeOwnerLock= new Object();
 

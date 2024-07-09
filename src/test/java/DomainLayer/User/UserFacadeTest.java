@@ -1,7 +1,8 @@
 package DomainLayer.User;
 
-
+import DomainLayer.Repositories.MemberMemoryRepository;
 import DomainLayer.Repositories.MemberRepository;
+import DomainLayer.Repositories.UserMemoryRepository;
 import DomainLayer.Repositories.UserRepository;
 import Util.UserDTO;
 import org.junit.jupiter.api.BeforeEach;
@@ -16,11 +17,14 @@ import static org.mockito.Mockito.*;
 public class UserFacadeTest {
     @Mock
     private User mockUser;
+    @Mock
     private Member mockMember;
-    private UserRepository mockUserRepository;  // Mocking the UserRepository
+    @Mock
+    private UserRepository mockUserRepository;
+    @Mock
+    private MemberRepository mockMemberRepository;
     @InjectMocks
-    private UserFacade userFacade;  // Ensure this is injected with mocks
-    private MemberRepository mockMemberRepository;  // Mocking the MemberRepository
+    private UserFacade userFacade;
     private final String userId = "1";
     private final String storeId = "1";
     private final String productName = "Product1";
@@ -28,30 +32,23 @@ public class UserFacadeTest {
     private final int totalPrice = 100;
 
     @BeforeEach
-    public void setUp() {
-        // Initialize mocks
+    public void setUp() throws Exception {
         MockitoAnnotations.openMocks(this);
+        userFacade = new UserFacade(mockUserRepository, mockMemberRepository);
 
-        // Configure mockUser to return a specific userId when getUserID() is called
-        when(mockUser.getUserID()).thenReturn("1");
+        // Mocking the behavior of userRepository
+        when(mockUserRepository.save(any(User.class))).thenAnswer(invocation -> {
+            User user = invocation.getArgument(0);
+            when(mockUserRepository.getById(user.getUserID())).thenReturn(user);
+            return user;
+        });
 
-        // Reset the UserFacade singleton for each test
-        userFacade = UserFacade.getInstance();
-        mockMemberRepository = mock(MemberRepository.class);
-        mockUserRepository = mock(UserRepository.class);
-        mockMember = mock(Member.class);
-        userFacade.userRepository.deleteAll();
-        userFacade.members.deleteAllInBatch();
+        when(mockUserRepository.findById(userId)).thenReturn(java.util.Optional.of(mockUser));
+        when(mockUserRepository.getById(userId)).thenReturn(mockUser);
 
-        // Insert the mockUser into the UserFacade for userId = 1
-        userFacade.userRepository.save(mockUser);  // Assuming userId = 1
-    }
-
-    @Test
-    public void testGetInstance() {
-        UserFacade instance = UserFacade.getInstance();
-        assertNotNull(instance);
-        assertSame(userFacade, instance);
+        // Configure mockMember to return specific values
+        when(mockMember.getUsername()).thenReturn("testUser");
+        when(mockMember.getUserId()).thenReturn(userId);
     }
 
     @Test
@@ -62,14 +59,17 @@ public class UserFacadeTest {
     @Test
     public void testAddUser() {
         String userId = userFacade.addUser();
+        when(mockUserRepository.findById(userId)).thenReturn(java.util.Optional.of(mockUser));
         assertNotNull(userFacade.getUserByID(userId));
     }
 
     @Test
     public void testRegister() throws Exception {
         String userId = userFacade.addUser();
+        when(mockUserRepository.findById(userId)).thenReturn(java.util.Optional.of(mockUser));
         userFacade.register(userId, new UserDTO(userId, "testUser", "01/01/2000", "Test Country", "Test City", "123 Test St", "Test Name"), "testPass");
 
+        when(mockMemberRepository.getByUserName("testUser")).thenReturn(mockMember);
         Member member = userFacade.getMemberByUsername("testUser");
         assertNotNull(member);
         assertEquals("testUser", member.getUsername());
@@ -77,6 +77,7 @@ public class UserFacadeTest {
 
     @Test
     public void testAddItemsToBasket() {
+        when(mockUserRepository.getById(userId)).thenReturn(mockUser);
         doNothing().when(mockUser).addToCart(anyString(), anyInt(), anyString(), anyInt());
         doNothing().when(mockUser).updateCartPrice();
 
@@ -87,6 +88,7 @@ public class UserFacadeTest {
 
     @Test
     public void testModifyBasketProduct() {
+        when(mockUserRepository.getById(userId)).thenReturn(mockUser);
         doNothing().when(mockUser).modifyProductInCart(anyString(), anyInt(), anyString(), anyInt());
         doNothing().when(mockUser).updateCartPrice();
 
@@ -97,14 +99,16 @@ public class UserFacadeTest {
 
     @Test
     public void testCheckIfCanRemove() {
+        when(mockUserRepository.getById(userId)).thenReturn(mockUser);
         when(mockUser.checkIfProductInUserCart(productName, storeId)).thenReturn(true);
-        //test that the method didnt throw an exception
+
         assertDoesNotThrow(() -> userFacade.checkIfCanRemove(productName, storeId, userId));
         verify(mockUser).checkIfProductInUserCart(productName, storeId);
     }
 
     @Test
     public void testRemoveItemFromUserCart() {
+        when(mockUserRepository.getById(userId)).thenReturn(mockUser);
         doNothing().when(mockUser).removeItemFromUserCart(anyString(), anyString());
 
         userFacade.removeItemFromUserCart(productName, storeId, userId);

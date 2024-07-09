@@ -1,14 +1,26 @@
 package DomainLayer.SupplyServices;
 
 import java.util.Date;
+import jakarta.persistence.*;
 
+@Entity
+@Table(name = "shifting_details")
 public class ShiftingDetails {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "shifting_id")
     private int shiftingId;
+    @Column(name = "user_name", nullable = false)
     private String userName;
+    @Column(name = "country", nullable = false)
     private String country;
+    @Column(name = "city", nullable = false)
     private String city;
+    @Column(name = "address", nullable = false)
     private String address;
+    @Column(name = "zip")
     private String zip;
+    @Column(name = "date", nullable = false)
     private Date date;
 
 
@@ -23,9 +35,15 @@ public class ShiftingDetails {
         this.date = new Date(); // Current date and time
     }
 
+    // No-argument constructor required by JPA
+    public ShiftingDetails() {
+    }
+
     public int getShiftingId() {
         return shiftingId;
     }
+
+
 
     // Getters
     public String getUserName() {

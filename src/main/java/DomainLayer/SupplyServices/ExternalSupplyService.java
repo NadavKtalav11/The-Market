@@ -3,26 +3,44 @@ package DomainLayer.SupplyServices;
 import DomainLayer.HttpRequestController;
 import Util.ExceptionsEnum;
 import Util.SupplyServiceDTO;
+import jakarta.persistence.Entity;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.MapKeyColumn;
+import jakarta.persistence.*;
 
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+@Entity
+@Table(name = "external_supply_service")
 public class ExternalSupplyService {
     //private String licensedDealerNumber;
 //    private String supplyServiceName;
 //    private Set<String> countries = new HashSet<>();
 //    private Set<String> cities = new HashSet<>();
+    @Id
+    @Column(name = "supply_url", nullable = false)
     private String supplyURL;
+    @Transient
     private HttpRequestController httpReqCtrl;
 
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "external_supply_service_url") // This will create a foreign key column in the ShiftingDetails table
+    @MapKeyColumn(name = "shift_id") // Column in the ShiftingDetails table for shift_id
     private Map<Integer, ShiftingDetails> shiftIdAndDetails = new HashMap<>();
 //    private final Object countriesLock;
 //    private final Object citiesLock;
+    @Transient
     private final Object shiftLock;
 
     int ShiftIDCounter= 1;
+
+    public ExternalSupplyService() {
+        // JPA requires a no-argument constructor
+        this.shiftLock = new Object();
+    }
 
     public ExternalSupplyService(String supplyURL){
 
@@ -168,6 +186,7 @@ public class ExternalSupplyService {
             }
 
             this.httpReqCtrl = new HttpRequestController(supplyURL);
+            this.shiftIdAndDetails.remove(transactionID);
             if(!this.httpReqCtrl.checkHandShake())
             {
                 throw new Exception(ExceptionsEnum.checkHandShake.toString());

@@ -32,7 +32,7 @@ import org.springframework.stereotype.Component;
 
 
 
-@SpringBootApplication(scanBasePackages = {"PresentationLayer.Vaadin", "PresentationLayer.WAF"})
+@SpringBootApplication(scanBasePackages = {"PresentationLayer.Vaadin", "PresentationLayer.WAF", "DomainLayer"})
 
 @EnableJpaRepositories(basePackages = "DomainLayer.Repositories")
 @EntityScan("DomainLayer")

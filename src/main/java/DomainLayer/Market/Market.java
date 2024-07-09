@@ -20,7 +20,9 @@ import DomainLayer.User.UserFacade;
 import DomainLayer.SupplyServices.SupplyServicesFacade;
 import Util.*;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 import org.yaml.snakeyaml.Yaml;
 import java.io.FileInputStream;
 import java.io.InputStream;
@@ -34,7 +36,7 @@ import java.util.regex.Pattern;
 import java.util.concurrent.*;
 
 
-@Component
+@Service
 public class Market {
     private static Market MarketInstance;
     private PaymentServicesFacade paymentServicesFacade;
@@ -53,32 +55,42 @@ public class Market {
     private MyWebSocketHandler myWebSocketHandler;
 
     public synchronized static Market getInstance() {
-        if (MarketInstance == null) {
-            MarketInstance = new Market();
-        }
+//        if (MarketInstance == null) {
+//            MarketInstance = new Market();
+//        }
         return MarketInstance;
     }
 
-    public Market(){
-        this.storeFacade = StoreFacade.getInstance();
-        this.userFacade = UserFacade.getInstance();
-        this.roleFacade = RoleFacade.getInstance();
-        this.paymentServicesFacade = PaymentServicesFacade.getInstance();
-        this.authenticationAndSecurityFacade = AuthenticationAndSecurityFacade.getInstance();
-        supplyServicesFacade= SupplyServicesFacade.getInstance();
+    public Market() {
+
+        StoreFacade storeFacade1 =  new StoreFacade();
+        UserFacade userFacade1 =  new UserFacade();
+        RoleFacade roleFacade1 =  new RoleFacade();
+        AuthenticationAndSecurityFacade authenticationAndSecurityFacade1 =  new AuthenticationAndSecurityFacade();
+        PaymentServicesFacade paymentServicesFacade1 =  new PaymentServicesFacade();
+        SupplyServicesFacade supplyServicesFacade1 = new SupplyServicesFacade();
+        storeFacade=storeFacade1;
+        userFacade = userFacade1;
+        roleFacade = roleFacade1;
+        authenticationAndSecurityFacade = authenticationAndSecurityFacade1;
+        paymentServicesFacade = paymentServicesFacade1;
+        supplyServicesFacade = supplyServicesFacade1;
         initializedLock= new Object();
-        this.systemManagerIds = new HashSet<>();
+        systemManagerIds = new HashSet<>();
         managersLock = new Object();
         validationLock = new Object();
+        //lateNotificationFacade = new LateNotificationFacade();
 
+        MarketInstance = this;
+
+        //notificationService = new NotificationsEndPoint();
         myWebSocketHandler =  MyWebSocketHandler.getInstance();
-        //init(new PaymentServiceDTO(" ds","f f" , "  ee"), new SupplyServiceDTO(" vv", "  vvv" , new HashSet<>(), new HashSet<>()));
     }
 
 
 
     public Market(UserFacade userFacade, AuthenticationAndSecurityFacade authenticationAndSecurityFacade,
-                  StoreFacade storeFacade){
+                  StoreFacade storeFacade) {
         this.storeFacade = storeFacade;
         this.userFacade = userFacade;
         this.roleFacade = RoleFacade.getInstance();
@@ -97,7 +109,7 @@ public class Market {
     }
 
     public Market(UserFacade userFacade, PaymentServicesFacade paymentServicesFacade,
-                  SupplyServicesFacade supplyServicesFacade){
+                  SupplyServicesFacade supplyServicesFacade) {
         this.storeFacade = StoreFacade.getInstance();
         this.userFacade = userFacade;
         this.roleFacade = RoleFacade.getInstance();
@@ -129,7 +141,7 @@ public class Market {
 
     }
     public Market(UserFacade userFacade, AuthenticationAndSecurityFacade authenticationAndSecurityFacade,
-                  StoreFacade storeFacade, SupplyServicesFacade supplyServicesFacade){
+                  StoreFacade storeFacade, SupplyServicesFacade supplyServicesFacade) {
         this.storeFacade = storeFacade;
         this.userFacade = userFacade;
         this.roleFacade = RoleFacade.getInstance();
@@ -183,10 +195,7 @@ public class Market {
         myWebSocketHandler = MyWebSocketHandler.getInstance();
     }
 
-
-
-
-    public Market(UserFacade userFacade){
+    public Market(UserFacade userFacade) {
         this.storeFacade = StoreFacade.getInstance();
         this.userFacade = userFacade;
         this.roleFacade = RoleFacade.getInstance();
@@ -204,20 +213,25 @@ public class Market {
 
     }
 
-    public Market(UserFacade userFacade, StoreFacade storeFacade){
+    @Autowired
+    public Market(UserFacade userFacade, StoreFacade storeFacade, SupplyServicesFacade supplyServicesFacade,
+                  PaymentServicesFacade paymentServicesFacade, RoleFacade roleFacade) throws Exception {
         this.storeFacade = storeFacade;
         this.userFacade = userFacade;
-        this.roleFacade = RoleFacade.getInstance();
-        this.paymentServicesFacade = PaymentServicesFacade.getInstance();
+        this.roleFacade = roleFacade;
+        this.paymentServicesFacade = paymentServicesFacade;
         this.authenticationAndSecurityFacade = AuthenticationAndSecurityFacade.getInstance();
-        this.supplyServicesFacade= SupplyServicesFacade.getInstance();
+        this.supplyServicesFacade= supplyServicesFacade;
         initializedLock= new Object();
         this.systemManagerIds = new HashSet<>();
         managersLock = new Object();
         validationLock = new Object();
+        systemManagerIds = new HashSet<>();
         //lateNotificationFacade = new LateNotificationFacade();
 
         myWebSocketHandler =  MyWebSocketHandler.getInstance();
+
+
 
     }
 
@@ -905,8 +919,8 @@ public class Market {
         }
     }
 
-    public void logout(String userId){
-        userFacade.getUserByID(userId).Logout();
+    public void logout(String userId) {
+        userFacade.logout(userId);
         authenticationAndSecurityFacade.removeToken(userId);
     }
 

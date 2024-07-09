@@ -1,20 +1,47 @@
 package DomainLayer.User;
 
+import jakarta.persistence.Entity;
+import jakarta.persistence.Table;
+import jakarta.persistence.*;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+@Entity
+@Table(name = "basket")
 public class Basket {
-    private final String storeId;
-    private Map<String, List<Integer>> products; //key = product name, value = [quantity, products total price]
+    @Id
+    @Column(name = "storeId")
+    private String storeId;
+
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+    private Map<String, ProductDetails> products;
+
+    //private Map<String, List<Integer>> products; //key = product name, value = [quantity, products total price]
+
+    @Column(name = "basket_price")
     int basketPrice;
+
+    @Transient
     private final Object basketPriceLock;
+
+    @Transient
     private final Object productsLock;
 
 
     public Basket(String storeId) {
         this.storeId = storeId;
+        this.basketPrice = 0;
+        basketPriceLock = new Object();
+        products = new HashMap<>();
+        productsLock =new Object();
+    }
+
+
+    public Basket() {
+        this.storeId = "";
         this.basketPrice = 0;
         basketPriceLock = new Object();
         products = new HashMap<>();
@@ -45,17 +72,22 @@ public class Basket {
 
     public synchronized Map<String, List<Integer>> getProducts() {
         synchronized (productsLock) {
+            Map<String, List<Integer>> products = new HashMap<>();
+            for (String productName : this.products.keySet()) {
+                List<Integer> quantityAndPrice = new ArrayList<>();
+                quantityAndPrice.add(this.products.get(productName).getQuantity());
+                quantityAndPrice.add(this.products.get(productName).getTotalPrice());
+                products.put(productName, quantityAndPrice);
+            }
             return products;
         }
     }
 
     public synchronized void addProduct(String productName, int quantity, int totalPrice)
     {
-        List<Integer> quantityAndPrice = new ArrayList<>();
         synchronized (productsLock) {
-            quantityAndPrice.add(quantity);
-            quantityAndPrice.add(totalPrice);
-            products.put(productName, quantityAndPrice);
+            ProductDetails productDetails = new ProductDetails(quantity, totalPrice);
+            products.put(productName, productDetails);
         }
     }
 
@@ -66,11 +98,12 @@ public class Basket {
                 throw new IllegalArgumentException("The item you try to edit is not in your basket. Please add the item before attempting to modify it.");
             }
         }
-        List<Integer> quantityAndPrice;
         synchronized (productsLock) {
-            quantityAndPrice = products.get(productName);
-            quantityAndPrice.set(0, quantity);
-            quantityAndPrice.set(1, totalPrice);
+            //todo: check if it is actually changing the values
+            ProductDetails productDetails  = products.get(productName);
+            productDetails.setQuantity(quantity);
+            productDetails.setTotalPrice(totalPrice);
+            products.put(productName, productDetails);
         }
     }
 
@@ -79,7 +112,7 @@ public class Basket {
         int totalPrice = 0;
         synchronized (productsLock) {
             for (String productName : products.keySet()) {
-                int totalItemPrice = products.get(productName).get(1);
+                int totalItemPrice = products.get(productName).getTotalPrice();
                 totalPrice += totalItemPrice;
             }
         }

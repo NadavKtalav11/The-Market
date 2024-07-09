@@ -13,7 +13,7 @@ public class StoreManager implements Role {
     @EmbeddedId
     private StoreManagerId id;
 
-    @ElementCollection
+    @Transient
     private List<Integer> authorizations;
 
     @Column(name = "inventoryPermissions")

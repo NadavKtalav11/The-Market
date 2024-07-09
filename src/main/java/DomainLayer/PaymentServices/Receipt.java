@@ -1,39 +1,57 @@
 package DomainLayer.PaymentServices;
 
-import java.util.HashMap;
+import jakarta.persistence.*;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.HashMap;
 
+@Entity
+@Table(name = "receipt")
 public class Receipt {
+
+    @Id
+    @Column(name = "receipt_id")
     private String receiptId;
+
+    @Column(name = "store_id") // Specify the column name explicitly
     private String storeId;
+
+    @Column(name = "user_id")
     private String userId;
-    private Map<String, List<Integer>> productList = new HashMap<>(); //<productName, price>
 
-    private final Object productListLock;
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)
+    @JoinColumns({
+            @JoinColumn(name = "receipt_id", referencedColumnName = "receipt_id"),
+            @JoinColumn(name = "store_id", referencedColumnName = "store_id")
+    })
+    private List<ProductDetailReceipt> productList = new ArrayList<>();
 
-    public Receipt(String receiptId, String storeId, String userId, Map<String, List<Integer>> productList)
-    {
+    @Transient
+    private Object productListLock = new Object();
+
+    public Receipt(String receiptId, String storeId, String userId, List<ProductDetailReceipt> productList) {
         this.receiptId = receiptId;
         this.storeId = storeId;
         this.userId = userId;
-        this. productList = productList;
-        productListLock= new Object();
+        this.productList = productList;
     }
 
-    public int getTotalPriceOfStoreReceipt()
-    {
+    public Receipt() {
+        productListLock = new Object();
+    }
+
+    public int getTotalPriceOfStoreReceipt() {
         synchronized (productListLock) {
             int storePrice = 0;
-            for (String productName : productList.keySet()) {
-                storePrice += productList.get(productName).get(1);
+            for (ProductDetailReceipt product : productList) {
+                storePrice += product.getPrice();
             }
             return storePrice;
         }
     }
 
-    public String getStoreId()
-    {
+    public String getStoreId() {
         return storeId;
     }
 
@@ -45,7 +63,18 @@ public class Receipt {
         return userId;
     }
 
-    public Map<String, List<Integer>> getProductList() {
+    public List<ProductDetailReceipt> getProductList() {
         return productList;
+    }
+
+    public Map<String, List<Integer>> getProductListToMap() {
+        Map<String, List<Integer>> productsList = new HashMap<>();
+        for (ProductDetailReceipt product : productList) {
+            List<Integer> quantityAndPrice = new ArrayList<>();
+            quantityAndPrice.add(product.getAmount());
+            quantityAndPrice.add(product.getPrice());
+            productsList.put(product.getId().getProductName(), quantityAndPrice);
+        }
+        return productsList;
     }
 }

@@ -7,18 +7,40 @@ import DomainLayer.HttpRequestController;
 import Util.ExceptionsEnum;
 import Util.PaymentDTO;
 import Util.PaymentServiceDTO;
+import jakarta.persistence.*;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+@Entity
+@Table(name = "external_payment_service")
 public  class ExternalPaymentService {
+    @Id
+    @Column(name = "url", nullable = false)
     private String url;
+    @Transient
     private HttpRequestController httpReqCtrl;
 
+    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "external_payment_service_url") // This will create a foreign key column in the Acquisition table
+    @MapKeyColumn(name = "acquisition_id") // Column in the Acquisition table for acquisition_id
     private Map<String, Acquisition> idAndAcquisition = new HashMap<>();
     // private HttpClient httpClient=new SimpleHttpClient();
+    @Transient
     private final Object acquisitionLock= new Object();
+
+    public ExternalPaymentService() {
+        // JPA requires a no-argument constructor
+        try
+        {
+            httpReqCtrl = new HttpRequestController(url);
+        }
+        catch (Exception e)
+        {
+            httpReqCtrl = null;
+        }
+    }
 
     public ExternalPaymentService(String url) {
         this.url = url;
