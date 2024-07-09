@@ -261,6 +261,10 @@ public class User   {
         state.addAcquisition(acquisitionId);
     }
 
+    public int cancelAcquisition(String acquisitionId){
+        return state.removeAcquisition(acquisitionId);
+    }
+
     public List<String> getAcquisitionIds() {
         return state.getAcquisitionIds();
     }

@@ -23,6 +23,7 @@ public class ShiftingDetails {
     @Column(name = "date", nullable = false)
     private Date date;
 
+
     // Constructor
     public ShiftingDetails(int shiftingId,String userName, String country, String city,
                            String address) {
@@ -37,6 +38,12 @@ public class ShiftingDetails {
     // No-argument constructor required by JPA
     public ShiftingDetails() {
     }
+
+    public int getShiftingId() {
+        return shiftingId;
+    }
+
+
 
     // Getters
     public String getUserName() {

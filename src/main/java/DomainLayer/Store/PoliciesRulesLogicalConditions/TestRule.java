@@ -13,7 +13,7 @@ public abstract class TestRule {
     protected final Category category;
     protected final String productName;
     protected final String description;
-    protected final boolean contains;
+    protected final Boolean contains;
     private static final ThreadLocal<Clock> clock = ThreadLocal.withInitial(Clock::systemDefaultZone); // Default clock
     protected final Object rangeLock;
     protected final Object categoryLock;
@@ -22,7 +22,7 @@ public abstract class TestRule {
     protected final Object containsLock;
     private static final Object clockLock = new Object();
 
-    public TestRule(String range, Category category, String productName, String description, boolean contains) {
+    public TestRule(String range, Category category, String productName, String description, Boolean contains) {
         this.range = range;
         this.category = category;
         this.productName = productName;
@@ -118,7 +118,7 @@ public abstract class TestRule {
         }
     }
 
-    protected boolean getContains() {
+    protected Boolean getContains() {
         synchronized (containsLock) {
             return contains;
         }

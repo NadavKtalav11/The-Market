@@ -10,7 +10,7 @@ public class PriceRule extends TestRule {
     private int price;
     protected final Object priceLock;
 
-    public PriceRule(int price, String range, Category category, String productName, String description, boolean contains) {
+    public PriceRule(int price, String range, Category category, String productName, String description, Boolean contains) {
         super(range, category, productName, description, contains);
         this.price = price;
         this.priceLock = new Object();

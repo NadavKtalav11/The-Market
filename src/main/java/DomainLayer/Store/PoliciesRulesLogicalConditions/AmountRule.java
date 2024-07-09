@@ -10,7 +10,7 @@ public class AmountRule extends TestRule {
     private int quantity;
     protected final Object quantityLock;
 
-    public AmountRule(int quantity, String range, Category category, String productName, String description, boolean contains) {
+    public AmountRule(int quantity, String range, Category category, String productName, String description, Boolean contains) {
         super(range, category, productName, description, contains);
         this.quantity = quantity;
         this.quantityLock = new Object();

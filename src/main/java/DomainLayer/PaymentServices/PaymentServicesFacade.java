@@ -112,7 +112,6 @@ public class PaymentServicesFacade {
         String acquisitionId  = getNewAcquisitionId();
         ExternalPaymentService externalPaymentService = getPaymentServiceByURL("https://damp-lynna-wsep-1984852e.koyeb.app/");
        int transactionId  = externalPaymentService.payWithCard(price, payment, userId, productList, acquisitionId);
-        System.out.println("transactionId is " + transactionId);
         Acquisition acquisition = new Acquisition(String.valueOf(transactionId), userId, price, payment, productList);
         acquisitionRepository.save(acquisition);
         externalPaymentService.addAcquisition(String.valueOf(transactionId), acquisition);

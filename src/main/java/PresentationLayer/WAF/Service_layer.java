@@ -42,8 +42,6 @@ public class Service_layer {
 
     }
 
-
-
     @Bean
     public RestTemplate restTemplate() {
         return new RestTemplate();
@@ -79,10 +77,10 @@ public class Service_layer {
         }
     }
 
-    public Response<String> cancelPayment(int transactionID){
+    public Response<String> cancelPayment(String userID , String transactionID){
         logger.info("Cancelling the payment for transactionID: {} .");
         try {
-            int res = market.cancelPayment(transactionID);
+            int res = market.cancelPayment(userID, transactionID);
             logger.info("The payment has been cancelled.");
             return new Response<>("Successful", "The payment has been cancelled.");
 
@@ -174,6 +172,7 @@ public class Service_layer {
         logger.info("Initiating purchase for user: {}", user_ID);
         try {
             String acquisitionID = market.purchase( paymentDTO,userDTO, cartDTO);
+            System.out.println("trans2: " + acquisitionID);
             logger.info("Purchase successful for user: {}", user_ID);
             return new Response<>("Purchase successful", "", acquisitionID);
         } catch (Exception e) {

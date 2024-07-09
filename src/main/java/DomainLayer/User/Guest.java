@@ -61,4 +61,8 @@ public class Guest extends State{
     public Long getId() {
         return id;
     }
+    @Override
+    public int removeAcquisition(String acquisitionId)  {
+        return -1;
+    }
 }

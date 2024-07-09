@@ -392,11 +392,16 @@ public class UserFacade {
     }
 
     public void addAcquisitionToUser(String userId, String acquisitionId) {
-        getUserByID(userId).addAcquisition(acquisitionId);
+
+         getUserByID(userId).addAcquisition(acquisitionId);
     }
 
     public List<String> getUserAcquisitionsHistory(String userId) {
         return getUserByID(userId).getAcquisitionIds();
+    }
+
+    public int cancelPaynmet(String userId, String acquisitionId){
+        return getUserByID(userId).cancelAcquisition(acquisitionId);
     }
 
     public void checkIfUserHasAcquisition(String userId, String acquisitionId) {

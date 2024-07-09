@@ -43,30 +43,6 @@ public class RoleFacade {
         this.storeManagerRepository = storeManagerRepository;
         this.storeOwnerRepository = storeOwnerRepository;
         systemManagerLock = new Object();
-
-//        storeManagerRepository.deleteAll();
-//        storeOwnerRepository.deleteAll();
-//        createStoreManager("memberID", "storeid", true,true, "memberID1");
-//        updateStoreManagerPermissions("memberID", "storeid", true,false, "memberID1");
-//
-//        createStoreOwner("memberID22", "storeid", true, "memberID1");
-//        createStoreOwner("memberID11", "storeid", false, "memberID1");
-//
-//        if (managerHasInventoryPermissions("memberID","storeid")){
-//            System.out.println("successy1");
-//        }
-//        if (!managerHasPurchasePermissions("memberID","storeid")){
-//            System.out.println("successy2");
-//        }
-//        if(verifyStoreManager("storeid","memberID")){
-//            System.out.println("successy3");
-//        }
-//        if(verifyStoreOwnerIsFounder("storeid","memberID22")){
-//            System.out.println("successy4");
-//        }
-//
-//        System.out.println(getInformationAboutStoreRoles("storeid"));
-
     }
 
     public static synchronized RoleFacade getInstance() {
@@ -76,7 +52,7 @@ public class RoleFacade {
         return roleFacadeInstance;
     }
 
-    public RoleFacade newForTest() throws Exception {
+    public RoleFacade newForTest(){
         roleFacadeInstance = new RoleFacade();
         return roleFacadeInstance;
     }
@@ -90,7 +66,7 @@ public class RoleFacade {
 
 
     public void verifyStoreOwnerError(String storeID, String memberID) throws Exception {
-        if (!verifyStoreOwner(storeID, memberID))
+        if (!verifyMemberIsSystemManager(memberID) && !verifyStoreOwner(storeID, memberID))
             throw new Exception(ExceptionsEnum.userIsNotStoreOwner.toString());
     }
 
@@ -108,12 +84,7 @@ public class RoleFacade {
         return storeOwnerRepository.get(storeID, memberID);
     }
 
-    public void addSystemManger(String memberId){
-        SystemManager systemManager = new SystemManager(memberId);
-        synchronized (systemManagers) {
-            systemManagers.add(systemManager);
-        }
-    }
+    
 
     public boolean verifyStoreManager(String storeID, String memberID) {
         return getStoreManager(storeID, memberID) != null;
@@ -125,7 +96,7 @@ public class RoleFacade {
 
     public boolean verifyStoreOwnerIsFounder(String storeID, String memberID) {
         StoreOwner storeOwner = getStoreOwner(storeID, memberID);
-        return storeOwner != null && storeOwner.verifyStoreOwnerIsFounder();
+        return verifyMemberIsSystemManager(memberID) && storeOwner != null && storeOwner.verifyStoreOwnerIsFounder();
     }
 
     public void createStoreOwner(String memberId, String storeId, boolean founder, String nominatorMemberId) throws Exception {
@@ -143,6 +114,13 @@ public class RoleFacade {
             addNewStoreManagerToTheMarket(newStoreManager);
         } else {
             throw new Exception(ExceptionsEnum.memberAlreadyHasRoleInThisStore.toString());
+        }
+    }
+
+    public void addSystemManger(String memberId) {
+        SystemManager systemManager = new SystemManager(memberId);
+        synchronized (systemManagers) {
+            systemManagers.add(systemManager);
         }
     }
 

@@ -1,6 +1,7 @@
 package DomainLayer.Market;
 
 import DomainLayer.AuthenticationAndSecurity.AuthenticationAndSecurityFacade;
+
 //import DomainLayer.Notifications.Notification;
 import DomainLayer.Notifications.LateNotificationFacade;
 //import DomainLayer.Notifications.StoreNotification;
@@ -25,6 +26,8 @@ import org.springframework.stereotype.Service;
 import org.yaml.snakeyaml.Yaml;
 import java.io.FileInputStream;
 import java.io.InputStream;
+import java.sql.Time;
+import java.sql.Timestamp;
 import java.util.Map;
 
 import java.util.*;
@@ -58,20 +61,30 @@ public class Market {
         return MarketInstance;
     }
 
-    private Market(StoreFacade storeFacade, UserFacade userFacade, RoleFacade roleFacade, PaymentServicesFacade paymentServicesFacade, AuthenticationAndSecurityFacade authenticationAndSecurityFacade, SupplyServicesFacade supplyServicesFacade){
-        this.storeFacade = storeFacade;
-        this.userFacade = userFacade;
-        this.roleFacade = roleFacade;
-        this.paymentServicesFacade = paymentServicesFacade;
-        this.authenticationAndSecurityFacade = authenticationAndSecurityFacade;
-        this.supplyServicesFacade= supplyServicesFacade;
-        this.initializedLock= new Object();
-        this.systemManagerIds = new HashSet<>();
+    public Market() {
+
+        StoreFacade storeFacade1 =  new StoreFacade();
+        UserFacade userFacade1 =  new UserFacade();
+        RoleFacade roleFacade1 =  new RoleFacade();
+        AuthenticationAndSecurityFacade authenticationAndSecurityFacade1 =  new AuthenticationAndSecurityFacade();
+        PaymentServicesFacade paymentServicesFacade1 =  new PaymentServicesFacade();
+        SupplyServicesFacade supplyServicesFacade1 = new SupplyServicesFacade();
+        storeFacade=storeFacade1;
+        userFacade = userFacade1;
+        roleFacade = roleFacade1;
+        authenticationAndSecurityFacade = authenticationAndSecurityFacade1;
+        paymentServicesFacade = paymentServicesFacade1;
+        supplyServicesFacade = supplyServicesFacade1;
+        initializedLock= new Object();
+        systemManagerIds = new HashSet<>();
         managersLock = new Object();
         validationLock = new Object();
+        //lateNotificationFacade = new LateNotificationFacade();
 
+        MarketInstance = this;
+
+        //notificationService = new NotificationsEndPoint();
         myWebSocketHandler =  MyWebSocketHandler.getInstance();
-        //init(new PaymentServiceDTO(" ds","f f" , "  ee"), new SupplyServiceDTO(" vv", "  vvv" , new HashSet<>(), new HashSet<>()));
     }
 
 
@@ -107,12 +120,26 @@ public class Market {
         this.systemManagerIds = new HashSet<>();
         managersLock = new Object();
         validationLock = new Object();
-        //notificationFacade = new NotificationFacade();
 
         myWebSocketHandler =  MyWebSocketHandler.getInstance();
 
     }
+    public Market(  PaymentServicesFacade paymentServicesFacade,
+                  SupplyServicesFacade supplyServicesFacade,AuthenticationAndSecurityFacade authenticationAndSecurityFacade){
+        this.storeFacade = StoreFacade.getInstance();
+        this.userFacade = UserFacade.getInstance();
+        this.roleFacade = RoleFacade.getInstance();
+        this.paymentServicesFacade = paymentServicesFacade;
+        this.authenticationAndSecurityFacade = authenticationAndSecurityFacade;
+        this.supplyServicesFacade= supplyServicesFacade;
+        initializedLock= new Object();
+        this.systemManagerIds = new HashSet<>();
+        managersLock = new Object();
+        validationLock = new Object();
 
+        myWebSocketHandler =  MyWebSocketHandler.getInstance();
+
+    }
     public Market(UserFacade userFacade, AuthenticationAndSecurityFacade authenticationAndSecurityFacade,
                   StoreFacade storeFacade, SupplyServicesFacade supplyServicesFacade) {
         this.storeFacade = storeFacade;
@@ -148,6 +175,24 @@ public class Market {
         //notificationService = new NotificationsEndPoint();
         myWebSocketHandler =  MyWebSocketHandler.getInstance();
 
+    }
+
+    public Market(UserFacade userFacade,  StoreFacade storeFacade ,
+                  PaymentServicesFacade paymentServicesFacade, SupplyServicesFacade supplyServicesFacade, RoleFacade roleFacade) {
+        this.storeFacade = storeFacade;
+        this.userFacade = userFacade;
+        this.roleFacade = roleFacade;
+        this.paymentServicesFacade = paymentServicesFacade;
+        this.authenticationAndSecurityFacade = AuthenticationAndSecurityFacade.getInstance();
+        this.supplyServicesFacade = supplyServicesFacade;
+        initializedLock = new Object();
+        this.systemManagerIds = new HashSet<>();
+        managersLock = new Object();
+        validationLock = new Object();
+        //lateNotificationFacade = new LateNotificationFacade();
+
+        //notificationService = new NotificationsEndPoint();
+        myWebSocketHandler = MyWebSocketHandler.getInstance();
     }
 
     public Market(UserFacade userFacade) {
@@ -186,16 +231,41 @@ public class Market {
 
         myWebSocketHandler =  MyWebSocketHandler.getInstance();
 
-//        Map<String, Map<String, List<Integer>>> productList = new HashMap<>();
-//        List<Integer> priceQuantity = new ArrayList<>();
-//        priceQuantity.add(12);
-//        priceQuantity.add(12);
-//        Map<String, List<Integer>> productNames = new HashMap<>();
-//        productNames.put("candle", priceQuantity);
-//        productList.put("candleStore", productNames);
-//        paymentServicesFacade.addExternalService("https://damp-lynna-wsep-1984852e.koyeb.app/");
-//        paymentServicesFacade.pay(99, new PaymentDTO("123", "noa", "curr", "123456789", 123,11,
-//                26),"userID", productList);
+
+
+    }
+
+    public Market(UserFacade userFacade, PaymentServicesFacade paymentServicesFacade){
+        this.storeFacade = StoreFacade.getInstance();
+        this.userFacade = userFacade;
+        this.roleFacade = RoleFacade.getInstance();
+        this.paymentServicesFacade = paymentServicesFacade;
+        this.authenticationAndSecurityFacade = AuthenticationAndSecurityFacade.getInstance();
+        this.supplyServicesFacade= SupplyServicesFacade.getInstance();
+        initializedLock= new Object();
+        this.systemManagerIds = new HashSet<>();
+        managersLock = new Object();
+        validationLock = new Object();
+        //lateNotificationFacade = new LateNotificationFacade();
+
+        myWebSocketHandler =  MyWebSocketHandler.getInstance();
+
+    }
+
+    public Market(PaymentServicesFacade paymentServicesFacade, StoreFacade storeFacade){
+        this.storeFacade = storeFacade;
+        this.userFacade = UserFacade.getInstance();
+        this.roleFacade = RoleFacade.getInstance();
+        this.paymentServicesFacade = paymentServicesFacade;
+        this.authenticationAndSecurityFacade = AuthenticationAndSecurityFacade.getInstance();
+        this.supplyServicesFacade= SupplyServicesFacade.getInstance();
+        initializedLock= new Object();
+        this.systemManagerIds = new HashSet<>();
+        managersLock = new Object();
+        validationLock = new Object();
+        //lateNotificationFacade = new LateNotificationFacade();
+
+        myWebSocketHandler =  MyWebSocketHandler.getInstance();
 
     }
 
@@ -208,30 +278,30 @@ public class Market {
     }
 
 
-    public Market() {
-
-        StoreFacade storeFacade1 =  new StoreFacade();
-        UserFacade userFacade1 =  new UserFacade();
-        RoleFacade roleFacade1 =  new RoleFacade();
-        AuthenticationAndSecurityFacade authenticationAndSecurityFacade1 =  new AuthenticationAndSecurityFacade();
-        PaymentServicesFacade paymentServicesFacade1 =  new PaymentServicesFacade();
-        SupplyServicesFacade supplyServicesFacade1 = new SupplyServicesFacade();
+    public synchronized Market newForTests(){
+        MarketInstance = new Market();
+        StoreFacade storeFacade1 =  storeFacade.newForTest();
+        UserFacade userFacade1 =  userFacade.newForTest();
+        RoleFacade roleFacade1 =  roleFacade.newForTest();
+        AuthenticationAndSecurityFacade authenticationAndSecurityFacade1 =  authenticationAndSecurityFacade.newForTest();
+        PaymentServicesFacade paymentServicesFacade1 =  paymentServicesFacade.newForTest();
+        SupplyServicesFacade supplyServicesFacade1 = supplyServicesFacade.newForTest();
         storeFacade=storeFacade1;
         userFacade = userFacade1;
         roleFacade = roleFacade1;
         authenticationAndSecurityFacade = authenticationAndSecurityFacade1;
         paymentServicesFacade = paymentServicesFacade1;
         supplyServicesFacade = supplyServicesFacade1;
-        initializedLock= new Object();
-        systemManagerIds = new HashSet<>();
-        managersLock = new Object();
-        validationLock = new Object();
         //lateNotificationFacade = new LateNotificationFacade();
 
-        MarketInstance = this;
 
         //notificationService = new NotificationsEndPoint();
         myWebSocketHandler =  MyWebSocketHandler.getInstance();
+
+        return MarketInstance;
+
+
+
     }
 
     public Map<String, Object> loadAdminConfiguration(String configFilePath) throws Exception {
@@ -349,9 +419,16 @@ public class Market {
         }
     }
 
-    public int cancelPayment(int transactionID) throws Exception {
-        return  paymentServicesFacade.cancelPayment(transactionID);
+    public int cancelPayment(String userId,  String transactionID) throws Exception {
+        if (userFacade.isMember(userId)) {
+            String memberId = userFacade.getMemberIdByUserId(userId);
+            boolean succeeded = authenticationAndSecurityFacade.validateToken(authenticationAndSecurityFacade.getToken(memberId));if (!succeeded) {
+                logout(userId);
+                throw new Exception(ExceptionsEnum.sessionOver.toString());
+            }
+        }
 
+        return userFacade.cancelPaynmet(userId , transactionID);
     }
 
     public int cancelSupply(int transactionID) throws Exception {
@@ -366,7 +443,7 @@ public class Market {
                 Map<String, Object> userData = (Map<String, Object>) users.get(username);
                 String password = (String) userData.get("password");
                 String userId = enterMarketSystem();
-               Login(userId, username, password);
+                Login(userId, username, password);
                 usernameToUserIdMap.put(username, userId);
             }
         }
@@ -634,6 +711,7 @@ public class Market {
     }
 
     public String purchase(PaymentDTO paymentDTO, UserDTO userDTO, CartDTO cartDTO) throws Exception {
+
         ScheduledFuture<?> timeoutHandle = null;
         ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
         AtomicBoolean timeoutExpired = new AtomicBoolean(false);
@@ -654,6 +732,9 @@ public class Market {
             //Todo: we call payWithExternalPaymentService twice, check if needed
             //this.payWithExternalPaymentService(cartDTO, paymentDTO, userDTO.getUserId());
             String acquisitionIdID = this.payWithExternalPaymentService(cartDTO, paymentDTO, userDTO.getUserId());
+            if(!isValidAcquisitionIdID(acquisitionIdID)){
+               throw new Exception(ExceptionsEnum.ExternalPaymentFailed.toString());
+            }
             sendMessagesOnPurchaseToStoreOwners(cartDTO);
             return acquisitionIdID;
         } catch (Exception var11) {
@@ -672,6 +753,13 @@ public class Market {
         }
 
     }
+    public boolean isValidAcquisitionIdID(String acqId){
+        int ID = Integer.parseInt(acqId);
+        if(ID>=10000 && ID<=100000){
+            return true;
+        }
+        return false;
+    }
 
 
     public void sendMessagesToOwnersAndManagers(String storeId , String message) throws Exception { // Inject VaadinUserService and NotificationService
@@ -686,7 +774,7 @@ public class Market {
         hasJob.addAll(storeOwnerIds);
         for (String memberId : hasJob) {
                 //String message = "A purchase was made from your store - " + storeName;
-            myWebSocketHandler.handleStringMessage(userFacade.getUserIdByMemberId(memberId), message); // Send real-time notification via WebSocket
+            myWebSocketHandler.handleStringMessage(memberId, message); // Send real-time notification via WebSocket
         }
     }
 
@@ -701,7 +789,6 @@ public class Market {
 
             for (String memberId : storeOwnerIds) {
                 String message = "A purchase was made from your store - " + storeName;
-
                 myWebSocketHandler.handleStringMessage(memberId, message); // Send real-time notification via WebSocket
 
             }
@@ -801,7 +888,7 @@ public class Market {
 
 
     public String payWithExternalPaymentService(CartDTO cartDTO,PaymentDTO payment, String userId) throws Exception{
-        if(cartDTO.getCartPrice()<= 0 || payment.getMonth()> 12 || payment.getMonth()<1 || payment.getYear() < 2023 ||payment.getHolderId()==null ||cartDTO.getStoreToProducts()==null) {
+        if(cartDTO.getCartPrice()<= 0 || payment.getMonth()> 12 || payment.getMonth()<1 || payment.getYear() < 2023 ||payment.getHolderId()==null || payment.getCreditCardNumber().length()!=16 || cartDTO.getStoreToProducts()==null) {
             throw new IllegalArgumentException(ExceptionsEnum.InvalidCreditCardParameters.toString());
         }
         if(paymentServicesFacade.getAllPaymentServices().size()<1){
@@ -875,8 +962,6 @@ public class Market {
         String encryptedPassword = authenticationAndSecurityFacade.encodePassword(password);
         String memberId = userFacade.Login(userId, username,encryptedPassword);
         authenticationAndSecurityFacade.generateToken(memberId);
-        //notificationService.sendNotification("user" + userId + "logged in successfully");
-        //myWebSocketHandler.sendMassageToEveryOne( "Hello from server!");
         return memberId;
     }
 
@@ -1063,6 +1148,7 @@ public class Market {
         String nominatedMemberID = userFacade.getMemberByUsername(nominatedUsername).getMemberID();
         roleFacade.verifyMangerNominatorError(nominatorMemberID, nominatedMemberID, storeId);
         roleFacade.fireStoreManager(nominatedMemberID, storeId);
+        myWebSocketHandler.handleStringMessage(nominatedMemberID , "you fired as store owner of store -by " + userFacade.getMemberName(nominatorMemberID));
     }
 
     public void updateStoreManagerPermissions(String nominatorUserId, String nominatedUsername, String storeId,
@@ -1179,7 +1265,7 @@ public class Market {
         storeFacade.verifyStoreExistError(store_ID);
         storeFacade.reopenStore(store_ID);
 
-        sendMessagesToOwnersAndManagers(store_ID , "your store - " + storeFacade.getStoreName(store_ID) +" has reopen");
+        sendMessagesToOwnersAndManagers(store_ID , "your store - " + storeFacade.getStoreName(store_ID) +" has been reopened");
 
     }
 
@@ -1778,7 +1864,7 @@ public class Market {
             throw new IllegalArgumentException(ExceptionsEnum.rulesNotMatchOpeators.toString());
         }
         for (int i = 0; i < numericalOperators.size(); i++) {
-            if (!numericalOperators.get(i).equals("MAX") && !numericalOperators.get(i).equals("ADD")) {
+            if (!numericalOperators.get(i).equals("MAX") && !numericalOperators.get(i).equals("ADDITION")) {
                 throw new IllegalArgumentException(ExceptionsEnum.InvalidOperator.toString());
             }
         }
@@ -1869,7 +1955,7 @@ public class Market {
             }
         }
 
-        if (!numericalOperator.equals("MAX") && !numericalOperator.equals("ADD")) {
+        if (!numericalOperator.equals("MAX") && !numericalOperator.equals("ADDITION")) {
             throw new IllegalArgumentException(ExceptionsEnum.InvalidOperator.toString());
         }
 
@@ -1892,7 +1978,7 @@ public class Market {
             throw new IllegalArgumentException(ExceptionsEnum.InvalidOperator.toString());
         }
 
-        if (!numericalOperator.equals("MAX") && !numericalOperator.equals("ADD")) {
+        if (!numericalOperator.equals("MAX") && !numericalOperator.equals("ADDITION")) {
             throw new IllegalArgumentException(ExceptionsEnum.InvalidOperator.toString());
         }
 
