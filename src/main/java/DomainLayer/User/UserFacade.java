@@ -5,10 +5,12 @@ import DomainLayer.Repositories.*;
 import Util.CartDTO;
 import Util.ExceptionsEnum;
 import Util.UserDTO;
+import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import jakarta.transaction.Transactional;
 import org.hibernate.Session;
 import org.jose4j.jwk.Use;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.CacheManager;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import DomainLayer.Repositories.UserMemoryRepository;
@@ -22,6 +24,7 @@ public class UserFacade {
     private static UserFacade userFacadeInstance;
     UserRepository userRepository;
     MemberRepository members;
+
     //private Object membersLock;
     //Map<String, Member> members = new HashMap<>(); //memberID-Member
     //private String memberIdPrefix;
@@ -371,8 +374,8 @@ public class UserFacade {
     public UserDTO updateUser( UserDTO userDTO){
         User user = getUserByID(userDTO.getUserId());
         user.updateByDTO(userDTO);
+        userRepository.save(user);
         return new UserDTO(user);
-
     }
 
     public void removeUser(String userId){

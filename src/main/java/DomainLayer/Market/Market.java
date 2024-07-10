@@ -906,7 +906,7 @@ public class Market {
     }
 
     //Map<StoreID, Map<ProductName, quantity>>
-    public void returnCartToStock(Map<String, Map<String, List<Integer>>> products){
+    public void returnCartToStock(Map<String, Map<String, List<Integer>>> products) throws Exception {
         for (String storeId: products.keySet()){
             storeFacade.returnProductToStore(products.get(storeId), storeId);
         }

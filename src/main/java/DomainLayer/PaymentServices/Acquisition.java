@@ -9,7 +9,7 @@ import java.util.*;
 public class Acquisition {
 
 
-    @Id
+    //@Id
     @Column(name = "transactionId")
     private int transactionId;
 
@@ -41,9 +41,10 @@ public class Acquisition {
     @Column(name = "date")
     private Date date;
 
-    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name = "acquisition_id")
-    @MapKeyColumn(name = "store_id")
+//    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
+//    @JoinColumn(name = "acquisition_id")
+//    @MapKeyColumn(name = "store_id")
+    @Transient
     private Map<String, Receipt> storeIdAndReceipt = new HashMap<>();
 
     @Transient

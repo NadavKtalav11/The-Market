@@ -19,7 +19,7 @@ public class StoreFacadeTest {
     }
 
     @Test
-    public void testOpenStore() {
+    public void testOpenStore() throws Exception {
         String storeId = storeFacade.openStore("Test Store", "A store for testing");
         Store store = storeFacade.getStoreByID(storeId);
 
@@ -29,7 +29,7 @@ public class StoreFacadeTest {
     }
 
     @Test
-    public void testGetStoreByID() {
+    public void testGetStoreByID() throws Exception {
         String storeId = storeFacade.openStore("Test Store", "A store for testing");
         Store store = storeFacade.getStoreByID(storeId);
 
