@@ -15,7 +15,8 @@ public class HttpRequestController {
     private URL url;
     private HttpURLConnection connection;
     private static final int MINIMUM_WAIT_TIME_SECONDS = 60; // Minimum wait time in seconds
-    private static final int MAXIMUM_WAIT_TIME_SECONDS = 120; //
+    private static final int MAXIMUM_WAIT_TIME_SECONDS = 120;
+    private static final int CONNECTION_TIMEOUT = 10000;//
 
     public HttpRequestController(String urlAddress) throws Exception
     {
@@ -27,6 +28,9 @@ public class HttpRequestController {
     {
         connection = (HttpURLConnection)url.openConnection();
         connection.setRequestMethod("POST");
+        connection.setConnectTimeout(CONNECTION_TIMEOUT);
+        connection.setReadTimeout(CONNECTION_TIMEOUT);
+
 
 //        connection.setConnectTimeout(TIMEOUT_SECONDS * 1000); // Convert seconds to milliseconds
 //        connection.setReadTimeout(TIMEOUT_SECONDS * 1000); // Convert seconds to milliseconds
@@ -49,7 +53,7 @@ public class HttpRequestController {
         }
 
         //Set timeouts - 10 seconds
-//        connection.setConnectTimeout(60000);
+//        connection.setConnectTimeout();
 //        connection.setReadTimeout(60000);
 
 
@@ -168,8 +172,10 @@ public class HttpRequestController {
 
     public boolean checkHandShake()
     {
+
         Map<String,String> params = new HashMap<>();
         params.put("action_type", "handshake");
+        //connection.setConnectTimeout(10000);
         String response = sendRequest(params);
         if(response == null)
             return false;
