@@ -71,9 +71,9 @@ public class PurhcaseHistoryInfo {
         , userDTO.getCountry(),userDTO.getCity(), userDTO.getAddress()).getResult();
         CartDTO cartDTO = new CartDTO(userID2,price,products);
         impl.setUserConfirmationPurchase(userID2);
-        impl.purchase(userID2,userDTO.getCountry(), userDTO.getCity(),userDTO.getAddress(),
+        System.out.println(impl.purchase(userID2,userDTO.getCountry(), userDTO.getCity(),userDTO.getAddress(),
                 paymentDTO.getCreditCardNumber(),paymentDTO.getCurrency(),paymentDTO.getHolderName(),paymentDTO.getCvv(),paymentDTO.getMonth(), paymentDTO.getYear(),paymentDTO.getHolderId(),
-                cartDTO.getCartPrice(), cartDTO.getStoreToProducts()).isSuccess();
+                cartDTO.getCartPrice(), cartDTO.getStoreToProducts()).isSuccess());
     }
 
     @Test

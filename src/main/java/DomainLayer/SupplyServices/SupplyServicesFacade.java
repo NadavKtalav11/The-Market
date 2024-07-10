@@ -76,6 +76,14 @@ public class SupplyServicesFacade {
         externalSupplyRepository.deleteAll();
     }
 
+
+
+    public boolean checkHandShake(ExternalSupplyService externalSupplyService){
+        return externalSupplyService.checkHandShake();
+
+    }
+
+
 //    public boolean addExternalService(String licensedDealerNumber, String supplyServiceName, HashSet<String> countries, HashSet<String> cities){
 //        synchronized (externalSupplyServiceLock) {
 //            int size_before = externalSupplyService.size();
@@ -85,11 +93,14 @@ public class SupplyServicesFacade {
 //        }
 //    }
 
-    public boolean addExternalService(String supplyURL){
+    public boolean addExternalService(String supplyURL) {
         List<ExternalSupplyService> externalSupplyServices = externalSupplyRepository.findAll();
         int size_before = externalSupplyServices.size();
-        ExternalSupplyService externalPaymentService = new ExternalSupplyService(supplyURL);
-        externalSupplyRepository.save(externalPaymentService);
+        ExternalSupplyService externalSupplyService = new ExternalSupplyService(supplyURL);
+        if (!externalSupplyService.checkHandShake()){
+            return false;
+        }
+        externalSupplyRepository.save(externalSupplyService);
         externalSupplyServices = externalSupplyRepository.findAll();
         return externalSupplyServices.size() == size_before + 1;
     }
