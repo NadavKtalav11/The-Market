@@ -37,9 +37,9 @@ public class SupplyServicesFacade {
 
 
     public synchronized static SupplyServicesFacade getInstance() {
-//        if (supplyServicesFacade == null) {
-//            supplyServicesFacade = new SupplyServicesFacade();
-//        }
+        if (supplyServicesFacade == null) {
+            supplyServicesFacade = new SupplyServicesFacade();
+        }
         return supplyServicesFacade;
     }
 
@@ -57,15 +57,17 @@ public class SupplyServicesFacade {
         return externalSupplyServicesMap;
     }
 
-    public void removeExternalService(String licensedDealerNumber){
-        externalSupplyRepository.deleteById(licensedDealerNumber);
+    public void removeExternalService(String SupplyServiceUrl){
+        externalSupplyRepository.deleteById(SupplyServiceUrl);
     }
 
-    public int cancelSupply(int transactionID) throws Exception {
-        Optional<ExternalSupplyService> externalSupplyService1 = externalSupplyRepository.findById("https://damp-lynna-wsep-1984852e.koyeb.app/");
-        ExternalSupplyService externalSupplyService2 = externalSupplyService1.orElse(null);
-        if (externalSupplyService2 != null) {
-            return externalSupplyService2.cancelSupply(transactionID);
+    public int cancelSupply(String shippingId) throws Exception {
+        //Optional<ExternalSupplyService> externalSupplyService1 = externalSupplyRepository.findById("https://damp-lynna-wsep-1984852e.koyeb.app/");
+        List<ExternalSupplyService> externalSupplyServiceList = externalSupplyRepository.findAll();
+        for (ExternalSupplyService externalSupplyService: externalSupplyServiceList ) {
+            if (externalSupplyService.hasShipment(shippingId)) {
+                return externalSupplyService.cancelSupply(shippingId);
+            }
         }
         return -1;
     }
@@ -124,9 +126,9 @@ public class SupplyServicesFacade {
     }
 
 
-   public boolean createShiftingDetails(String externalSupplyServiceId,String userName,String country,String city,String address) throws Exception {
-        ExternalSupplyService externalSupplyService = getExternalSupplyServiceByURL(externalSupplyServiceId);
-        int res = externalSupplyService.createSupply(userName,country ,city, address);
+   public boolean createShiftingDetails(String externalSupplyServiceUrl,String userName,String country,String city,String address, String acquisitionId) throws Exception {
+        ExternalSupplyService externalSupplyService = getExternalSupplyServiceByURL(externalSupplyServiceUrl);
+        int res = externalSupplyService.createSupply(userName,country ,city, address, acquisitionId);
         if(res>= 10000 & res<= 100000){
             return true;
         }

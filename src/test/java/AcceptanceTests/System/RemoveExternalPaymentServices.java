@@ -26,8 +26,8 @@ public class RemoveExternalPaymentServices {
 
     @Test
     public void testRemoveExternalPaymentServiceSuccess() throws Exception {
-        market.addExternalPaymentService( "http://paypal.com", "77");
-        market.addExternalPaymentService( "http://stripe.com","77");
+        market.addExternalPaymentService( "card","http://paypal.com", "77");
+        market.addExternalPaymentService("card", "http://stripe.com","77");
 
         // Act and Assert
         assertDoesNotThrow(() -> {
@@ -38,7 +38,7 @@ public class RemoveExternalPaymentServices {
     @Test
     public void testRemoveExternalPaymentServiceFailureNotSystemManager() throws Exception {
         // Arrange
-        market.addExternalPaymentService("http://paypal.com","77");
+        market.addExternalPaymentService("card","http://paypal.com","77");
 
         // Act and Assert
         Exception exception = assertThrows(Exception.class, () -> {
@@ -52,7 +52,7 @@ public class RemoveExternalPaymentServices {
     @Test
     public void testRemoveExternalPaymentServiceFailureOnlyOneService() throws Exception {
         // Arrange
-        market.addExternalPaymentService( "http://paypal.com","77");
+        market.addExternalPaymentService( "card","http://paypal.com","77");
 
         // Act and Assert
         Exception exception = assertThrows(Exception.class, () -> {

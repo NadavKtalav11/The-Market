@@ -16,9 +16,13 @@ import java.util.Map;
 @Entity
 @Table(name = "external_payment_service")
 public  class ExternalPaymentService {
-    @Id
+
     @Column(name = "url", nullable = false)
     private String url;
+    @Id
+    @Column(name = "name", nullable = false)
+    private String name;
+
     @Transient
     private HttpRequestController httpReqCtrl;
 
@@ -42,7 +46,8 @@ public  class ExternalPaymentService {
         }
     }
 
-    public ExternalPaymentService(String url) {
+    public ExternalPaymentService(String name , String url) {
+        this.name = name;
         this.url = url;
             try
             {
@@ -54,8 +59,11 @@ public  class ExternalPaymentService {
             }
         }
 
+    public String getName() {
+        return name;
+    }
 
-//    public ExternalPaymentService(PaymentServiceDTO paymentServiceDTO) {
+    //    public ExternalPaymentService(PaymentServiceDTO paymentServiceDTO) {
 //        this.licensedDealerNumber = paymentServiceDTO.getLicensedDealerNumber();
 //        this.paymentServiceName = paymentServiceDTO.getPaymentServiceName();
 //        this.url = paymentServiceDTO.getUrl();

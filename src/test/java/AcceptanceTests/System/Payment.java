@@ -14,6 +14,7 @@ import org.junit.jupiter.api.*;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
+import org.mockito.internal.stubbing.answers.ThrowsException;
 
 import java.util.HashMap;
 import java.util.List;
@@ -80,9 +81,9 @@ public class Payment {
 
 
         // Act and Assert
-        assertDoesNotThrow(() -> {paymentServicesFacade.pay(cartDTO.getCartPrice(), new PaymentDTO("DDDD",holderID, "USD",cardNumber, cvv, month, year), cartDTO.getUserID(),cartDTO.getStoreToProducts());
+        assertDoesNotThrow(() -> {paymentServicesFacade.pay(cartDTO.getCartPrice(),"card", new PaymentDTO(holderID,"nadav", "USD",cardNumber, cvv, month, year), cartDTO.getUserID(),cartDTO.getStoreToProducts());
         });
-        String res =paymentServicesFacade.pay(cartDTO.getCartPrice(), new PaymentDTO("DDDD",holderID, "USD",cardNumber, cvv, month, year), cartDTO.getUserID(),cartDTO.getStoreToProducts());
+        String res =paymentServicesFacade.pay(cartDTO.getCartPrice(),"card", new PaymentDTO(holderID,"nadav" ,"USD",cardNumber, cvv, month, year), cartDTO.getUserID(),cartDTO.getStoreToProducts());
         int res1 = Integer.valueOf(res);
         assertTrue(res1>=10000);
         assertTrue(res1<=100000);
@@ -115,7 +116,7 @@ public class Payment {
 
 //
         Exception exception = assertThrows(Exception.class, () -> {
-            market.payWithExternalPaymentService(new CartDTO(userID,price,productList), new PaymentDTO("d",holderID,"USD", cardNumber, cvv, month, year), userID);
+            market.payWithExternalPaymentService(new CartDTO(userID,price,productList),"card", new PaymentDTO("d",holderID,"USD", cardNumber, cvv, month, year), userID);
         });
         int result1 = externalPaymentService.getIdAndAcquisition().size();
         assertEquals(0, result1);
@@ -141,7 +142,7 @@ public class Payment {
 //
 
         Exception exception = assertThrows(Exception.class, () -> {
-            market.payWithExternalPaymentService(new CartDTO(userID,price,productList), new PaymentDTO("D",holderID,"USD", cardNumber, cvv, month, year), userID);
+            market.payWithExternalPaymentService(new CartDTO(userID,price,productList), "card",new PaymentDTO("D",holderID,"USD", cardNumber, cvv, month, year), userID);
         });
 
         assertEquals(ExceptionsEnum.noAvailableExternalPaymentService.toString(), exception.getMessage());
@@ -159,7 +160,7 @@ public class Payment {
         Mockito.when(cartDTO.getCartPrice()).thenReturn(100);
         int price = 100;
         String cardNumber = "1111222233334444";
-        int cvv = 988;
+        int cvv = 986;
         int month = 12;
         int year = 2024;
         String holderID = "123456789";
@@ -175,17 +176,20 @@ public class Payment {
         HttpClient mockHttpClient = Mockito.mock(HttpClient.class);
         Mockito.when(mockHttpClient.checkCreditCard(Mockito.eq(url), Mockito.any(PaymentDTO.class))).thenReturn(false);
 
-        paymentServicesFacade.addExternalService(url);
+        paymentServicesFacade.addExternalService("card",url);
         ExternalPaymentService externalPaymentService = paymentServicesFacade.getAllPaymentServices().get(url);
 
         int result = externalPaymentService.getIdAndAcquisition().size();
         assertEquals(0, result);
 
-        String res= paymentServicesFacade.pay(cartDTO.getCartPrice(), new PaymentDTO("dd",holderID,"USD", cardNumber, cvv, month, year), cartDTO.getUserID(),cartDTO.getStoreToProducts());
-        int res1 = Integer.valueOf(res);
-        assertEquals(-1,res1);
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () ->
+                paymentServicesFacade.pay(cartDTO.getCartPrice(), "card",new PaymentDTO(holderID,"name", "USD", cardNumber, cvv, month, year), cartDTO.getUserID(),cartDTO.getStoreToProducts()));
 
+        assertEquals(ExceptionsEnum.ExternalPaymentFailed.toString(), exception.getMessage());
     }
+        //int res1 = Integer.valueOf(res)
+
+
 
 
 }

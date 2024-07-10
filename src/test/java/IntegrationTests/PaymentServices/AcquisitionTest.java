@@ -26,7 +26,7 @@ public class AcquisitionTest {
         productList.get("store1").put("Product2", Arrays.asList(1, 50));
 
         // Create Acquisition instance
-        acquisition = new Acquisition("acq-1", "user-1", 150, paymentDTO, productList);
+        acquisition = new Acquisition(30000, "acq-1", "user-1", 150, paymentDTO, productList);
     }
 
     @Test

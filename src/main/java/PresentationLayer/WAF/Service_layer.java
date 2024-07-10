@@ -90,10 +90,10 @@ public class Service_layer {
         }
     }
 
-    public Response<String> cancelSupply(int transactionID){
+    public Response<String> cancelSupply(String  shippingId){
         logger.info("Cancelling the supply for transactionID: {} .");
         try {
-            int res = market.cancelSupply(transactionID);
+            int res = market.cancelSupply(shippingId);
             logger.info("The supply has been cancelled.");
             return new Response<>("Successful", "The supply has been cancelled.");
 
@@ -104,10 +104,10 @@ public class Service_layer {
     }
 
 
-    public Response<String> addExternalPaymentService(String paymentURL , String managerId) throws Exception {
+    public Response<String> addExternalPaymentService(String paymentServiceName , String paymentURL , String managerId) throws Exception {
         logger.info("Trying to add a new external payment service");
         try {
-            market.addExternalPaymentService(paymentURL ,managerId );
+            market.addExternalPaymentService(paymentServiceName, paymentURL ,managerId );
             logger.info("Adding new external payment service have been done successfully.");
             return new Response<>("Successful adding", "Adding new external payment service have been done successfully.");
 
@@ -167,11 +167,11 @@ public class Service_layer {
         }
     }
 
-    public Response<String> purchase(UserDTO userDTO, PaymentDTO paymentDTO, CartDTO cartDTO){
+    public Response<String> purchase(UserDTO userDTO, PaymentDTO paymentDTO, CartDTO cartDTO , String paymentServiceName){
         String user_ID = userDTO.getUserId();
         logger.info("Initiating purchase for user: {}", user_ID);
         try {
-            String acquisitionID = market.purchase( paymentDTO,userDTO, cartDTO);
+            String acquisitionID = market.purchase( paymentDTO,paymentServiceName, userDTO, cartDTO);
             System.out.println("trans2: " + acquisitionID);
             logger.info("Purchase successful for user: {}", user_ID);
             return new Response<>("Purchase successful", "", acquisitionID);
@@ -882,7 +882,7 @@ public class Service_layer {
         logger.info("Starting care validation and price calculation before purchase.");
 
         try {
-            int price = market.checkingCartValidationBeforePurchase(user_ID, userDTO);
+            int price = market.checkingCartValidationBeforePurchaseDTO(user_ID, userDTO).getCartPrice();
             Response<Integer> ans = new Response<>(price, "Cart validation and price calculation completed successfully.");
             return ans;
         } catch (Exception e) {

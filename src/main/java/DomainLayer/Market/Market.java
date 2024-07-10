@@ -375,7 +375,7 @@ public class Market {
             synchronized (managersLock) {
                 systemManagerIds.add(systemManagerId);
             }
-            paymentServicesFacade.addExternalService(paymentURL);
+            paymentServicesFacade.addExternalService("pay by card" ,paymentURL);
             supplyServicesFacade.addExternalService(supplyURL);
             synchronized (initializedLock) {
                 initialized = true;
@@ -431,8 +431,8 @@ public class Market {
         return userFacade.cancelPaynmet(userId , transactionID);
     }
 
-    public int cancelSupply(int transactionID) throws Exception {
-        return  supplyServicesFacade.cancelSupply(transactionID);
+    public int cancelSupply(String shippingId) throws Exception {
+        return  supplyServicesFacade.cancelSupply(shippingId);
 
     }
 
@@ -634,7 +634,7 @@ public class Market {
         return initialized;
     }
 
-    public void addExternalPaymentService(String paymentURL, String systemMangerId) throws Exception {
+    public void addExternalPaymentService(String paymentServiceName, String paymentURL, String systemMangerId) throws Exception {
         try {
             synchronized (managersLock) {
                 if (!systemManagerIds.contains(systemMangerId)) {
@@ -648,7 +648,7 @@ public class Market {
             // Log the error or handle it as needed
             throw e;  // Re-throwing the exception to be handled by the caller
         }
-        paymentServicesFacade.addExternalService(paymentURL);
+        paymentServicesFacade.addExternalService(paymentServiceName, paymentURL);
     }
 
     public void removeExternalPaymentService(String licensedDealerNumber, String systemMangerId) throws Exception {
@@ -710,7 +710,7 @@ public class Market {
         }
     }
 
-    public String purchase(PaymentDTO paymentDTO, UserDTO userDTO, CartDTO cartDTO) throws Exception {
+    public String purchase(PaymentDTO paymentDTO,String paymentServiceName, UserDTO userDTO, CartDTO cartDTO) throws Exception {
 
         ScheduledFuture<?> timeoutHandle = null;
         ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
@@ -731,14 +731,13 @@ public class Market {
 
             //Todo: we call payWithExternalPaymentService twice, check if needed
             //this.payWithExternalPaymentService(cartDTO, paymentDTO, userDTO.getUserId());
-            String acquisitionIdID = this.payWithExternalPaymentService(cartDTO, paymentDTO, userDTO.getUserId());
-            if(!isValidAcquisitionIdID(acquisitionIdID)){
-               throw new Exception(ExceptionsEnum.ExternalPaymentFailed.toString());
-            }
+            String acquisitionId = this.payWithExternalPaymentService(cartDTO,paymentServiceName, paymentDTO, userDTO.getUserId());
+            String availableExternalSupplyService = this.checkAvailableExternalSupplyService(userDTO.getCountry(), userDTO.getCity());
+            this.createShiftingDetails(userDTO.getCountry(), userDTO.getCity(), availableExternalSupplyService, userDTO.getAddress(), userDTO.getUserId(),acquisitionId );
             sendMessagesOnPurchaseToStoreOwners(cartDTO);
-            return acquisitionIdID;
-        } catch (Exception var11) {
-            Exception e = var11;
+            return acquisitionId;
+        } catch (Exception exception) {
+            Exception e = exception;
             if (cartDTO != null) {
                 this.returnCartToStock(cartDTO.getStoreToProducts());
             }
@@ -753,13 +752,7 @@ public class Market {
         }
 
     }
-    public boolean isValidAcquisitionIdID(String acqId){
-        int ID = Integer.parseInt(acqId);
-        if(ID>=10000 && ID<=100000){
-            return true;
-        }
-        return false;
-    }
+
 
 
     public void sendMessagesToOwnersAndManagers(String storeId , String message) throws Exception { // Inject VaadinUserService and NotificationService
@@ -887,14 +880,14 @@ public class Market {
 
 
 
-    public String payWithExternalPaymentService(CartDTO cartDTO,PaymentDTO payment, String userId) throws Exception{
+    public String payWithExternalPaymentService(CartDTO cartDTO,String paymentServiceName ,PaymentDTO payment, String userId) throws Exception{
         if(cartDTO.getCartPrice()<= 0 || payment.getMonth()> 12 || payment.getMonth()<1 || payment.getYear() < 2023 ||payment.getHolderId()==null || payment.getCreditCardNumber().length()!=16 || cartDTO.getStoreToProducts()==null) {
             throw new IllegalArgumentException(ExceptionsEnum.InvalidCreditCardParameters.toString());
         }
         if(paymentServicesFacade.getAllPaymentServices().size()<1){
             throw new Exception(ExceptionsEnum.noAvailableExternalPaymentService.toString());
         }
-        String acquisitionId = paymentServicesFacade.pay(cartDTO.getCartPrice(), payment, userId, cartDTO.getStoreToProducts());
+        String acquisitionId = paymentServicesFacade.pay(cartDTO.getCartPrice(), paymentServiceName, payment, userId, cartDTO.getStoreToProducts());
         Map<String,String> receiptIdStoreId = paymentServicesFacade.getAcquisitionReceipts(acquisitionId); //<receiptId, storeId>
         //print when implement notifications (purchase successes)
 
@@ -1449,45 +1442,42 @@ public class Market {
         return storeReceiptsAndTotalAmount;
     }
 
-    public int checkingCartValidationBeforePurchase(String user_ID, UserDTO userDTO) throws Exception {
-        if (this.userFacade.isMember(user_ID)) {
-            String memberId = this.userFacade.getMemberIdByUserId(user_ID);
-            boolean succeeded = this.authenticationAndSecurityFacade.validateToken(this.authenticationAndSecurityFacade.getToken(memberId));
-            if (!succeeded) {
-                this.logout(user_ID);
-                throw new Exception(ExceptionsEnum.sessionOver.toString());
-            }
-        }
-
-        int totalPrice = 0;
-        this.userFacade.isUserCartEmpty(user_ID);
-        List<String> stores = this.userFacade.getCartStoresByUser(user_ID);
-
-        int storeTotalPrice;
-        for(Iterator var5 = stores.iterator(); var5.hasNext(); totalPrice += storeTotalPrice) {
-            String store_ID = (String)var5.next();
-            Map<String, List<Integer>> products = this.userFacade.getCartProductsByStoreAndUser(store_ID, user_ID);
-            List<ProductDTO> productDTOS = this.storeFacade.getProductsDTOSByProductsNames(products, store_ID);
-            Iterator var10 = products.keySet().iterator();
-
-            String availableExternalSupplyService;
-            while(var10.hasNext()) {
-                availableExternalSupplyService = (String)var10.next();
-                int quantity = (Integer)((List)products.get(availableExternalSupplyService)).get(0);
-                this.storeFacade.checkQuantityAndPrice(availableExternalSupplyService, quantity, store_ID);
-            }
-
-            this.storeFacade.checkPurchasePolicy(userDTO, productDTOS, store_ID);
-            int priceToReduce = this.storeFacade.calcDiscountPolicy(userDTO, productDTOS, store_ID);
-            availableExternalSupplyService = this.checkAvailableExternalSupplyService(userDTO.getCountry(), userDTO.getCity());
-            this.createShiftingDetails(userDTO.getCountry(), userDTO.getCity(), availableExternalSupplyService, userDTO.getAddress(), user_ID);
-            int storeTotalPriceBeforeDiscount = this.userFacade.getCartPriceByUser(user_ID);
-            storeTotalPrice = storeTotalPriceBeforeDiscount - priceToReduce;
-        }
-
-        this.removeUserCartFromStock(user_ID);
-        return totalPrice;
-    }
+//    public int checkingCartValidationBeforePurchase(String user_ID, UserDTO userDTO) throws Exception {
+//        if (this.userFacade.isMember(user_ID)) {
+//            String memberId = this.userFacade.getMemberIdByUserId(user_ID);
+//            boolean succeeded = this.authenticationAndSecurityFacade.validateToken(this.authenticationAndSecurityFacade.getToken(memberId));
+//            if (!succeeded) {
+//                this.logout(user_ID);
+//                throw new Exception(ExceptionsEnum.sessionOver.toString());
+//            }
+//        }
+//
+//        int totalPrice = 0;
+//        this.userFacade.isUserCartEmpty(user_ID);
+//        List<String> stores = this.userFacade.getCartStoresByUser(user_ID);
+//
+//        int storeTotalPrice;
+//        for(Iterator storeIt = stores.iterator(); storeIt.hasNext(); totalPrice += storeTotalPrice) {
+//            String store_ID = (String)storeIt.next();
+//            Map<String, List<Integer>> products = this.userFacade.getCartProductsByStoreAndUser(store_ID, user_ID);
+//            List<ProductDTO> productDTOS = this.storeFacade.getProductsDTOSByProductsNames(products, store_ID);
+//            Iterator productIt = products.keySet().iterator();
+//
+//            String productId;
+//            while(productIt.hasNext()) {
+//                productId = (String)productIt.next();
+//                int quantity = (Integer)((List)products.get(productId)).get(0);
+//                this.storeFacade.checkQuantityAndPrice(productId, quantity, store_ID);
+//            }
+//            this.storeFacade.checkPurchasePolicy(userDTO, productDTOS, store_ID);
+//            int priceToReduce = this.storeFacade.calcDiscountPolicy(userDTO, productDTOS, store_ID);
+//            int storeTotalPriceBeforeDiscount = this.userFacade.getCartPriceByUser(user_ID);
+//            storeTotalPrice = storeTotalPriceBeforeDiscount - priceToReduce;
+//        }
+//
+//        this.removeUserCartFromStock(user_ID);
+//        return totalPrice;
+//    }
 
     public CartDTO checkingCartValidationBeforePurchaseDTO(String user_ID, UserDTO userDTO) throws Exception {
         if (this.userFacade.isMember(user_ID)) {
@@ -1504,23 +1494,20 @@ public class Market {
         List<String> stores = this.userFacade.getCartStoresByUser(user_ID);
 
         int storeTotalPrice;
-        for(Iterator var5 = stores.iterator(); var5.hasNext(); totalPrice += storeTotalPrice) {
-            String store_ID = (String)var5.next();
+        for(Iterator storeIt = stores.iterator(); storeIt.hasNext(); totalPrice += storeTotalPrice) {
+            String store_ID = (String)storeIt.next();
             Map<String, List<Integer>> products = this.userFacade.getCartProductsByStoreAndUser(store_ID, user_ID);
             List<ProductDTO> productDTOS = this.storeFacade.getProductsDTOSByProductsNames(products, store_ID);
-            Iterator var10 = products.keySet().iterator();
+            Iterator productIt = products.keySet().iterator();
 
-            String availableExternalSupplyService;
-            while(var10.hasNext()) {
-                availableExternalSupplyService = (String)var10.next();
-                int quantity = (Integer)((List)products.get(availableExternalSupplyService)).get(0);
-                this.storeFacade.checkQuantityAndPrice(availableExternalSupplyService, quantity, store_ID);
+            String productId;
+            while(productIt.hasNext()) {
+                productId = (String)productIt.next();
+                int quantity = (Integer)((List)products.get(productId)).get(0);
+                this.storeFacade.checkQuantityAndPrice(productId, quantity, store_ID);
             }
-
             this.storeFacade.checkPurchasePolicy(userDTO, productDTOS, store_ID);
             int priceToReduce = this.storeFacade.calcDiscountPolicy(userDTO, productDTOS, store_ID);
-            availableExternalSupplyService = this.checkAvailableExternalSupplyService(userDTO.getCountry(), userDTO.getCity());
-            this.createShiftingDetails(userDTO.getCountry(), userDTO.getCity(), availableExternalSupplyService, userDTO.getAddress(), user_ID);
             int storeTotalPriceBeforeDiscount = this.userFacade.getCartPriceByUser(user_ID);
             storeTotalPrice = storeTotalPriceBeforeDiscount - priceToReduce;
         }
@@ -1540,10 +1527,10 @@ public class Market {
         return availibleExteranlSupplyService;
     }
 
-    public void createShiftingDetails(String country, String city, String availibleExteranlSupplyService, String address, String user_ID) throws Exception
+    public void createShiftingDetails(String country, String city, String availibleExteranlSupplyService, String address, String user_ID, String acquisitionId) throws Exception
     {
         String userName = this.userFacade.getUserByID(user_ID).getName();
-        if(!supplyServicesFacade.createShiftingDetails(availibleExteranlSupplyService, userName,country,city,address)){
+        if(!supplyServicesFacade.createShiftingDetails(availibleExteranlSupplyService, userName,country,city,address, acquisitionId)){
             throw new Exception(ExceptionsEnum.createShiftingError.toString());
         }
     }

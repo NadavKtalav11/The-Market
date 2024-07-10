@@ -223,9 +223,10 @@ public class MarketController {
     @PostMapping("/addExternalPaymentService")
     public ResponseEntity<APIResponse<String>> addExternalPaymentService(@RequestParam Map<String,String> params) {
         try {
+            String paymentServiceName = params.get("paymentName");
             String paymentUrl =params.get("paymentServiceDTO");
             String managerId = params.get("memberId");
-            Response<String> response = serviceLayer.addExternalPaymentService(paymentUrl, managerId);
+            Response<String> response = serviceLayer.addExternalPaymentService(paymentServiceName, paymentUrl, managerId);
             if (response.isSuccess()) {
                 String result = response.getResult();
                 HttpHeaders headers = new HttpHeaders();
@@ -318,7 +319,8 @@ public class MarketController {
             String userDTO = params.get("userDTO");
             String paymentDTO= params.get("paymentDTO");
             String cartDTO = params.get("cartDTO");
-            Response<String> response = serviceLayer.purchase(objectMapper.readValue(userDTO, UserDTO.class),objectMapper.readValue( paymentDTO, PaymentDTO.class), objectMapper.readValue( cartDTO, CartDTO.class));
+            String paymentServiceName = params.get("paymentServiceName");
+            Response<String> response = serviceLayer.purchase(objectMapper.readValue(userDTO, UserDTO.class),objectMapper.readValue( paymentDTO, PaymentDTO.class), objectMapper.readValue( cartDTO, CartDTO.class), paymentServiceName);
             if (response.isSuccess()) {
                 String result = response.getData();
                 HttpHeaders headers = new HttpHeaders();

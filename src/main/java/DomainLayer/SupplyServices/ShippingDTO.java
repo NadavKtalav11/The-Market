@@ -4,12 +4,12 @@ import java.util.Date;
 import jakarta.persistence.*;
 
 @Entity
-@Table(name = "shifting_details")
-public class ShiftingDetails {
+@Table(name = "shipping_DTO")
+public class ShippingDTO {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "shifting_id")
-    private int shiftingId;
+    @Column(name = "shipping_id")
+    private String shipping_id;
     @Column(name = "user_name", nullable = false)
     private String userName;
     @Column(name = "country", nullable = false)
@@ -22,25 +22,33 @@ public class ShiftingDetails {
     private String zip;
     @Column(name = "date", nullable = false)
     private Date date;
+    @Column(name = "acquisitionId", nullable = false)
+    private String acquisitionId;
+
+    @Column(name = "transactionId", nullable = false)
+    private int transactionId;
+
 
 
     // Constructor
-    public ShiftingDetails(int shiftingId,String userName, String country, String city,
-                           String address) {
-        this.shiftingId = shiftingId;
+    public ShippingDTO(String shipping_id , int transactionId , String userName, String country, String city,
+                       String address , String acquisitionId ) {
+        this.shipping_id = shipping_id;
         this.userName = userName;
         this.country = country;
         this.city = city;
         this.address = address;
         this.date = new Date(); // Current date and time
+        this.acquisitionId = acquisitionId;
+        this.transactionId = transactionId;
     }
 
     // No-argument constructor required by JPA
-    public ShiftingDetails() {
+    public ShippingDTO() {
     }
 
-    public int getShiftingId() {
-        return shiftingId;
+    public String getShipping_id() {
+        return shipping_id;
     }
 
 
@@ -70,5 +78,15 @@ public class ShiftingDetails {
         return date;
     }
 
+    public String getAcquisitionId() {
+        return acquisitionId;
+    }
 
+    public void setAcquisitionId(String acquisitionId) {
+        this.acquisitionId = acquisitionId;
+    }
+
+    public int getTransactionId() {
+        return transactionId;
+    }
 }
