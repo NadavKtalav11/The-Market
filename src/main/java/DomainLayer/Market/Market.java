@@ -28,6 +28,8 @@ import java.io.FileInputStream;
 import java.io.InputStream;
 import java.sql.Time;
 import java.sql.Timestamp;
+import java.time.Month;
+import java.time.Year;
 import java.util.Map;
 
 import java.util.*;
@@ -881,7 +883,11 @@ public class Market {
 
 
     public String payWithExternalPaymentService(CartDTO cartDTO,String paymentServiceName ,PaymentDTO payment, String userId) throws Exception{
-        if(cartDTO.getCartPrice()<= 0 || payment.getMonth()> 12 || payment.getMonth()<1 || payment.getYear() < 2023 ||payment.getHolderId()==null || payment.getCreditCardNumber().length()!=16 || cartDTO.getStoreToProducts()==null) {
+        Calendar c = Calendar.getInstance();
+        int month = c.get(Calendar.MONTH)+1;
+        if(cartDTO.getCartPrice()<= 0 || payment.getMonth()> 12 || payment.getMonth()<1 || payment.getYear() < Year.now().getValue()
+                ||payment.getHolderId()==null || payment.getCreditCardNumber().length()!=16 || cartDTO.getStoreToProducts()==null||
+                (payment.getYear() == Year.now().getValue() && month>= payment.getMonth())) {
             throw new IllegalArgumentException(ExceptionsEnum.InvalidCreditCardParameters.toString());
         }
         if(paymentServicesFacade.getAllPaymentServices().size()<1){
