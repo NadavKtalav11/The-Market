@@ -97,7 +97,6 @@ public class MyWebSocketHandler extends TextWebSocketHandler {
 
     }
 
-    // todo after connection closed()
 
 
     public void afterConnectionClosed(WebSocketSession session, CloseStatus status) throws Exception {

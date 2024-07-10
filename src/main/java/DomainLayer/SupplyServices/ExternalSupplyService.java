@@ -2,16 +2,12 @@ package DomainLayer.SupplyServices;
 
 import DomainLayer.HttpRequestController;
 import Util.ExceptionsEnum;
-import Util.SupplyServiceDTO;
 import jakarta.persistence.Entity;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.MapKeyColumn;
 import jakarta.persistence.*;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 @Entity
 @Table(name = "external_supply_service")
@@ -20,6 +16,8 @@ public class ExternalSupplyService {
 //    private String supplyServiceName;
 //    private Set<String> countries = new HashSet<>();
 //    private Set<String> cities = new HashSet<>();
+
+
     @Id
     @Column(name = "supply_url", nullable = false)
     private String supplyURL;
@@ -28,24 +26,24 @@ public class ExternalSupplyService {
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "external_supply_service_url") // This will create a foreign key column in the ShiftingDetails table
-    @MapKeyColumn(name = "shift_id") // Column in the ShiftingDetails table for shift_id
-    private Map<Integer, ShiftingDetails> shiftIdAndDetails = new HashMap<>();
+    @MapKeyColumn(name = "shippingId") // Column in the ShiftingDetails table for shift_id
+    private Map<String, ShippingDTO> shippingAndDetails = new HashMap<>();
 //    private final Object countriesLock;
 //    private final Object citiesLock;
     @Transient
-    private final Object shiftLock;
+    private final Object shippingLock;
 
-    int ShiftIDCounter= 1;
+   // String ShiftID;
 
     public ExternalSupplyService() {
         // JPA requires a no-argument constructor
-        this.shiftLock = new Object();
+        this.shippingLock = new Object();
     }
 
     public ExternalSupplyService(String supplyURL){
 
         this.supplyURL=supplyURL;
-        shiftLock =new Object();
+        shippingLock =new Object();
 
         try
             {
@@ -117,22 +115,29 @@ public class ExternalSupplyService {
 //    }
 
 
-    public boolean createShiftingDetails(String userName, String country,String city,String address){
-        synchronized (shiftLock) {
-            int size = shiftIdAndDetails.size();
-            ShiftingDetails shiftingDetails = new ShiftingDetails(ShiftIDCounter, userName, country, city, address);
-            shiftIdAndDetails.put(ShiftIDCounter, shiftingDetails);
-            ShiftIDCounter++;
-            return shiftIdAndDetails.size() == size + 1;
-        }
+    public String getCurrentShippingID (){
+        UUID uuid = UUID.randomUUID();
+        return "shipping-" + uuid;
+
     }
-    public Map<Integer,ShiftingDetails> getShiftIdAndDetails(){
-        synchronized (shiftLock) {
-            return this.shiftIdAndDetails;
+
+
+//    public void createShiftingDetails(String userName, String country,String city,String address, String acquisitionId){
+//        synchronized (shippingLock) {
+//            int size = shiftIdAndDetails.size();
+//            //getShiftIdAndDetails()
+//            String shippingId=  getCurrentShippingID();
+//            ShiftingDetails shiftingDetails = new ShiftingDetails(shippingId, userName, country, city, address ,acquisitionId);
+//            shiftIdAndDetails.put(shippingId, shiftingDetails);
+//        }
+//    }
+    public Map<String, ShippingDTO> getShippingAndDetails(){
+        synchronized (shippingLock) {
+            return this.shippingAndDetails;
         }
     }
 
-    public int createSupply(String userName, String country,String city,String address) throws Exception {
+    public int createSupply(String userName, String country,String city,String address , String acquisitionId)  {
         try {
             if (this.httpReqCtrl == null) {
                 return -1;
@@ -156,9 +161,10 @@ public class ExternalSupplyService {
             }
             try {
                 int transactionId = Integer.parseInt(response);
+                String shippingId = getCurrentShippingID();
                 if (isValidTransactionID(transactionId)) {
-                    ShiftingDetails shiftingDetails = new ShiftingDetails(transactionId, userName, country, city, address);
-                    shiftIdAndDetails.put(ShiftIDCounter, shiftingDetails);
+                    ShippingDTO shippingDTO = new ShippingDTO(shippingId, transactionId, userName, country, city, address, acquisitionId);
+                    shippingAndDetails.put(shippingId, shippingDTO);
                     return transactionId;
                 }
                 return  -1;
@@ -173,8 +179,8 @@ public class ExternalSupplyService {
         }
     }
 
-        public int cancelSupply(int transactionID)  throws Exception{
-
+        public int cancelSupply(String shippingId)  throws Exception{
+            int transactionID = getTransactionId(shippingId);
             if(httpReqCtrl == null) //If constructor failed
             {
                 throw new Exception("No connection established");
@@ -186,7 +192,7 @@ public class ExternalSupplyService {
             }
 
             this.httpReqCtrl = new HttpRequestController(supplyURL);
-            this.shiftIdAndDetails.remove(transactionID);
+            //this.shippingAndDetails.remove(transactionID);
             if(!this.httpReqCtrl.checkHandShake())
             {
                 throw new Exception(ExceptionsEnum.checkHandShake.toString());
@@ -205,13 +211,38 @@ public class ExternalSupplyService {
             {
                 throw new Exception(ExceptionsEnum.cancelFailed.toString());
             }
-
-            this.shiftIdAndDetails.remove(transactionID);
+            synchronized (shippingAndDetails) {
+                this.shippingAndDetails.remove(shippingId);
+            }
             return cancelRes;
         }
 
         public boolean isValidTransactionID(int transactionID){
             return transactionID >= 10000 && transactionID <= 100000;
+        }
+
+        public boolean hasShipment(String shippingID){
+            return shippingAndDetails.containsKey(shippingID);
+        }
+
+        public String getShippingId(String acquisitionId){
+            for (ShippingDTO shippingDTO : shippingAndDetails.values()){
+                if (shippingDTO.getAcquisitionId().equals(acquisitionId)){
+                    return shippingDTO.getShipping_id();
+                }
+            }
+            return null;
+        }
+
+        public int getTransactionId(String shippingId){
+            synchronized (shippingLock){
+                ShippingDTO shippingDTO=  shippingAndDetails.get(shippingId);
+                if (shippingDTO!=null){
+                    return shippingDTO.getTransactionId();
+                }
+
+            }
+            return -1;
         }
 
 

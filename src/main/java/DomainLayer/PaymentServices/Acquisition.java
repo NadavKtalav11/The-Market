@@ -8,6 +8,11 @@ import java.util.*;
 @Table(name = "acquisition")
 public class Acquisition {
 
+
+    @Id
+    @Column(name = "transactionId")
+    private int transactionId;
+
     @Id
     @Column(name = "acquisition_id")
     private String acquisitionId;
@@ -44,7 +49,8 @@ public class Acquisition {
     @Transient
     private final Object storeReceiptLock;
 
-    public Acquisition(String acquisitionId, String userId, int totalPrice, PaymentDTO payment, Map<String, Map<String, List<Integer>>> productList) {
+    public Acquisition(int transactionId , String acquisitionId, String userId, int totalPrice, PaymentDTO payment, Map<String, Map<String, List<Integer>>> productList) {
+        this.transactionId = transactionId;
         this.acquisitionId = acquisitionId;
         this.userId = userId;
         this.totalPrice = totalPrice;
@@ -115,6 +121,10 @@ public class Acquisition {
         synchronized (storeReceiptLock) {
             return storeIdAndReceipt.get(storeId).getReceiptId();
         }
+    }
+
+    public int getTransactionId() {
+        return transactionId;
     }
 
     public Map<String, String> getReceiptIdAndStoreIdMap() {

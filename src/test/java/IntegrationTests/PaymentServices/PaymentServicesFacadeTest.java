@@ -25,19 +25,21 @@ public class PaymentServicesFacadeTest {
 
     @Test
     public void testAddExternalServiceWithParams() {
-        boolean added = paymentServicesFacade.addExternalService( "http://test.com");
+        boolean added = paymentServicesFacade.addExternalService( "card", "http://test.com");
         assertTrue(added);
-
         ExternalPaymentService service = paymentServicesFacade.getPaymentServiceByURL("http://test.com");
         assertNotNull(service);
+        ExternalPaymentService service2 = paymentServicesFacade.getPaymentServiceByName("card");
+        assertNotNull(service2);
         assertEquals("http://test.com", service.getUrl());
+        assertEquals("http://test.com", service2.getUrl());
     }
 
     @Test
     public void testAddExternalServiceWithDTO() {
       //  PaymentServiceDTO paymentServiceDTO = new PaymentServiceDTO("123", "TestService", "http://test.com");
 
-        boolean added = paymentServicesFacade.addExternalService("http://test.com");
+        boolean added = paymentServicesFacade.addExternalService("card", "http://test.com");
         assertTrue(added);
 
         ExternalPaymentService service = paymentServicesFacade.getPaymentServiceByURL("http://test.com");
@@ -48,8 +50,8 @@ public class PaymentServicesFacadeTest {
     @Test
     public void testRemoveExternalService() {
         String url = "http://test.com";
-        paymentServicesFacade.addExternalService( url);
-        paymentServicesFacade.removeExternalService(url);
+        paymentServicesFacade.addExternalService("card", url);
+        paymentServicesFacade.removeExternalService("card");
 
         ExternalPaymentService service = paymentServicesFacade.getPaymentServiceByURL(url);
         assertNull(service);
@@ -57,21 +59,21 @@ public class PaymentServicesFacadeTest {
 
     @Test
     public void testPaySuccess() throws Exception {
-        paymentServicesFacade.addExternalService("http://test.com");
+        paymentServicesFacade.addExternalService("card","http://test.com");
 
         Map<String, Map<String, List<Integer>>> productList = new HashMap<>();
         Map<String, List<Integer>> storeProducts = new HashMap<>();
         storeProducts.put("product1", Arrays.asList(2, 100));
         productList.put("store1", storeProducts);
 
-        String result = paymentServicesFacade.pay(100, paymentDTO, "userId", productList);
+        String result = paymentServicesFacade.pay(100, "card" , paymentDTO, "userId", productList);
 
         assertNotNull(result);
     }
 
     @Test
     public void testGetAllPaymentServices() {
-        paymentServicesFacade.addExternalService( "http://test.com");
+        paymentServicesFacade.addExternalService("card", "http://test.com");
 
         Map<String, ExternalPaymentService> allServices = paymentServicesFacade.getAllPaymentServices();
         assertEquals(1, allServices.size());
@@ -80,7 +82,7 @@ public class PaymentServicesFacadeTest {
 
     @Test
     public void testGetPaymentServiceDTOById() {
-        paymentServicesFacade.addExternalService( "http://test.com");
+        paymentServicesFacade.addExternalService("card", "http://test.com");
 
 //        PaymentServiceDTO dto = paymentServicesFacade.getPaymentServiceDTOById("123");
 //        assertNotNull(dto);
@@ -89,7 +91,7 @@ public class PaymentServicesFacadeTest {
 
     @Test
     public void testGetStorePurchaseInfo() {
-        paymentServicesFacade.addExternalService("http://test.com");
+        paymentServicesFacade.addExternalService("card","http://test.com");
 
         Map<String, Map<String, List<Integer>>> productList = new HashMap<>();
         Map<String, List<Integer>> storeProducts = new HashMap<>();
@@ -97,7 +99,7 @@ public class PaymentServicesFacadeTest {
         productList.put("store1", storeProducts);
 
         try {
-            paymentServicesFacade.pay(100, paymentDTO, "userId", productList);
+            paymentServicesFacade.pay(100,"card", paymentDTO, "userId", productList);
         } catch (Exception e) {
             fail("Payment failed");
         }
@@ -111,7 +113,7 @@ public class PaymentServicesFacadeTest {
 
     @Test
     public void testGetStoreReceiptsAndTotalAmount() {
-        paymentServicesFacade.addExternalService( "http://test.com");
+        paymentServicesFacade.addExternalService("card", "http://test.com");
 
         Map<String, Map<String, List<Integer>>> productList = new HashMap<>();
         Map<String, List<Integer>> storeProducts = new HashMap<>();
@@ -119,7 +121,7 @@ public class PaymentServicesFacadeTest {
         productList.put("store1", storeProducts);
 
         try {
-            paymentServicesFacade.pay(100, paymentDTO, "userId", productList);
+            paymentServicesFacade.pay(100,"card", paymentDTO, "userId", productList);
         } catch (Exception e) {
             fail("Payment failed");
         }
@@ -131,7 +133,7 @@ public class PaymentServicesFacadeTest {
 
     @Test
     public void testClearPaymentServices() {
-        paymentServicesFacade.addExternalService( "http://test.com");
+        paymentServicesFacade.addExternalService("card", "http://test.com");
         paymentServicesFacade.clearPaymentServices();
 
         assertTrue(paymentServicesFacade.getAllPaymentServices().isEmpty());

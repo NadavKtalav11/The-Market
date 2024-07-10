@@ -3,7 +3,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
-import java.util.HashMap;
 import java.util.HashSet;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -13,7 +12,7 @@ public class ExternalSupplyServicesTests {
     private HashSet<String> mockCountries;
     private HashSet<String> mockCities;
     private HashSet<String> shiftIdAndDetails;
-    private ShiftingDetails shiftingDetailsMock; // Add mock for ShiftingDetails
+    private ShippingDTO shippingDTOMock; // Add mock for ShiftingDetails
 
 
     @BeforeEach
@@ -25,7 +24,7 @@ public class ExternalSupplyServicesTests {
 
         countries.add("Israel");
         cities.add("Bash");
-        shiftingDetailsMock = Mockito.mock(ShiftingDetails.class);
+        shippingDTOMock = Mockito.mock(ShippingDTO.class);
         shiftIdAndDetails = Mockito.mock(HashSet.class);
 
 
@@ -83,9 +82,9 @@ public class ExternalSupplyServicesTests {
     @Test
     public void testCreateShiftingDetails() throws Exception {
         // Ensure that the initial size of shiftIdAndDetails is zero
-        assertEquals(0, externalSupplyService.getShiftIdAndDetails().size());
+        assertEquals(0, externalSupplyService.getShippingAndDetails().size());
 
-        int result = externalSupplyService.createSupply("User1", "MockCountry", "MockCity", "MockAddress");
+        int result = externalSupplyService.createSupply("User1", "MockCountry", "MockCity", "MockAddress", "10");
         boolean res;
         if(result >= 10000 && result <= 100000) {
             res = true;
@@ -94,7 +93,7 @@ public class ExternalSupplyServicesTests {
             res = false;
         }
         assertTrue(res);
-       assertEquals(1, externalSupplyService.getShiftIdAndDetails().size());
-        assertNotNull(externalSupplyService.getShiftIdAndDetails().get(1));
+       assertEquals(1, externalSupplyService.getShippingAndDetails().size());
+        assertNotNull(externalSupplyService.getShippingAndDetails().get(1));
     }
 }

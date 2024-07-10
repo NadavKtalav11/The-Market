@@ -84,10 +84,10 @@ public class PaymentServicesFacade {
 //        }
 //    }
 
-    public boolean addExternalService(String paymentURL){
+    public boolean addExternalService(String name , String paymentURL){
         List<ExternalPaymentService> externalPaymentServices = externalPaymentRepository.findAll();
         int size_before = externalPaymentServices.size();
-        ExternalPaymentService externalPaymentService = new ExternalPaymentService(paymentURL);
+        ExternalPaymentService externalPaymentService = new ExternalPaymentService(name, paymentURL);
         externalPaymentRepository.save(externalPaymentService);
         return externalPaymentRepository.findAll().size() == size_before + 1;
 
@@ -107,22 +107,25 @@ public class PaymentServicesFacade {
     }
 
     @Transactional
-    public String pay(int price, PaymentDTO payment, String userId, Map<String, Map<String, List<Integer>>> productList) throws Exception{
-       
+    public String pay(int price,String paymentServiceName , PaymentDTO payment, String userId, Map<String, Map<String, List<Integer>>> productList) throws Exception{
         String acquisitionId  = getNewAcquisitionId();
-        ExternalPaymentService externalPaymentService = getPaymentServiceByURL("https://damp-lynna-wsep-1984852e.koyeb.app/");
-       int transactionId  = externalPaymentService.payWithCard(price, payment, userId, productList, acquisitionId);
-        Acquisition acquisition = new Acquisition(String.valueOf(transactionId), userId, price, payment, productList);
+        //ExternalPaymentService externalPaymentService = getPaymentServiceByURL("https://damp-lynna-wsep-1984852e.koyeb.app/");
+        ExternalPaymentService externalPaymentService = getPaymentServiceByName(paymentServiceName);
+        int transactionId  = externalPaymentService.payWithCard(price, payment, userId, productList, acquisitionId);
+        if (!isValidAcquisitionIdID(acquisitionId)){
+            throw new IllegalArgumentException(ExceptionsEnum.ExternalPaymentFailed.toString());
+        }
+        Acquisition acquisition = new Acquisition(transactionId,acquisitionId, userId, price, payment, productList);
         acquisitionRepository.save(acquisition);
-        externalPaymentService.addAcquisition(String.valueOf(transactionId), acquisition);
+        externalPaymentService.addAcquisition(acquisitionId, acquisition);
         return acquisition.getAcquisitionId();
 
     }
 
-    public int cancelPayment(int transactionID) throws Exception {
-        ExternalPaymentService externalPaymentService = getPaymentServiceByURL("https://damp-lynna-wsep-1984852e.koyeb.app/");
-         return externalPaymentService.cancelPayment(transactionID);
-    }
+//    public int cancelPayment(int transactionID) throws Exception {
+//        ExternalPaymentService externalPaymentService = getPaymentServiceByURL("https://damp-lynna-wsep-1984852e.koyeb.app/");
+//         return externalPaymentService.cancelPayment(transactionID);
+//    }
 
     public Map<String, String> getAcquisitionReceipts(String acquisitionId){
         Optional<Acquisition> acquisition = acquisitionRepository.findById(acquisitionId);
@@ -167,14 +170,25 @@ public class PaymentServicesFacade {
 //    }
 
     public ExternalPaymentService getPaymentServiceByURL(String paymentURL){
-
-        Optional<ExternalPaymentService> externalPaymentService = externalPaymentRepository.findById(paymentURL);
-        ExternalPaymentService externalPaymentService1 = externalPaymentService.orElse(null);
-        if (externalPaymentService1 != null){
-            return new ExternalPaymentService(externalPaymentService1.getUrl());
+        List<ExternalPaymentService> externalPaymentServicesList = getAllPaymentServices().values().stream().toList();
+        //Optional<ExternalPaymentService> externalPaymentService = externalPaymentRepository.findById(paymentURL);
+        //ExternalPaymentService externalPaymentService1 = externalPaymentService.orElse(null);
+        for (ExternalPaymentService externalPaymentService:externalPaymentServicesList){
+            if (externalPaymentService.getUrl().equals(paymentURL)){
+                return externalPaymentService;
+            }
         }
         return null;
     }
+
+    public ExternalPaymentService getPaymentServiceByName(String name){
+        Optional<ExternalPaymentService> externalPaymentService = externalPaymentRepository.findById(name);
+        ExternalPaymentService externalPaymentService1 = externalPaymentService.orElse(null);
+        //if (externalPaymentService1 != null){
+        return externalPaymentService1;
+
+    }
+
 
     public Map<String, Integer> getStorePurchaseInfo()
     {
@@ -240,5 +254,13 @@ public class PaymentServicesFacade {
             }
         }
         return receiptsDTO;
+    }
+
+    public boolean isValidAcquisitionIdID(String acqId){
+        int ID = Integer.parseInt(acqId);
+        if(ID>=10000 && ID<=100000){
+            return true;
+        }
+        return false;
     }
 }

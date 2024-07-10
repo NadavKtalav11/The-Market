@@ -127,7 +127,7 @@ public class externalConnections {
     public void checkSupplySuccess() throws Exception {
 
         ExternalSupplyService supplyServices = market.getSupplyServicesFacade().getAllSupplyServices().get("https://damp-lynna-wsep-1984852e.koyeb.app/");
-        int res = supplyServices.createSupply("david", "Israel", "Ashdod", "Elul");
+        int res = supplyServices.createSupply("david", "Israel", "Ashdod", "Elul", "3");
         assertTrue(res>=10000);
         assertTrue(res<=100000);
 
@@ -137,20 +137,21 @@ public class externalConnections {
     @Order(6)
     public void checkSupplyAndCancelSuccess() throws Exception {
         ExternalSupplyService supplyServices = market.getSupplyServicesFacade().getAllSupplyServices().get("https://damp-lynna-wsep-1984852e.koyeb.app/");
-        int res = supplyServices.createSupply("david", "Israel", "Ashdod", "Elul");
-        int res1= supplyServices.cancelSupply(res);
+        supplyServices.createSupply("david", "Israel", "Ashdod", "Elul", "4");
+        String shippingId = supplyServices.getShippingId("4");
+        int res1= supplyServices.cancelSupply(shippingId);
         assertEquals(1,res1);
     }
 
     @Test
     @Order(7)
     public void isValidAcquisitionIdID() throws Exception {
-        assertTrue(market.isValidAcquisitionIdID("54656"));
-        assertTrue(market.isValidAcquisitionIdID("84656"));
-        assertTrue(market.isValidAcquisitionIdID("99656"));
-        assertFalse(market.isValidAcquisitionIdID("-1"));
-        assertFalse(market.isValidAcquisitionIdID("155"));
-        assertFalse(market.isValidAcquisitionIdID("564646644"));
+        assertTrue(paymentServicesFacade.isValidAcquisitionIdID("54656"));
+        assertTrue(paymentServicesFacade.isValidAcquisitionIdID("84656"));
+        assertTrue(paymentServicesFacade.isValidAcquisitionIdID("99656"));
+        assertFalse(paymentServicesFacade.isValidAcquisitionIdID("-1"));
+        assertFalse(paymentServicesFacade.isValidAcquisitionIdID("155"));
+        assertFalse(paymentServicesFacade.isValidAcquisitionIdID("564646644"));
 
 
 
