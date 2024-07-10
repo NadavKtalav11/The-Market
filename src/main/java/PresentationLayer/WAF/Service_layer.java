@@ -69,10 +69,14 @@ public class Service_layer {
         try {
             String userId = market.init();
             logger.info("System initialized successfully.");
+
+            logger.info("Start initialized system state");
+            market.startStateInitialization();
+            logger.info("System primary state initialized successfully.");
             return new Response<>("Initialization successful", "System initialized successfully.",userId);
 
         } catch (Exception e) {
-            logger.error("Error occurred during the initialization: {}", e.getMessage(), e);
+            logger.info("Error occurred during the initialization: {} ", e.getMessage(), e);
             return new Response<>(null, e.getMessage());
         }
     }
@@ -85,7 +89,7 @@ public class Service_layer {
             return new Response<>("Successful", "The payment has been cancelled.");
 
         } catch (Exception e) {
-            logger.error("Error occurred during the payment cancellation: {}", e.getMessage(), e);
+            logger.info("Error occurred during the payment cancellation: {}", e.getMessage(), e);
             return new Response<>(null, e.getMessage());
         }
     }
@@ -98,7 +102,7 @@ public class Service_layer {
             return new Response<>("Successful", "The supply has been cancelled.");
 
         } catch (Exception e) {
-            logger.error("Error occurred during the supply cancellation: {}", e.getMessage(), e);
+            logger.info("Error occurred during the supply cancellation: {}", e.getMessage(), e);
             return new Response<>(null, e.getMessage());
         }
     }
@@ -112,7 +116,7 @@ public class Service_layer {
             return new Response<>("Successful adding", "Adding new external payment service have been done successfully.");
 
         } catch (Exception e) {
-            logger.error("Error occurred during the adding: {}", e.getMessage(), e);
+            logger.info("Error occurred during the adding: {}", e.getMessage(), e);
             return new Response<>(null, e.getMessage());
         }
     }
@@ -125,7 +129,7 @@ public class Service_layer {
             return new Response<>("Successful adding", "Adding new external payment service have been done successfully.");
         }
         catch (Exception e) {
-            logger.error("Error occurred during the removing: {}", e.getMessage(), e);
+            logger.info("Error occurred during the removing: {}", e.getMessage(), e);
             return new Response<>(null, e.getMessage());
         }
 
@@ -138,7 +142,7 @@ public class Service_layer {
             logger.info("Adding new external supply service has been done successfully.");
             return new Response<>("Successful adding", "Adding new external supply service has been done successfully.");
         } catch (Exception e) {
-            logger.error("Error occurred during the adding: {}", e.getMessage(), e);
+            logger.info("Error occurred during the adding: {}", e.getMessage(), e);
             return new Response<>(null, e.getMessage());
         }
     }
@@ -150,7 +154,7 @@ public class Service_layer {
             List<String> notificationsList =  market.getUserNotifications(memberId);
             return new Response<>(notificationsList, "get user "+ memberId +"notifications");
         } catch (Exception e) {
-            logger.error("Error occurred during the adding: {}", e.getMessage(), e);
+            logger.info("Error occurred during the adding: {}", e.getMessage(), e);
             return new Response<>(null, e.getMessage());
         }
     }
@@ -162,7 +166,7 @@ public class Service_layer {
             logger.info("Removing the external supply : {} has been done successfully.", supplyURL);
             return new Response<>("Successful removal", "Removing external supply service has been done successfully.");
         } catch (Exception e) {
-            logger.error("Error occurred during the removing: {}", e.getMessage(), e);
+            logger.info("Error occurred during the removing: {}", e.getMessage(), e);
             return new Response<>(null, e.getMessage());
         }
     }
@@ -176,7 +180,7 @@ public class Service_layer {
             logger.info("Purchase successful for user: {}", user_ID);
             return new Response<>("Purchase successful", "", acquisitionID);
         } catch (Exception e) {
-            logger.error("Purchase failed for user: {} with error: {}", user_ID, e.getMessage(), e);
+            logger.info("Purchase failed for user: {} with error: {}", user_ID, e.getMessage(), e);
             return new Response<>(null, e.getMessage());
         }
     }
@@ -187,7 +191,7 @@ public class Service_layer {
             Boolean res = market.checkInitializedMarket();
             return new Response<Boolean>(res, "Checked if the market has already initialized, res is the answer");
         } catch (Exception e) {
-            logger.error("Error occurred during Checking if the market has been already initialized {}", e.getMessage());
+            logger.info("Error occurred during Checking if the market has been already initialized {}", e.getMessage());
             return new Response<>(null, e.getMessage());
         }
     }
@@ -199,7 +203,7 @@ public class Service_layer {
             market.exitMarketSystem(userID);
             return new Response<>("Exit successful", "User exited the market system successfully.");
         } catch (Exception e) {
-            logger.error("Error occurred during exiting market system {}", e.getMessage());
+            logger.info("Error occurred during exiting market system {}", e.getMessage());
             return new Response<>(null, e.getMessage());
         }
     }
@@ -212,7 +216,7 @@ public class Service_layer {
             String userID = market.enterMarketSystem();
             return new Response<>("Enter successful", "Entered the market system successfully.", userID);
         } catch (Exception e) {
-            logger.error("Error occurred during entering market system {}", e.getMessage());
+            logger.info("Error occurred during entering market system {}", e.getMessage());
             return new Response<>(null, e.getMessage() , "");
 
         }
@@ -224,7 +228,7 @@ public class Service_layer {
             String memberID = market.register(userDTO.getUserId(), userDTO, password);
             return new Response<>("Registration successful", "User registered successfully.", memberID);
         } catch (Exception e) {
-            logger.error("Error occurred during registration {}", e.getMessage());
+            logger.info("Error occurred during registration {}", e.getMessage());
             return new Response<>(null, e.getMessage());
         }
     }
@@ -242,7 +246,7 @@ public class Service_layer {
             return new Response<>("Login successful", "User logged in successfully.", memberId);
 
         } catch (Exception e) {
-            logger.error("Error occurred during log in - {}", e.getMessage());
+            logger.info("Error occurred during log in - {}", e.getMessage());
             return new Response<>(null, e.getMessage(), e.getMessage());
         }
     }
@@ -253,7 +257,7 @@ public class Service_layer {
             market.logout(userID);
             return new Response<>("Logout successful", "User logged out successfully.");
         } catch (Exception e) {
-            logger.error("Error occurred during log out", e.getMessage());
+            logger.info("Error occurred during log out", e.getMessage());
             return new Response<>(null, e.getMessage());
         }
     }
@@ -265,7 +269,7 @@ public class Service_layer {
             market.addProductToStore(userId, storeID,productDTO);
             return new Response<>("Product added successfully", "Product added to store successfully.");
         } catch (Exception e) {
-            logger.error("Error occurred during adding product to store", e.getMessage(), e);
+            logger.info("Error occurred during adding product to store", e.getMessage(), e);
             return new Response<>(null, e.getMessage());
         }
     }
@@ -279,7 +283,7 @@ public class Service_layer {
             return new Response<>("Product removed successfully", "Product removed from store successfully.");
         } catch (Exception e) {
 
-            logger.error("Error occurred during removing product from store", e.getMessage(), e);
+            logger.info("Error occurred during removing product from store", e.getMessage(), e);
             return new Response<>(null, e.getMessage());
         }
     }
@@ -292,7 +296,7 @@ public class Service_layer {
             return new Response<>("Product updated successfully", "Product updated in store successfully.");
         } catch (Exception e) {
 
-            logger.error("Error occurred during updating product in store", e.getMessage(), e);;
+            logger.info("Error occurred during updating product in store", e.getMessage(), e);;
             return new Response<>(null, e.getMessage());
         }
     }
@@ -305,7 +309,7 @@ public class Service_layer {
             return new Response<>("Store owner appointed successfully", "Store owner appointed successfully.");
         } catch (Exception e) {
 
-            logger.error("Error occurred during appointing store owner", e.getMessage(), e);
+            logger.info("Error occurred during appointing store owner", e.getMessage(), e);
             return new Response<>(null, e.getMessage());
 
         }
@@ -319,7 +323,7 @@ public class Service_layer {
             return new Response<>("Store owner fired successfully", "Store owner fired successfully.");
         } catch (Exception e) {
 
-            logger.error("Error occurred during firing store owner", e.getMessage(), e);
+            logger.info("Error occurred during firing store owner", e.getMessage(), e);
             return new Response<>(null, e.getMessage());
 
         }
@@ -336,7 +340,7 @@ public class Service_layer {
             return new Response<>("Store manager appointed successfully", "Store manager appointed successfully.");
         } catch (Exception e) {
 
-            logger.error("Error occurred during appointing store manager", e.getMessage(), e);
+            logger.info("Error occurred during appointing store manager", e.getMessage(), e);
             return new Response<>(null, e.getMessage());
         }
     }
@@ -349,7 +353,7 @@ public class Service_layer {
             return new Response<>("Store manager fired successfully", "Store manager fired successfully.");
         } catch (Exception e) {
 
-            logger.error("Error occurred during firing store manager", e.getMessage(), e);
+            logger.info("Error occurred during firing store manager", e.getMessage(), e);
             return new Response<>(null, e.getMessage());
 
         }
@@ -366,7 +370,7 @@ public class Service_layer {
             return new Response<>("Permissions updated successfully", "Store manager permissions updated successfully.");
         } catch (Exception e) {
 
-            logger.error("Error occurred during updating store manager permissions", e.getMessage(), e);
+            logger.info("Error occurred during updating store manager permissions", e.getMessage(), e);
             return new Response<>(null, e.getMessage());
 
         }
@@ -380,7 +384,7 @@ public class Service_layer {
             List<String> filteredProductNames = market.generalProductFilter(userId, categoryStr, keywords, minPrice, maxPrice, productMinRating, productsFromSearch, storeMinRating);
             return new Response<>(filteredProductNames, "Product filter applied successfully.");
         } catch (Exception e) {
-            logger.error("Error occurred during the general product search filter: {}", e.getMessage(), e);
+            logger.info("Error occurred during the general product search filter: {}", e.getMessage(), e);
             return new Response<>(null, e.getMessage());
         }
     }
@@ -393,7 +397,7 @@ public class Service_layer {
             List<ProductDTO> products = market.getStoreProducts(userId);
             return new Response<>(products, "product getter good result.");
         } catch (Exception e) {
-            logger.error("Error occurred during the product getter {}", e.getMessage(), e);
+            logger.info("Error occurred during the product getter {}", e.getMessage(), e);
             return new Response<>(null, e.getMessage());
         }
     }
@@ -405,7 +409,7 @@ public class Service_layer {
             List<String> products = market.getStoreCategories();
             return new Response<>(products, "product getter good result.");
         } catch (Exception e) {
-            logger.error("Error occurred during the product getter {}", e.getMessage(), e);
+            logger.info("Error occurred during the product getter {}", e.getMessage(), e);
             return new Response<>(null, e.getMessage());
         }
     }
@@ -417,7 +421,7 @@ public class Service_layer {
             List<UserDTO> workers = market.getStoreWorkers(storeId);
             return new Response<>(workers, "Store Workers get good result.");
         } catch (Exception e) {
-            logger.error("Error occurred during the product getter {}", e.getMessage(), e);
+            logger.info("Error occurred during the product getter {}", e.getMessage(), e);
             return new Response<>(null, e.getMessage());
         }
     }
@@ -429,7 +433,7 @@ public class Service_layer {
             List<UserDTO> workers = market.getStoreManagersDTO(storeId);
             return new Response<>(workers, "Store managers get good result.");
         } catch (Exception e) {
-            logger.error("Error occurred during the managers getter {}", e.getMessage(), e);
+            logger.info("Error occurred during the managers getter {}", e.getMessage(), e);
             return new Response<>(null, e.getMessage());
         }
     }
@@ -440,7 +444,7 @@ public class Service_layer {
             List<UserDTO> workers = market.getStoreOwnersDTO(storeId);
             return new Response<>(workers, "Store owners get good result.");
         } catch (Exception e) {
-            logger.error("Error occurred during the managers getter {}", e.getMessage(), e);
+            logger.info("Error occurred during the managers getter {}", e.getMessage(), e);
             return new Response<>(null, e.getMessage());
         }
     }
@@ -451,7 +455,7 @@ public class Service_layer {
             List<String> workers = market.getStoreManagers(storeId);
             return new Response<>(workers, "Store managers get good result.");
         } catch (Exception e) {
-            logger.error("Error occurred during the managers getter {}", e.getMessage(), e);
+            logger.info("Error occurred during the managers getter {}", e.getMessage(), e);
             return new Response<>(null, e.getMessage());
         }
     }
@@ -462,7 +466,7 @@ public class Service_layer {
             List<String> workers = market.getStoreOwners(storeId);
             return new Response<>(workers, "Store owners get good result.");
         } catch (Exception e) {
-            logger.error("Error occurred during the managers getter {}", e.getMessage(), e);
+            logger.info("Error occurred during the managers getter {}", e.getMessage(), e);
             return new Response<>(null, e.getMessage());
         }
     }
@@ -477,7 +481,7 @@ public class Service_layer {
             Map<String, List<ProductDTO>> filteredProductNames = market.generalProductSearchDTO(userId, productName, categoryStr, keywords);
             return new Response<>(filteredProductNames, "Product search completed successfully.");
         } catch (Exception e) {
-            logger.error("Error occurred during the general product search: {}", e.getMessage(), e);
+            logger.info("Error occurred during the general product search: {}", e.getMessage(), e);
             return new Response<>(null, e.getMessage());
         }
     }
@@ -490,7 +494,7 @@ public class Service_layer {
             List<String> filteredProductNames = market.generalProductSearch(userId, productName, categoryStr, keywords);
             return new Response<>(filteredProductNames, "Product search completed successfully.");
         } catch (Exception e) {
-            logger.error("Error occurred during the general product search: {}", e.getMessage(), e);
+            logger.info("Error occurred during the general product search: {}", e.getMessage(), e);
             return new Response<>(null, e.getMessage());
         }
     }
@@ -505,7 +509,7 @@ public class Service_layer {
             List<String> allAvailableStores = market.getInformationAboutStores(user_ID);
             return new Response<>(allAvailableStores, "Information about stores retrieved successfully.");
         } catch (Exception e) {
-            logger.error("Error occurred during reviewing information about stores in the market: {}", e.getMessage(), e);
+            logger.info("Error occurred during reviewing information about stores in the market: {}", e.getMessage(), e);
             return new Response<>(null, e.getMessage());
         }
 
@@ -519,7 +523,7 @@ public class Service_layer {
             Map<String, String> information = market.getInformationAboutRolesInStore(user_ID, store_ID);
             return new Response<>(information, "Information about roles in store retrieved successfully.");
         } catch (Exception e) {
-            logger.error("Error occurred during reviewing information about products in store: {}", e.getMessage(), e);
+            logger.info("Error occurred during reviewing information about products in store: {}", e.getMessage(), e);
             return new Response<>(null, e.getMessage());
         }
     }
@@ -532,7 +536,7 @@ public class Service_layer {
             Map<String, List<Integer>> managersAuthorizations = market.getAuthorizationsOfManagersInStore(user_ID, store_ID);
             return new Response<>(managersAuthorizations, "Authorizations of managers in store retrieved successfully.");
         } catch (Exception e) {
-            logger.error("Error occurred during store owner reviewing authorizations of managers in store: {}", e.getMessage(), e);
+            logger.info("Error occurred during store owner reviewing authorizations of managers in store: {}", e.getMessage(), e);
             return new Response<>(null, e.getMessage());
         }
     }
@@ -545,7 +549,7 @@ public class Service_layer {
             market.closeStore(user_ID, store_ID);
             return new Response<>("Store closed successfully", "Store closed successfully.");
         } catch (Exception e) {
-            logger.error("Error occurred during store owner was trying to close a store: {}", e.getMessage(), e);
+            logger.info("Error occurred during store owner was trying to close a store: {}", e.getMessage(), e);
             return new Response<>(null, e.getMessage());
         }
     }
@@ -558,7 +562,7 @@ public class Service_layer {
             market.reopenStore(user_ID, store_ID);
             return new Response<>("Store reopened successfully", "Store reopened successfully.");
         } catch (Exception e) {
-            logger.error("Error occurred during store owner was trying to reopened a store: {}", e.getMessage(), e);
+            logger.info("Error occurred during store owner was trying to reopened a store: {}", e.getMessage(), e);
             return new Response<>(null, e.getMessage());
         }
     }
@@ -571,7 +575,7 @@ public class Service_layer {
             String storeId = market.openStore(user_ID, name, description);
             return new Response<>("Store opened successfully", "Store opened successfully.", storeId);
         } catch (Exception e) {
-            logger.error("Error occurred during store owner was trying to open a store: {}", e.getMessage(), e);
+            logger.info("Error occurred during store owner was trying to open a store: {}", e.getMessage(), e);
             return new Response<>(null, e.getMessage());
         }
     }
@@ -584,7 +588,7 @@ public class Service_layer {
             market.addProductToBasket(productName, quantity, storeId, userId);
             return new Response<>("Product added to basket successfully", "Product added to basket successfully.");
         } catch (Exception e) {
-            logger.error("Error occurred during adding new product to the basket: {}", e.getMessage(), e);
+            logger.info("Error occurred during adding new product to the basket: {}", e.getMessage(), e);
             return new Response<>(null, e.getMessage());
         }
     }
@@ -597,7 +601,7 @@ public class Service_layer {
             market.removeProductFromBasket(productName, storeId, userId);
             return new Response<>("Product removed from basket successfully", "Product removed from basket successfully.");
         } catch (Exception e) {
-            logger.error("Error occurred during removing a product from the basket: {}", e.getMessage(), e);
+            logger.info("Error occurred during removing a product from the basket: {}", e.getMessage(), e);
             return new Response<>(null, e.getMessage());
         }
     }
@@ -610,7 +614,7 @@ public class Service_layer {
             market.modifyShoppingCart(productName, quantity, storeId, userId);
             return new Response<>("Shopping cart modified successfully", "Shopping cart modified successfully.");
         } catch (Exception e) {
-            logger.error("Error occurred during modifying shopping cart: {}", e.getMessage(), e);
+            logger.info("Error occurred during modifying shopping cart: {}", e.getMessage(), e);
             return new Response<>(null, e.getMessage());
         }
     }
@@ -623,7 +627,7 @@ public class Service_layer {
             Map<String, Integer> marketPurchases = market.marketManagerAskInfo(user_ID);
             return new Response<>(marketPurchases, "Information about purchases in the market retrieved successfully.");
         } catch (Exception e) {
-            logger.error("Error occurred during the request of the market manager getting the purchase information: {}", e.getMessage(), e);
+            logger.info("Error occurred during the request of the market manager getting the purchase information: {}", e.getMessage(), e);
             return new Response<>(null, e.getMessage());
         }
     }
@@ -636,7 +640,7 @@ public class Service_layer {
             Map<String, Integer> storePurchases = market.storeOwnerGetInfoAboutStore(user_ID, store_ID);
             return new Response<>(storePurchases, "Information about purchases in the store retrieved successfully.");
         } catch (Exception e) {
-            logger.error("Error occurred during the request of the store owner getting the purchase information: {}", e.getMessage(), e);
+            logger.info("Error occurred during the request of the store owner getting the purchase information: {}", e.getMessage(), e);
             return new Response<>(null, e.getMessage());
         }
     }
@@ -649,7 +653,7 @@ public class Service_layer {
             List<String> filteredProductNames = market.inStoreProductFilter(userId, categoryStr, keywords, minPrice, maxPrice, productMinRating, storeId, productsFromSearch, storeMinRating);
             return new Response<>(filteredProductNames, "In-store product search filter applied successfully.");
         } catch (Exception e) {
-            logger.error("Error occurred during the in-store product search filter: {}", e.getMessage(), e);
+            logger.info("Error occurred during the in-store product search filter: {}", e.getMessage(), e);
             return new Response<>(null, e.getMessage());
         }
     }
@@ -662,7 +666,7 @@ public class Service_layer {
             List<String> filteredProductNames = market.inStoreProductSearch(userId, productName, categoryStr, keywords, storeId);
             return new Response<>(filteredProductNames, "In-store product search completed successfully.");
         } catch (Exception e) {
-            logger.error("Error occurred during the in-store product search: {}", e.getMessage(), e);
+            logger.info("Error occurred during the in-store product search: {}", e.getMessage(), e);
             return new Response<>(null, e.getMessage());
         }
     }
@@ -676,7 +680,7 @@ public class Service_layer {
             List<ProductDTO> filteredProductNames = market.inStoreProductSearchDTO(userId, productName, categoryStr, keywords, storeId);
             return new Response<>(filteredProductNames, "In-store product search completed successfully.");
         } catch (Exception e) {
-            logger.error("Error occurred during the in-store product search: {}", e.getMessage(), e);
+            logger.info("Error occurred during the in-store product search: {}", e.getMessage(), e);
             return new Response<>(null, e.getMessage());
         }
     }
@@ -689,7 +693,7 @@ public class Service_layer {
             market.addPurchaseRuleToStore(testRules, operators, userId, storeId);
             return new Response<>("Purchase rule added successfully", "Purchase rule added to store successfully.");
         } catch (Exception e) {
-            logger.error("Error occurred during adding purchase rule to store: {}", e.getMessage(), e);
+            logger.info("Error occurred during adding purchase rule to store: {}", e.getMessage(), e);
             return new Response<>(null, e.getMessage());
         }
     }
@@ -702,7 +706,7 @@ public class Service_layer {
             market.removePurchaseRuleFromStore(ruleIndex, userId, storeId);
             return new Response<>("Removing purchase rule removed successfully", "Removing purchase rule removed from store successfully.");
         } catch (Exception e) {
-            logger.error("Error occurred during removing purchase rule from store: {}", e.getMessage(), e);
+            logger.info("Error occurred during removing purchase rule from store: {}", e.getMessage(), e);
             return new Response<>(null, e.getMessage());
         }
     }
@@ -714,7 +718,7 @@ public class Service_layer {
             market.composeCurrentPurchaseRules(ruleIndex1, ruleIndex2, operator, userId, storeId);
             return new Response<>("Purchase rules composed successfully", "Purchase rules composed successfully.");
         } catch (Exception e) {
-            logger.error("Error occurred during composing purchase rules: {}", e.getMessage(), e);
+            logger.info("Error occurred during composing purchase rules: {}", e.getMessage(), e);
             return new Response<>(null, e.getMessage());
         }
     }
@@ -726,7 +730,7 @@ public class Service_layer {
             market.addDiscountCondRuleToStore(testRules, logicOperators, discDetails, numericalOperators, userId, storeId);
             return new Response<>("Discount conditional rule added successfully", "Discount conditional rule added to store successfully.");
         } catch (Exception e) {
-            logger.error("Error occurred during adding conditional discount rule to store: {}", e.getMessage(), e);
+            logger.info("Error occurred during adding conditional discount rule to store: {}", e.getMessage(), e);
             return new Response<>(null, e.getMessage());
         }
     }
@@ -738,7 +742,7 @@ public class Service_layer {
             market.addDiscountSimpleRuleToStore(discs, numericalOperators, userId, storeId);
             return new Response<>("Discount simple rule added successfully", "Discount simple rule added to store successfully.");
         } catch (Exception e) {
-            logger.error("Error occurred during adding simple discount rule to store: {}", e.getMessage(), e);
+            logger.info("Error occurred during adding simple discount rule to store: {}", e.getMessage(), e);
             return new Response<>(null, e.getMessage());
         }
     }
@@ -751,7 +755,7 @@ public class Service_layer {
             market.removeDiscountRuleFromStore(ruleIndex, userId, storeId);
             return new Response<>("Discount rule removed successfully", "Discount rule removed from store successfully.");
         } catch (Exception e) {
-            logger.error("Error occurred during removing discount rule from store: {}", e.getMessage(), e);
+            logger.info("Error occurred during removing discount rule from store: {}", e.getMessage(), e);
             return new Response<>(null, e.getMessage());
         }
     }
@@ -763,7 +767,7 @@ public class Service_layer {
             market.composeCurrentSimpleDiscountRules(ruleIndex1, ruleIndex2, numericalOperator, userId, storeId);
             return new Response<>("Simple discount rules composed successfully", "Simple discount rules composed successfully.");
         } catch (Exception e) {
-            logger.error("Error occurred during composing simple discount rules: {}", e.getMessage(), e);
+            logger.info("Error occurred during composing simple discount rules: {}", e.getMessage(), e);
             return new Response<>(null, e.getMessage());
         }
     }
@@ -775,7 +779,7 @@ public class Service_layer {
             market.composeCurrentCondDiscountRules(ruleIndex1, ruleIndex2, logicalOperator, numericalOperator, userId, storeId);
             return new Response<>("Discount rules composed successfully", "Discount rules composed successfully.");
         } catch (Exception e) {
-            logger.error("Error occurred during composing discount rules: {}", e.getMessage(), e);
+            logger.info("Error occurred during composing discount rules: {}", e.getMessage(), e);
             return new Response<>(null, e.getMessage());
         }
     }
@@ -787,7 +791,7 @@ public class Service_layer {
             List<String> storeRules = market.getStoreCurrentSimpleDiscountRules(userId, storeId);
             return new Response<>(storeRules, "Store current simple rules retrieved successfully.");
         } catch (Exception e) {
-            logger.error("Error occurred during getting store current simple rules: {}", e.getMessage(), e);
+            logger.info("Error occurred during getting store current simple rules: {}", e.getMessage(), e);
             return new Response<>(null, e.getMessage());
         }
     }
@@ -799,7 +803,7 @@ public class Service_layer {
             List<String> storeRules = market.getStoreCurrentCondDiscountRules(userId, storeId);
             return new Response<>(storeRules, "Store current rules retrieved successfully.");
         } catch (Exception e) {
-            logger.error("Error occurred during getting store current rules: {}", e.getMessage(), e);
+            logger.info("Error occurred during getting store current rules: {}", e.getMessage(), e);
             return new Response<>(null, e.getMessage());
         }
     }
@@ -811,7 +815,7 @@ public class Service_layer {
             market.setUserConfirmationPurchase(userID);
             return new Response<>("user's answer get successfully", "user's answer get successfully.");
         } catch (Exception e) {
-            logger.error("Error occurred during setting answer from user: {}", e.getMessage(), e);
+            logger.info("Error occurred during setting answer from user: {}", e.getMessage(), e);
             return new Response<>(null, e.getMessage());
         }
     }
@@ -823,7 +827,7 @@ public class Service_layer {
             List<String> storeRules = market.getStoreCurrentPurchaseRules(userId, storeId);
             return new Response<>(storeRules, "Store current rules retrieved successfully.");
         } catch (Exception e) {
-            logger.error("Error occurred during getting store current rules: {}", e.getMessage(), e);
+            logger.info("Error occurred during getting store current rules: {}", e.getMessage(), e);
             return new Response<>(null, e.getMessage());
         }
     }
@@ -837,7 +841,7 @@ public class Service_layer {
             return new Response<>(storeRules, "Store current rules retrieved successfully.");
 
         } catch (Exception e) {
-            logger.error("Error occurred during getting store current rules: {}", e.getMessage(), e);
+            logger.info("Error occurred during getting store current rules: {}", e.getMessage(), e);
             return new Response<>(null, e.getMessage());
         }
     }
@@ -854,10 +858,10 @@ public class Service_layer {
 //                market.paymentFailed(userID);
 //            }
 //            catch (Exception exception){
-//                logger.error("Error occurred while restore stock data: {}", e.getMessage(), e);
+//                logger.info("Error occurred while restore stock data: {}", e.getMessage(), e);
 //                return new Response<>(null, "restore stock data failed: " + e.getMessage());
 //            }
-//            logger.error("Error occurred while paying: {}", e.getMessage(), e);
+//            logger.info("Error occurred while paying: {}", e.getMessage(), e);
 //            return new Response<>(null, "Payment failed: " + e.getMessage());
 //        }
 //    }
@@ -872,7 +876,7 @@ public class Service_layer {
             CartDTO cartDTO = market.checkingCartValidationBeforePurchaseDTO(user_ID, userDTO);
             return new Response<>(cartDTO, "Cart validation and price calculation completed successfully.");
         } catch (Exception e) {
-            logger.error("Error occurred during the validation of the cart: {}", e.getMessage(), e);
+            logger.info("Error occurred during the validation of the cart: {}", e.getMessage(), e);
             return new Response<>(null, "Cart validation failed: " + e.getMessage());
         }
     }
@@ -886,7 +890,7 @@ public class Service_layer {
             Response<Integer> ans = new Response<>(price, "Cart validation and price calculation completed successfully.");
             return ans;
         } catch (Exception e) {
-            logger.error("Error occurred during the validation of the cart: {}", e.getMessage(), e);
+            logger.info("Error occurred during the validation of the cart: {}", e.getMessage(), e);
             return new Response<>(null, e.getMessage());
         }
     }
@@ -897,7 +901,7 @@ public class Service_layer {
             List<AcquisitionDTO> acquisitions = market.getUserAcquisitionsHistory(userId);
             return new Response<>(acquisitions, "Acquisitions retrieved successfully.");
         } catch (Exception e) {
-            logger.error("Error occurred during getting acquisitions of user: {}", userId, e);
+            logger.info("Error occurred during getting acquisitions of user: {}", userId, e);
             return new Response<>(null, e.getMessage());
         }
     }
@@ -908,7 +912,7 @@ public class Service_layer {
             Map<String, ReceiptDTO> receipts = market.getUserReceiptsByAcquisition(userId, acquisitionId);
             return new Response<>(receipts, "Receipts retrieved successfully.");
         } catch (Exception e) {
-            logger.error("Error occurred during getting receipts of user: {} by acquisition: {}", userId, acquisitionId, e);
+            logger.info("Error occurred during getting receipts of user: {} by acquisition: {}", userId, acquisitionId, e);
             return new Response<>(null, e.getMessage());
         }
     }
