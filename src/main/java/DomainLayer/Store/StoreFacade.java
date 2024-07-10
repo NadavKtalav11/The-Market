@@ -57,7 +57,7 @@ public class StoreFacade {
     }
 
 
-    public boolean isStoreOpen(String storeId){
+    public boolean isStoreOpen(String storeId) throws Exception {
         if (getStoreByID(storeId)==null){
             return false;
         }
@@ -80,12 +80,18 @@ public class StoreFacade {
     }
 
 
-    public void returnProductToStore(Map<String, List<Integer>> products , String storeId){
+    public void returnProductToStore(Map<String, List<Integer>> products , String storeId) throws Exception {
         getStoreByID(storeId).returnProductToStore(products);
     }
 
-    public Store getStoreByID(String storeID){
-        return allStores.getById(storeID);
+    public Store getStoreByID(String storeID) throws Exception {
+        try {
+            return allStores.getById(storeID);
+        } catch (Exception e) {
+            throw new Exception(ExceptionsEnum.DatabaseIsNotConnected.toString());
+        }
+
+        //return allStores.getById(storeID);
         //Optional<Store> store = allStores.findById(storeID);
         //return store.orElse(null);
     }
@@ -110,7 +116,7 @@ public class StoreFacade {
         return  store.getProductsDTO();
     }
 
-    public StoreDTO getStoreDTOById(String storeId){
+    public StoreDTO getStoreDTOById(String storeId) throws Exception {
         Store store = getStoreByID(storeId);
         return getStoreDTOFromStore(store);
     }
@@ -152,7 +158,7 @@ public class StoreFacade {
         checkProductPrice(store.getProductDTOByName(productName, quantity));
     }
 
-    public void checkIfProductExists(String productName, String storeId){
+    public void checkIfProductExists(String productName, String storeId) throws Exception {
         Store store = getStoreByID(storeId);
         if (!store.checkProductExists(productName))
         {
@@ -171,8 +177,7 @@ public class StoreFacade {
         return productDTOS;
     }
 
-    public void checkProductQuantityAvailability(String productName, String storeId, int quantity)
-    {
+    public void checkProductQuantityAvailability(String productName, String storeId, int quantity) throws Exception {
         Store store = getStoreByID(storeId);
         if (!store.checkProductQuantity(productName, quantity))
         {
@@ -188,8 +193,7 @@ public class StoreFacade {
         }
     }
 
-    public void checkPurchasePolicy(UserDTO userDTO, List<ProductDTO> products, String storeId)
-    {
+    public void checkPurchasePolicy(UserDTO userDTO, List<ProductDTO> products, String storeId) throws Exception {
         Store store = getStoreByID(storeId);
 
         if (!store.checkPurchasePolicy(userDTO, products))
@@ -198,14 +202,12 @@ public class StoreFacade {
         }
     }
 
-    public int calcDiscountPolicy(UserDTO userDTO, List<ProductDTO> products, String storeId)
-    {
+    public int calcDiscountPolicy(UserDTO userDTO, List<ProductDTO> products, String storeId) throws Exception {
         Store store = getStoreByID(storeId);
         return store.calcDiscountPolicy(userDTO, products);
     }
 
-    public int calcPrice(String productName, int quantity, String storeId, String userId)
-    {
+    public int calcPrice(String productName, int quantity, String storeId, String userId) throws Exception {
         Store store = getStoreByID(storeId);
         return store.calcPriceInStore(productName, quantity, userId);
     }
@@ -258,8 +260,7 @@ public class StoreFacade {
         }
     }
 
-    public boolean verifyStoreExist(String storeID)
-    {
+    public boolean verifyStoreExist(String storeID) throws Exception {
         return getStoreByID(storeID) != null;
     }
 
@@ -307,29 +308,25 @@ public class StoreFacade {
         return closedStoreInformation;
     }
 
-    public List<String> getStoreProducts(String store_ID)
-    {
+    public List<String> getStoreProducts(String store_ID) throws Exception {
         Store store = getStoreByID(store_ID);
         return store.getProducts();
     }
 
-    public List<String> inStoreProductSearch(String productName, String categoryStr, List<String> keywords, String storeId)
-    {
+    public List<String> inStoreProductSearch(String productName, String categoryStr, List<String> keywords, String storeId) throws Exception {
         Store storeToSearchIn = getStoreByID(storeId);
         List<String> filteredProducts = storeToSearchIn.matchProducts(productName, categoryStr, keywords);
         return filteredProducts;
     }
 
-    public List<ProductDTO> inStoreProductSearchDTO(String productName, String categoryStr, List<String> keywords, String storeId)
-    {
+    public List<ProductDTO> inStoreProductSearchDTO(String productName, String categoryStr, List<String> keywords, String storeId) throws Exception {
         Store storeToSearchIn = getStoreByID(storeId);
         List<ProductDTO> filteredProducts = storeToSearchIn.matchProductsDTO(productName, categoryStr, keywords);
         return filteredProducts;
     }
 
 
-    public List<String> inStoreProductFilter(String categoryStr, List<String> keywords, Integer minPrice, Integer maxPrice, Double minRating, String storeId, List<String> productsFromSearch, Double storeMinRating)
-    {
+    public List<String> inStoreProductFilter(String categoryStr, List<String> keywords, Integer minPrice, Integer maxPrice, Double minRating, String storeId, List<String> productsFromSearch, Double storeMinRating) throws Exception {
         Store storeToSearchIn = getStoreByID(storeId);
         List<String> filteredProducts = storeToSearchIn.filterProducts(categoryStr, keywords, minPrice, maxPrice, minRating, productsFromSearch, storeMinRating);
         return filteredProducts;
@@ -343,15 +340,20 @@ public class StoreFacade {
         }
     }
 
-    public boolean checkProductExistInStore(String productName, String storeId)
-    {
+    public boolean checkProductExistInStore(String productName, String storeId) throws Exception {
         Store store = getStoreByID(storeId);
         return store.checkProductExists(productName);
     }
 
-    public List<String> getStores() {
+    public List<String> getStores() throws Exception {
 
-        return allStores.getAllIds();
+        try{
+            return allStores.getAllIds();
+        }
+        catch(Exception e) {
+            throw new Exception(ExceptionsEnum.DatabaseIsNotConnected.toString());
+//        return allStores.getAllIds();
+        }
     }
 
     public void addReceiptToStore(String storeId, String  receiptId, String userId)

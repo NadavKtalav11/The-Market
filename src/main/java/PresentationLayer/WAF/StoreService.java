@@ -39,12 +39,12 @@ public class StoreService {
         return storeFacade.getAllDTOs();
     }
 
-    public StoreDTO getStore(String storeId){
+    public StoreDTO getStore(String storeId) throws Exception {
         return storeFacade.getStoreDTOById(storeId);
     }
 
 
-    public boolean isStoreOpen(String storeID){
+    public boolean isStoreOpen(String storeID) throws Exception {
         return storeFacade.isStoreOpen(storeID);
     }
 
