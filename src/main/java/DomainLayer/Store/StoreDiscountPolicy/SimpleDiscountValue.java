@@ -13,10 +13,6 @@ public class SimpleDiscountValue implements DiscountValue {
     private final Category category;
     private final boolean isStoreDiscount;
     private final List<String> productsNames;
-    private final Object productsNamesLock;
-    private final Object categoryLock;
-    private final Object isStoreDiscountLock;
-    private final Object percentageLock;
 
 
     public SimpleDiscountValue(int percentage, Category category, boolean isStoreDiscount, List<String> productsNames) {
@@ -24,10 +20,6 @@ public class SimpleDiscountValue implements DiscountValue {
         this.category = category;
         this.isStoreDiscount = isStoreDiscount;
         this.productsNames = productsNames;
-        this.productsNamesLock = new Object();
-        this.categoryLock = new Object();
-        this.isStoreDiscountLock = new Object();
-        this.percentageLock = new Object();
     }
 
     public int calcDiscount(List<ProductDTO> basketProducts) {
@@ -67,38 +59,26 @@ public class SimpleDiscountValue implements DiscountValue {
     }
 
     public int getPercentage() {
-        synchronized (percentageLock) {
-            return percentage;
-        }
+        return percentage;
     }
 
     public boolean isStoreDiscount() {
-        synchronized (isStoreDiscountLock) {
-            return isStoreDiscount;
-        }
+        return isStoreDiscount;
     }
 
     private Category getCategory() {
-        synchronized (categoryLock) {
-            return category;
-        }
+        return category;
     }
 
     private List<String> getProductsNames() {
-        synchronized (productsNamesLock) {
-            return productsNames;
-        }
+        return productsNames;
     }
 
     public boolean isCategoryDiscount() {
-        synchronized (categoryLock) {
-            return category != null;
-        }
+        return category != null;
     }
 
     public boolean isProductsDiscount() {
-        synchronized (productsNamesLock) {
-            return productsNames != null;
-        }
+        return productsNames != null;
     }
 }
