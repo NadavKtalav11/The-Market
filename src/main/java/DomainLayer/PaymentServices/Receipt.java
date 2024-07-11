@@ -20,11 +20,12 @@ public class Receipt {
     @Column(name = "user_id")
     private String userId;
 
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)
-    @JoinColumns({
-            @JoinColumn(name = "receipt_id", referencedColumnName = "receipt_id"),
-            @JoinColumn(name = "store_id", referencedColumnName = "store_id")
-    })
+//    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)
+//    @JoinColumns({
+//            @JoinColumn(name = "receipt_id", referencedColumnName = "receipt_id"),
+//            @JoinColumn(name = "store_id", referencedColumnName = "store_id")
+//    })
+    @Transient
     private List<ProductDetailReceipt> productList = new ArrayList<>();
 
     @Transient

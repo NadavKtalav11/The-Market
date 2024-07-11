@@ -81,6 +81,11 @@ public class MemoryStoreManagerRepository implements StoreManagerRepository {
     }
 
     @Override
+    public void addSystemManager(String memberId) {
+
+    }
+
+    @Override
     public void flush() {
 
     }

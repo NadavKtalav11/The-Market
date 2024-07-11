@@ -121,6 +121,7 @@ public class RoleFacade {
         SystemManager systemManager = new SystemManager(memberId);
         synchronized (systemManagers) {
             systemManagers.add(systemManager);
+            storeManagerRepository.addSystemManager(memberId);
         }
     }
 

@@ -24,9 +24,7 @@ public class ExternalSupplyService {
     @Transient
     private HttpRequestController httpReqCtrl;
 
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name = "external_supply_service_url") // This will create a foreign key column in the ShiftingDetails table
-    @MapKeyColumn(name = "shippingId") // Column in the ShiftingDetails table for shift_id
+    @Transient
     private Map<String, ShippingDTO> shippingAndDetails = new HashMap<>();
 //    private final Object countriesLock;
 //    private final Object citiesLock;
