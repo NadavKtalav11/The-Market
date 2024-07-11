@@ -515,6 +515,8 @@ public class Market {
         }
     }
 
+
+
     private void addProductToStoreInitState(Map<String, Object> products, Map<String, Object> actionData, Map<String, String> usernameToUserIdMap) throws Exception {
 
 
@@ -982,7 +984,7 @@ public class Market {
         }
         String store_ID = this.storeFacade.openStore(name, description);
         String member_ID = this.userFacade.getMemberIdByUserId(user_ID);
-        this.roleFacade.createStoreOwner(member_ID, store_ID, true, "no nominator");
+        this.roleFacade.createStoreOwnerWithoutAsk(member_ID, store_ID, true, "no nominator");
         return store_ID;
     }
 
@@ -1045,6 +1047,54 @@ public class Market {
         }
     }
 
+
+    public void approveStoreOwnerInvitation(String userId,  String storeId) throws Exception {
+        String memberId = userFacade.getMemberIdByUserId(userId);
+        boolean succeeded = authenticationAndSecurityFacade.validateToken(authenticationAndSecurityFacade.getToken(memberId));
+        if (!succeeded) {
+            logout(userId);
+            throw new Exception(ExceptionsEnum.sessionOver.toString());
+        }
+        storeFacade.errorIfStoreNotExist(storeId);
+        roleFacade.approveInvitationStoreOwner(memberId, storeId);
+    }
+
+
+    public void declineStoreOwnerInvitation(String userId,  String storeId) throws Exception {
+        String memberId = userFacade.getMemberIdByUserId(userId);
+        boolean succeeded = authenticationAndSecurityFacade.validateToken(authenticationAndSecurityFacade.getToken(memberId));
+        if (!succeeded) {
+            logout(userId);
+            throw new Exception(ExceptionsEnum.sessionOver.toString());
+        }
+        storeFacade.errorIfStoreNotExist(storeId);
+        roleFacade.declineInvitationStoreOwner(memberId, storeId);
+    }
+
+    public void declineStoreManagerInvitation(String userId,  String storeId) throws Exception {
+        String memberId = userFacade.getMemberIdByUserId(userId);
+        boolean succeeded = authenticationAndSecurityFacade.validateToken(authenticationAndSecurityFacade.getToken(memberId));
+        if (!succeeded) {
+            logout(userId);
+            throw new Exception(ExceptionsEnum.sessionOver.toString());
+        }
+        storeFacade.errorIfStoreNotExist(storeId);
+        roleFacade.declineInvitationStoreManager(memberId, storeId);
+    }
+
+    public void approveStoreManagerInvitation(String userId,  String storeId) throws Exception {
+        String memberId = userFacade.getMemberIdByUserId(userId);
+        boolean succeeded = authenticationAndSecurityFacade.validateToken(authenticationAndSecurityFacade.getToken(memberId));
+        if (!succeeded) {
+            logout(userId);
+            throw new Exception(ExceptionsEnum.sessionOver.toString());
+        }
+        storeFacade.errorIfStoreNotExist(storeId);
+        roleFacade.approveInvitationStoreManager(memberId, storeId);
+    }
+
+
+
     public void appointStoreOwner(String nominatorUserId, String nominatedUsername, String storeId) throws Exception {
         userFacade.errorIfUserNotExist(nominatorUserId);
         userFacade.errorIfUserNotMember(nominatorUserId);
@@ -1058,7 +1108,7 @@ public class Market {
         roleFacade.verifyStoreOwnerError(storeId, nominatorMemberID);
         userFacade.errorIfUsernameNotFound(nominatedUsername);
         String nominatedMemberID = userFacade.getMemberByUsername(nominatedUsername).getMemberID();
-        roleFacade.createStoreOwner(nominatedMemberID, storeId, false, nominatorMemberID);
+        roleFacade.addOwnerNominator(nominatedMemberID, storeId, false, nominatorMemberID);
     }
 
     public void fireStoreOwner(String nominatorUserId, String nominatedUsername, String storeId) throws Exception {
@@ -1094,7 +1144,7 @@ public class Market {
         roleFacade.verifyStoreOwnerError(storeId, nominatorMemberID);
         userFacade.errorIfUsernameNotFound(nominatedUsername);
         String nominatedMemberID = userFacade.getMemberByUsername(nominatedUsername).getMemberID();
-        roleFacade.createStoreManager(nominatedMemberID, storeId, inventoryPermissions, purchasePermissions, nominatorMemberID);
+        roleFacade.addManagerNominator(nominatedMemberID, storeId, inventoryPermissions, purchasePermissions, nominatorMemberID);
     }
 
     public void fireStoreManager(String nominatorUserId, String nominatedUsername, String storeId) throws Exception {
