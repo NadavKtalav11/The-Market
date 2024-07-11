@@ -6,6 +6,7 @@ import DomainLayer.AuthenticationAndSecurity.AuthenticationAndSecurityFacade;
 import DomainLayer.Notifications.LateNotificationFacade;
 //import DomainLayer.Notifications.StoreNotification;
 import DomainLayer.PaymentServices.PaymentServicesFacade;
+import DomainLayer.Repositories.InitializedDBRepository;
 import DomainLayer.Role.RoleFacade;
 
 import DomainLayer.Store.Product;
@@ -53,7 +54,8 @@ public class Market {
     private StoreFacade storeFacade;
     private UserFacade userFacade;
     private RoleFacade roleFacade;
-    private boolean initialized= false;
+    private InitializedStatus initialized = new InitializedStatus(false);
+    private InitializedDBRepository initializedDBRepository;
     private final Object initializedLock;
     private final Object managersLock;
     private final Object validationLock;
@@ -69,7 +71,6 @@ public class Market {
     }
 
     public Market() {
-
         StoreFacade storeFacade1 =  new StoreFacade();
         UserFacade userFacade1 =  new UserFacade();
         RoleFacade roleFacade1 =  new RoleFacade();
@@ -131,7 +132,7 @@ public class Market {
         myWebSocketHandler =  MyWebSocketHandler.getInstance();
 
     }
-    public Market(  PaymentServicesFacade paymentServicesFacade,
+    public Market(PaymentServicesFacade paymentServicesFacade,
                   SupplyServicesFacade supplyServicesFacade,AuthenticationAndSecurityFacade authenticationAndSecurityFacade){
         this.storeFacade = StoreFacade.getInstance();
         this.userFacade = UserFacade.getInstance();
@@ -222,18 +223,22 @@ public class Market {
 
     @Autowired
     public Market(UserFacade userFacade, StoreFacade storeFacade, SupplyServicesFacade supplyServicesFacade,
-                  PaymentServicesFacade paymentServicesFacade, RoleFacade roleFacade) throws Exception {
+                  PaymentServicesFacade paymentServicesFacade, RoleFacade roleFacade, InitializedDBRepository initializedDBRepository) throws Exception {
         this.storeFacade = storeFacade;
         this.userFacade = userFacade;
         this.roleFacade = roleFacade;
         this.paymentServicesFacade = paymentServicesFacade;
         this.authenticationAndSecurityFacade = AuthenticationAndSecurityFacade.getInstance();
         this.supplyServicesFacade= supplyServicesFacade;
+        this.initializedDBRepository = initializedDBRepository;
         initializedLock= new Object();
         this.systemManagerIds = new HashSet<>();
         managersLock = new Object();
         validationLock = new Object();
         systemManagerIds = new HashSet<>();
+        Optional<InitializedStatus> initialized1 = initializedDBRepository.findById("market");
+        initialized = initialized1.orElse(new InitializedStatus(false));
+        initializedDBRepository.save(initialized);
         //lateNotificationFacade = new LateNotificationFacade();
 
         myWebSocketHandler =  MyWebSocketHandler.getInstance();
@@ -339,7 +344,7 @@ public class Market {
         String adminPassword = "";
 
         synchronized (initializedLock) {
-            if (initialized == true) {
+            if (initialized.isInitialized()) {
                 logger.info("system already initialized");
                 return "null";
             }
@@ -394,7 +399,15 @@ public class Market {
                 throw new Exception("problem while adding external supply service");
             };
             synchronized (initializedLock) {
-                initialized = true;
+                initialized.setInitialized(true);
+                if (initializedDBRepository != null){
+                    try {
+                        initializedDBRepository.save(initialized);
+                    }
+                    catch (Exception e) {
+                        throw new Exception(ExceptionsEnum.DatabaseIsNotConnected.toString());
+                    }
+                }
                 logger.info("system initialized successfully");
             }
 
@@ -600,7 +613,7 @@ public class Market {
 
 
     public boolean checkInitializedMarket(){
-        return initialized;
+        return initialized.isInitialized();
     }
 
     public void addExternalPaymentService(String paymentServiceName, String paymentURL, String systemMangerId) throws Exception {
@@ -1708,7 +1721,7 @@ public class Market {
 
     public boolean isInitialized() {
         synchronized (initializedLock) {
-            return initialized;
+            return initialized.isInitialized();
         }
     }
 

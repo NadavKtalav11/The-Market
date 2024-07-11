@@ -8,8 +8,6 @@ import java.util.*;
 @Table(name = "acquisition")
 public class Acquisition {
 
-
-    //@Id
     @Column(name = "transactionId")
     private int transactionId;
 
