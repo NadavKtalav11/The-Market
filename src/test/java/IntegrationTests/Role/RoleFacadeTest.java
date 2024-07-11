@@ -24,42 +24,42 @@ public class RoleFacadeTest {
 
     @Test
     void testVerifyStoreOwner() throws Exception {
-        roleFacade.createStoreOwner("1", "1", true, "2");
+        roleFacade.createStoreOwnerWithoutAsk("1", "1", true, "2");
         assertTrue(roleFacade.verifyStoreOwner("1", "1"));
         assertFalse(roleFacade.verifyStoreOwner("2", "1"));
     }
 
     @Test
     void testVerifyStoreManager() throws Exception {
-        roleFacade.createStoreManager("1", "1", true, true, "2");
+        roleFacade.createStoreManagerWithoutAsk("1", "1", true, true, "2");
         assertTrue(roleFacade.verifyStoreManager("1", "1"));
         assertFalse(roleFacade.verifyStoreManager("2", "1"));
     }
 
     @Test
     void testVerifyStoreOwnerIsFounder() throws Exception {
-        roleFacade.createStoreOwner("1", "1", true, "2");
+        roleFacade.createStoreOwnerWithoutAsk("1", "1", true, "2");
         assertTrue(roleFacade.verifyStoreOwnerIsFounder("1", "1"));
         assertFalse(roleFacade.verifyStoreOwnerIsFounder("1", "2"));
     }
 
     @Test
     void testManagerHasInventoryPermissions() throws Exception {
-        roleFacade.createStoreManager("1", "1", true, false, "2");
+        roleFacade.createStoreManagerWithoutAsk("1", "1", true, false, "2");
         assertTrue(roleFacade.managerHasInventoryPermissions("1", "1"));
         assertFalse(roleFacade.managerHasInventoryPermissions("2", "1"));
     }
 
     @Test
     void testManagerHasPurchasePermissions() throws Exception {
-        roleFacade.createStoreManager("1", "1", false, true, "2");
+        roleFacade.createStoreManagerWithoutAsk("1", "1", false, true, "2");
         assertTrue(roleFacade.managerHasPurchasePermissions("1", "1"));
         assertFalse(roleFacade.managerHasPurchasePermissions("2", "1"));
     }
 
     @Test
     void testUpdateStoreManagerPermissions() throws Exception {
-        roleFacade.createStoreManager("1", "1", false, false, "2");
+        roleFacade.createStoreManagerWithoutAsk("1", "1", false, false, "2");
         roleFacade.updateStoreManagerPermissions("1", "1", true, true, "2");
         StoreManager storeManager = roleFacade.getStoreManager("1", "1");
         assertTrue(storeManager.hasInventoryPermissions());
@@ -68,8 +68,8 @@ public class RoleFacadeTest {
 
     @Test
     void testGetInformationAboutStoreRoles() throws Exception {
-        roleFacade.createStoreOwner("1", "1", true, "2");
-        roleFacade.createStoreManager("2", "1", true, true, "3");
+        roleFacade.createStoreOwnerWithoutAsk("1", "1", true, "2");
+        roleFacade.createStoreManagerWithoutAsk("2", "1", true, true, "3");
 
         Map<String, String> roles = roleFacade.getInformationAboutStoreRoles("1");
         assertEquals(2, roles.size());
@@ -79,8 +79,8 @@ public class RoleFacadeTest {
 
     @Test
     void testGetStoreManagersAuthorizations() throws Exception {
-        roleFacade.createStoreManager("1", "1", true, false, "2");
-        roleFacade.createStoreManager("2", "1", false, true, "3");
+        roleFacade.createStoreManagerWithoutAsk("1", "1", true, false, "2");
+        roleFacade.createStoreManagerWithoutAsk("2", "1", false, true, "3");
 
         Map<String, List<Integer>> authorizations = roleFacade.getStoreManagersAuthorizations("1");
         assertEquals(2, authorizations.size());
@@ -90,8 +90,8 @@ public class RoleFacadeTest {
 
     @Test
     void testGetAllStoreManagers() throws Exception {
-        roleFacade.createStoreManager("1", "1", true, false, "2");
-        roleFacade.createStoreManager("2", "1", false, true, "3");
+        roleFacade.createStoreManagerWithoutAsk("1", "1", true, false, "2");
+        roleFacade.createStoreManagerWithoutAsk("2", "1", false, true, "3");
 
         List<String> managers = roleFacade.getAllStoreManagers("1");
         assertEquals(2, managers.size());
@@ -101,8 +101,8 @@ public class RoleFacadeTest {
 
     @Test
     void testGetAllStoreOwners() throws Exception {
-        roleFacade.createStoreOwner("1", "1", true, "2");
-        roleFacade.createStoreOwner("2", "1", false, "3");
+        roleFacade.createStoreOwnerWithoutAsk("1", "1", true, "2");
+        roleFacade.createStoreOwnerWithoutAsk("2", "1", false, "3");
 
         List<String> owners = roleFacade.getAllStoreOwners("1");
         assertEquals(2, owners.size());
@@ -116,8 +116,8 @@ public class RoleFacadeTest {
         stores.add("1");
         stores.add("2");
 
-        roleFacade.createStoreOwner("1", "1", true, "2");
-        roleFacade.createStoreOwner("1", "2", false, "3");
+        roleFacade.createStoreOwnerWithoutAsk("1", "1", true, "2");
+        roleFacade.createStoreOwnerWithoutAsk("1", "2", false, "3");
 
         List<String> storesByOwner = roleFacade.getStoresByOwner(stores, "1");
         assertEquals(2, storesByOwner.size());

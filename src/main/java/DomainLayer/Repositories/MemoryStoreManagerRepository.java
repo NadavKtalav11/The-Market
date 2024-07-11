@@ -73,6 +73,8 @@ public class MemoryStoreManagerRepository implements StoreManagerRepository {
         }
     }
 
+
+
     @Override
     public void updateStoreManagerPermissions(String memberId, String storeId, boolean inventoryPermissions, boolean purchasePermissions, String nominatorMemberID) {
         synchronized (storeManagerLock){

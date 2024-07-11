@@ -41,6 +41,8 @@ public class Member extends State{
     private int productIdCounter;
     @ElementCollection
     private List<String> acquisitionIds;
+
+
     //private boolean isLogin;
 
     /*Member(String member_ID, UserDTO user, String password)
