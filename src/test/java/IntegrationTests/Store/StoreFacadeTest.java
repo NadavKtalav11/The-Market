@@ -19,7 +19,7 @@ public class StoreFacadeTest {
     }
 
     @Test
-    public void testOpenStore() {
+    public void testOpenStore() throws Exception {
         String storeId = storeFacade.openStore("Test Store", "A store for testing");
         Store store = storeFacade.getStoreByID(storeId);
 
@@ -29,7 +29,7 @@ public class StoreFacadeTest {
     }
 
     @Test
-    public void testGetStoreByID() {
+    public void testGetStoreByID() throws Exception {
         String storeId = storeFacade.openStore("Test Store", "A store for testing");
         Store store = storeFacade.getStoreByID(storeId);
 
@@ -149,7 +149,7 @@ public class StoreFacadeTest {
     }
 
     @Test
-    public void testCheckPurchasePolicy() {
+    public void testCheckPurchasePolicy() throws Exception {
         String storeId = storeFacade.openStore("Test Store", "A store for testing");
         ProductDTO product = new ProductDTO("Product1", 10, 5, "A product", "TOYS");
         try {
@@ -168,7 +168,7 @@ public class StoreFacadeTest {
     }
 
     @Test
-    public void testCalcDiscountPolicy() {
+    public void testCalcDiscountPolicy() throws Exception {
         String storeId = storeFacade.openStore("Test Store", "A store for testing");
         ProductDTO product = new ProductDTO("Product1", 10, 5, "A product", "TOYS");
         try {
@@ -187,7 +187,7 @@ public class StoreFacadeTest {
     }
 
     @Test
-    public void testCalcPrice() {
+    public void testCalcPrice() throws Exception {
         String storeId = storeFacade.openStore("Test Store", "A store for testing");
         ProductDTO product = new ProductDTO("Product1", 10, 5, "A product", "TOYS");
         try {

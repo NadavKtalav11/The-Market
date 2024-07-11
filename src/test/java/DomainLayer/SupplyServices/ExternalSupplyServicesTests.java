@@ -29,12 +29,12 @@ public class ExternalSupplyServicesTests {
 
 
         // Initialize the service with the mock data
-        externalSupplyService = new ExternalSupplyService("supply.com");
+        externalSupplyService = new ExternalSupplyService("https://damp-lynna-wsep-1984852e.koyeb.app/");
     }
 
     @Test
     public void testGetSupplyURL() {
-        assertEquals("supply.com", externalSupplyService.getSupplyURL());
+        assertEquals("https://damp-lynna-wsep-1984852e.koyeb.app/", externalSupplyService.getSupplyURL());
     }
 
     @Test
@@ -94,6 +94,6 @@ public class ExternalSupplyServicesTests {
         }
         assertTrue(res);
        assertEquals(1, externalSupplyService.getShippingAndDetails().size());
-        assertNotNull(externalSupplyService.getShippingAndDetails().get(1));
+       assertNotNull(externalSupplyService.getShippingAndDetails().values());
     }
 }

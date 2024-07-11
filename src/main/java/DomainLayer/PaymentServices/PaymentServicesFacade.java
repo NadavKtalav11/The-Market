@@ -8,6 +8,7 @@ import DomainLayer.Repositories.ExternalPaymentRepository;
 import Util.*;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Example;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -66,13 +67,9 @@ public class PaymentServicesFacade {
         externalPaymentRepository.deleteById(paymentId);
     }
 
-    public boolean checkHandShake(){
-        Optional<ExternalPaymentService> externalPaymentService = externalPaymentRepository.findById("https://damp-lynna-wsep-1984852e.koyeb.app/");
-        ExternalPaymentService externalPaymentService1 = externalPaymentService.orElse(null);
-        if (externalPaymentService1 != null){
-            return externalPaymentService1.checkHandShake();
-        }
-        return false;
+    public boolean checkHandShake(ExternalPaymentService externalPaymentService){
+        return externalPaymentService.checkHandShake();
+
     }
 
 //    public boolean addExternalService(String licensedDealerNumber, String paymentServiceName, String url){
@@ -87,7 +84,11 @@ public class PaymentServicesFacade {
     public boolean addExternalService(String name , String paymentURL){
         List<ExternalPaymentService> externalPaymentServices = externalPaymentRepository.findAll();
         int size_before = externalPaymentServices.size();
+
         ExternalPaymentService externalPaymentService = new ExternalPaymentService(name, paymentURL);
+        if (!checkHandShake(externalPaymentService)){
+            return false;
+        }
         externalPaymentRepository.save(externalPaymentService);
         return externalPaymentRepository.findAll().size() == size_before + 1;
 
@@ -105,6 +106,7 @@ public class PaymentServicesFacade {
     public void clearPaymentServices() {
         externalPaymentRepository.deleteAll();
     }
+
 
     @Transactional
     public String pay(int price,String paymentServiceName , PaymentDTO payment, String userId, Map<String, Map<String, List<Integer>>> productList) throws Exception{
@@ -182,10 +184,13 @@ public class PaymentServicesFacade {
     }
 
     public ExternalPaymentService getPaymentServiceByName(String name){
-        Optional<ExternalPaymentService> externalPaymentService = externalPaymentRepository.findById(name);
-        ExternalPaymentService externalPaymentService1 = externalPaymentService.orElse(null);
-        //if (externalPaymentService1 != null){
-        return externalPaymentService1;
+        //Optional<ExternalPaymentService> externalPaymentService = externalPaymentRepository.findById(name);
+        //ExternalPaymentService externalPaymentService1 = externalPaymentService.orElse(null);
+        ExternalPaymentService externalPaymentService =externalPaymentRepository.findById(name).orElse(null);
+        if (externalPaymentService == null){
+            throw new IllegalArgumentException("no payment service with this name");
+        }
+        return externalPaymentService;
 
     }
 

@@ -306,6 +306,11 @@ package Util;
             public String toString(){
                 return "Invalid range type";
             }
+        },
+        DatabaseIsNotConnected{
+            public String toString(){
+                return "Database is not connected";
+            }
         };
     }
 

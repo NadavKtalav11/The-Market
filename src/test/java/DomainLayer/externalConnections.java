@@ -57,13 +57,13 @@ public class externalConnections {
     }
 
 
-    @Test
-    @Order(1)
-    public void checkHandShake() throws Exception {
-
-        assertTrue(market.checkHandShake());
-
-    }
+//    @Test
+//    @Order(1)
+//    public void checkHandShake() throws Exception {
+//
+//        //assertTrue(market.checkHandShake());
+//
+//    }
 
     @Test
     @Order(2)

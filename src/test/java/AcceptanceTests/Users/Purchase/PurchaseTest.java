@@ -80,7 +80,7 @@ public class PurchaseTest {
         int price = impl.checkingCartValidationBeforePurchase(userID2, userDTO.getUserName(), userDTO.getBirthday(),
                 userDTO.getName(), userDTO.getCountry(), userDTO.getCity(), userDTO.getAddress()).getResult();
         CartDTO cartDTO = new CartDTO(userID2,price,products);
-
+        paymentDTO.setCvv(100);
         Response<String> result = impl.purchase(userID2, userDTO.getCountry(), userDTO.getCity(), userDTO.getAddress(),
                 paymentDTO.getCreditCardNumber(),paymentDTO.getCurrency(),paymentDTO.getHolderName(), paymentDTO.getCvv(), paymentDTO.getMonth(), paymentDTO.getYear(),
                 paymentDTO.getHolderId(), cartDTO.getCartPrice(), cartDTO.getStoreToProducts());

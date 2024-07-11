@@ -135,6 +135,10 @@ public class ExternalSupplyService {
         }
     }
 
+    public boolean checkHandShake(){
+        return this.httpReqCtrl.checkHandShake();
+    }
+
     public int createSupply(String userName, String country,String city,String address , String acquisitionId)  {
         try {
             if (this.httpReqCtrl == null) {
