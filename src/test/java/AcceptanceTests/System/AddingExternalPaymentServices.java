@@ -2,22 +2,34 @@ package AcceptanceTests.System;
 
 import AcceptanceTests.BridgeToTests;
 import AcceptanceTests.ProxyToTest;
+import AcceptanceTests.RealToTest;
 import DomainLayer.Market.Market;
+import PresentationLayer.Application;
 import Util.PaymentServiceDTO;
 import Util.ExceptionsEnum;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.ContextConfiguration;
+
 import static org.junit.jupiter.api.Assertions.*;
 
-
+@ContextConfiguration(classes = {Application.class, RealToTest.class})
+@SpringBootTest
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
+@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
 public class AddingExternalPaymentServices {
+
+    @Autowired
     private Market market;
 
 
 
     @BeforeEach
     public void setUp() {
-        this.market = Market.getInstance();
 
     }
 

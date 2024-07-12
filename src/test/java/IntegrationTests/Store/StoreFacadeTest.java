@@ -1,21 +1,43 @@
 package IntegrationTests.Store;
 
+import AcceptanceTests.RealToTest;
+import DomainLayer.Repositories.StoreRepository;
 import DomainLayer.Store.*;
+import PresentationLayer.Application;
 import Util.*;
 import org.jose4j.jwk.Use;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.ContextConfiguration;
 
 import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+@ContextConfiguration(classes = {Application.class, RealToTest.class})
+@SpringBootTest
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
+@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
 public class StoreFacadeTest {
+
+    @Autowired
+    private StoreRepository storeRepository;
+
     private StoreFacade storeFacade;
 
     @BeforeEach
     public void setUp() {
-        storeFacade = StoreFacade.getInstance().newForTest();
+        storeFacade = new StoreFacade(storeRepository);
+    }
+
+    @AfterEach
+    public void tearDown() {
+        storeRepository.deleteAll();
     }
 
     @Test

@@ -1,5 +1,6 @@
 package IntegrationTests.SupplyServices;
 
+import AcceptanceTests.RealToTest;
 import DomainLayer.Repositories.ExternalSupplyRepository;
 import DomainLayer.SupplyServices.ExternalSupplyService;
 import DomainLayer.SupplyServices.SupplyServicesFacade;
@@ -7,8 +8,10 @@ import PresentationLayer.Application;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 
 import java.util.HashSet;
@@ -16,8 +19,10 @@ import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-@ContextConfiguration(classes = {Application.class})
+@ContextConfiguration(classes = {Application.class, RealToTest.class})
 @SpringBootTest
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
+@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
 public class SupplyServicesFacadeTest {
 
     @Autowired
