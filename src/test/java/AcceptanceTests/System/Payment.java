@@ -25,7 +25,6 @@ import static org.mockito.Mockito.*;
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class Payment {
-    private static BridgeToTests impl;
     private Market market;
 
     @Mock
@@ -39,7 +38,6 @@ public class Payment {
 
     @BeforeEach
     public void setUp() {
-        impl = new ProxyToTest("Real");
         MockitoAnnotations.openMocks(this);
 
         this.paymentServicesFacade = PaymentServicesFacade.getInstance();

@@ -33,7 +33,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
 
 public class Provision {
-    private static BridgeToTests impl;
     private Market market;
 
     @Mock
@@ -56,7 +55,6 @@ public class Provision {
 
     @BeforeEach
     public void setUp() {
-        impl = new ProxyToTest("Real");
         MockitoAnnotations.openMocks(this);
 
 

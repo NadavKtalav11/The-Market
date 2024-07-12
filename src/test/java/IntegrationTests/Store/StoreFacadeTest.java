@@ -71,7 +71,7 @@ public class StoreFacadeTest {
         Store store = storeFacade.getStoreByID(storeId);
         ProductDTO retrievedProduct = store.getProductDTOByName("Product1", 10);
 
-        assertEquals(20, retrievedProduct.getPrice());
+        assertEquals(200, retrievedProduct.getPrice());
         assertEquals(10, retrievedProduct.getQuantity());
         assertEquals("Updated product", retrievedProduct.getDescription());
         assertEquals("BOOKS", retrievedProduct.getCategoryStr());

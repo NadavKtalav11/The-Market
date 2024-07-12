@@ -11,14 +11,12 @@ import static org.junit.jupiter.api.Assertions.*;
 
 
 public class AddingExternalPaymentServices {
-    private static BridgeToTests impl;
     private Market market;
 
 
 
     @BeforeEach
     public void setUp() {
-        impl = new ProxyToTest("Real");
         this.market = Market.getInstance();
 
     }

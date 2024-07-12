@@ -1,62 +1,52 @@
 package IntegrationTests.SupplyServices;
 
+import DomainLayer.Repositories.ExternalSupplyRepository;
 import DomainLayer.SupplyServices.ExternalSupplyService;
 import DomainLayer.SupplyServices.SupplyServicesFacade;
-import Util.SupplyServiceDTO;
+import PresentationLayer.Application;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ContextConfiguration;
 
 import java.util.HashSet;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+@ContextConfiguration(classes = {Application.class})
+@SpringBootTest
 public class SupplyServicesFacadeTest {
 
+    @Autowired
+    public ExternalSupplyRepository externalSupplyRepository;
+
     private SupplyServicesFacade supplyServicesFacade;
-    private final String supplyURl = "supply.com";
-//    private final String licensedDealerNumber = "123";
-//    private final String supplyServiceName = "Test Supply Service";
-//    private final HashSet<String> countries = new HashSet<>();
-//    private final HashSet<String> cities = new HashSet<>();
+
+    private final String supplyURl = "https://damp-lynna-wsep-1984852e.koyeb.app/";
 
     @BeforeEach
     public void setUp() {
         // Reset the SupplyServicesFacade singleton for each test
-        supplyServicesFacade = SupplyServicesFacade.getInstance().newForTest();
-
-        // Add test data
-//        countries.add("TestCountry");
-//        cities.add("TestCity");
+        supplyServicesFacade = new SupplyServicesFacade(externalSupplyRepository);
+        supplyServicesFacade.reset();
     }
 
-    @Test
-    public void testGetInstance() {
-        SupplyServicesFacade instance = SupplyServicesFacade.getInstance();
-        assertNotNull(instance);
-        assertSame(supplyServicesFacade, instance);
+    @AfterEach
+    public void tearDown() {
+        supplyServicesFacade.reset();
     }
 
     @Test
     public void testAddExternalServiceWithParams() {
-        boolean added = supplyServicesFacade.addExternalService( supplyURl);
+        boolean added = supplyServicesFacade.addExternalService(supplyURl);
         assertTrue(added);
 
         ExternalSupplyService service = supplyServicesFacade.getExternalSupplyServiceByURL(supplyURl);
         assertNotNull(service);
         assertEquals(supplyURl, service.getSupplyURL());
-    }
-
-    @Test
-    public void testAddExternalServiceWithDTO() {
-//        SupplyServiceDTO supplyServiceDTO = new SupplyServiceDTO(licensedDealerNumber, supplyServiceName, countries, cities);
-//
-//        boolean added = supplyServicesFacade.addExternalService(supplyServiceDTO);
-//        assertTrue(added);
-//
-//        ExternalSupplyService service = supplyServicesFacade.getExternalSupplyServiceById(licensedDealerNumber);
-//        assertNotNull(service);
-//        assertEquals(licensedDealerNumber, service.getLicensedDealerNumber());
     }
 
     @Test

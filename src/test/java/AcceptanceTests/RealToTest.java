@@ -18,13 +18,20 @@ import java.util.Map;
 
 @Service
 public class RealToTest implements BridgeToTests {
+
+
     private Service_layer service;
 
     public RealToTest()
     {
-        Market market = new Market();
-        this.service = new Service_layer(1, market);
+        //Market market = new Market();
+        //this.service = new Service_layer(1, market);
+    }
 
+    @Autowired
+    public RealToTest(Service_layer service)
+    {
+        this.service = service;
     }
 
 //    @Autowired

@@ -10,14 +10,12 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class RemoveExternalPaymentServices {
-    private static BridgeToTests impl;
     private Market market;
 
 
 
     @BeforeEach
     public void setUp() {
-        impl = new ProxyToTest("Real");
         this.market = Market.getInstance();
         market.getSystemManagerIds().add("77");
 
