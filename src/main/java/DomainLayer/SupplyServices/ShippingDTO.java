@@ -7,7 +7,6 @@ import jakarta.persistence.*;
 @Table(name = "shipping_DTO")
 public class ShippingDTO {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "shipping_id")
     private String shipping_id;
     @Column(name = "user_name", nullable = false)
@@ -24,7 +23,6 @@ public class ShippingDTO {
     private Date date;
     @Column(name = "acquisitionId", nullable = false)
     private String acquisitionId;
-
     @Column(name = "transactionId", nullable = false)
     private int transactionId;
 

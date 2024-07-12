@@ -13,20 +13,12 @@ public class XorRule extends CompositeRule  {
 
     @Override
     public boolean checkRule(UserDTO user, List<ProductDTO> products) {
-        synchronized (rule1Lock) {
-            synchronized (rule2Lock) {
-                return rule1.checkRule(user, products) ^ rule2.checkRule(user, products);
-            }
-        }
+        return getRule1().checkRule(user, products) ^ getRule2().checkRule(user, products);
     }
 
     @Override
     public String getDescription() {
-        synchronized (rule1Lock) {
-            synchronized (rule2Lock) {
-                return " (" + rule1.getDescription() + " xor " + rule2.getDescription() + ") ";
-            }
-        }
+        return " (" + getRule1().getDescription() + " xor " + getRule2().getDescription() + ") ";
     }
 
 }

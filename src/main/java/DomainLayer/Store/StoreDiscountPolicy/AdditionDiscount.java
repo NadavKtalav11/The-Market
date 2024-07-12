@@ -14,24 +14,15 @@ public class AdditionDiscount extends CompositeNumericalDiscount {
 
     @Override
     public int calcDiscount(List<ProductDTO> basketProducts) {
-        synchronized (discountValue1Lock){
-            synchronized (discountValue2Lock) {
-                int discount1 = discountValue1.calcDiscount(basketProducts);
-                int discount2 = discountValue2.calcDiscount(basketProducts);
+        int discount1 = getDiscountValue1().calcDiscount(basketProducts);
+        int discount2 = getDiscountValue2().calcDiscount(basketProducts);
 
-                return discount1 + discount2;
-            }
-        }
-
+        return discount1 + discount2;
     }
 
     @Override
     public String getDescription() {
-        synchronized (discountValue1Lock){
-            synchronized (discountValue2Lock) {
-                return " (" + discountValue1.getDescription() + " addition " + discountValue2.getDescription() + ") ";
-            }
-        }
+        return " (" + getDiscountValue1().getDescription() + " addition " + getDiscountValue2().getDescription() + ") ";
     }
 
 }

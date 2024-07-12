@@ -21,4 +21,16 @@ public abstract class CompositeNumericalDiscount implements DiscountValue{
     }
 
     public abstract int calcDiscount(List<ProductDTO> basketProducts);
+
+    public DiscountValue getDiscountValue1() {
+        synchronized (discountValue1Lock) {
+            return discountValue1;
+        }
+    }
+
+    public DiscountValue getDiscountValue2() {
+        synchronized (discountValue2Lock) {
+            return discountValue2;
+        }
+    }
 }
