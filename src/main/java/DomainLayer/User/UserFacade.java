@@ -329,7 +329,9 @@ public class UserFacade {
         loginMember.validatePassword(password);
         User user = getUserByID(userID);
         user.Login(loginMember);
+        loginMember.setUserId(userID);
         this.userRepository.save(user);
+        this.members.save(loginMember);
         return loginMember.getMemberID();
     }
 

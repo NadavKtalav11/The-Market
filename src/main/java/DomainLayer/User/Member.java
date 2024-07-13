@@ -155,6 +155,10 @@ public class Member extends State{
         return userId;
     }
 
+    public void setUserId(String userId) {
+        this.userId = userId;
+    }
+
     @Override
     public int removeAcquisition(String acquisitionId) {
         if (acquisitionIds.contains(acquisitionId)) {

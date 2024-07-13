@@ -26,6 +26,7 @@ public class PaymentServicesFacade {
         this.externalPaymentRepository = externalPaymentRepository;
         this.acquisitionRepository = acquisitionRepository;
 
+        /*
 //        //TEST
         Map<String, Map<String, List<Integer>>> productList = new HashMap<>();
         List<Integer> priceQuantity = new ArrayList<>();
@@ -38,7 +39,7 @@ public class PaymentServicesFacade {
         pay(99, "noaab" , new PaymentDTO("123", "noa", "curr", "123456789", 123,11,
                 26),"userID", productList);
 //        Acquisition acquisition = new Acquisition(12,"12", "usrt", 88, new PaymentDTO("1", "2","3", "4", 5,6,9), productList);
-//        acquisitionRepository.save(acquisition);
+//        acquisitionRepository.save(acquisition);*/
 
     }
 
