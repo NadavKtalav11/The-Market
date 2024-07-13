@@ -55,7 +55,7 @@ public class SupplyServicesFacadeTest {
     }
 
     @Test
-    public void testRemoveExternalService() {
+    public void testRemoveExternalService() throws Exception {
         supplyServicesFacade.addExternalService( supplyURl);
         supplyServicesFacade.removeExternalService(supplyURl);
 

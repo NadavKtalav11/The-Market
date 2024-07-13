@@ -5,6 +5,7 @@ import DomainLayer.Repositories.AcquisitionMemoryRepository;
 import DomainLayer.Repositories.AcquisitionRepository;
 import DomainLayer.Repositories.ExternalPaymentMemoryRepository;
 import DomainLayer.Repositories.ExternalPaymentRepository;
+import DomainLayer.SupplyServices.ExternalSupplyService;
 import Util.*;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,7 +36,7 @@ public class PaymentServicesFacade {
         productNames.put("candle", priceQuantity);
         productList.put("candleStore", productNames);
         //addExternalService("noaab", "https://damp-lynna-wsep-1984852e.koyeb.app/");
-        pay(99, "noaab" , new PaymentDTO("123", "noa", "curr", "123456789", 123,11,
+        pay(99 , new PaymentDTO("123", "noa", "curr", "123456789", 123,11,
                 26),"userID", productList);
 //        Acquisition acquisition = new Acquisition(12,"12", "usrt", 88, new PaymentDTO("1", "2","3", "4", 5,6,9), productList);
 //        acquisitionRepository.save(acquisition);
@@ -63,7 +64,10 @@ public class PaymentServicesFacade {
         return paymentServicesFacadeInstance;
     }
 
-    public void removeExternalService(String paymentId){
+    public void removeExternalService(String paymentId) throws Exception {
+        if (getAllPaymentServices().size() <= 1) {
+            throw new Exception(ExceptionsEnum.OnlyPaymentService.toString());
+        }
         externalPaymentRepository.deleteById(paymentId);
     }
 
@@ -81,11 +85,11 @@ public class PaymentServicesFacade {
 //        }
 //    }
 
-    public boolean addExternalService(String name , String paymentURL){
+    public boolean addExternalService(String paymentURL){
         List<ExternalPaymentService> externalPaymentServices = externalPaymentRepository.findAll();
         int size_before = externalPaymentServices.size();
 
-        ExternalPaymentService externalPaymentService = new ExternalPaymentService(name, paymentURL);
+        ExternalPaymentService externalPaymentService = new ExternalPaymentService(paymentURL);
         if (!checkHandShake(externalPaymentService)){
             return false;
         }
@@ -109,11 +113,10 @@ public class PaymentServicesFacade {
 
 
     @Transactional
-    public String pay(int price,String paymentServiceName , PaymentDTO payment, String userId, Map<String, Map<String, List<Integer>>> productList) throws Exception{
+    public String pay(int price, PaymentDTO payment, String userId, Map<String, Map<String, List<Integer>>> productList) throws Exception{
         String acquisitionId  = getNewAcquisitionId();
-        //ExternalPaymentService externalPaymentService = getPaymentServiceByURL("https://damp-lynna-wsep-1984852e.koyeb.app/");
-        ExternalPaymentService externalPaymentService = getPaymentServiceByName(paymentServiceName);
-        int transactionId  = externalPaymentService.payWithCard(price, payment, userId, productList, acquisitionId);
+        ExternalPaymentService externalPaymentService = getAvailablePaymentService();
+        int transactionId  = externalPaymentService.payWithCard(price, payment );
         if (!isValidTransactionIdID(transactionId)){
             throw new IllegalArgumentException(ExceptionsEnum.ExternalPaymentFailed.toString());
         }
@@ -123,6 +126,16 @@ public class PaymentServicesFacade {
         return acquisition.getAcquisitionId();
 
     }
+
+    public List<String> getAllPaymentServicesUrl(){
+        List<ExternalPaymentService> externalPaymentServicesList = externalPaymentRepository.findAll();
+        List<String> urls = new ArrayList<>();
+        for (ExternalPaymentService externalPaymentService: externalPaymentServicesList){
+            urls.add(externalPaymentService.getUrl());
+        }
+        return urls;
+    }
+
 
 //    public int cancelPayment(int transactionID) throws Exception {
 //        ExternalPaymentService externalPaymentService = getPaymentServiceByURL("https://damp-lynna-wsep-1984852e.koyeb.app/");
@@ -182,16 +195,26 @@ public class PaymentServicesFacade {
         }
         return null;
     }
+//
+//    public ExternalPaymentService getPaymentServiceByName(String name){
+//        //Optional<ExternalPaymentService> externalPaymentService = externalPaymentRepository.findById(name);
+//        //ExternalPaymentService externalPaymentService1 = externalPaymentService.orElse(null);
+//        ExternalPaymentService externalPaymentService =externalPaymentRepository.findById(name).orElse(null);
+//        if (externalPaymentService == null){
+//            throw new IllegalArgumentException("no payment service with this name");
+//        }
+//        return externalPaymentService;
 
-    public ExternalPaymentService getPaymentServiceByName(String name){
-        //Optional<ExternalPaymentService> externalPaymentService = externalPaymentRepository.findById(name);
-        //ExternalPaymentService externalPaymentService1 = externalPaymentService.orElse(null);
-        ExternalPaymentService externalPaymentService =externalPaymentRepository.findById(name).orElse(null);
-        if (externalPaymentService == null){
-            throw new IllegalArgumentException("no payment service with this name");
+    //}
+
+
+    public ExternalPaymentService getAvailablePaymentService(){
+        for (ExternalPaymentService externalPaymentService : externalPaymentRepository.findAll()){
+            if (externalPaymentService.checkHandShake()){
+                return  externalPaymentService;
+            }
         }
-        return externalPaymentService;
-
+        return null;
     }
 
 

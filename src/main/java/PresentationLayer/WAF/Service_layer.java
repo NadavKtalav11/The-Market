@@ -81,37 +81,37 @@ public class Service_layer {
         }
     }
 
-    public Response<String> cancelPayment(String userID , String transactionID){
-        logger.info("Cancelling the payment for transactionID: {} .");
-        try {
-            int res = market.cancelPayment(userID, transactionID);
-            logger.info("The payment has been cancelled.");
-            return new Response<>("Successful", "The payment has been cancelled.");
+//    public Response<String> cancelPayment(String userID , String transactionID){
+//        logger.info("Cancelling the payment for transactionID: {} .");
+//        try {
+//            int res = market.cancelPayment(userID, transactionID);
+//            logger.info("The payment has been cancelled.");
+//            return new Response<>("Successful", "The payment has been cancelled.");
+//
+//        } catch (Exception e) {
+//            logger.info("Error occurred during the payment cancellation: {}", e.getMessage(), e);
+//            return new Response<>(null, e.getMessage());
+//        }
+//    }
 
-        } catch (Exception e) {
-            logger.info("Error occurred during the payment cancellation: {}", e.getMessage(), e);
-            return new Response<>(null, e.getMessage());
-        }
-    }
-
-    public Response<String> cancelSupply(String  shippingId){
-        logger.info("Cancelling the supply for transactionID: {} .");
-        try {
-            int res = market.cancelSupply(shippingId);
-            logger.info("The supply has been cancelled.");
-            return new Response<>("Successful", "The supply has been cancelled.");
-
-        } catch (Exception e) {
-            logger.info("Error occurred during the supply cancellation: {}", e.getMessage(), e);
-            return new Response<>(null, e.getMessage());
-        }
-    }
+//    public Response<String> cancelSupply(String  shippingId){
+//        logger.info("Cancelling the supply for transactionID: {} .");
+//        try {
+//            int res = market.cancelSupply(shippingId);
+//            logger.info("The supply has been cancelled.");
+//            return new Response<>("Successful", "The supply has been cancelled.");
+//
+//        } catch (Exception e) {
+//            logger.info("Error occurred during the supply cancellation: {}", e.getMessage(), e);
+//            return new Response<>(null, e.getMessage());
+//        }
+//    }
 
 
-    public Response<String> addExternalPaymentService(String paymentServiceName , String paymentURL , String managerId) throws Exception {
+    public Response<String> addExternalPaymentService(String paymentURL , String managerId) throws Exception {
         logger.info("Trying to add a new external payment service");
         try {
-            market.addExternalPaymentService(paymentServiceName, paymentURL ,managerId );
+            market.addExternalPaymentService(paymentURL ,managerId );
             logger.info("Adding new external payment service have been done successfully.");
             return new Response<>("Successful adding", "Adding new external payment service have been done successfully.");
 
@@ -171,16 +171,71 @@ public class Service_layer {
         }
     }
 
-    public Response<String> purchase(UserDTO userDTO, PaymentDTO paymentDTO, CartDTO cartDTO , String paymentServiceName){
+    public Response<String> purchase(UserDTO userDTO, PaymentDTO paymentDTO, CartDTO cartDTO ){
         String user_ID = userDTO.getUserId();
         logger.info("Initiating purchase for user: {}", user_ID);
         try {
-            String acquisitionID = market.purchase( paymentDTO,paymentServiceName, userDTO, cartDTO);
+            String acquisitionID = market.purchase( paymentDTO, userDTO, cartDTO);
             System.out.println("trans2: " + acquisitionID);
             logger.info("Purchase successful for user: {}", user_ID);
             return new Response<>("Purchase successful", "", acquisitionID);
         } catch (Exception e) {
             logger.info("Purchase failed for user: {} with error: {}", user_ID, e.getMessage(), e);
+            return new Response<>(null, e.getMessage());
+        }
+    }
+
+    public Response<List<String>> getAllPaymentServices(){
+        try {
+            List<String> res = market.getAllExternalPaymentServices();
+            return new Response<List<String>>(res, "returned all payment services successfully");
+        } catch (Exception e) {
+            logger.info("Error occurred while trying to get all payment services- {}", e.getMessage());
+            return new Response<>(null, e.getMessage());
+        }
+    }
+
+    public Response<List<StoreOwnerDTO>> getOwnerJobProposal(String userId ){
+        try {
+
+            List<StoreOwnerDTO> res = market.getOwnerJobProposal(userId);
+            return new Response<List<StoreOwnerDTO>>(res, "returned all owner proposals successfully");
+        } catch (Exception e) {
+            logger.info("Error occurred while trying to get all owner proposals {}", e.getMessage());
+            return new Response<>(null, e.getMessage());
+        }
+    }
+
+    public Response<List<StoreManagerDTO>> getManagerJobProposal(String userId ){
+        try {
+
+            List<StoreManagerDTO> res = market.getManagerJobProposal(userId);
+            return new Response<List<StoreManagerDTO>>(res, "returned all manager proposals successfully");
+        } catch (Exception e) {
+            logger.info("Error occurred while trying to get all manager proposals {}", e.getMessage());
+            return new Response<>(null, e.getMessage());
+        }
+    }
+
+    public Response<String> answerJobProposal(String userId, String storeId, boolean manager_proposal ,boolean answer ){
+        try {
+            market.answerJobProposal(userId ,storeId, manager_proposal, answer);
+            return new Response<String>("your answer has send", "your answer has send");
+        } catch (Exception e) {
+            logger.info("Error occurred while trying to answer to job proposal {}", e.getMessage());
+            return new Response<>(null, e.getMessage());
+        }
+    }
+
+
+
+
+    public Response<List<String>> getAllSupplyServices(){
+        try {
+            List<String> res = market.getAllExternalSupplyServices();
+            return new Response<List<String>>(res, "returned all supply services successfully");
+        } catch (Exception e) {
+            logger.info("Error occurred while trying to get all supply services-{}", e.getMessage());
             return new Response<>(null, e.getMessage());
         }
     }

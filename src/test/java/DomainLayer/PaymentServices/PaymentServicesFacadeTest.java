@@ -50,7 +50,7 @@ public class PaymentServicesFacadeTest {
         String paymentServiceName = "TestService";
         String url = "http://testservice.com";
 
-        boolean isAdded = paymentServicesFacade.addExternalService("card",url);
+        boolean isAdded = paymentServicesFacade.addExternalService(url);
         assertTrue(isAdded);
     }
 
@@ -66,7 +66,7 @@ public class PaymentServicesFacadeTest {
         Map<String, Map<String, List<Integer>>> productList = new HashMap<>();
         productList.put("store1", new HashMap<>());
 
-        paymentServicesFacade.addExternalService( "card","http://testservice.com");
+        paymentServicesFacade.addExternalService( "http://testservice.com");
         String acquisitionId;
 
       //  acquisitionId= paymentServicesFacade.pay(price, new PaymentDTO(holderID, creditCard, cvv, month, year), userId, productList);

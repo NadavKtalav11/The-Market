@@ -91,9 +91,10 @@ public class UserFacade {
         }
     }
 
-    public void isUserLoggedInError(String userID){
-        if(!isMember(userID))
+    public void isUserLoggedInError(String userID) {
+        if (!isMember(userID)) {
             throw new IllegalArgumentException(ExceptionsEnum.userIsNotMember.toString());
+        }
     }
 
     /*public String getUsernameByUserID(String userID)

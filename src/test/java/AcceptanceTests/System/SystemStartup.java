@@ -28,7 +28,7 @@ public class  SystemStartup {
 
 
     @BeforeEach
-    public void setUp() {
+    public void setUp() throws Exception {
         this.userFacade = UserFacade.getInstance();
         this.paymentServicesFacade = PaymentServicesFacade.getInstance();
         this.supplyServicesFacade = SupplyServicesFacade.getInstance();
