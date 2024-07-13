@@ -42,7 +42,6 @@ public class Member extends State{
     @ElementCollection
     private List<String> acquisitionIds;
 
-
     //private boolean isLogin;
 
     /*Member(String member_ID, UserDTO user, String password)
@@ -77,7 +76,6 @@ public class Member extends State{
     public Member() {
 
     }
-
 
     public void Logout()
     {

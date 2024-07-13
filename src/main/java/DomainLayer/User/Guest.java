@@ -1,19 +1,13 @@
 package DomainLayer.User;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.Map;
 
-@Entity
+@Component
 public class Guest extends State{
-
-
-    @Id
-    private Long id;
-
     public Guest(){
         super();
     }
@@ -54,15 +48,9 @@ public class Guest extends State{
         return null;
     }
 
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public Long getId() {
-        return id;
-    }
     @Override
     public int removeAcquisition(String acquisitionId)  {
         return -1;
     }
+
 }

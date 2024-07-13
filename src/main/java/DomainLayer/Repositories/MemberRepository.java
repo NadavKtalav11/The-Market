@@ -13,4 +13,7 @@ public interface MemberRepository extends JpaRepository<Member,String> {
 
     @Query("SELECT m FROM Member m WHERE m.username = ?1")
     Member getByUserName(String member);
+
+    @Query("SELECT m FROM Member m WHERE m.userId = ?1")
+    Member getByUserId(String userId);
 }

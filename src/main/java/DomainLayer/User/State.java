@@ -1,12 +1,13 @@
 package DomainLayer.User;
 
 import jakarta.persistence.*;
-import org.springframework.stereotype.Component;
+import jakarta.transaction.Transactional;
 
 import java.util.List;
 import java.util.Map;
 
-@Component
+@MappedSuperclass
+@Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
 public abstract class State {
 
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
@@ -17,6 +18,7 @@ public abstract class State {
         cart = new Cart();
     }
 
+    //@Transactional
     public void addItemsToCart(String productName, int quantity, String storeId, int totalPrice)
     {
         cart.addItemsToCart(productName, quantity, storeId, totalPrice);
@@ -69,7 +71,9 @@ public abstract class State {
         return this.cart.getCartPrice();
     }
 
-
+    public Long getCartID(){
+        return cart.getCartId();
+    }
 
 
 

@@ -29,6 +29,7 @@ public class MemberMemoryRepository implements MemberRepository {
 
     }
 
+
     @Override
     public <S extends Member> S saveAndFlush(S entity) {
         return null;
@@ -150,6 +151,18 @@ public class MemberMemoryRepository implements MemberRepository {
         synchronized (allMembersLock) {
             for (Member curr_member : allMembers.values()) {
                 if (curr_member.getUsername().equals(member)) {
+                    return curr_member;
+                }
+            }
+        }
+        return null;
+    }
+
+    @Override
+    public Member getByUserId(String userId) {
+        synchronized (allMembersLock) {
+            for (Member curr_member : allMembers.values()) {
+                if (curr_member.getUserId().equals(userId)) {
                     return curr_member;
                 }
             }

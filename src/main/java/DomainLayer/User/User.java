@@ -8,7 +8,9 @@ import jakarta.persistence.*;
 
 import Util.CartDTO;
 import Util.UserDTO;
+import jakarta.transaction.Transactional;
 import org.bouncycastle.crypto.generators.BaseKDFBytesGenerator;
+import org.hibernate.annotations.Cascade;
 
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -22,10 +24,8 @@ public class User   {
     @Id
     private String userID;
 
-    //TODO: CHANGE THE ANNOTATION
-    //@OneToOne(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
-    //@JoinColumn(name = "state_id")
     @Transient
+    @Cascade(org.hibernate.annotations.CascadeType.ALL)
     private State state;
 
     @Column(name = "birthday")
@@ -72,7 +72,6 @@ public class User   {
 
     public User() {
         this.state = new Guest();
-        this.isGuest = !state.isMember();
     }
 
     public void updateByDTO(UserDTO userDTO){
@@ -165,6 +164,7 @@ public class User   {
         //state.exitMarketSystem(this);
     }
 
+    //@Transactional
     public void addToCart(String productName, int quantity, String storeId, int totalPrice)
     {
         state.addItemsToCart(productName, quantity, storeId, totalPrice);
@@ -175,6 +175,7 @@ public class User   {
         state.modifyProductInCart(productName, quantity, storeId, totalPrice);
     }
 
+    @Transactional
     public void updateCartPrice()
     {
         state.calcCartTotal();
@@ -268,4 +269,9 @@ public class User   {
     public List<String> getAcquisitionIds() {
         return state.getAcquisitionIds();
     }
+
+    public boolean getIsGuest(){
+        return isGuest;
+    }
+
 }
