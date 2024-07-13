@@ -1,24 +1,44 @@
 package IntegrationTests.PaymentServices;
 
+import AcceptanceTests.RealToTest;
 import DomainLayer.PaymentServices.ExternalPaymentService;
 import DomainLayer.PaymentServices.PaymentServicesFacade;
+import DomainLayer.Repositories.AcquisitionRepository;
+import DomainLayer.Repositories.ExternalPaymentRepository;
+import PresentationLayer.Application;
 import Util.PaymentDTO;
 import Util.PaymentServiceDTO;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.ContextConfiguration;
 
 import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+
+@ContextConfiguration(classes = {Application.class, RealToTest.class})
+@SpringBootTest
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
+@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
 public class PaymentServicesFacadeTest {
+
+    @Autowired
+    private ExternalPaymentRepository externalPaymentRepository;
+
+    @Autowired
+    private AcquisitionRepository acquisitionRepository;
 
     private PaymentServicesFacade paymentServicesFacade;
     private PaymentDTO paymentDTO;
 
     @BeforeEach
-    public void setUp() {
-        paymentServicesFacade = PaymentServicesFacade.getInstance().newForTest();
+    public void setUp() throws Exception {
+        paymentServicesFacade = new PaymentServicesFacade(externalPaymentRepository, acquisitionRepository);
         paymentDTO = new PaymentDTO("130", "david", "USD","98767576576", 986, 6,2030);
 
     }

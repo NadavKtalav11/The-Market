@@ -1,9 +1,19 @@
 package IntegrationTests.Role;
 
+import AcceptanceTests.RealToTest;
+import DomainLayer.Repositories.StoreManagerRepository;
+import DomainLayer.Repositories.StoreOwnerRepository;
 import DomainLayer.Role.RoleFacade;
 import DomainLayer.Role.StoreManager;
+import PresentationLayer.Application;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.ContextConfiguration;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -11,15 +21,31 @@ import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+@ContextConfiguration(classes = {Application.class, RealToTest.class})
+@SpringBootTest
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
+@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
 public class RoleFacadeTest {
+
+    @Autowired
+    private StoreManagerRepository storeManagerRepository;
+
+    @Autowired
+    private StoreOwnerRepository storeOwnerRepository;
 
     private RoleFacade roleFacade;
 
 
     @BeforeEach
     public void setUp() {
-        roleFacade.resetInstanceForTests();
-        roleFacade = RoleFacade.getInstance();
+        roleFacade = new RoleFacade(storeManagerRepository, storeOwnerRepository);
+    }
+
+    @AfterEach
+    public void tearDown() {
+        storeManagerRepository.deleteAll();
+        storeOwnerRepository.deleteAll();
+
     }
 
     @Test

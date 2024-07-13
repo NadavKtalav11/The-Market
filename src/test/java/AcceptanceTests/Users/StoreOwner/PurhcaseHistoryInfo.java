@@ -2,18 +2,32 @@ package AcceptanceTests.Users.StoreOwner;
 
 import AcceptanceTests.BridgeToTests;
 import AcceptanceTests.ProxyToTest;
+import AcceptanceTests.RealToTest;
+import PresentationLayer.Application;
 import Util.*;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.ContextConfiguration;
 
 import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+@ContextConfiguration(classes = {Application.class, RealToTest.class})
+@SpringBootTest
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
+@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
 public class PurhcaseHistoryInfo {
-    private static BridgeToTests impl;
+
+    @Autowired
+    private BridgeToTests impl;
+
     private static String userID1;
     private static String userID2;
     private static String storeID;
@@ -24,9 +38,7 @@ public class PurhcaseHistoryInfo {
 
 
     @BeforeAll
-    public static void setUp() throws JsonProcessingException {
-        impl = new ProxyToTest("Real");
-        //Do what you need
+    public void setUp() throws JsonProcessingException {
         HashSet<String> countries = new HashSet<>();
         countries.add("Israel");
         HashSet<String> cities = new HashSet<>();

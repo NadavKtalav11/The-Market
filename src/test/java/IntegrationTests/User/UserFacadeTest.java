@@ -1,17 +1,41 @@
 package IntegrationTests.User;
 
+import AcceptanceTests.RealToTest;
+import DomainLayer.Repositories.ExternalSupplyRepository;
+import DomainLayer.Repositories.MemberRepository;
+import DomainLayer.Repositories.UserRepository;
 import DomainLayer.User.Member;
 import DomainLayer.User.User;
 import DomainLayer.User.UserFacade;
+import PresentationLayer.Application;
 import Util.UserDTO;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.ContextConfiguration;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+
+@ContextConfiguration(classes = {Application.class, RealToTest.class})
+@SpringBootTest
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
+@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
 public class UserFacadeTest {
 
+    @Autowired
+    public UserRepository userRepository;
+
+    @Autowired
+    public MemberRepository memberRepository;
+
     private UserFacade userFacade;
+
+
     private final String userId = "1";
     private final String storeId = "1";
     private final String productName = "Product1";
@@ -20,22 +44,21 @@ public class UserFacadeTest {
     private final int totalPrice = 100;
 
     @BeforeEach
-    public void setUp() {
+    public void setUp() throws Exception {
+        userFacade = new UserFacade(userRepository, memberRepository);
+
         // Reset the UserFacade singleton for each test
-        userFacade = UserFacade.getInstance();
         userFacade.getUserRepository().deleteAll();
-        userFacade.getMembers().deleteAllInBatch();
 
         // Create a new user and add to the UserFacade
         User user = new User(userId);
         userFacade.getUserRepository().save(user);
     }
 
-    @Test
-    public void testGetInstance() {
-        UserFacade instance = UserFacade.getInstance();
-        assertNotNull(instance);
-        assertSame(userFacade, instance);
+    @AfterEach
+    public void tearDown() {
+        // Reset the UserFacade singleton for each test
+        userFacade.getUserRepository().deleteAll();
     }
 
     @Test

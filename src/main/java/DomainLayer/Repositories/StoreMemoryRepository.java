@@ -185,7 +185,9 @@ public class StoreMemoryRepository implements StoreRepository{
 
     @Override
     public void deleteAll() {
-
+        synchronized (storesLock) {
+            allStores.clear();
+        }
     }
 
     @Override

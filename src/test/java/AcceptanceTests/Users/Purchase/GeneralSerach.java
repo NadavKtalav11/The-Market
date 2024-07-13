@@ -2,12 +2,20 @@ package AcceptanceTests.Users.Purchase;
 
 import AcceptanceTests.BridgeToTests;
 import AcceptanceTests.ProxyToTest;
+import AcceptanceTests.RealToTest;
+import PresentationLayer.Application;
 import ServiceLayer.Response;
 import Util.ExceptionsEnum;
 import Util.ProductDTO;
 import Util.UserDTO;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.ContextConfiguration;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -17,8 +25,15 @@ import java.util.Set;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 
+@ContextConfiguration(classes = {Application.class, RealToTest.class})
+@SpringBootTest
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
+@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
 public class GeneralSerach {
-    private static BridgeToTests impl;
+
+    @Autowired
+    private BridgeToTests impl;
+
     static String userId0;
     static String storeId0;
     static String storeId1;
@@ -26,12 +41,7 @@ public class GeneralSerach {
 
 
     @BeforeAll
-    public static void setUp() {
-        impl = new ProxyToTest("Real");
-        //Do what you need
-
-        impl = new ProxyToTest("Real");
-        //Do what you need
+    public void setUp() {
         userId0= impl.enterMarketSystem().getData();
         impl.register(userId0,"user1", "12/12/00", "Israel", "Beer Sheva", "Mesada", "Toy", "fSijsd281");
         impl.login(userId0, "user1", "fSijsd281");
