@@ -127,6 +127,7 @@ public class Member extends State{
 
     //public Map<String, String> getReceiptIdsAndStoreId(){return receiptIdsAndStoreId;}
 
+    @Override
     public String getMemberID()
     {
         return this.member_ID;
