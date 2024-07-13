@@ -38,9 +38,11 @@ public class UserFacade {
     @Transactional
     public void test() throws Exception {
         String newUserId = addUser();
+        String newUserId2 = addUser();
         UserDTO userDTO = new UserDTO(newUserId, "testUser", "01/01/2000", "Test Country", "Test City", "123 Test St", "Test Name");
         register(newUserId, userDTO, "testPass");
         Login(newUserId, "testUser", "testPass");
+        Login(newUserId2, "testUser", "testPass");
 
         addItemsToBasket("product1", 1, "store83afa8b9-2e7c-48a3-ad9f-498c8ad18eb9", newUserId, 100);
         addItemsToBasket("product2", 3, "store83afa8b9-2e7c-48a3-ad9f-498c8ad18eb", newUserId, 50);
@@ -48,7 +50,7 @@ public class UserFacade {
         removeItemFromUserCart("product2", "store83afa8b9-2e7c-48a3-ad9f-498c8ad18eb", newUserId);
         //userRepository.save(getUserByID(newUserId));
     }
- */
+*/
 
     public UserFacade()
     {
@@ -93,13 +95,14 @@ public class UserFacade {
     public User getUserByID(String userID){
         Optional<User> user = userRepository.findById(userID);
         User userToReturn = user.orElse(null);
-        Member member = null;
+        Optional<Member> member = null;
 
         if(userToReturn != null){
             if(!userToReturn.getIsGuest() && !userToReturn.isMember()) {
-                member = members.getByUserId(userID);
-                members.save(member);
-                userToReturn.setState(member);
+                member = members.findById(userToReturn.getMember_ID());
+                Member memberToUpdate = member.orElse(null);
+                members.save(memberToUpdate);
+                userToReturn.setState(memberToUpdate);
                 userRepository.save(userToReturn);
             }
         }
@@ -237,9 +240,8 @@ public class UserFacade {
 
             Member newMember = new Member(userID, memberId,user.getUserName(), user.getAddress(), user.getName(), password, user.getBirthday(), user.getCountry(), user.getCity());
             members.save(newMember);
-            User userToUpdate = getUserByID(userID);//.addInfo(user);
+            User userToUpdate = getUserByID(userID);
             userToUpdate.addInfo(user);
-            //todo: nitzan verify if needed and if works well with memory
             this.userRepository.save(userToUpdate);
             //todo pass the user to login page.
             return memberId;

@@ -76,7 +76,7 @@ public abstract class State {
     }
 
 
-
+    protected abstract String getMemberID();
 
     protected abstract void Logout();
     protected abstract void exitMarketSystem();
