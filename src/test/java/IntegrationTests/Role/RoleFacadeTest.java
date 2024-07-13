@@ -5,6 +5,7 @@ import DomainLayer.Repositories.StoreManagerRepository;
 import DomainLayer.Repositories.StoreOwnerRepository;
 import DomainLayer.Role.RoleFacade;
 import DomainLayer.Role.StoreManager;
+import DomainLayer.Role.StoreOwner;
 import PresentationLayer.Application;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -33,12 +34,18 @@ public class RoleFacadeTest {
     @Autowired
     private StoreOwnerRepository storeOwnerRepository;
 
+    @Autowired
+    private StoreManagerRepository nominatorManager;
+
+    @Autowired
+    private StoreOwnerRepository nominatorOwner;
+
     private RoleFacade roleFacade;
 
 
     @BeforeEach
     public void setUp() {
-        roleFacade = new RoleFacade(storeManagerRepository, storeOwnerRepository);
+        roleFacade = new RoleFacade(storeManagerRepository, storeOwnerRepository, nominatorManager, nominatorOwner);
     }
 
     @AfterEach

@@ -41,7 +41,7 @@ public class AcquisitionTest {
 
     @Test
     public void testGetTotalPriceOfStoreInAcquisition() {
-        int totalPriceStore1 = acquisition.getTotalPriceOfStoreInAcquisition("store1");
+        int totalPriceStore1 = acquisition.getReceiptMap().get("store1").getTotalPriceOfStoreReceipt();
         assertEquals(150, totalPriceStore1); // Expected total: 2 * 100 + 1 * 50 = 250
     }
 

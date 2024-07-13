@@ -9,13 +9,16 @@ import java.util.Objects;
 @Embeddable
 public class ProductDetailReceiptId implements Serializable {
 
-    private String store_id;
+    private String receiptId;
+
+    private String storeId;
 
     private String productName;
 
     // Update constructor, getters, and setters accordingly
-    public ProductDetailReceiptId(String store_id, String productName) {
-        this.store_id = store_id;
+    public ProductDetailReceiptId(String receiptId, String storeId, String productName) {
+        this.storeId = storeId;
+        this.receiptId = receiptId;
         this.productName = productName;
     }
 
@@ -23,12 +26,20 @@ public class ProductDetailReceiptId implements Serializable {
 
     }
 
-    public String getStore_id() {
-        return store_id;
+    public String getReceiptId() {
+        return receiptId;
     }
 
-    public void setStore_id(String store_id) {
-        this.store_id = store_id;
+    public void setReceiptId(String receiptId) {
+        this.receiptId = receiptId;
+    }
+
+    public String getStoreId() {
+        return storeId;
+    }
+
+    public void setStoreId(String store_id) {
+        this.storeId = store_id;
     }
 
     public String getProductName() {

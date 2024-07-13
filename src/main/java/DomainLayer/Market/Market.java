@@ -23,10 +23,12 @@ import DomainLayer.User.UserFacade;
 import DomainLayer.SupplyServices.SupplyServicesFacade;
 import Util.*;
 
+import jakarta.inject.Qualifier;
 import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.yaml.snakeyaml.Yaml;
@@ -88,7 +90,6 @@ public class Market {
         systemManagerIds = new HashSet<>();
         managersLock = new Object();
         validationLock = new Object();
-        initializedRepository = null;
         //lateNotificationFacade = new LateNotificationFacade();
 
         MarketInstance = this;
@@ -111,13 +112,8 @@ public class Market {
         this.systemManagerIds = new HashSet<>();
         managersLock = new Object();
         validationLock = new Object();
-        initializedRepository = null;
-
-
-
         //notificationService = new NotificationsEndPoint();
         myWebSocketHandler =  MyWebSocketHandler.getInstance();
-
     }
 
     public Market(UserFacade userFacade, PaymentServicesFacade paymentServicesFacade,
@@ -132,7 +128,6 @@ public class Market {
         this.systemManagerIds = new HashSet<>();
         managersLock = new Object();
         validationLock = new Object();
-        initializedRepository = null;
 
 
         myWebSocketHandler =  MyWebSocketHandler.getInstance();
@@ -150,7 +145,6 @@ public class Market {
         this.systemManagerIds = new HashSet<>();
         managersLock = new Object();
         validationLock = new Object();
-        initializedRepository = null;
 
 
         myWebSocketHandler =  MyWebSocketHandler.getInstance();
@@ -168,7 +162,6 @@ public class Market {
         this.systemManagerIds = new HashSet<>();
         managersLock = new Object();
         validationLock = new Object();
-        initializedRepository = null;
 
         //lateNotificationFacade = new LateNotificationFacade();
 
@@ -188,7 +181,6 @@ public class Market {
         this.systemManagerIds = new HashSet<>();
         managersLock = new Object();
         validationLock = new Object();
-        initializedRepository = null;
 
         //lateNotificationFacade = new LateNotificationFacade();
 
@@ -209,7 +201,6 @@ public class Market {
         this.systemManagerIds = new HashSet<>();
         managersLock = new Object();
         validationLock = new Object();
-        initializedRepository = null;
 
         //lateNotificationFacade = new LateNotificationFacade();
 
@@ -228,7 +219,7 @@ public class Market {
         this.systemManagerIds = new HashSet<>();
         managersLock = new Object();
         validationLock = new Object();
-        initializedRepository = null;
+
         //lateNotificationFacade = new LateNotificationFacade();
 
         //notificationService = new NotificationsEndPoint();
@@ -238,38 +229,33 @@ public class Market {
 
     @Autowired
     public Market(UserFacade userFacade, StoreFacade storeFacade, SupplyServicesFacade supplyServicesFacade,
-                  PaymentServicesFacade paymentServicesFacade, RoleFacade roleFacade, InitializedRepository initializedDBRepository) throws Exception {
+                  PaymentServicesFacade paymentServicesFacade, RoleFacade roleFacade,
+                  InitializedRepository initializedRepository) throws Exception {
         this.storeFacade = storeFacade;
         this.userFacade = userFacade;
         this.roleFacade = roleFacade;
         this.paymentServicesFacade = paymentServicesFacade;
         this.authenticationAndSecurityFacade = AuthenticationAndSecurityFacade.getInstance();
         this.supplyServicesFacade= supplyServicesFacade;
-        this.initializedRepository = initializedDBRepository;
+        this.initializedRepository = initializedRepository;
         initializedLock= new Object();
         this.systemManagerIds = new HashSet<>();
         managersLock = new Object();
         validationLock = new Object();
         systemManagerIds = new HashSet<>();
         try{
-            Optional<InitializedStatus> initialized = initializedDBRepository.findById("market");
+            Optional<InitializedStatus> initialized = initializedRepository.findById("market");
             InitializedStatus initializedStatus = initialized.orElse(null);
             if (initializedStatus == null) {
-                initializedDBRepository.save(new InitializedStatus(false));
+                initializedRepository.save(new InitializedStatus(false));
             }
         }
         catch(Exception e){
             throw new Exception(ExceptionsEnum.DatabaseIsNotConnected.toString());
         }
-//        if (this.initializedDBRepository != null){
-//            initializedDBRepository.save(initialized);
-//        }
         //lateNotificationFacade = new LateNotificationFacade();
 
         myWebSocketHandler =  MyWebSocketHandler.getInstance();
-
-
-
     }
 
     public Market(UserFacade userFacade, PaymentServicesFacade paymentServicesFacade){

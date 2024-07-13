@@ -34,10 +34,10 @@ public class PaymentServicesFacade {
         Map<String, List<Integer>> productNames = new HashMap<>();
         productNames.put("candle", priceQuantity);
         productList.put("candleStore", productNames);
-//        pay(99, new PaymentDTO("123", "noa", "curr", "123456789", 123,11,
-//                26),"userID", productList);
-//        addExternalService("noaaboody");
-//        Acquisition acquisition = new Acquisition("11", "usrt", 88, new PaymentDTO("1", "2","3", "4", 5,6,9), productList);
+        //addExternalService("noaab", "https://damp-lynna-wsep-1984852e.koyeb.app/");
+        pay(99, "noaab" , new PaymentDTO("123", "noa", "curr", "123456789", 123,11,
+                26),"userID", productList);
+//        Acquisition acquisition = new Acquisition(12,"12", "usrt", 88, new PaymentDTO("1", "2","3", "4", 5,6,9), productList);
 //        acquisitionRepository.save(acquisition);
 
     }
@@ -114,7 +114,7 @@ public class PaymentServicesFacade {
         //ExternalPaymentService externalPaymentService = getPaymentServiceByURL("https://damp-lynna-wsep-1984852e.koyeb.app/");
         ExternalPaymentService externalPaymentService = getPaymentServiceByName(paymentServiceName);
         int transactionId  = externalPaymentService.payWithCard(price, payment, userId, productList, acquisitionId);
-        if (!isValidAcquisitionIdID(acquisitionId)){
+        if (!isValidTransactionIdID(transactionId)){
             throw new IllegalArgumentException(ExceptionsEnum.ExternalPaymentFailed.toString());
         }
         Acquisition acquisition = new Acquisition(transactionId,acquisitionId, userId, price, payment, productList);
@@ -200,9 +200,8 @@ public class PaymentServicesFacade {
         Map<String, Integer> storePurchaseStats = new HashMap<>();
         List<Acquisition> acquisitions = acquisitionRepository.findAll();
             for (Acquisition acquisition : acquisitions) {
-                Map<String, Receipt> acqReceipts = acquisition.getStoreIdAndReceipt();
-                for (String receiptId : acqReceipts.keySet()) {
-                    String storeId = acqReceipts.get(receiptId).getStoreId();
+                Map<String, String> acqReceipts = acquisition.getStoreIdAndReceiptID();
+                for (String storeId : acqReceipts.keySet()) {
                     storePurchaseStats.put(storeId, storePurchaseStats.getOrDefault(storeId, 0) + 1);
                 }
             }
@@ -215,8 +214,8 @@ public class PaymentServicesFacade {
         Map<String, Integer> receiptAndTotalPrice = new HashMap<>();
         List<Acquisition> acquisitions = acquisitionRepository.findAll();
             for (Acquisition acquisition : acquisitions) {
-                if (acquisition.getStoreIdAndReceipt().containsKey(storeId)) {
-                    receiptAndTotalPrice.put(acquisition.getReceiptIdByStoreId(storeId), acquisition.getTotalPriceOfStoreInAcquisition(storeId));
+                if (acquisition.getStoreIdAndReceiptID().containsKey(storeId)) {
+                    receiptAndTotalPrice.put(acquisition.getReceiptIdByStoreId(storeId), acquisitionRepository.findTotalPriceByStoreAndReceiptAndAcquisition(storeId,acquisition.getReceiptIdByStoreId(storeId),acquisition.getAcquisitionId()));
                 }
             }
 
@@ -252,20 +251,33 @@ public class PaymentServicesFacade {
         Optional<Acquisition> acq = acquisitionRepository.findById(acquisitionId);
         Acquisition acq1 = acq.orElse(null);
         if (acq1 != null) {
-            Map<String, Receipt> storeReceipts = acq1.getStoreIdAndReceipt();
+            Map<String, String> storeReceipts = acq1.getStoreIdAndReceiptID();
             for (String storeId : storeReceipts.keySet()) {
-                Receipt receipt = storeReceipts.get(storeId);
-                receiptsDTO.put(receipt.getReceiptId(), new ReceiptDTO(receipt.getReceiptId(), receipt.getStoreId(), receipt.getUserId(), receipt.getProductListToMap()));
+                String receiptId = storeReceipts.get(storeId);
+                receiptsDTO.put(receiptId,
+                        new ReceiptDTO(storeReceipts.get(storeId),storeId, acq1.getUserId(), convertToProductList(acquisitionRepository.findProductDetailReceiptsByReceiptAndAcquisition(receiptId,acquisitionId))));
             }
         }
         return receiptsDTO;
     }
 
-    public boolean isValidAcquisitionIdID(String acqId){
-        int ID = Integer.parseInt(acqId);
+    public boolean isValidTransactionIdID(int transactionId){
+        int ID = transactionId;
         if(ID>=10000 && ID<=100000){
             return true;
         }
         return false;
+    }
+
+    //convert product list from List<ProductDetailReceipt> to Map<String, List<Integer>>
+    public Map<String, List<Integer>> convertToProductList(List<ProductDetailReceipt> productDetailReceipts){
+        Map<String, List<Integer>> productList = new HashMap<>();
+        for (ProductDetailReceipt productDetailReceipt : productDetailReceipts) {
+            List<Integer> priceAndQuantity = new ArrayList<>();
+            priceAndQuantity.add(productDetailReceipt.getPrice());
+            priceAndQuantity.add(productDetailReceipt.getAmount());
+            productList.put(productDetailReceipt.getId().getProductName(), priceAndQuantity);
+        }
+        return productList;
     }
 }
