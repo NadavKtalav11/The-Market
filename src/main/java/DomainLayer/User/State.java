@@ -12,7 +12,7 @@ public abstract class State {
 
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     @JoinColumn(name = "cart_id")
-    private Cart cart;
+    protected Cart cart;
 
     protected State(){
         cart = new Cart();

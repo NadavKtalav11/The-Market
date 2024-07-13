@@ -1,6 +1,5 @@
 package DomainLayer.Repositories;
 
-import DomainLayer.User.Cart;
 import DomainLayer.User.Member;
 import DomainLayer.User.User;
 import org.springframework.data.jpa.repository.JpaRepository;

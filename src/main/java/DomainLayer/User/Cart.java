@@ -42,7 +42,7 @@ public class Cart {
 
     //Constructor injection for testing
     public Cart(Map<String, Basket> baskets, int cartPrice) {
-        //this.baskets = baskets;
+        this.baskets = baskets;
         this.cartPrice = cartPrice;
         basketsLock = new Object();
         priceLock = new Object();
@@ -68,14 +68,12 @@ public class Cart {
         synchronized (basketsLock) {
             if (baskets.containsKey(storeId)) {
                 basket = baskets.get(storeId);
-                basket.addProduct(productName, quantity, totalPrice);
             } else {
                 basket = new Basket(storeId);
                 basket.setCart(this);
-                basket.addProduct(productName, quantity, totalPrice);
                 baskets.put(storeId, basket);
             }
-            //basket.addProduct(productName, quantity, totalPrice);
+            basket.addProduct(productName, quantity, totalPrice);
         }
 
     }

@@ -71,7 +71,6 @@ public class Member extends State{
         this.name = name;
         this.productIdCounter = 0;
         this.acquisitionIds = new ArrayList<>();
-        //cart = new Cart();
     }
 
     public Member() {

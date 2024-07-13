@@ -1,6 +1,5 @@
 package DomainLayer.Repositories;
 
-import DomainLayer.User.Cart;
 import DomainLayer.User.Member;
 import org.springframework.context.annotation.Profile;
 import org.springframework.data.domain.Example;

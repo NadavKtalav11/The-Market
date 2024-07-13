@@ -24,8 +24,6 @@ public class User   {
     @Id
     private String userID;
 
-    //TODO: CHANGE THE ANNOTATION
-    //@OneToOne(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     @Transient
     @Cascade(org.hibernate.annotations.CascadeType.ALL)
     private State state;
@@ -74,15 +72,6 @@ public class User   {
 
     public User() {
         this.state = new Guest();
-        //this.isGuest = !state.isMember();
-        /*
-        if(!isGuest)
-        {
-            this.state = new Member();//i it to be "Member" with all of the information related
-        }
-        else {
-            this.state = new Guest();
-        }*/
     }
 
     public void updateByDTO(UserDTO userDTO){

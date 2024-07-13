@@ -30,11 +30,10 @@ public class UserFacade {
     public UserFacade(UserRepository userRepository, MemberRepository members) throws Exception {
         this.userRepository = userRepository;
         this.members = members;
-
-        // TODO: uncomment this to test DB
-        test();
+        //test();
     }
 
+    /*
     //TODO: remove this after done testing DB
     @Transactional
     public void test() throws Exception {
@@ -43,10 +42,12 @@ public class UserFacade {
         register(newUserId, userDTO, "testPass");
         Login(newUserId, "testUser", "testPass");
 
-       addItemsToBasket("product1", 1, "store83afa8b9-2e7c-48a3-ad9f-498c8ad18eb9", newUserId, 100);
-      //userRepository.save(getUserByID(newUserId));
-    }
+        addItemsToBasket("product1", 1, "store83afa8b9-2e7c-48a3-ad9f-498c8ad18eb9", newUserId, 100);
+        addItemsToBasket("product2", 3, "store83afa8b9-2e7c-48a3-ad9f-498c8ad18eb", newUserId, 50);
 
+        //userRepository.save(getUserByID(newUserId));
+    }
+*/
     public UserFacade()
     {
         userRepository = new UserMemoryRepository();
