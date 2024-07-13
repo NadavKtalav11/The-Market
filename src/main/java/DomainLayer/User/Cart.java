@@ -26,7 +26,7 @@ public class Cart {
     private Map<String, Basket> baskets; //key = storeID
 
     @Column(name = "cart_price")
-    public int cartPrice;
+    private int cartPrice;
 
     @Transient
     private final Object basketsLock;
