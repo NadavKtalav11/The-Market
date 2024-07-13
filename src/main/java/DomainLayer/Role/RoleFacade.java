@@ -42,9 +42,10 @@ public class RoleFacade {
     }
 
     @Autowired
-    public RoleFacade(StoreManagerRepository storeManagerRepository, StoreOwnerRepository storeOwnerRepository) {
+    public RoleFacade(StoreManagerRepository storeManagerRepository, StoreOwnerRepository storeOwnerRepository, StoreManagerRepository managerNominators, StoreOwnerRepository ownersNominators) {
         systemManagers = new ArrayList<>();
-
+        this.managerNominators = managerNominators;
+        this.ownersNominators = ownersNominators;
         this.storeManagerRepository = storeManagerRepository;
         this.storeOwnerRepository = storeOwnerRepository;
         systemManagerLock = new Object();
