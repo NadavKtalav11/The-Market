@@ -13,9 +13,13 @@ public class SystemManager {
     @Column(name = "member_id", nullable = false, unique = true)
     private String member_ID;
 
+//    @Column(name = "nominated_member_Id", nullable = false, unique = true)
+//    private String nominated_member_Id;
+
     SystemManager(String member_ID)
     {
         this.member_ID = member_ID;
+
     }
 
     public SystemManager() {
@@ -26,4 +30,7 @@ public class SystemManager {
         return this.member_ID;
     }
 
+//    public String getNominated_member_Id() {
+//        return nominated_member_Id;
+//    }
 }

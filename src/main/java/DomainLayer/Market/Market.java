@@ -402,7 +402,7 @@ public class Market {
             String firstUserID = enterMarketSystem();
             UserDTO userDTO1 = new UserDTO(firstUserID, adminUsername, adminBirthday, adminCountry, adminCity, adminAddress, adminName);
             String systemManagerId = userFacade.register(firstUserID, userDTO1, encryptedPassword);
-            roleFacade.addSystemManger(systemManagerId);
+            roleFacade.addSystemManager(systemManagerId);
             synchronized (managersLock) {
                 systemManagerIds.add(systemManagerId);
             }
@@ -516,14 +516,13 @@ public class Market {
         String userNameNominator=  (String) actionData.get("nominatorUser");
         List<String> nominatedUsers=  (List<String>) actionData.get("nominatedUsers");
         Boolean inventoryPermissions=  (Boolean) actionData.get("inventoryPermissions");
-        Boolean purchasePermissions=  (Boolean) actionData.get("purchasePermissions");
+        Boolean purchasePermissions= (Boolean) actionData.get("purchasePermissions");
         String nominatorId = usernameToUserIdMap.get(userNameNominator);
         for(String userName : nominatedUsers){
             logger.info(" try appoint manager to store");
             appointStoreManager(nominatorId, userName, storeId,inventoryPermissions ,purchasePermissions);
             logger.info(" manager appointed successfully");
         }
-
     }
 
 
@@ -1073,9 +1072,10 @@ public class Market {
     public void approveStoreOwnerInvitation(String userId,  String storeId) throws Exception {
         String memberId = verifyToken(userId);
         verifyMemberExist(memberId);
-
         storeFacade.errorIfStoreNotExist(storeId);
-        roleFacade.approveInvitationStoreOwner(memberId, storeId);
+        String proposerMemberId = roleFacade.approveInvitationStoreOwner(memberId, storeId);
+        myWebSocketHandler.handleStringMessage(proposerMemberId,
+                userFacade.getMemberName(memberId)  + " approved your offer to be store Manager in store " + storeFacade.getStoreName(storeId));
     }
 
 
@@ -1083,7 +1083,10 @@ public class Market {
         String memberId = verifyToken(userId);
         verifyMemberExist(memberId);
         storeFacade.errorIfStoreNotExist(storeId);
-        roleFacade.declineInvitationStoreOwner(memberId, storeId);
+        String proposerMemberId = roleFacade.declineInvitationStoreOwner(memberId, storeId);
+        myWebSocketHandler.handleStringMessage(proposerMemberId,
+                userFacade.getMemberName(memberId)  + " declined your offer to be store Manager in store " + storeFacade.getStoreName(storeId));
+
     }
 
     public void declineStoreManagerInvitation(String userId,  String storeId) throws Exception {
@@ -1091,14 +1094,19 @@ public class Market {
         verifyMemberExist(memberId);
 
         storeFacade.errorIfStoreNotExist(storeId);
-        roleFacade.declineInvitationStoreManager(memberId, storeId);
+        String proposerMemberId = roleFacade.declineInvitationStoreManager(memberId, storeId);
+        myWebSocketHandler.handleStringMessage(proposerMemberId,
+                userFacade.getMemberName(memberId)  + " declined your offer to be store Manager in store " + storeFacade.getStoreName(storeId));
+
     }
 
     public void approveStoreManagerInvitation(String userId,  String storeId) throws Exception {
         String memberId = userFacade.getMemberIdByUserId(userId);
         verifyMemberExist(memberId);
         storeFacade.errorIfStoreNotExist(storeId);
-        roleFacade.approveInvitationStoreManager(memberId, storeId);
+        String proposerMemberId = roleFacade.approveInvitationStoreManager(memberId, storeId);
+        myWebSocketHandler.handleStringMessage(proposerMemberId,
+                userFacade.getMemberName(memberId)  + " approved your offer to be store Manager in store " + storeFacade.getStoreName(storeId));
     }
 
 
@@ -1112,6 +1120,8 @@ public class Market {
         userFacade.errorIfUsernameNotFound(nominatedUsername);
         String nominatedMemberID = userFacade.getMemberByUsername(nominatedUsername).getMemberID();
         roleFacade.addOwnerNominator(nominatedMemberID, storeId, false, nominatorMemberID);
+        myWebSocketHandler.handleStringMessage(nominatedMemberID,
+                "you have new job proposal from " +userFacade.getMemberName(nominatorMemberID)+  " to be store owner in store " + storeFacade.getStoreName(storeId) + " please accept or decline the proposal in the jobs page");
     }
 
     public void fireStoreOwner(String nominatorUserId, String nominatedUsername, String storeId) throws Exception {
@@ -1138,6 +1148,8 @@ public class Market {
         userFacade.errorIfUsernameNotFound(nominatedUsername);
         String nominatedMemberID = userFacade.getMemberByUsername(nominatedUsername).getMemberID();
         roleFacade.addManagerNominator(nominatedMemberID, storeId, inventoryPermissions, purchasePermissions, nominatorMemberID);
+        myWebSocketHandler.handleStringMessage(nominatedMemberID,
+                "you have new job proposal from " +userFacade.getMemberName(nominatorMemberID)+  " to be store manager in store " + storeFacade.getStoreName(storeId) + " please accept or decline the proposal in the jobs page");
     }
 
     public void fireStoreManager(String nominatorUserId, String nominatedUsername, String storeId) throws Exception {
