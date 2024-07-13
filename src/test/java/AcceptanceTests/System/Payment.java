@@ -2,6 +2,7 @@ package AcceptanceTests.System;
 
 import AcceptanceTests.BridgeToTests;
 import AcceptanceTests.ProxyToTest;
+import AcceptanceTests.RealToTest;
 import DomainLayer.Market.Market;
 import DomainLayer.PaymentServices.ExternalPaymentService;
 import DomainLayer.PaymentServices.HttpClient;
@@ -9,12 +10,17 @@ import DomainLayer.PaymentServices.PaymentServicesFacade;
 import DomainLayer.Store.StoreFacade;
 import DomainLayer.User.User;
 import DomainLayer.User.UserFacade;
+import PresentationLayer.Application;
 import Util.*;
 import org.junit.jupiter.api.*;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.mockito.internal.stubbing.answers.ThrowsException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.ContextConfiguration;
 
 import java.util.HashMap;
 import java.util.List;
@@ -23,15 +29,18 @@ import java.util.Map;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
+@ContextConfiguration(classes = {Application.class, RealToTest.class})
+@SpringBootTest
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
+@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class Payment {
-    private static BridgeToTests impl;
+
+    @Autowired
     private Market market;
 
     @Mock
     private PaymentServicesFacade paymentServicesFacade;
-
-
 
     @Mock
     private UserFacade userFacade;
@@ -39,7 +48,6 @@ public class Payment {
 
     @BeforeEach
     public void setUp() {
-        impl = new ProxyToTest("Real");
         MockitoAnnotations.openMocks(this);
 
         this.paymentServicesFacade = PaymentServicesFacade.getInstance();

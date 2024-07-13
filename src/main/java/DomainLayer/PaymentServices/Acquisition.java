@@ -8,8 +8,6 @@ import java.util.*;
 @Table(name = "acquisition")
 public class Acquisition {
 
-
-    //@Id
     @Column(name = "transactionId")
     private int transactionId;
 
@@ -41,11 +39,18 @@ public class Acquisition {
     @Column(name = "date")
     private Date date;
 
-//    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
-//    @JoinColumn(name = "acquisition_id")
+//    @ElementCollection
+//    @CollectionTable(name = "receipt", joinColumns = @JoinColumn(name = "acquisition_id"))
 //    @MapKeyColumn(name = "store_id")
+//    @Column(name = "receipt_id")
     @Transient
-    private Map<String, Receipt> storeIdAndReceipt = new HashMap<>();
+    private Map<String, String> storeIdAndReceiptID = new HashMap<>();
+
+    @Transient
+    private Map<String, Receipt> receiptMap = new HashMap<>();
+
+    @OneToMany(mappedBy = "acquisition", cascade = CascadeType.ALL, orphanRemoval = true)
+    private final List<ProductDetailReceipt> productDetailReceipts = new ArrayList<>();
 
     @Transient
     private final Object storeReceiptLock;
@@ -64,17 +69,46 @@ public class Acquisition {
         this.date = new Date(); // Current date and time
 
         for (String storeId : productList.keySet()) {
-            Map<String, List<Integer>> productsList = productList.get(storeId);
-            List<ProductDetailReceipt> productDetailReceipts = new ArrayList<>();
-            for (String productName : productsList.keySet()) {
-                int quantity = productsList.get(productName).get(0);
-                int price = productsList.get(productName).get(1);
-                ProductDetailReceiptId id = new ProductDetailReceiptId(storeId, productName);
-                ProductDetailReceipt productDetailReceipt = new ProductDetailReceipt(id, quantity, price);
-                productDetailReceipts.add(productDetailReceipt);
-            }
-            storeIdAndReceipt.put(storeId, new Receipt(getNewReceiptId(), storeId, userId, productDetailReceipts));
+            String receiptID = getNewReceiptId();
+            storeIdAndReceiptID.put(storeId, receiptID);
+            receiptMap.put(storeId,createNewReceipt(receiptID,storeId,productList.get(storeId)));
+            this.productDetailReceipts.addAll(convertToProductDetailReceipt(productList.get(storeId), storeId));
         }
+    }
+
+    //convert product list from List<ProductDetailReceipt> to Map<String, List<Integer>>
+    public Map<String, List<Integer>> convertToProductList(List<ProductDetailReceipt> productDetailReceipts){
+        Map<String, List<Integer>> productList = new HashMap<>();
+        for (ProductDetailReceipt productDetailReceipt : productDetailReceipts) {
+            List<Integer> priceAndQuantity = new ArrayList<>();
+            priceAndQuantity.add(productDetailReceipt.getPrice());
+            priceAndQuantity.add(productDetailReceipt.getAmount());
+            productList.put(productDetailReceipt.getId().getProductName(), priceAndQuantity);
+        }
+        return productList;
+    }
+
+    //convert product list from Map<String, List<Integer>> to List<ProductDetailReceipt>
+    public List<ProductDetailReceipt> convertToProductDetailReceipt(Map<String, List<Integer>> productDetailReceipts, String storeId){
+        List<ProductDetailReceipt> productList = new ArrayList<>();
+        for (String productName : productDetailReceipts.keySet()) {
+            List<Integer> priceAndQuantity = productDetailReceipts.get(productName);
+            ProductDetailReceipt productDetailReceipt = new ProductDetailReceipt(new ProductDetailReceiptId(getNewReceiptId(),storeId,productName), priceAndQuantity.get(0), priceAndQuantity.get(1),this);
+            productList.add(productDetailReceipt);
+        }
+        return productList;
+    }
+
+    public Receipt createNewReceipt(String receiptID ,String storeID, Map<String, List<Integer>> products) {
+        List<ProductDetailReceipt> productDetailReceipts = new ArrayList<>();
+        for (String productName : products.keySet()) {
+            int quantity = products.get(productName).get(0);
+            int price = products.get(productName).get(1);
+            ProductDetailReceiptId id = new ProductDetailReceiptId(receiptID,storeID,productName);
+            ProductDetailReceipt productDetailReceipt = new ProductDetailReceipt(id,quantity,price, this);
+            productDetailReceipts.add(productDetailReceipt);
+        }
+        return new Receipt(receiptID, storeID, userId, productDetailReceipts);
     }
 
     public Acquisition() {
@@ -106,21 +140,31 @@ public class Acquisition {
         return date;
     }
 
-    public Map<String, Receipt> getStoreIdAndReceipt() {
+    public Map<String, Receipt> getReceiptMap() {
+        return receiptMap;
+    }
+
+    public void setReceiptMap(Map<String, Receipt> receiptMap) {
+        this.receiptMap = receiptMap;
+    }
+
+    public Map<String, String> getStoreIdAndReceiptID() {
         synchronized (storeReceiptLock) {
-            return storeIdAndReceipt;
+            return storeIdAndReceiptID;
         }
     }
 
-    public int getTotalPriceOfStoreInAcquisition(String storeId) {
-        synchronized (storeReceiptLock) {
-            return storeIdAndReceipt.get(storeId).getTotalPriceOfStoreReceipt();
-        }
-    }
+//    public int getTotalPriceOfStoreInAcquisition(String storeId) {
+//        synchronized (storeReceiptLock) {
+//
+//            Receipt receipt = createNewReceipt(storeIdAndReceiptID.get(storeId),storeId,)
+//            return storeIdAndReceiptID.get(storeId).getTotalPriceOfStoreReceipt();
+//        }
+//    }
 
     public String getReceiptIdByStoreId(String storeId) {
         synchronized (storeReceiptLock) {
-            return storeIdAndReceipt.get(storeId).getReceiptId();
+            return storeIdAndReceiptID.get(storeId);
         }
     }
 
@@ -131,8 +175,8 @@ public class Acquisition {
     public Map<String, String> getReceiptIdAndStoreIdMap() {
         Map<String, String> receiptIdAndStoreIdMap = new HashMap<>();
         synchronized (storeReceiptLock) {
-            for (Map.Entry<String, Receipt> entry : storeIdAndReceipt.entrySet()) {
-                receiptIdAndStoreIdMap.put(entry.getValue().getReceiptId(), entry.getKey());
+            for (Map.Entry<String, String> entry : storeIdAndReceiptID.entrySet()) {
+                receiptIdAndStoreIdMap.put(entry.getValue(), entry.getKey());
             }
         }
         return receiptIdAndStoreIdMap;

@@ -2,20 +2,29 @@ package AcceptanceTests;
 
 import ServiceLayer.Response;
 import Util.*;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import javax.persistence.criteria.CriteriaBuilder;
 import java.util.List;
 import java.util.Map;
 
+@Service
 public class ProxyToTest implements BridgeToTests {
+
 
     private RealToTest realServiceAdaptor;
 
     public ProxyToTest(String type) {
         if (type.equals("Real"))
-            this.realServiceAdaptor = new RealToTest();
+            realServiceAdaptor = new RealToTest();
         else
-            this.realServiceAdaptor = null;
+            realServiceAdaptor = null;
+    }
+
+    @Autowired
+    public ProxyToTest(RealToTest realServiceAdaptor) {
+        this.realServiceAdaptor = realServiceAdaptor;
     }
 
 

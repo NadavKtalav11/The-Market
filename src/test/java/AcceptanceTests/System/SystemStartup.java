@@ -20,7 +20,6 @@ import java.util.HashSet;
 
 
 public class  SystemStartup {
-    private static BridgeToTests impl;
     private Market market;
     private UserFacade userFacade;
     private PaymentServicesFacade  paymentServicesFacade;
@@ -30,7 +29,6 @@ public class  SystemStartup {
 
     @BeforeEach
     public void setUp() {
-        impl = new ProxyToTest("Real");
         this.userFacade = UserFacade.getInstance();
         this.paymentServicesFacade = PaymentServicesFacade.getInstance();
         this.supplyServicesFacade = SupplyServicesFacade.getInstance();

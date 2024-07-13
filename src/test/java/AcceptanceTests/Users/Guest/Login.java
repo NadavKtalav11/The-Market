@@ -2,26 +2,35 @@ package AcceptanceTests.Users.Guest;
 
 import AcceptanceTests.BridgeToTests;
 import AcceptanceTests.ProxyToTest;
+import AcceptanceTests.RealToTest;
+import PresentationLayer.Application;
 import ServiceLayer.Response;
 import Util.ExceptionsEnum;
 import Util.UserDTO;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.ContextConfiguration;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+@ContextConfiguration(classes = {Application.class, RealToTest.class})
+@SpringBootTest
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
+@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
 public class Login {
 
-    private static BridgeToTests impl;
+    @Autowired
+    private BridgeToTests impl;
     private static String userID1;
     private static String userID2;
     private static String userID3;
 
-    @BeforeAll
-    public static void setUp() {
+    @BeforeEach
+    public void setUp() {
 
-        impl = new ProxyToTest("Real");
         userID1 = impl.enterMarketSystem().getData();
         userID2 = impl.enterMarketSystem().getData();
         userID3 = impl.enterMarketSystem().getData();

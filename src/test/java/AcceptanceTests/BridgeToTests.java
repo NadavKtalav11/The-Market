@@ -2,10 +2,12 @@ package AcceptanceTests;
 
 import ServiceLayer.Response;
 import Util.*;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Map;
 
+@Service
 public interface BridgeToTests {
 
     Response<String> init();

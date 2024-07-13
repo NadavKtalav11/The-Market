@@ -2,11 +2,18 @@ package AcceptanceTests.Users.StoreOwner;
 
 import AcceptanceTests.BridgeToTests;
 import AcceptanceTests.ProxyToTest;
+import AcceptanceTests.RealToTest;
+import PresentationLayer.Application;
 import ServiceLayer.Response;
 import Util.ExceptionsEnum;
 import Util.TestRuleDTO;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.ContextConfiguration;
 
 import java.time.LocalTime;
 import java.util.ArrayList;
@@ -14,15 +21,20 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+@ContextConfiguration(classes = {Application.class, RealToTest.class})
+@SpringBootTest
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
+@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
 public class AddPurchaseRuleTest {
 
-    private static BridgeToTests impl;
+    @Autowired
+    private BridgeToTests impl;
+
     static String saarUserID;
     static String storeId;
 
     @BeforeAll
-    public static void setUp() {
-        impl = new ProxyToTest("Real");
+    public void setUp() {
         saarUserID = impl.enterMarketSystem().getData();
         impl.register(saarUserID,"saar", "10/04/84", "Israel", "Jerusalem", "Yehuda halevi 18", "saar", "Fadidaa1");
         impl.login(saarUserID, "saar", "Fadidaa1");
