@@ -17,11 +17,9 @@ import java.util.Map;
 @Table(name = "external_payment_service")
 public  class ExternalPaymentService {
 
+    @Id
     @Column(name = "url", nullable = false)
     private String url;
-    @Id
-    @Column(name = "name", nullable = false)
-    private String name;
 
     @Transient
     private HttpRequestController httpReqCtrl;
@@ -46,8 +44,7 @@ public  class ExternalPaymentService {
         }
     }
 
-    public ExternalPaymentService(String name , String url) {
-        this.name = name;
+    public ExternalPaymentService(String url) {
         this.url = url;
             try
             {
@@ -59,9 +56,7 @@ public  class ExternalPaymentService {
             }
         }
 
-    public String getName() {
-        return name;
-    }
+
 
     //    public ExternalPaymentService(PaymentServiceDTO paymentServiceDTO) {
 //        this.licensedDealerNumber = paymentServiceDTO.getLicensedDealerNumber();
@@ -92,8 +87,7 @@ public  class ExternalPaymentService {
     }
 
     // Abstract method for paying with a card
-    public int payWithCard(int price, PaymentDTO payment, String id, Map<String, Map<String, List<Integer>>> productList,
-                                             String acquisitionIdCounter) throws Exception {
+    public int payWithCard(int price, PaymentDTO payment) throws Exception {
         try {
             if (this.httpReqCtrl == null) {
                 return -1;
@@ -175,10 +169,10 @@ public  class ExternalPaymentService {
         return cancelRes;
     }
 
-    // Abstract method for checking service availability
-    public boolean checkServiceAvailability() {
-        return true;
-    }
+//    // Abstract method for checking service availability
+//    public boolean checkServiceAvailability() {
+//        return true;
+//    }
 
     public Map<String, Acquisition> getIdAndAcquisition() {
         synchronized (acquisitionLock) {

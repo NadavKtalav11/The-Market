@@ -223,10 +223,9 @@ public class MarketController {
     @PostMapping("/addExternalPaymentService")
     public ResponseEntity<APIResponse<String>> addExternalPaymentService(@RequestParam Map<String,String> params) {
         try {
-            String paymentServiceName = params.get("paymentName");
             String paymentUrl =params.get("paymentServiceDTO");
             String managerId = params.get("memberId");
-            Response<String> response = serviceLayer.addExternalPaymentService(paymentServiceName, paymentUrl, managerId);
+            Response<String> response = serviceLayer.addExternalPaymentService( paymentUrl, managerId);
             if (response.isSuccess()) {
                 String result = response.getResult();
                 HttpHeaders headers = new HttpHeaders();
@@ -245,10 +244,10 @@ public class MarketController {
         }
     }
 
-    @DeleteMapping("/removeExternalPaymentService/{licenceNum}/{managerId}")
-    public ResponseEntity<APIResponse<String>> removeExternalPaymentService(@PathVariable String licenceNum, @PathVariable String managerId) {
+    @DeleteMapping("/removeExternalPaymentService/{url}/{managerId}")
+    public ResponseEntity<APIResponse<String>> removeExternalPaymentService(@PathVariable String url, @PathVariable String managerId) {
         try {
-            Response<String> response = serviceLayer.removeExternalPaymentService(licenceNum, managerId);
+            Response<String> response = serviceLayer.removeExternalPaymentService(url, managerId);
             if (response.isSuccess()) {
                 String result = response.getResult();
                 HttpHeaders headers = new HttpHeaders();
@@ -291,10 +290,10 @@ public class MarketController {
         }
     }
 
-    @DeleteMapping("/removeExternalSupplyService/{licenceNum}/{managerId}")
-    public ResponseEntity<APIResponse<String>> removeExternalSupplyService(@PathVariable String licenceNum, @PathVariable String managerId) {
+    @DeleteMapping("/removeExternalSupplyService/{url}/{managerId}")
+    public ResponseEntity<APIResponse<String>> removeExternalSupplyService(@PathVariable String url, @PathVariable String managerId) {
         try {
-            Response<String> response = serviceLayer.removeExternalSupplyService(licenceNum, managerId);
+            Response<String> response = serviceLayer.removeExternalSupplyService(url, managerId);
             if (response.isSuccess()) {
                 String result = response.getResult();
                 HttpHeaders headers = new HttpHeaders();
@@ -319,8 +318,7 @@ public class MarketController {
             String userDTO = params.get("userDTO");
             String paymentDTO= params.get("paymentDTO");
             String cartDTO = params.get("cartDTO");
-            String paymentServiceName = params.get("paymentServiceName");
-            Response<String> response = serviceLayer.purchase(objectMapper.readValue(userDTO, UserDTO.class),objectMapper.readValue( paymentDTO, PaymentDTO.class), objectMapper.readValue( cartDTO, CartDTO.class), paymentServiceName);
+            Response<String> response = serviceLayer.purchase(objectMapper.readValue(userDTO, UserDTO.class),objectMapper.readValue( paymentDTO, PaymentDTO.class), objectMapper.readValue( cartDTO, CartDTO.class));
             if (response.isSuccess()) {
                 String result = response.getData();
                 HttpHeaders headers = new HttpHeaders();
@@ -427,6 +425,36 @@ public class MarketController {
     }
 
 
+    @GetMapping("/getExternalSupplyServices")
+    public ResponseEntity<APIResponse<List<String>>> getExternalSupplyServices() {
+        try {
+            Response<List<String>> response = serviceLayer.getAllSupplyServices();
+            HttpHeaders headers = new HttpHeaders();
+            headers.add("accept", "*/*");
+            return ResponseEntity.status(HttpStatus.OK).headers(headers)
+                    .body(new APIResponse<>(response.getResult(), null));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new APIResponse<>(null, e.getMessage()));
+        }
+    }
+
+    @GetMapping("/getExternalPaymentServices")
+    public ResponseEntity<APIResponse<List<String>>> getExternalPaymentServices() {
+        try {
+            Response<List<String>> response = serviceLayer.getAllPaymentServices();
+            HttpHeaders headers = new HttpHeaders();
+            headers.add("accept", "*/*");
+            return ResponseEntity.status(HttpStatus.OK).headers(headers)
+                    .body(new APIResponse<>(response.getResult(), null));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new APIResponse<>(null, e.getMessage()));
+        }
+    }
+
+
+
     @GetMapping("/getStoreProducts/{storeId}")
     public ResponseEntity<APIResponse<List<String>>> getStoreProducts(@PathVariable String storeId) {
         try {
@@ -439,6 +467,44 @@ public class MarketController {
                 dtosRes.add(objectMapper.writeValueAsString(productDTO));
             }
 
+            return ResponseEntity.status(HttpStatus.OK).headers(headers)
+                    .body(new APIResponse<>(dtosRes, null));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new APIResponse<>(null, e.getMessage()));
+        }
+    }
+
+    @GetMapping("/getManagerJobProposal/{userId}")
+    public ResponseEntity<APIResponse<List<String>>> getManagerJobProposal(@PathVariable String userId) {
+        try {
+            ObjectMapper objectMapper= new ObjectMapper();
+            Response<List<StoreManagerDTO>> response = serviceLayer.getManagerJobProposal(userId);
+            HttpHeaders headers = new HttpHeaders();
+            headers.add("accept", "*/*");
+            List<String> dtosRes = new ArrayList<>();
+            for (StoreManagerDTO storeManagerDTO : response.getResult() ){
+                dtosRes.add(objectMapper.writeValueAsString(storeManagerDTO));
+            }
+            return ResponseEntity.status(HttpStatus.OK).headers(headers)
+                    .body(new APIResponse<>(dtosRes, null));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new APIResponse<>(null, e.getMessage()));
+        }
+    }
+
+    @GetMapping("/getOwnerJobProposal/{userId}")
+    public ResponseEntity<APIResponse<List<String>>> getOwnerJobProposal(@PathVariable String userId) {
+        try {
+            ObjectMapper objectMapper= new ObjectMapper();
+            Response<List<StoreOwnerDTO>> response = serviceLayer.getOwnerJobProposal(userId);
+            HttpHeaders headers = new HttpHeaders();
+            headers.add("accept", "*/*");
+            List<String> dtosRes = new ArrayList<>();
+            for (StoreOwnerDTO storeOwnerDTO : response.getResult() ){
+                dtosRes.add(objectMapper.writeValueAsString(storeOwnerDTO));
+            }
             return ResponseEntity.status(HttpStatus.OK).headers(headers)
                     .body(new APIResponse<>(dtosRes, null));
         } catch (Exception e) {
@@ -1137,10 +1203,11 @@ public class MarketController {
         }
     }
 
-    @PostMapping("/cancelAcquisition/{userId}/{acquisitionId}")
-    public ResponseEntity<APIResponse<String>> cancel(@PathVariable String userId, @PathVariable String acquisitionId) {
+
+    @PostMapping("/answerJobProposal/{userId}/{storeID}/{manager_proposal}/{answer}")
+    public ResponseEntity<APIResponse<String>> answerJobProposal(@PathVariable String userId,@PathVariable String storeID,@PathVariable boolean manager_proposal, @PathVariable boolean answer) {
         try {
-            Response<String> response = serviceLayer.cancelPayment(userId, acquisitionId);
+            Response<String> response = serviceLayer.answerJobProposal(userId ,storeID ,manager_proposal, answer);
             if (response.isSuccess()) {
                 String result = response.getResult();
                 HttpHeaders headers = new HttpHeaders();
@@ -1158,6 +1225,28 @@ public class MarketController {
 
         }
     }
+
+//    @PostMapping("/cancelAcquisition/{userId}/{acquisitionId}")
+//    public ResponseEntity<APIResponse<String>> cancel(@PathVariable String userId, @PathVariable String acquisitionId) {
+//        try {
+//            Response<String> response = serviceLayer.cancelPayment(userId, acquisitionId);
+//            if (response.isSuccess()) {
+//                String result = response.getResult();
+//                HttpHeaders headers = new HttpHeaders();
+//                headers.add("accept", "*/*");
+//
+//                return ResponseEntity.status(HttpStatus.OK).headers(headers)
+//                        .body(new APIResponse<String>(result, null));
+//            } else {
+//                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+//                        .body(new APIResponse<>(null, response.getDescription()));
+//            }
+//        }  catch (Exception e) {
+//            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+//                    .body(new APIResponse<>(null, e.getMessage()));
+//
+//        }
+//    }
 
 
 

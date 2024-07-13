@@ -42,7 +42,7 @@ public class AddingExternalPaymentServices {
 
         // Act and Assert
         assertDoesNotThrow(() -> {
-            market.addExternalPaymentService("card",url, systemManagerId);
+            market.addExternalPaymentService(url, systemManagerId);
         });
     }
 
@@ -58,7 +58,7 @@ public class AddingExternalPaymentServices {
 
         // Act and Assert
         Exception exception = assertThrows(Exception.class, () -> {
-            market.addExternalPaymentService("card",url, nonManagerId);
+            market.addExternalPaymentService(url, nonManagerId);
         });
 
         // Optionally check the exception message
@@ -76,7 +76,7 @@ public class AddingExternalPaymentServices {
 
         // Act and Assert
         Exception exception = assertThrows(Exception.class, () -> {
-            market.addExternalPaymentService("card", url, systemManagerId);
+            market.addExternalPaymentService( url, systemManagerId);
         });
 
         // Optionally check the exception message

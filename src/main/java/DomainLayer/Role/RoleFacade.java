@@ -5,6 +5,8 @@ import DomainLayer.Repositories.MemoryStoreOwnerRepository;
 import DomainLayer.Repositories.StoreManagerRepository;
 import DomainLayer.Repositories.StoreOwnerRepository;
 import Util.ExceptionsEnum;
+import Util.StoreManagerDTO;
+import Util.StoreOwnerDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -343,6 +345,29 @@ public class RoleFacade {
     public void verifyMemberIsSystemManagerError(String member_ID) throws Exception {
         if (!verifyMemberIsSystemManager(member_ID))
             throw new Exception(ExceptionsEnum.notSystemManager.toString());
+    }
+
+    public List<StoreManagerDTO> getAllManagerProposal(String memberId){
+        List <StoreManagerDTO> dtos= new ArrayList<>();
+        List<StoreManager> storeManagerList = managerNominators.getAllMemberIdManagers(memberId);
+        for (StoreManager storeManager: storeManagerList){
+            dtos.add(new StoreManagerDTO(storeManager.getMember_ID(), storeManager.getStore_ID()
+                    , storeManager.hasInventoryPermissions(), storeManager.hasPurchasePermissions(),
+                    storeManager.getNominatorMemberId()));
+
+        }
+        return dtos;
+    }
+
+
+    public List<StoreOwnerDTO> getAllOwnersProposal(String memberId){
+        List <StoreOwnerDTO> dtos= new ArrayList<>();
+        List<StoreOwner> storeOwnerList = ownersNominators.getAllMemberIdOwners(memberId);
+        for (StoreOwner storeOwner: storeOwnerList){
+            dtos.add(new StoreOwnerDTO(storeOwner.getMember_ID(), storeOwner.getStore_ID(),
+                    storeOwner.getFounder(), storeOwner.getNominatorId()));
+        }
+        return dtos;
     }
 
     public static void resetInstanceForTests() {
