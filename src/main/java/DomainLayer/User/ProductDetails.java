@@ -16,6 +16,9 @@ public class ProductDetails {
     @Column(name = "product_name")
     private String product_name;
 
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JoinColumn(name = "storeId")
+    private Basket basket;
 
     // Constructors, getters, and setters
     public ProductDetails() {

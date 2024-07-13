@@ -32,7 +32,7 @@ public class UserFacade {
         this.members = members;
         //test();
     }
-
+    
     /*
     //TODO: remove this after done testing DB
     @Transactional
@@ -44,7 +44,8 @@ public class UserFacade {
 
         addItemsToBasket("product1", 1, "store83afa8b9-2e7c-48a3-ad9f-498c8ad18eb9", newUserId, 100);
         addItemsToBasket("product2", 3, "store83afa8b9-2e7c-48a3-ad9f-498c8ad18eb", newUserId, 50);
-
+        modifyBasketProduct("product1", 2, "store83afa8b9-2e7c-48a3-ad9f-498c8ad18eb9", newUserId, 200);
+        removeItemFromUserCart("product2", "store83afa8b9-2e7c-48a3-ad9f-498c8ad18eb", newUserId);
         //userRepository.save(getUserByID(newUserId));
     }
 */
@@ -69,8 +70,6 @@ public class UserFacade {
         }
         return userFacadeInstance;
     }
-
-
 
     public UserFacade newForTest(){
         userFacadeInstance= new UserFacade();
@@ -201,6 +200,11 @@ public class UserFacade {
         User user = getUserByID(userId);
         user.modifyProductInCart(productName, quantity, storeId, totalPrice);
         user.updateCartPrice();
+
+        //save cart if user state is member
+        if (user.isMember())
+            members.save((Member) user.getState());
+        userRepository.save(user);
     }
 
     public void checkIfCanRemove(String productName, String storeId, String userId)
@@ -214,6 +218,10 @@ public class UserFacade {
     {
         User user = getUserByID(userId);
         user.removeItemFromUserCart(productName, storeId);
+
+        //save cart if user state is member
+        if (user.isMember())
+            members.saveAndFlush((Member) user.getState());
     }
 
 
@@ -424,8 +432,14 @@ public class UserFacade {
     }
 
     public void addAcquisitionToUser(String userId, String acquisitionId) {
+        User user = getUserByID(userId);
+        user.addAcquisition(acquisitionId);
 
-         getUserByID(userId).addAcquisition(acquisitionId);
+        //TODO: check if correct
+        //save acquisition only if member
+        if(user.isMember())
+            members.save((Member) user.getState());
+        userRepository.save(user);
     }
 
     public List<String> getUserAcquisitionsHistory(String userId) {
@@ -433,7 +447,16 @@ public class UserFacade {
     }
 
     public int cancelPaynmet(String userId, String acquisitionId){
-        return getUserByID(userId).cancelAcquisition(acquisitionId);
+        User user = getUserByID(userId);
+        int result = user.cancelAcquisition(acquisitionId);
+
+        //todo check if correct
+        //save acquisition only if member
+        if(user.isMember())
+            members.save((Member) user.getState());
+        userRepository.save(user);
+
+        return result;
     }
 
     public void checkIfUserHasAcquisition(String userId, String acquisitionId) {
