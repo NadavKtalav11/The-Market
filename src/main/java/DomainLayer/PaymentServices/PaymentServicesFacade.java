@@ -27,7 +27,7 @@ public class PaymentServicesFacade {
         this.externalPaymentRepository = externalPaymentRepository;
         this.acquisitionRepository = acquisitionRepository;
 
-        /*
+
 //        //TEST
         Map<String, Map<String, List<Integer>>> productList = new HashMap<>();
         List<Integer> priceQuantity = new ArrayList<>();
@@ -36,11 +36,11 @@ public class PaymentServicesFacade {
         Map<String, List<Integer>> productNames = new HashMap<>();
         productNames.put("candle", priceQuantity);
         productList.put("candleStore", productNames);
-        //addExternalService("noaab", "https://damp-lynna-wsep-1984852e.koyeb.app/");
-//        pay(99 , new PaymentDTO("123", "noa", "curr", "123456789", 123,11,
-//                26),"userID", productList);
+        addExternalService("https://damp-lynna-wsep-1984852e.koyeb.app/");
+        pay(99 , new PaymentDTO("123", "noa", "curr", "123456789", 123,11,
+                26),"userID", productList);
 //        Acquisition acquisition = new Acquisition(12,"12", "usrt", 88, new PaymentDTO("1", "2","3", "4", 5,6,9), productList);
-//        acquisitionRepository.save(acquisition);*/
+//        acquisitionRepository.save(acquisition);
 
     }
 
@@ -211,8 +211,9 @@ public class PaymentServicesFacade {
 
     public ExternalPaymentService getAvailablePaymentService(){
         for (ExternalPaymentService externalPaymentService : externalPaymentRepository.findAll()){
-            if (externalPaymentService.checkHandShake()){
-                return  externalPaymentService;
+            ExternalPaymentService externalPaymentService1 = new ExternalPaymentService(externalPaymentService.getUrl());
+            if (externalPaymentService1.checkHandShake()){
+                return  externalPaymentService1;
             }
         }
         return null;
