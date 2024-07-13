@@ -42,7 +42,6 @@ public class Member extends State{
     @ElementCollection
     private List<String> acquisitionIds;
 
-
     //private boolean isLogin;
 
     /*Member(String member_ID, UserDTO user, String password)
@@ -72,12 +71,12 @@ public class Member extends State{
         this.name = name;
         this.productIdCounter = 0;
         this.acquisitionIds = new ArrayList<>();
+        //cart = new Cart();
     }
 
     public Member() {
 
     }
-
 
     public void Logout()
     {

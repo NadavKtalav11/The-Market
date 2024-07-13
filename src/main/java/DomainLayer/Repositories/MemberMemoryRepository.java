@@ -1,5 +1,6 @@
 package DomainLayer.Repositories;
 
+import DomainLayer.User.Cart;
 import DomainLayer.User.Member;
 import org.springframework.context.annotation.Profile;
 import org.springframework.data.domain.Example;
@@ -28,6 +29,7 @@ public class MemberMemoryRepository implements MemberRepository {
     public void flush() {
 
     }
+
 
     @Override
     public <S extends Member> S saveAndFlush(S entity) {
@@ -150,6 +152,18 @@ public class MemberMemoryRepository implements MemberRepository {
         synchronized (allMembersLock) {
             for (Member curr_member : allMembers.values()) {
                 if (curr_member.getUsername().equals(member)) {
+                    return curr_member;
+                }
+            }
+        }
+        return null;
+    }
+
+    @Override
+    public Member getByUserId(String userId) {
+        synchronized (allMembersLock) {
+            for (Member curr_member : allMembers.values()) {
+                if (curr_member.getUserId().equals(userId)) {
                     return curr_member;
                 }
             }

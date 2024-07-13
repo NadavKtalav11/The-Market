@@ -12,8 +12,8 @@ import org.jose4j.jwk.Use;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.CacheManager;
 import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Service;
 import DomainLayer.Repositories.UserMemoryRepository;
+import org.springframework.stereotype.Service;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -25,28 +25,37 @@ public class UserFacade {
     UserRepository userRepository;
     MemberRepository members;
 
-    //private Object membersLock;
-    //Map<String, Member> members = new HashMap<>(); //memberID-Member
-    //private String memberIdPrefix;
-    //private String userIdPrefix;
-    //private int currentUserID;
-    //private int currentMemberID;
-    //Object allUserLock;
-
-    //private Object userIdLock;
-    //private Object memberIdLock;
-    //Map<Integer, User> allUsers = new HashMap<Integer, User>(); //userID-User
 
     @Autowired
     public UserFacade(UserRepository userRepository, MemberRepository members) throws Exception {
         this.userRepository = userRepository;
         this.members = members;
+
+        // TODO: uncomment this to test DB
+        test();
+    }
+
+    //TODO: remove this after done testing DB
+    @Transactional
+    public void test() throws Exception {
+        String newUserId = addUser();
+        UserDTO userDTO = new UserDTO(newUserId, "testUser", "01/01/2000", "Test Country", "Test City", "123 Test St", "Test Name");
+        register(newUserId, userDTO, "testPass");
+        Login(newUserId, "testUser", "testPass");
+
+       addItemsToBasket("product1", 1, "store83afa8b9-2e7c-48a3-ad9f-498c8ad18eb9", newUserId, 100);
+      //userRepository.save(getUserByID(newUserId));
     }
 
     public UserFacade()
     {
         userRepository = new UserMemoryRepository();
         members = new MemberMemoryRepository();
+    }
+
+    public void reset(){
+        userRepository.deleteAll();
+        members.deleteAll();
     }
 
     public String getMemberName(String memberId){
@@ -82,7 +91,18 @@ public class UserFacade {
     //@Transactional
     public User getUserByID(String userID){
         Optional<User> user = userRepository.findById(userID);
-        return user.orElse(null);
+        User userToReturn = user.orElse(null);
+        Member member = null;
+
+        if(userToReturn != null){
+            if(!userToReturn.getIsGuest() && !userToReturn.isMember()) {
+                member = members.getByUserId(userID);
+                members.save(member);
+                userToReturn.setState(member);
+                userRepository.save(userToReturn);
+            }
+        }
+        return userToReturn;
     }
 
     public void errorIfUserNotExist(String userID) throws Exception {
@@ -167,6 +187,11 @@ public class UserFacade {
         User user = getUserByID(userId);
         user.addToCart(productName, quantity, storeId, totalPrice);
         user.updateCartPrice();
+
+        //save cart if user state is member
+        if(user.isMember())
+            members.save((Member) user.getState());
+        userRepository.save(user);
     }
 
     public void modifyBasketProduct(String productName, int quantity, String storeId, String userId, int totalPrice)

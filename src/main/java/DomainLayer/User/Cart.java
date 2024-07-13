@@ -12,20 +12,21 @@ import jakarta.transaction.Transactional;
 import java.util.*;
 
 @Entity
-@Table(name = "cart")
+@Table(name = "cart", schema = "themarketdb")
 public class Cart {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "cart_id")
     private Long id;
 
     // One-to-many relationship with Basket
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
-    @JoinColumn(name = "cart_id") // This will create a cart_id column in the Basket table
+    @OneToMany(mappedBy = "cart", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+    // @JoinColumn(name = "cart_id") // This will create a cart_id column in the Basket table
     @MapKey(name = "storeId") // Column in the Basket table for store_id
-    Map<String, Basket> baskets ; //key = storeID
+    private Map<String, Basket> baskets; //key = storeID
 
     @Column(name = "cart_price")
-    private int cartPrice;
+    public int cartPrice;
 
     @Transient
     private final Object basketsLock;
@@ -41,7 +42,7 @@ public class Cart {
 
     //Constructor injection for testing
     public Cart(Map<String, Basket> baskets, int cartPrice) {
-        this.baskets = baskets;
+        //this.baskets = baskets;
         this.cartPrice = cartPrice;
         basketsLock = new Object();
         priceLock = new Object();
@@ -67,11 +68,14 @@ public class Cart {
         synchronized (basketsLock) {
             if (baskets.containsKey(storeId)) {
                 basket = baskets.get(storeId);
+                basket.addProduct(productName, quantity, totalPrice);
             } else {
                 basket = new Basket(storeId);
+                basket.setCart(this);
+                basket.addProduct(productName, quantity, totalPrice);
                 baskets.put(storeId, basket);
             }
-            basket.addProduct(productName, quantity, totalPrice);
+            //basket.addProduct(productName, quantity, totalPrice);
         }
 
     }
@@ -197,4 +201,9 @@ public class Cart {
     public Map<String, Basket> getBaskets() {
         return baskets;
     }
+
+    public Long getCartId() {
+        return id;
+    }
 }
+
