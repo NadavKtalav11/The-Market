@@ -33,12 +33,18 @@ public class RoleFacadeTest {
     @Autowired
     private StoreOwnerRepository storeOwnerRepository;
 
+    @Autowired
+    private StoreManagerRepository managerNominatorRepository;
+
+    @Autowired
+    private StoreOwnerRepository ownerNominatorRepository;
+
     private RoleFacade roleFacade;
 
 
     @BeforeEach
     public void setUp() {
-        roleFacade = new RoleFacade(storeManagerRepository, storeOwnerRepository);
+        roleFacade = new RoleFacade(storeManagerRepository, storeOwnerRepository, managerNominatorRepository, ownerNominatorRepository);
     }
 
     @AfterEach
