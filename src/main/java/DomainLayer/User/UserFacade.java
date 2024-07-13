@@ -33,7 +33,7 @@ public class UserFacade {
         //test();
     }
 
-    /*
+/*
     //TODO: remove this after done testing DB
     @Transactional
     public void test() throws Exception {
@@ -48,7 +48,8 @@ public class UserFacade {
         removeItemFromUserCart("product2", "store83afa8b9-2e7c-48a3-ad9f-498c8ad18eb", newUserId);
         //userRepository.save(getUserByID(newUserId));
     }
-*/
+ */
+
     public UserFacade()
     {
         userRepository = new UserMemoryRepository();
@@ -217,6 +218,7 @@ public class UserFacade {
     {
         User user = getUserByID(userId);
         user.removeItemFromUserCart(productName, storeId);
+        user.updateCartPrice();
 
         //save cart if user state is member
         if (user.isMember())
