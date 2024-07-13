@@ -36,8 +36,8 @@ public class PaymentServicesFacade {
         productNames.put("candle", priceQuantity);
         productList.put("candleStore", productNames);
         //addExternalService("noaab", "https://damp-lynna-wsep-1984852e.koyeb.app/");
-        pay(99 , new PaymentDTO("123", "noa", "curr", "123456789", 123,11,
-                26),"userID", productList);
+//        pay(99 , new PaymentDTO("123", "noa", "curr", "123456789", 123,11,
+//                26),"userID", productList);
 //        Acquisition acquisition = new Acquisition(12,"12", "usrt", 88, new PaymentDTO("1", "2","3", "4", 5,6,9), productList);
 //        acquisitionRepository.save(acquisition);
 
