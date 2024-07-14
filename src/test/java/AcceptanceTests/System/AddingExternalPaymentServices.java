@@ -7,9 +7,12 @@ import DomainLayer.Market.Market;
 import PresentationLayer.Application;
 import Util.PaymentServiceDTO;
 import Util.ExceptionsEnum;
+import Util.UserDTO;
+import jakarta.inject.Inject;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
@@ -23,64 +26,76 @@ import static org.junit.jupiter.api.Assertions.*;
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
 public class AddingExternalPaymentServices {
 
-    @Autowired
+    @Inject
     private Market market;
 
 
 
     @BeforeEach
-    public void setUp() {
+    public void setUp() throws Exception {
 
     }
-
+    @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
     @Test
-    public void testAddExternalPaymentServiceSuccess() {
+    public void testAddExternalPaymentServiceSuccess() throws Exception {
         // Arrange
-        String systemManagerId = "user77";
-        market.getSystemManagerIds().add(systemManagerId);
-        String url = "http://paypal.com";
-
+        //String systemManagerId = "u1";
+        //market.getSystemManagerIds().add(systemManagerId);
+        String url = "https://damp-lynna-wsep-1984852e.koyeb.app/";
+        String userId = market.enterMarketSystem();
+        market.register(userId, new UserDTO("nadav", "nadavKt","10/10/2002","nad","vv "," vv","nasav " ), "nadavVV1");
+        String memberId= market.Login(userId, "nadavKt", "nadavVV1");
+        market.getSystemManagerIds().add(memberId);
         // Act and Assert
         assertDoesNotThrow(() -> {
-            market.addExternalPaymentService(url, systemManagerId);
+            market.addExternalPaymentService(url, userId);
         });
     }
 
-
+    @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
     @Test
-    public void testAddExternalPaymentServiceFailureNotSystemManager() {
+    public void testAddExternalPaymentServiceFailureNotSystemManager() throws Exception {
         // Arrange
+        market.init();
         String systemManagerId = "USER1";
         String nonManagerId = "user2";
         market.getSystemManagerIds().add(systemManagerId);
 
-        String url = "http://paypal.com";
+        String url = "https://damp-lynna-wsep-1984852e.koy111eb.app/";
+        String userId = market.enterMarketSystem();
+        market.register(userId, new UserDTO("nadav", "nadavKt","10/10/2002","nad","vv "," vv","nasav " ), "nadavVV1");
+        market.Login(userId,"nadavKt" ,"nadavVV1" );
+
 
         // Act and Assert
         Exception exception = assertThrows(Exception.class, () -> {
-            market.addExternalPaymentService(url, nonManagerId);
+            market.addExternalPaymentService(url, userId);
         });
 
         // Optionally check the exception message
         assertEquals(ExceptionsEnum.SystemManagerPaymentAuthorization.toString(), exception.getMessage());
     }
 
+
+    @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
     @Test
-    public void testAddExternalPaymentServiceFailureInvalidDetails() {
+    public void testAddExternalPaymentServiceFailureInvalidDetails() throws Exception {
         // Arrange
+        market.init();
         String systemManagerId = "user1";
         market.getSystemManagerIds().add(systemManagerId);
-        String licensedDealerNumber = "-1"; // Invalid dealer number
-        String paymentServiceName = null; // Invalid payment service name
-        String url = null; // Invalid URL
-
+      //  String licensedDealerNumber = "-1"; // Invalid dealer number
+       // String paymentServiceName = null; // Invalid payment service name
+        String url = "httpds://damp/"; // Invalid URL
+        String userId = market.enterMarketSystem();
+        market.Login(userId, "u1", "adminPassword1");
         // Act and Assert
         Exception exception = assertThrows(Exception.class, () -> {
-            market.addExternalPaymentService( url, systemManagerId);
+            market.addExternalPaymentService( url, userId);
         });
 
         // Optionally check the exception message
-        assertEquals(ExceptionsEnum.InvalidPaymentServiceParameters.toString(), exception.getMessage());
+        assertEquals("Payment Service cannot connect to the url", exception.getMessage());
     }
 
 }

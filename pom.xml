@@ -268,5 +268,10 @@
             <artifactId>json</artifactId>
             <version>20210307</version> <!-- Replace with the latest version -->
         </dependency>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 </project>

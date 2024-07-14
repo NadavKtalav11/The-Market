@@ -294,7 +294,7 @@ public class Service_layer {
         try {
             String memberId = market.Login(userID, username, password);
 
-            String notificationMessage = String.format("User %s logged in successfully.", username);
+           // String notificationMessage = String.format("User %s logged in successfully.", username);
             //messagingTemplate.convertAndSend("/topic/notifications", notificationMessage);
 
 
@@ -302,6 +302,19 @@ public class Service_layer {
 
         } catch (Exception e) {
             logger.info("Error occurred during log in - {}", e.getMessage());
+            return new Response<>(null, e.getMessage(), e.getMessage());
+        }
+    }
+
+    public Response<List<AcquisitionDTO>> getAllAcquisitions(String userID) {
+        logger.info("get all system acquisitions");
+        try {
+            List<AcquisitionDTO> acquisitionDTOList = market.getAllSystemAcquisitions(userID);
+
+            return new Response<>(acquisitionDTOList, "successfully getter");
+
+        } catch (Exception e) {
+            logger.info("Error occurred during get all acquisitions- {}", e.getMessage());
             return new Response<>(null, e.getMessage(), e.getMessage());
         }
     }

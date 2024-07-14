@@ -13,6 +13,7 @@ import org.springframework.data.domain.Example;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
+import java.util.logging.Logger;
 
 @Service
 public class PaymentServicesFacade {
@@ -72,7 +73,7 @@ public class PaymentServicesFacade {
         externalPaymentRepository.deleteById(paymentId);
     }
 
-    public boolean checkHandShake(ExternalPaymentService externalPaymentService){
+    public boolean checkHandShake(ExternalPaymentService externalPaymentService) throws Exception {
         return externalPaymentService.checkHandShake();
 
     }
@@ -86,7 +87,7 @@ public class PaymentServicesFacade {
 //        }
 //    }
 
-    public boolean addExternalService(String paymentURL){
+    public boolean addExternalService(String paymentURL) throws Exception {
         List<ExternalPaymentService> externalPaymentServices = externalPaymentRepository.findAll();
         int size_before = externalPaymentServices.size();
 
@@ -95,8 +96,21 @@ public class PaymentServicesFacade {
             return false;
         }
         externalPaymentRepository.save(externalPaymentService);
-        return externalPaymentRepository.findAll().size() == size_before + 1;
+        if (externalPaymentRepository.findAll().size() == size_before ){
+            throw new Exception("this url already exist");
+        }
+        return true;
 
+    }
+
+
+    public List<AcquisitionDTO> getAllAcquisitions(){
+        List<Acquisition> acquisitions =acquisitionRepository.findAll();
+        List<AcquisitionDTO> acquisitionDTOList = new ArrayList<>();
+        for (Acquisition acquisition:acquisitions){
+            acquisitionDTOList.add(new AcquisitionDTO(acquisition.getAcquisitionId(), acquisition.getUserId(),acquisition.getTotalPrice(),acquisition.getDate()));
+        }
+        return acquisitionDTOList;
     }
 
 //    public boolean addExternalService(PaymentServiceDTO paymentServiceDTO, HttpClient httpClient){
@@ -117,15 +131,37 @@ public class PaymentServicesFacade {
     public String pay(int price, PaymentDTO payment, String userId, Map<String, Map<String, List<Integer>>> productList) throws Exception{
         String acquisitionId  = getNewAcquisitionId();
         ExternalPaymentService externalPaymentService = getAvailablePaymentService();
+        if (externalPaymentService== null){
+            throw new IllegalArgumentException("no available payment service right now , please try again later");
+        }
+        String url = externalPaymentService.getUrl();
         int transactionId  = externalPaymentService.payWithCard(price, payment );
         if (!isValidTransactionIdID(transactionId)){
             throw new IllegalArgumentException(ExceptionsEnum.ExternalPaymentFailed.toString());
         }
-        Acquisition acquisition = new Acquisition(transactionId,acquisitionId, userId, price, payment, productList);
+        Acquisition acquisition = new Acquisition(transactionId,acquisitionId, userId, price,url, payment, productList);
         acquisitionRepository.save(acquisition);
-        externalPaymentService.addAcquisition(acquisitionId, acquisition);
+        //externalPaymentService.addAcquisition(acquisitionId, acquisition);
         return acquisition.getAcquisitionId();
 
+    }
+
+
+    public boolean cancelPayment(String acquisitionId) throws Exception {
+        Acquisition acquisition = acquisitionRepository.findById(acquisitionId).orElse(null);
+        if (acquisition!= null){
+            throw new Exception("error cannot cancel the payment");
+        }
+        String url = acquisition.getUrl();
+        if (url==null){
+            throw new Exception("error while trying to find service to cancel payment");
+        }
+        ExternalPaymentService externalPaymentService = getPaymentServiceByURL(url);
+        if (null== externalPaymentService){
+            throw new Exception("error while trying to cancel payment");
+        }
+        int transactionId = externalPaymentService.cancelPayment(acquisition.getTransactionId());
+        return isValidTransactionIdID(transactionId);
     }
 
     public List<String> getAllPaymentServicesUrl(){
@@ -143,14 +179,13 @@ public class PaymentServicesFacade {
 //         return externalPaymentService.cancelPayment(transactionID);
 //    }
 
-    public Map<String, String> getAcquisitionReceipts(String acquisitionId){
+    public Map<String, String> getAcquisitionReceipts(String acquisitionId) {
         Optional<Acquisition> acquisition = acquisitionRepository.findById(acquisitionId);
         Acquisition acquisition1 = acquisition.orElse(null);
-        if(acquisition1 != null){
+        if (acquisition1 != null) {
             return acquisition1.getReceiptIdAndStoreIdMap();
         }
         throw new IllegalArgumentException(ExceptionsEnum.AcquisitionNotExist.toString());
-
     }
 
     public String getNewAcquisitionId(){
@@ -209,7 +244,7 @@ public class PaymentServicesFacade {
     //}
 
 
-    public ExternalPaymentService getAvailablePaymentService(){
+    public ExternalPaymentService getAvailablePaymentService() throws Exception {
         for (ExternalPaymentService externalPaymentService : externalPaymentRepository.findAll()){
             if (externalPaymentService.checkHandShake()){
                 return  externalPaymentService;
@@ -304,4 +339,6 @@ public class PaymentServicesFacade {
         }
         return productList;
     }
+
+
 }

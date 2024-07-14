@@ -475,6 +475,26 @@ public class MarketController {
         }
     }
 
+    @GetMapping("/getAllAcquisitions/{userId}")
+    public ResponseEntity<APIResponse<List<String>>> getAllAcquisitions(@PathVariable String userId) {
+        try {
+            ObjectMapper objectMapper= new ObjectMapper();
+            Response<List<AcquisitionDTO>> response = serviceLayer.getAllAcquisitions(userId);
+            HttpHeaders headers = new HttpHeaders();
+            headers.add("accept", "*/*");
+            List<String> dtosRes = new ArrayList<>();
+            for (AcquisitionDTO acquisitionDTO : response.getResult() ){
+                dtosRes.add(objectMapper.writeValueAsString(acquisitionDTO));
+            }
+
+            return ResponseEntity.status(HttpStatus.OK).headers(headers)
+                    .body(new APIResponse<>(dtosRes, null));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new APIResponse<>(null, e.getMessage()));
+        }
+    }
+
     @GetMapping("/getManagerJobProposal/{userId}")
     public ResponseEntity<APIResponse<List<String>>> getManagerJobProposal(@PathVariable String userId) {
         try {

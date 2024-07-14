@@ -684,8 +684,22 @@ public class Market {
         if (paymentURL== null  ) {
             throw new IllegalArgumentException(ExceptionsEnum.InvalidPaymentServiceParameters.toString());
         }
-        paymentServicesFacade.addExternalService( paymentURL);
+        if (!paymentServicesFacade.addExternalService( paymentURL)){
+            throw new IllegalArgumentException(ExceptionsEnum.InvalidPaymentServiceParameters.toString());
+        };
     }
+
+
+    public List<AcquisitionDTO> getAllSystemAcquisitions(String userId) throws Exception {
+        String memberId = verifyToken(userId);
+        verifyMemberExist(memberId);
+        if (!getSystemManagerIds().contains(memberId)) {
+            throw new Exception(ExceptionsEnum.notSystemManager.toString());
+        }
+        return paymentServicesFacade.getAllAcquisitions();
+    }
+
+
 
     public void removeExternalPaymentService(String licensedDealerNumber, String systemMangerUserId) throws Exception {
         String memberId = verifyToken(systemMangerUserId);
@@ -753,9 +767,20 @@ public class Market {
 
             //Todo: we call payWithExternalPaymentService twice, check if needed
             //this.payWithExternalPaymentService(cartDTO, paymentDTO, userDTO.getUserId());
-            String acquisitionId = this.payWithExternalPaymentService(cartDTO,paymentDTO, userDTO.getUserId());
+
             String availableExternalSupplyService = this.checkAvailableExternalSupplyService(userDTO.getCountry(), userDTO.getCity());
-            this.createShiftingDetails(userDTO.getCountry(), userDTO.getCity(), availableExternalSupplyService, userDTO.getAddress(), userDTO.getUserId(),acquisitionId );
+            String acquisitionId = this.payWithExternalPaymentService(cartDTO,paymentDTO, userDTO.getUserId());
+
+            try {
+                this.createShiftingDetails(userDTO.getCountry(), userDTO.getCity(), availableExternalSupplyService, userDTO.getAddress(), userDTO.getUserId(), acquisitionId);
+            }
+            catch (Exception e ){
+                boolean succeed = paymentServicesFacade.cancelPayment(acquisitionId);
+                if (succeed){
+                    throw new Exception("purchase canceled");
+                }
+                throw new Exception("system Error - please contact us!");
+            }
             sendMessagesOnPurchaseToStoreOwners(cartDTO);
             return acquisitionId;
         } catch (Exception exception) {
@@ -763,7 +788,6 @@ public class Market {
             if (cartDTO != null) {
                 this.returnCartToStock(cartDTO.getStoreToProducts());
             }
-
             throw e;
         } finally {
             if (timeoutHandle != null && !timeoutHandle.isDone()) {
@@ -913,7 +937,7 @@ public class Market {
                 (payment.getYear() == Year.now().getValue() && month>= payment.getMonth())) {
             throw new IllegalArgumentException(ExceptionsEnum.InvalidCreditCardParameters.toString());
         }
-        if(paymentServicesFacade.getAllPaymentServices().size()<1){
+        if(paymentServicesFacade.getAllPaymentServices().isEmpty()){
             throw new Exception(ExceptionsEnum.noAvailableExternalPaymentService.toString());
         }
         String acquisitionId = paymentServicesFacade.pay(cartDTO.getCartPrice(), payment, userId, cartDTO.getStoreToProducts());
@@ -1827,6 +1851,90 @@ public class Market {
         }
     }
 
+    public UserFacade getUserFacade() {
+        return userFacade;
+    }
 
 
+    @Transactional
+    public String init(String configFilePath ) throws Exception {
+
+        logger.info("Starting the initialization of the system.");
+        Map<String, Object> adminConfig = null; // Declare adminConfig here
+        //String configFilePath = "src/main/resources/ConfigurationFile.yaml";
+        Map<String, Object> initConfig = loadAdminConfiguration(configFilePath);
+        Map<String, Object> paymentConfig  = (Map<String, Object>) initConfig.get("paymentService");
+        String paymentURL = (String) paymentConfig.get("url");
+        Map<String, Object> serviceConfig  = (Map<String, Object>) initConfig.get("supplyService");
+        String supplyURL = (String) serviceConfig.get("url");
+
+        String adminPassword = "";
+
+        synchronized (initializedLock) {
+            if (Objects.requireNonNull(initializedRepository.findById("market").orElse(null)).isInitialized()) {
+                logger.info("system already initialized");
+                return "null";
+            }
+        }
+        try {
+            // Check for supply service
+            if (supplyURL == null) {
+                logger.error("system cannot be initialized, supply url problem");
+                throw new IllegalArgumentException(ExceptionsEnum.InvalidSupplyServiceDetails.toString());
+            }
+            // Check for payment service
+            if (paymentURL == null) {
+                logger.error("system cannot be initialized, payment url problem");
+                throw new IllegalArgumentException(ExceptionsEnum.InvalidPaymentServiceDetails.toString());
+            }
+
+
+            adminConfig = (Map<String, Object>) initConfig.get("admin");
+            adminPassword = (String) adminConfig.get("password");
+            validateAdminPassword1(adminPassword);
+
+        } catch (Exception e) {
+            throw e; // Re-throw the exception to be handled by the caller
+        }
+
+
+        // Extract admin configuration values
+        String adminUsername = (String) adminConfig.get("username");
+        String adminBirthday = (String) adminConfig.get("birthday");
+        String adminCountry = (String) adminConfig.get("country");
+        String adminCity = (String) adminConfig.get("city");
+        String adminAddress = (String) adminConfig.get("address");
+        String adminName = (String) adminConfig.get("name");
+
+
+        logger.info("try register system admin");
+        // Encode admin password
+        String encryptedPassword = authenticationAndSecurityFacade.encodePassword(adminPassword);
+
+        // Register user and retrieve system manager ID
+        String firstUserID = enterMarketSystem();
+        UserDTO userDTO1 = new UserDTO(firstUserID, adminUsername, adminBirthday, adminCountry, adminCity, adminAddress, adminName);
+        String systemManagerId = userFacade.register(firstUserID, userDTO1, encryptedPassword);
+        roleFacade.addSystemManager(systemManagerId);
+        synchronized (managersLock) {
+            systemManagerIds.add(systemManagerId);
+        }
+        if (!paymentServicesFacade.addExternalService(paymentURL)){
+            throw new Exception("problem while adding external payment service");
+        };
+        if (!supplyServicesFacade.addExternalService(supplyURL)){
+            throw new Exception("problem while adding external supply service");
+        };
+        synchronized (initializedLock) {
+            try {
+                initializedRepository.save(new InitializedStatus(true));
+            }
+            catch (Exception e) {
+                throw new Exception(ExceptionsEnum.DatabaseIsNotConnected.toString());
+            }
+            logger.info("system initialized successfully");
+        }
+
+        return firstUserID; // Return the generated user ID
+    }
 }

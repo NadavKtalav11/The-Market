@@ -45,7 +45,7 @@ public class PaymentServicesFacadeTest {
     }
 
     @Test
-    public void testAddExternalService() {
+    public void testAddExternalService() throws Exception {
         String licensedDealerNumber = "1";
         String paymentServiceName = "TestService";
         String url = "http://testservice.com";

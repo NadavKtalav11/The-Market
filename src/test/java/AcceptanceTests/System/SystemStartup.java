@@ -2,42 +2,62 @@ package AcceptanceTests.System;
 
 import AcceptanceTests.BridgeToTests;
 import AcceptanceTests.ProxyToTest;
+import AcceptanceTests.RealToTest;
 import DomainLayer.Market.Market;
 import static org.junit.jupiter.api.Assertions.*;
 
 import DomainLayer.PaymentServices.PaymentServicesFacade;
 import DomainLayer.SupplyServices.SupplyServicesFacade;
 import DomainLayer.User.UserFacade;
+import PresentationLayer.Application;
 import Util.ExceptionsEnum;
 import Util.PaymentServiceDTO;
 import Util.SupplyServiceDTO;
 import Util.UserDTO;
+import jakarta.inject.Inject;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
+import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
+import org.mockito.junit.MockitoJUnitRunner;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.ContextConfiguration;
 
 import java.util.Arrays;
 import java.util.HashSet;
 
-
+@ContextConfiguration(classes = {Application.class, RealToTest.class})
+@SpringBootTest
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class  SystemStartup {
+
+    @Inject
     private Market market;
+
+
+    //private Market market;
     private UserFacade userFacade;
     private PaymentServicesFacade  paymentServicesFacade;
     private SupplyServicesFacade supplyServicesFacade;
 
 
 
-    @BeforeEach
+    @BeforeAll
     public void setUp() throws Exception {
-        this.userFacade = UserFacade.getInstance();
+        //this.userFacade = userFacade.getInstance();
         this.paymentServicesFacade = PaymentServicesFacade.getInstance();
         this.supplyServicesFacade = SupplyServicesFacade.getInstance();
-        this.market = new Market(userFacade, paymentServicesFacade, supplyServicesFacade);
-
+        //this.market = new Market(userFacade, paymentServicesFacade, supplyServicesFacade);
+       // market = new Market();
     }
-
+    @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
     @Test
     public void successfulInitTest() throws Exception {
+
         assertFalse(market.isInitialized());
         assertEquals(0, market.getSystemManagerIds().size());
         assertEquals(0, market.getPaymentServicesFacade().getAllPaymentServices().size());
@@ -45,13 +65,13 @@ public class  SystemStartup {
 
 
 
-        String licensedDealerNumber = "12345";
-        String paymentServiceName = "PayPal";
-        String url = "http://example.com";
-        String licensedDealerNumber1 = "67890";
-        String supplyServiceName = "SupplyService";
-        HashSet<String> countries = new HashSet<>(Arrays.asList("USA", "Canada"));
-        HashSet<String> cities = new HashSet<>(Arrays.asList("New York", "Los Angeles"));
+//        String licensedDealerNumber = "12345";
+//        String paymentServiceName = "PayPal";
+//        String url = "http://example.com";
+//        String licensedDealerNumber1 = "67890";
+//        String supplyServiceName = "SupplyService";
+//        HashSet<String> countries = new HashSet<>(Arrays.asList("USA", "Canada"));
+//        HashSet<String> cities = new HashSet<>(Arrays.asList("New York", "Los Angeles"));
 
         // Act
         market.init();
@@ -60,7 +80,7 @@ public class  SystemStartup {
         assertTrue(market.isInitialized());
         assertEquals(1, market.getSystemManagerIds().size());
         String memberID = market.getSystemManagerIds().iterator().next();
-
+        userFacade = market.getUserFacade();
         // assert the system manager details match the details in the config file
         assertEquals("u1", userFacade.getMembers().getById(memberID).getUsername());
         assertEquals("19/09/1996", userFacade.getMembers().getById(memberID).getBirthday());
@@ -71,59 +91,54 @@ public class  SystemStartup {
 
     }
 
-    @Test
-    public void testInitFailureNoSupplyService() {
-//        assertFalse(market.isInitialized());
-//
-//        // Arrange
-//
-//        String licensedDealerNumber = "12345";
-//        String paymentServiceName = "PayPal";
-//        String url = "http://example.com";
-//        String licensedDealerNumber1 = "67890";
-//        String supplyServiceName = null; // No supply service provided
-//        HashSet<String> countries = new HashSet<>(Arrays.asList("USA", "Canada"));
-//        HashSet<String> cities = new HashSet<>(Arrays.asList("New York", "Los Angeles"));
-//
-//        // Act and Assert
-//        Exception exception = assertThrows(Exception.class, () -> {
-//            market.init();
-//        });
-//
-//
-//        // Optionally check the exception message
-//        assertEquals(ExceptionsEnum.InvalidSupplyServiceDetails.toString(), exception.getMessage());
-//        assertFalse(market.isInitialized());
-
-    }
+    @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
     @Test
     public void noPaymentServiceTest() {
-//        assertFalse(market.isInitialized());
-//
-//        // Arrange
-//        String userName = "manager";
-//        String password = "password123";
-//        String birthday = "1990-01-01";
-//        String country = "USA";
-//        String city = "New York";
-//        String address = "123 Main St";
-//        String name = "Manager Name";
-//        String licensedDealerNumber = "12345";
-//        String paymentServiceName = null;
-//        String url = "http://example.com";
-//        String licensedDealerNumber1 = "67890";
-//        String supplyServiceName = "serviceService"; // No supply service provided
-//        HashSet<String> countries = new HashSet<>(Arrays.asList("USA", "Canada"));
-//        HashSet<String> cities = new HashSet<>(Arrays.asList("New York", "Los Angeles"));
-//
-////        // Act and Assert
-//        Exception exception = assertThrows(Exception.class, () -> {
-//            market.init();
-//        });
-//////
-//////
-//////        // Optionally check the exception message
-//        assertEquals(ExceptionsEnum.InvalidPaymentServiceDetails.toString(), exception.getMessage());
-//        assertFalse(market.isInitialized());
+        assertFalse(market.isInitialized());
+
+
+//        // Act and Assert
+        Exception exception = assertThrows(Exception.class, () -> {
+            market.init("src/main/resources/configurationBadPayment.yaml");
+        });
+////
+////
+////        // Optionally check the exception message
+        assertEquals("Payment Service cannot connect to the url", exception.getMessage());
+        assertFalse(market.isInitialized());
     }
+
+    @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
+    @Test
+    public void testInitFailureNoAdmin() {
+        assertFalse(market.isInitialized());
+
+        Exception exception = assertThrows(Exception.class, () -> {
+            market.init("src/main/resources/configurationBadAdmin.yaml");
+        });
+
+
+        // Optionally check the exception message
+//        assertEquals(ExceptionsEnum.passwordInvalid.toString(), exception.getMessage());
+        assertFalse(market.isInitialized());
+
+    }
+    @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
+    @Test
+    public void noSupply() {
+        assertFalse(market.isInitialized());
+
+
+//        // Act and Assert
+        Exception exception = assertThrows(Exception.class, () -> {
+            market.init("src/main/resources/configurationBadSupply.yaml");
+        });
+////
+////
+////        // Optionally check the exception message
+        //assertEquals(ExceptionsEnum.InvalidPaymentServiceDetails.toString(), exception.getMessage());
+        assertFalse(market.isInitialized());
+    }
+
+
 }
