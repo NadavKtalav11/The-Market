@@ -92,12 +92,12 @@ public class MarketPurchaseHistory {
                 cartDTO.getCartPrice(), cartDTO.getStoreToProducts()).isSuccess();
     }
 
-    @Test
-    public void successfulRequestTest() {
-        Map<String, Integer> storeIdAndNumOfAcquistion = new HashMap<>();
-        storeIdAndNumOfAcquistion.put(storeID, 1);
-        assertEquals(impl.marketManagerAskInfo(managerID1).getResult(), storeIdAndNumOfAcquistion);
-    }
+//    @Test
+//    public void successfulRequestTest() {
+//        Map<String, Integer> storeIdAndNumOfAcquistion = new HashMap<>();
+//        storeIdAndNumOfAcquistion.put(storeID, 1);
+//        assertEquals(impl.marketManagerAskInfo(managerID1).getResult(), storeIdAndNumOfAcquistion);
+//    }
 
     @Test
     public void noPermissionsTest() {

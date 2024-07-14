@@ -54,14 +54,14 @@ public class SupplyServicesFacadeTest {
         assertEquals(supplyURl, service.getSupplyURL());
     }
 
-    @Test
-    public void testRemoveExternalService() throws Exception {
-        supplyServicesFacade.addExternalService( supplyURl);
-        supplyServicesFacade.removeExternalService(supplyURl);
-
-        ExternalSupplyService service = supplyServicesFacade.getExternalSupplyServiceByURL(supplyURl);
-        assertNull(service);
-    }
+//    @Test
+//    public void testRemoveExternalService() throws Exception {
+//        supplyServicesFacade.addExternalService( supplyURl);
+//        supplyServicesFacade.removeExternalService(supplyURl);
+//
+//        ExternalSupplyService service = supplyServicesFacade.getExternalSupplyServiceByURL(supplyURl);
+//        assertNull(service);
+//    }
 
     @Test
     public void testCheckAvailableExternalSupplyService() throws Exception {

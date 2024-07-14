@@ -58,11 +58,14 @@ public class SupplyServicesFacade {
         return externalSupplyServicesMap;
     }
 
-    public void removeExternalService(String SupplyServiceUrl) throws Exception {
+    public void removeExternalService(String supplyServiceUrl) throws Exception {
         if (getAllSupplyServices().size() <= 1) {
             throw new Exception(ExceptionsEnum.OnlySupplyService.toString());
         }
-        externalSupplyRepository.deleteById(SupplyServiceUrl);
+        if (externalSupplyRepository.findById(supplyServiceUrl).orElse(null)==null){
+            throw new Exception("this url doesnt exist in the system");
+        }
+        externalSupplyRepository.deleteById(supplyServiceUrl);
     }
 
     public int cancelSupply(String shippingId) throws Exception {
@@ -158,5 +161,11 @@ public class SupplyServicesFacade {
         }
         return false;
         // Check if the product exists in the instance's map and if the amount is sufficient
+    }
+
+
+
+    public void addSupplyForTests(String url){
+        externalSupplyRepository.save(new ExternalSupplyService(url));
     }
 }
