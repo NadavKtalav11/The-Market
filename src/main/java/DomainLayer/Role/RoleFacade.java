@@ -109,7 +109,8 @@ public class RoleFacade {
 
     public boolean verifyStoreOwnerIsFounder(String storeID, String memberID) {
         StoreOwner storeOwner = getStoreOwner(storeID, memberID);
-        return verifyMemberIsSystemManager(memberID) && storeOwner != null && storeOwner.verifyStoreOwnerIsFounder();
+        return verifyMemberIsSystemManager(memberID) || storeOwner != null
+                && storeOwner.verifyStoreOwnerIsFounder();
     }
 
     public void createStoreOwnerWithoutAsk(String memberId, String storeId, boolean founder, String nominatorMemberId) throws Exception {

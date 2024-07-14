@@ -6,6 +6,7 @@ import AcceptanceTests.RealToTest;
 import DomainLayer.Market.Market;
 import PresentationLayer.Application;
 import Util.SupplyServiceDTO;
+import Util.UserDTO;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import Util.ExceptionsEnum;
@@ -34,29 +35,39 @@ public class AddingExternalSupplyServices {
     }
 
     @Test
-    public void testAddExternalSupplyServiceSuccess() {
+    @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
+    public void testAddExternalSupplyServiceSuccess() throws Exception {
         // Arrange
-        String url = ".com";
-        String systemManagerId = "user77";
-        market.getSystemManagerIds().add(systemManagerId);
+        String userId = market.enterMarketSystem();
+        market.register(userId, new UserDTO("nadav", "nadavKt","10/10/2002","nad","vv "," vv","nasav " ), "nadavVV1");
+        String memberId= market.Login(userId, "nadavKt", "nadavVV1");
+        String url = "https://damp-lynna-wsep-1984852e.koyeb.app/";
+        //String systemManagerId = ;
+        market.getSystemManagerIds().add(memberId);
         HashSet<String> countries = new HashSet<>();
         HashSet<String> cities = new HashSet<>();
         countries.add("Israel");
         cities.add("Bash");
         // Act and Assert
         assertDoesNotThrow(() -> {
-            market.addExternalSupplyService(url, systemManagerId);
+            market.addExternalSupplyService(url, userId);
         });
     }
 
     @Test
-    public void testAddExternalSupplyServiceFailureNotSystemManager() {
+    @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
+    public void testAddExternalSupplyServiceFailureNotSystemManager() throws Exception {
         // Arrange
-        String url = ".com";
-        String systemManagerId = "user77";
-        String nonManagerId = "user2";
-        market.getSystemManagerIds().add(systemManagerId);
-        market.getSystemManagerIds().add(systemManagerId);
+
+        String userId = market.enterMarketSystem();
+        market.register(userId, new UserDTO("nadav", "nadavKt","10/10/2002","nad","vv "," vv","nasav " ), "nadavVV1");
+        String memberId= market.Login(userId, "nadavKt", "nadavVV1");
+//        String url = ".com";
+//        String systemManagerId = "user77";
+//        String nonManagerId = "user2";
+        //market.getSystemManagerIds().add(systemManagerId);
+        //market.getSystemManagerIds().add(systemManagerId);
+        String url = "https://damp-lynna-wsep-1984852e.koyeb.app/";
         HashSet<String> countries = new HashSet<>();
         HashSet<String> cities = new HashSet<>();
         countries.add("Israel");
@@ -64,7 +75,7 @@ public class AddingExternalSupplyServices {
 
         // Act and Assert
         Exception exception = assertThrows(Exception.class, () -> {
-            market.addExternalSupplyService(url, nonManagerId);
+            market.addExternalSupplyService(url, userId);
         });
 
         //  check the exception message
@@ -72,13 +83,15 @@ public class AddingExternalSupplyServices {
     }
 
     @Test
-    public void testAddExternalSupplyServiceFailureInvalidDetails() {
+    @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
+    public void testAddExternalSupplyServiceFailureInvalidDetails() throws Exception {
         // Arrange
-        String url = null;
-
-        String systemManagerId = "user77";
-        market.getSystemManagerIds().add(systemManagerId);
-        market.getSystemManagerIds().add(systemManagerId);
+        String url = "https://nadav.com";
+        String userId = market.enterMarketSystem();
+        market.register(userId, new UserDTO("nadav", "nadavKt","10/10/2002","nad","vv "," vv","nasav " ), "nadavVV1");
+        String memberId= market.Login(userId, "nadavKt", "nadavVV1");
+        //market.getSystemManagerIds().add(systemManagerId);
+        market.getSystemManagerIds().add(memberId);
         HashSet<String> countries = new HashSet<>();
         HashSet<String> cities = new HashSet<>();
         countries.add("Israel");
@@ -86,7 +99,7 @@ public class AddingExternalSupplyServices {
 
         // Act and Assert
         Exception exception = assertThrows(Exception.class, () -> {
-            market.addExternalSupplyService(url, systemManagerId);
+            market.addExternalSupplyService(url, userId);
         });
 
         //  check the exception message
