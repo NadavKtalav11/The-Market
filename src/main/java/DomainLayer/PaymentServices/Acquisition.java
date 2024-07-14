@@ -11,6 +11,9 @@ public class Acquisition {
     @Column(name = "transactionId")
     private int transactionId;
 
+    @Column(name = "url")
+    private String url;
+
     @Id
     @Column(name = "acquisition_id")
     private String acquisitionId;
@@ -24,17 +27,17 @@ public class Acquisition {
     @Column(name = "holder_id")
     private String holderId;
 
-    @Column(name = "credit_card_number")
-    private String creditCardNumber;
+//    @Column(name = "credit_card_number")
+//    private String creditCardNumber;
 
-    @Column(name = "cvv")
-    private int cvv;
-
-    @Column(name = "month")
-    private int month;
-
-    @Column(name = "year")
-    private int year;
+//    @Column(name = "cvv")
+//    private int cvv;
+//
+//    @Column(name = "month")
+//    private int month;
+//
+//    @Column(name = "year")
+//    private int year;
 
     @Column(name = "date")
     private Date date;
@@ -55,18 +58,21 @@ public class Acquisition {
     @Transient
     private final Object storeReceiptLock;
 
-    public Acquisition(int transactionId , String acquisitionId, String userId, int totalPrice, PaymentDTO payment, Map<String, Map<String, List<Integer>>> productList) {
+    public Acquisition(int transactionId , String acquisitionId, String userId, int totalPrice,String url,  PaymentDTO payment, Map<String, Map<String, List<Integer>>> productList) {
         this.transactionId = transactionId;
         this.acquisitionId = acquisitionId;
         this.userId = userId;
         this.totalPrice = totalPrice;
         this.holderId = payment.getHolderId();
-        this.creditCardNumber = payment.getCreditCardNumber();
-        storeReceiptLock = new Object();
-        this.cvv = payment.getCvv();
-        this.month = payment.getMonth();
-        this.year = payment.getYear();
+        this.url = url;
+
+        //this.creditCardNumber = payment.getCreditCardNumber();
+        //this.cvv = payment.getCvv();
+        //this.month = payment.getMonth();
+        //this.year = payment.getYear();
         this.date = new Date(); // Current date and time
+
+        storeReceiptLock = new Object();
 
         for (String storeId : productList.keySet()) {
             String receiptID = getNewReceiptId();
@@ -181,6 +187,11 @@ public class Acquisition {
         }
         return receiptIdAndStoreIdMap;
     }
+
+    public String getUrl() {
+        return url;
+    }
+
 
     public String getNewReceiptId() {
         UUID uuid = UUID.randomUUID();

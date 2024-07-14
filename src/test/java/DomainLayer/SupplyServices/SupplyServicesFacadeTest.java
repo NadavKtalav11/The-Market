@@ -22,7 +22,7 @@ public class SupplyServicesFacadeTest {
     }
 
     @Test
-    public void testAddExternalService() {
+    public void testAddExternalService() throws Exception {
         // Create mocks for parameters
         String url = "supply.com";
         String supplyServiceName = "MockService";
@@ -48,7 +48,7 @@ public class SupplyServicesFacadeTest {
     }
 
     @Test
-    public void testCheckAvailableExternalSupplyService() {
+    public void testCheckAvailableExternalSupplyService() throws Exception {
         // Mock externalSupplyService
 
 

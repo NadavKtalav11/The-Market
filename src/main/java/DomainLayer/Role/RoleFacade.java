@@ -5,6 +5,8 @@ import DomainLayer.Repositories.MemoryStoreOwnerRepository;
 import DomainLayer.Repositories.StoreManagerRepository;
 import DomainLayer.Repositories.StoreOwnerRepository;
 import Util.ExceptionsEnum;
+import Util.StoreManagerDTO;
+import Util.StoreOwnerDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -20,8 +22,9 @@ public class RoleFacade {
 
 
     private List<SystemManager> systemManagers;
+    //private List<SystemManager> systemManagersNominators;
     private final Object systemManagerLock;
-
+    //private final Object systemManagerNominatorsLock;
     StoreOwnerRepository storeOwnerRepository;
     StoreManagerRepository storeManagerRepository;
 
@@ -32,6 +35,8 @@ public class RoleFacade {
 
     public RoleFacade() {
         systemManagers = new ArrayList<>();
+        //systemManagersNominators= new ArrayList<>();
+        //systemManagerNominatorsLock = new Object();
         managerNominators = new MemoryStoreManagerRepository() ;
         ownersNominators = new MemoryStoreOwnerRepository() ;
         storeManagerRepository = new MemoryStoreManagerRepository();
@@ -44,11 +49,13 @@ public class RoleFacade {
     @Autowired
     public RoleFacade(StoreManagerRepository storeManagerRepository, StoreOwnerRepository storeOwnerRepository, StoreManagerRepository managerNominators, StoreOwnerRepository ownersNominators) {
         systemManagers = new ArrayList<>();
+        //systemManagersNominators= new ArrayList<>();
         this.managerNominators = managerNominators;
         this.ownersNominators = ownersNominators;
         this.storeManagerRepository = storeManagerRepository;
         this.storeOwnerRepository = storeOwnerRepository;
         systemManagerLock = new Object();
+        //systemManagerNominatorsLock = new Object();
     }
 
     public static synchronized RoleFacade getInstance() {
@@ -124,7 +131,7 @@ public class RoleFacade {
     }
 
 
-    public void approveInvitationStoreOwner(String memberId, String storeId) throws Exception {
+    public String approveInvitationStoreOwner(String memberId, String storeId) throws Exception {
         if (verifyStoreOwner(storeId, memberId)) {
             throw new Exception(ExceptionsEnum.memberIsAlreadyStoreOwner.toString());
         }
@@ -135,19 +142,26 @@ public class RoleFacade {
         }
         ownersNominators.delete(newStoreOwner);
         addNewStoreOwnerToTheMarket(newStoreOwner);
+        return newStoreOwner.getNominatorId();
     }
 
-    public void declineInvitationStoreOwner(String memberId, String storeId) throws Exception {
+    public String declineInvitationStoreOwner(String memberId, String storeId) throws Exception {
         if (verifyStoreOwner(storeId, memberId)) {
             throw new Exception(ExceptionsEnum.memberIsAlreadyStoreOwner.toString());
         }
 
         StoreOwner newStoreOwner = ownersNominators.get(storeId, memberId);
+
+        if (newStoreOwner== null){
+            throw new IllegalArgumentException("no available offer for this member Id and store Id");
+        }
+
         ownersNominators.delete(newStoreOwner);
+        return newStoreOwner.getNominatorId();
 
     }
 
-    public void approveInvitationStoreManager(String memberId, String storeId) throws Exception {
+    public String approveInvitationStoreManager(String memberId, String storeId) throws Exception {
         if (verifyStoreOwner(storeId, memberId) || verifyStoreManager(storeId, memberId)) {
             throw new Exception("member already manager or owner in this store");
         }
@@ -157,22 +171,70 @@ public class RoleFacade {
         }
         managerNominators.delete(newStoreManager);
         addNewStoreManagerToTheMarket(newStoreManager);
+        return newStoreManager.getNominatorMemberId();
     }
 
-    public void declineInvitationStoreManager(String memberId, String storeId) throws Exception {
+    public String declineInvitationStoreManager(String memberId, String storeId) throws Exception {
         if (verifyStoreOwner(storeId, memberId) || verifyStoreManager(storeId, memberId)) {
             throw new Exception("member already manager or owner in this store");
         }
         StoreManager newStoreManager = managerNominators.get(storeId, memberId);
+        if (newStoreManager== null){
+            throw new IllegalArgumentException("no available offer for this member Id and store Id ");
+        }
         managerNominators.delete(newStoreManager);
+        return newStoreManager.getNominatorMemberId();
         //addNewStoreOwnerToTheMarket(newStoreOwner);
     }
 
 
-    public void addSystemManger(String memberId) {
-        SystemManager systemManager = new SystemManager(memberId);
+//    public void proposeSystemManager(String newSystemManagerMemberId ,String currSystemManager ){
+//        verifyMemberIsSystemManager(currSystemManager);
+//        if (verifyMemberIsSystemManager(newSystemManagerMemberId)){
+//            throw new IllegalArgumentException("member is already system manager");
+//        }
+//        if (verifyAlreadySystemManagerNominator(newSystemManagerMemberId)){
+//            throw new IllegalArgumentException("system is already nominated to be system manager");
+//        }
+//        synchronized (systemManagerNominatorsLock){
+//           systemManagersNominators.add(new SystemManager(newSystemManagerMemberId, currSystemManager));
+//        }
+//
+//    }
+
+//    public boolean verifyAlreadySystemManagerNominator(String memberID){
+//        synchronized (systemManagerNominatorsLock) {
+//            for (SystemManager systemManager : systemManagersNominators) {
+//                if (systemManager.getMember_ID()==memberID){
+//                    return true;
+//                }
+//            }
+//        }
+//        return false;
+//    }
+
+//    public SystemManager getSystemManagerNominator(String memberId){
+//        synchronized (systemManagerNominatorsLock) {
+//            for (SystemManager systemManager : systemManagersNominators) {
+//                if (systemManager.getMember_ID() == memberId) {
+//                    return systemManager;
+//                }
+//            }
+//        }
+//        return  null;
+//    }
+
+
+    public void addSystemManager(String memberId) {
+        //SystemManager systemManager = getSystemManagerNominator(memberId);
+//        if (systemManager ==null){
+//            throw new IllegalArgumentException("this proposal no longer exist");
+//        }
+//        synchronized (systemManagerNominatorsLock){
+//            systemManagersNominators.remove(systemManager);
+//        }
         synchronized (systemManagers) {
-            systemManagers.add(systemManager);
+            systemManagers.add(new SystemManager(memberId));
             storeManagerRepository.addSystemManager(memberId);
         }
     }
@@ -345,6 +407,29 @@ public class RoleFacade {
             throw new Exception(ExceptionsEnum.notSystemManager.toString());
     }
 
+    public List<StoreManagerDTO> getAllManagerProposal(String memberId){
+        List <StoreManagerDTO> dtos= new ArrayList<>();
+        List<StoreManager> storeManagerList = managerNominators.getAllMemberIdManagers(memberId);
+        for (StoreManager storeManager: storeManagerList){
+            dtos.add(new StoreManagerDTO(storeManager.getMember_ID(), storeManager.getStore_ID()
+                    , storeManager.hasInventoryPermissions(), storeManager.hasPurchasePermissions(),
+                    storeManager.getNominatorMemberId()));
+
+        }
+        return dtos;
+    }
+
+
+    public List<StoreOwnerDTO> getAllOwnersProposal(String memberId){
+        List <StoreOwnerDTO> dtos= new ArrayList<>();
+        List<StoreOwner> storeOwnerList = ownersNominators.getAllMemberIdOwners(memberId);
+        for (StoreOwner storeOwner: storeOwnerList){
+            dtos.add(new StoreOwnerDTO(storeOwner.getMember_ID(), storeOwner.getStore_ID(),
+                    storeOwner.getFounder(), storeOwner.getNominatorId()));
+        }
+        return dtos;
+    }
+
     public static void resetInstanceForTests() {
         roleFacadeInstance = null;
     }
@@ -352,23 +437,44 @@ public class RoleFacade {
     public void fireStoreOwner(String memberIdToFire, String storeID){
         List<String> ownersOfTheStore = getAllStoreOwners(storeID);
         for(int i=0 ; i<ownersOfTheStore.size() ; i++){
-            String storeOwner = ownersOfTheStore.get(i);
-            if(storeOwnerRepository.get(storeID, storeOwner).getNominatorId().equals(memberIdToFire)){
-                fireStoreOwner(storeOwner, storeID);
+            String storeOwnerId = ownersOfTheStore.get(i);
+            StoreOwner storeOwner= storeOwnerRepository.get(storeID, storeOwnerId);
+            if(storeOwner!=null && storeOwner.getNominatorId().equals(memberIdToFire)){
+                fireStoreOwner(storeOwnerId, storeID);
             }
         }
         List<String> managersOfTheStore = getAllStoreManagers(storeID);
         for(int i=0 ; i<managersOfTheStore.size() ; i++){
-            String storeManager = managersOfTheStore.get(i);
-            if(storeManagerRepository.get(storeID, storeManager).getNominatorId().equals(memberIdToFire)){
-                fireStoreManager(storeManager, storeID);
+            String storeManagerId = managersOfTheStore.get(i);
+            StoreManager storeManager= storeManagerRepository.get(storeID, storeManagerId);
+            if(storeManager!= null && storeManager.getNominatorMemberId().equals(memberIdToFire)){
+                fireStoreManager(storeManagerId, storeID);
             }
         }
-        storeOwnerRepository.delete(storeOwnerRepository.get(storeID, memberIdToFire));
+        List<StoreOwner> nominatorsOwners = ownersNominators.getAllMemberIdOwners(storeID);
+        for(StoreOwner storeOwner: nominatorsOwners){
+            if(storeOwner.getNominatorId().equals(memberIdToFire)){
+                nominatorsOwners.remove(storeOwner);
+            }
+        }
+        List<StoreManager> nominatorsManagers = managerNominators.getAllMemberIdManagers(storeID);
+        for(StoreManager storeManager: nominatorsManagers){
+            if(storeManager.getNominatorMemberId().equals(memberIdToFire)){
+                nominatorsManagers.remove(storeManager);
+            }
+        }
+        StoreOwner storeOwner =storeOwnerRepository.get(storeID, memberIdToFire);
+        if (storeOwner!=null) {
+            storeOwnerRepository.delete(storeOwner);
+        }
     }
 
     public void fireStoreManager(String memberIdToFire, String storeID){
-        storeManagerRepository.delete(storeManagerRepository.get(storeID, memberIdToFire));
+        StoreManager storeManager = storeManagerRepository.get(storeID, memberIdToFire);
+        if (storeManager==null){
+            throw new IllegalArgumentException("this user is no longer store manager in this store");
+        }
+        storeManagerRepository.delete(storeManager);
     }
 }
 

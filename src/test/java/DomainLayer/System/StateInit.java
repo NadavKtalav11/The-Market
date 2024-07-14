@@ -53,10 +53,7 @@ public class StateInit {
         this.paymentServicesFacade = PaymentServicesFacade.getInstance();
         this.supplyServicesFacade = SupplyServicesFacade.getInstance();
         this.roleFacade = RoleFacade.getInstance();
-
-
-
-        this.market = new Market(userFacade, storeFacade, paymentServicesFacade, supplyServicesFacade,roleFacade);
+        market = new Market(userFacade, storeFacade, paymentServicesFacade, supplyServicesFacade,roleFacade);
 
     }
 

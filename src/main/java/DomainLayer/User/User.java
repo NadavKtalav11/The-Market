@@ -49,6 +49,9 @@ public class User   {
     @Column(name = "is_guest")
     private boolean isGuest;
 
+    @Column(name = "member_id")
+    private String member_ID;
+
     //@Transient
     //private Observer observer;
     // maps notification to a bool value: true - if was published to user, false - if wasn't
@@ -66,6 +69,7 @@ public class User   {
         this.name = null;
         this.readyToPay = false;
         this.isGuest = !state.isMember();
+        this.member_ID = null;
         //this.cart = new Cart();
 
     }
@@ -134,6 +138,7 @@ public class User   {
     public void setState(State state) {
         this.state = state;
         this.isGuest = !state.isMember();
+        member_ID = state.getMemberID();
     }
 
     public String getCountry(){
@@ -158,6 +163,7 @@ public class User   {
         state.Logout();
         state = new Guest();
         this.isGuest = !state.isMember();
+        this.member_ID = null;
     }
 
     public void exitMarketSystem() {
@@ -274,4 +280,11 @@ public class User   {
         return isGuest;
     }
 
+    public void setMember_ID(String member_ID) {
+        this.member_ID = member_ID;
+    }
+
+    public String getMember_ID() {
+        return member_ID;
+    }
 }

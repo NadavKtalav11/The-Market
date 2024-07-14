@@ -94,7 +94,7 @@ public class externalConnections {
         ExternalPaymentService externalPaymentService = market.getPaymentServicesFacade().getPaymentServiceByURL("https://damp-lynna-wsep-1984852e.koyeb.app/");
         CartDTO cartDTO = new CartDTO("130", 5500, products);
         PaymentDTO paymentDTO = new PaymentDTO("20444444", "David David", "USD", "2222333344445555", 982, 6, 2030);
-        int res = externalPaymentService.payWithCard(1000, paymentDTO, "11", cartDTO.getStoreToProducts(), "4545");
+        int res = externalPaymentService.payWithCard(1000, paymentDTO);
         assertTrue(res>=10000);
         assertTrue(res<=100000);
 
@@ -114,7 +114,7 @@ public class externalConnections {
         ExternalPaymentService externalPaymentService = market.getPaymentServicesFacade().getPaymentServiceByURL("https://damp-lynna-wsep-1984852e.koyeb.app/");
         CartDTO cartDTO = new CartDTO("130", 5500, products);
         PaymentDTO paymentDTO = new PaymentDTO("20444444", "David David", "USD", "2222333344445555", 982, 6, 2030);
-        int res = externalPaymentService.payWithCard(1000, paymentDTO, "11", cartDTO.getStoreToProducts(), "4545");
+        int res = externalPaymentService.payWithCard(1000, paymentDTO);
         System.out.println("transss is:" +  res);
         int res1= externalPaymentService.cancelPayment(res);
         assertEquals(1,res1);
@@ -146,12 +146,12 @@ public class externalConnections {
     @Test
     @Order(7)
     public void isValidAcquisitionIdID() throws Exception {
-        assertTrue(paymentServicesFacade.isValidAcquisitionIdID("54656"));
-        assertTrue(paymentServicesFacade.isValidAcquisitionIdID("84656"));
-        assertTrue(paymentServicesFacade.isValidAcquisitionIdID("99656"));
-        assertFalse(paymentServicesFacade.isValidAcquisitionIdID("-1"));
-        assertFalse(paymentServicesFacade.isValidAcquisitionIdID("155"));
-        assertFalse(paymentServicesFacade.isValidAcquisitionIdID("564646644"));
+        assertTrue(paymentServicesFacade.isValidTransactionIdID(54656));
+        assertTrue(paymentServicesFacade.isValidTransactionIdID(84656));
+        assertTrue(paymentServicesFacade.isValidTransactionIdID(99656));
+        assertFalse(paymentServicesFacade.isValidTransactionIdID(-1));
+        assertFalse(paymentServicesFacade.isValidTransactionIdID(155));
+        assertFalse(paymentServicesFacade.isValidTransactionIdID(564646644));
 
 
 

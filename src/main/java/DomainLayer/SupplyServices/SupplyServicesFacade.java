@@ -7,6 +7,7 @@ import DomainLayer.Repositories.ExternalSupplyRepository;
 import DomainLayer.Repositories.MemberMemoryRepository;
 import DomainLayer.Repositories.UserMemoryRepository;
 import DomainLayer.Role.RoleFacade;
+import Util.ExceptionsEnum;
 import Util.SupplyServiceDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -57,7 +58,10 @@ public class SupplyServicesFacade {
         return externalSupplyServicesMap;
     }
 
-    public void removeExternalService(String SupplyServiceUrl){
+    public void removeExternalService(String SupplyServiceUrl) throws Exception {
+        if (getAllSupplyServices().size() <= 1) {
+            throw new Exception(ExceptionsEnum.OnlySupplyService.toString());
+        }
         externalSupplyRepository.deleteById(SupplyServiceUrl);
     }
 
@@ -78,7 +82,7 @@ public class SupplyServicesFacade {
 
 
 
-    public boolean checkHandShake(ExternalSupplyService externalSupplyService){
+    public boolean checkHandShake(ExternalSupplyService externalSupplyService) throws Exception {
         return externalSupplyService.checkHandShake();
 
     }
@@ -93,7 +97,7 @@ public class SupplyServicesFacade {
 //        }
 //    }
 
-    public boolean addExternalService(String supplyURL) {
+    public boolean addExternalService(String supplyURL) throws Exception {
         List<ExternalSupplyService> externalSupplyServices = externalSupplyRepository.findAll();
         int size_before = externalSupplyServices.size();
         ExternalSupplyService externalSupplyService = new ExternalSupplyService(supplyURL);
@@ -125,6 +129,15 @@ public class SupplyServicesFacade {
 //            return externalSupplyService.get(externalSupplyServiceId);
 //        }
 //    }
+
+    public List<String> getAllSupplyServicesUrl(){
+        List<ExternalSupplyService> externalSupplyServiceList = externalSupplyRepository.findAll();
+        List<String> urls = new ArrayList<>();
+        for (ExternalSupplyService externalSupplyService: externalSupplyServiceList){
+            urls.add(externalSupplyService.getSupplyURL());
+        }
+        return urls;
+    }
 
     public ExternalSupplyService getExternalSupplyServiceByURL(String supplyURL){
        Optional<ExternalSupplyService> externalSupplyService1 = externalSupplyRepository.findById(supplyURL);

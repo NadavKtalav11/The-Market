@@ -45,7 +45,7 @@ public class SupplyServicesFacadeTest {
     }
 
     @Test
-    public void testAddExternalServiceWithParams() {
+    public void testAddExternalServiceWithParams() throws Exception {
         boolean added = supplyServicesFacade.addExternalService(supplyURl);
         assertTrue(added);
 
@@ -55,7 +55,7 @@ public class SupplyServicesFacadeTest {
     }
 
     @Test
-    public void testRemoveExternalService() {
+    public void testRemoveExternalService() throws Exception {
         supplyServicesFacade.addExternalService( supplyURl);
         supplyServicesFacade.removeExternalService(supplyURl);
 
@@ -64,7 +64,7 @@ public class SupplyServicesFacadeTest {
     }
 
     @Test
-    public void testCheckAvailableExternalSupplyService() {
+    public void testCheckAvailableExternalSupplyService() throws Exception {
         supplyServicesFacade.addExternalService(supplyURl);
 
         String result = supplyServicesFacade.checkAvailableExternalSupplyService("TestCountry", "TestCity");
@@ -75,7 +75,7 @@ public class SupplyServicesFacadeTest {
     }
 
     @Test
-    public void testGetAllSupplyServices() {
+    public void testGetAllSupplyServices() throws Exception {
         supplyServicesFacade.addExternalService(supplyURl);
 
         Map<String, ExternalSupplyService> allServices = supplyServicesFacade.getAllSupplyServices();
@@ -84,7 +84,7 @@ public class SupplyServicesFacadeTest {
     }
 
     @Test
-    public void testCreateShiftingDetails() {
+    public void testCreateShiftingDetails() throws Exception {
         supplyServicesFacade.addExternalService(supplyURl);
 
 //        boolean result = supplyServicesFacade.createShiftingDetails(licensedDealerNumber, "User", "TestCountry", "TestCity", "TestAddress");
@@ -96,7 +96,7 @@ public class SupplyServicesFacadeTest {
     }
 
     @Test
-    public void testReset() {
+    public void testReset() throws Exception {
         supplyServicesFacade.addExternalService(supplyURl);
         supplyServicesFacade.reset();
 

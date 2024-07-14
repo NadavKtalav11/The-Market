@@ -24,34 +24,40 @@ public class UserFacade {
     private static UserFacade userFacadeInstance;
     UserRepository userRepository;
     MemberRepository members;
-
+    Map<String, Cart> guestCarts;
 
     @Autowired
     public UserFacade(UserRepository userRepository, MemberRepository members) throws Exception {
         this.userRepository = userRepository;
         this.members = members;
+        guestCarts = new HashMap<>();
         //test();
     }
 
-    /*
+/*
     //TODO: remove this after done testing DB
     @Transactional
     public void test() throws Exception {
         String newUserId = addUser();
+        //String newUserId2 = addUser();
         UserDTO userDTO = new UserDTO(newUserId, "testUser", "01/01/2000", "Test Country", "Test City", "123 Test St", "Test Name");
         register(newUserId, userDTO, "testPass");
-        Login(newUserId, "testUser", "testPass");
+        //Login(newUserId, "testUser", "testPass");
+        //Login(newUserId2, "testUser", "testPass");
 
         addItemsToBasket("product1", 1, "store83afa8b9-2e7c-48a3-ad9f-498c8ad18eb9", newUserId, 100);
         addItemsToBasket("product2", 3, "store83afa8b9-2e7c-48a3-ad9f-498c8ad18eb", newUserId, 50);
-
+        modifyBasketProduct("product1", 2, "store83afa8b9-2e7c-48a3-ad9f-498c8ad18eb9", newUserId, 200);
+        removeItemFromUserCart("product2", "store83afa8b9-2e7c-48a3-ad9f-498c8ad18eb", newUserId);
         //userRepository.save(getUserByID(newUserId));
     }
 */
+
     public UserFacade()
     {
         userRepository = new UserMemoryRepository();
         members = new MemberMemoryRepository();
+        guestCarts = new HashMap<>();
     }
 
     public void reset(){
@@ -70,8 +76,6 @@ public class UserFacade {
         return userFacadeInstance;
     }
 
-
-
     public UserFacade newForTest(){
         userFacadeInstance= new UserFacade();
         return userFacadeInstance;
@@ -89,18 +93,23 @@ public class UserFacade {
         return uniqueId;
     }
 
-    //@Transactional
     public User getUserByID(String userID){
         Optional<User> user = userRepository.findById(userID);
         User userToReturn = user.orElse(null);
-        Member member = null;
+        Optional<Member> member = null;
 
         if(userToReturn != null){
             if(!userToReturn.getIsGuest() && !userToReturn.isMember()) {
-                member = members.getByUserId(userID);
-                members.save(member);
-                userToReturn.setState(member);
+                member = members.findById(userToReturn.getMember_ID());
+                Member memberToUpdate = member.orElse(null);
+                members.save(memberToUpdate);
+                userToReturn.setState(memberToUpdate);
                 userRepository.save(userToReturn);
+            }
+            else if(userToReturn.getIsGuest()) //if user is guest cart is not saved in DB
+            {
+                if(guestCarts.containsKey(userID))
+                    userToReturn.setCart(guestCarts.get(userID));
             }
         }
         return userToReturn;
@@ -112,9 +121,10 @@ public class UserFacade {
         }
     }
 
-    public void isUserLoggedInError(String userID){
-        if(!isMember(userID))
+    public void isUserLoggedInError(String userID) {
+        if (!isMember(userID)) {
             throw new IllegalArgumentException(ExceptionsEnum.userIsNotMember.toString());
+        }
     }
 
     /*public String getUsernameByUserID(String userID)
@@ -192,6 +202,9 @@ public class UserFacade {
         //save cart if user state is member
         if(user.isMember())
             members.save((Member) user.getState());
+        else
+            guestCarts.put(userId, user.getCart());
+
         userRepository.save(user);
     }
 
@@ -200,6 +213,13 @@ public class UserFacade {
         User user = getUserByID(userId);
         user.modifyProductInCart(productName, quantity, storeId, totalPrice);
         user.updateCartPrice();
+
+        //save cart if user state is member
+        if (user.isMember())
+            members.save((Member) user.getState());
+        else
+            guestCarts.put(userId, user.getCart());
+        userRepository.save(user);
     }
 
     public void checkIfCanRemove(String productName, String storeId, String userId)
@@ -213,6 +233,13 @@ public class UserFacade {
     {
         User user = getUserByID(userId);
         user.removeItemFromUserCart(productName, storeId);
+        user.updateCartPrice();
+
+        //save cart if user state is member
+        if (user.isMember())
+            members.saveAndFlush((Member) user.getState());
+        else
+            guestCarts.put(userId, user.getCart());
     }
 
 
@@ -227,9 +254,8 @@ public class UserFacade {
 
             Member newMember = new Member(userID, memberId,user.getUserName(), user.getAddress(), user.getName(), password, user.getBirthday(), user.getCountry(), user.getCity());
             members.save(newMember);
-            User userToUpdate = getUserByID(userID);//.addInfo(user);
+            User userToUpdate = getUserByID(userID);
             userToUpdate.addInfo(user);
-            //todo: nitzan verify if needed and if works well with memory
             this.userRepository.save(userToUpdate);
             //todo pass the user to login page.
             return memberId;
@@ -328,6 +354,11 @@ public class UserFacade {
         }*/
         loginMember.validatePassword(password);
         User user = getUserByID(userID);
+
+        //remove guest cart from GuestCarts
+        if(user.getIsGuest())
+            guestCarts.remove(userID);
+
         user.Login(loginMember);
         loginMember.setUserId(userID);
         this.userRepository.save(user);
@@ -354,6 +385,7 @@ public class UserFacade {
     public List<String> getCartStoresByUser(String user_ID)
     {
         User user = getUserByID(user_ID);
+
         if(user != null)
             return user.getCartStores();
         else
@@ -363,6 +395,7 @@ public class UserFacade {
     public Map<String, List<Integer>> getCartProductsByStoreAndUser(String store_ID, String user_ID)
     {
         User user = getUserByID(user_ID);
+
         if(user != null)
             return user.getCartProductsByStore(store_ID);
         else
@@ -408,6 +441,7 @@ public class UserFacade {
 
     public void removeUser(String userId){
         userRepository.deleteById(userId);
+        guestCarts.remove(userId);
     }
 
     public CartDTO getCartDTO(String userId){
@@ -423,8 +457,14 @@ public class UserFacade {
     }
 
     public void addAcquisitionToUser(String userId, String acquisitionId) {
+        User user = getUserByID(userId);
+        user.addAcquisition(acquisitionId);
 
-         getUserByID(userId).addAcquisition(acquisitionId);
+        //TODO: check if correct
+        //save acquisition only if member
+        if(user.isMember())
+            members.save((Member) user.getState());
+        userRepository.save(user);
     }
 
     public List<String> getUserAcquisitionsHistory(String userId) {
@@ -432,7 +472,16 @@ public class UserFacade {
     }
 
     public int cancelPaynmet(String userId, String acquisitionId){
-        return getUserByID(userId).cancelAcquisition(acquisitionId);
+        User user = getUserByID(userId);
+        int result = user.cancelAcquisition(acquisitionId);
+
+        //todo check if correct
+        //save acquisition only if member
+        if(user.isMember())
+            members.save((Member) user.getState());
+        userRepository.save(user);
+
+        return result;
     }
 
     public void checkIfUserHasAcquisition(String userId, String acquisitionId) {

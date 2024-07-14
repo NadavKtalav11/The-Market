@@ -11,6 +11,13 @@ public class Guest extends State{
     public Guest(){
         super();
     }
+
+    @Override
+    public String getMemberID()
+    {
+        return null;
+    }
+
     @Override
     public void Logout() {
         throw new IllegalArgumentException("only member can log out");

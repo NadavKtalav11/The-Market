@@ -1,40 +1,32 @@
-package DomainLayer.Role;
+package Util;
 
-import jakarta.persistence.*;
 
-import java.util.HashMap;
+
 import java.util.List;
-import java.util.Map;
 
-@Entity
-@Table(name = "storeManager", schema = "themarketdb")
-public class StoreManager implements Role {
+public class StoreManagerDTO {
 
-    @EmbeddedId
-    private StoreManagerId id;
+    private String storeId;
+    private String memberId;
 
-    @Transient
-    private List<Integer> authorizations;
 
-    @Column(name = "inventoryPermissions")
     private boolean inventoryPermissions;
 
-    @Column(name = "purchasePermissions")
     private boolean purchasePermissions;
 
-    @Column(name = "nominatorMemberId")
     private String nominatorMemberId;
 
 
-    StoreManager(String member_ID, String store_ID, boolean inventoryPermissions, boolean purchasePermissions, String nominatorMemberId)
+    public StoreManagerDTO(String member_ID, String store_ID, boolean inventoryPermissions, boolean purchasePermissions, String nominatorMemberId)
     {
-        this.id = new StoreManagerId(member_ID, store_ID);
+        this.storeId = store_ID;
+        this.memberId = member_ID;
         this.inventoryPermissions = inventoryPermissions;
         this.purchasePermissions = purchasePermissions;
         this.nominatorMemberId = nominatorMemberId;
     }
 
-    public StoreManager() {
+    public StoreManagerDTO() {
 
     }
 
@@ -50,18 +42,18 @@ public class StoreManager implements Role {
 
     public String getStore_ID()
     {
-        return this.id.getStore_ID();
+        return this.storeId;
     }
 
     public String getMember_ID()
     {
-        return this.id.getMember_ID();
+        return this.memberId;
     }
 
-
-    public List<Integer> getAuthorizations(){
-        return this.authorizations;
+    public String getNominatorId() {
+        return this.nominatorMemberId;
     }
+
 
     public boolean hasInventoryPermissions(){
         return this.inventoryPermissions;
@@ -71,3 +63,4 @@ public class StoreManager implements Role {
         return this.purchasePermissions;
     }
 }
+

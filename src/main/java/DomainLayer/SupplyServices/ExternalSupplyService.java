@@ -135,7 +135,8 @@ public class ExternalSupplyService {
         }
     }
 
-    public boolean checkHandShake(){
+    public boolean checkHandShake() throws Exception {
+        this.httpReqCtrl = new HttpRequestController(supplyURL);
         return this.httpReqCtrl.checkHandShake();
     }
 
