@@ -13,6 +13,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.net.URLDecoder;
 import java.util.*;
 
 @RestController
@@ -224,8 +225,8 @@ public class MarketController {
     public ResponseEntity<APIResponse<String>> addExternalPaymentService(@RequestParam Map<String,String> params) {
         try {
             String paymentUrl =params.get("paymentServiceDTO");
-            String managerId = params.get("memberId");
-            Response<String> response = serviceLayer.addExternalPaymentService( paymentUrl, managerId);
+            String systemMangerUserId = params.get("systemMangerUserId");
+            Response<String> response = serviceLayer.addExternalPaymentService( paymentUrl, systemMangerUserId);
             if (response.isSuccess()) {
                 String result = response.getResult();
                 HttpHeaders headers = new HttpHeaders();
@@ -244,10 +245,13 @@ public class MarketController {
         }
     }
 
-    @DeleteMapping("/removeExternalPaymentService/{url}/{managerId}")
-    public ResponseEntity<APIResponse<String>> removeExternalPaymentService(@PathVariable String url, @PathVariable String managerId) {
+    @DeleteMapping("/removeExternalPaymentService")
+    public ResponseEntity<APIResponse<String>> removeExternalPaymentService(@RequestParam Map<String,String> params) {
         try {
-            Response<String> response = serviceLayer.removeExternalPaymentService(url, managerId);
+            String paymentUrl =params.get("url");
+            String systemMangerUserId = params.get("systemMangerUserId");
+            String decodedUrl = URLDecoder.decode(paymentUrl, "UTF-8");
+            Response<String> response = serviceLayer.removeExternalPaymentService(decodedUrl, systemMangerUserId);
             if (response.isSuccess()) {
                 String result = response.getResult();
                 HttpHeaders headers = new HttpHeaders();
@@ -270,8 +274,8 @@ public class MarketController {
     public ResponseEntity<APIResponse<String>> addExternalSupplyService(@RequestParam Map<String,String> params) {
         try {
             String supplyURL = params.get("supplyServiceDTO");
-            String managerId= params.get("managerId");
-            Response<String> response = serviceLayer.addExternalSupplyService(supplyURL, managerId);
+            String systemMangerUserId = params.get("systemMangerUserId");
+            Response<String> response = serviceLayer.addExternalSupplyService(supplyURL, systemMangerUserId);
             if (response.isSuccess()) {
                 String result = response.getResult();
                 HttpHeaders headers = new HttpHeaders();
@@ -290,10 +294,13 @@ public class MarketController {
         }
     }
 
-    @DeleteMapping("/removeExternalSupplyService/{url}/{managerId}")
-    public ResponseEntity<APIResponse<String>> removeExternalSupplyService(@PathVariable String url, @PathVariable String managerId) {
+    @DeleteMapping("/removeExternalSupplyService")
+    public ResponseEntity<APIResponse<String>> removeExternalSupplyService(@RequestParam Map<String,String> params) {
         try {
-            Response<String> response = serviceLayer.removeExternalSupplyService(url, managerId);
+            String paymentUrl =params.get("url");
+            String systemMangerUserId = params.get("systemMangerUserId");
+            String decodedUrl = URLDecoder.decode(paymentUrl, "UTF-8");
+            Response<String> response = serviceLayer.removeExternalSupplyService(decodedUrl, systemMangerUserId);
             if (response.isSuccess()) {
                 String result = response.getResult();
                 HttpHeaders headers = new HttpHeaders();
@@ -320,7 +327,7 @@ public class MarketController {
             String cartDTO = params.get("cartDTO");
             Response<String> response = serviceLayer.purchase(objectMapper.readValue(userDTO, UserDTO.class),objectMapper.readValue( paymentDTO, PaymentDTO.class), objectMapper.readValue( cartDTO, CartDTO.class));
             if (response.isSuccess()) {
-                String result = response.getData();
+                String result = response.getResult();
                 HttpHeaders headers = new HttpHeaders();
                 headers.add("accept", "*/*");
 
