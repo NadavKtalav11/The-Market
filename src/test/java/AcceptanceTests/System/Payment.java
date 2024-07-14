@@ -92,7 +92,7 @@ public class Payment {
         assertDoesNotThrow(() -> {paymentServicesFacade.pay(cartDTO.getCartPrice(), new PaymentDTO(holderID,"nadav", "USD",cardNumber, cvv, month, year), cartDTO.getUserID(),null, cartDTO.getStoreToProducts());
         });
 
-        String res =paymentServicesFacade.pay(cartDTO.getCartPrice(), new PaymentDTO(holderID,"nadav" ,"USD",cardNumber, cvv, month, year), cartDTO.getUserID(),cartDTO.getStoreToProducts());
+        String res =paymentServicesFacade.pay(cartDTO.getCartPrice(), new PaymentDTO(holderID,"nadav" ,"USD",cardNumber, cvv, month, year), cartDTO.getUserID(), null, cartDTO.getStoreToProducts());
         //int res1 = Integer.valueOf(res);
         Acquisition acquisition = paymentServicesFacade.getAcquisitionById(res);
         assertNotNull(acquisition);

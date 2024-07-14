@@ -45,7 +45,7 @@ public class RoleFacadeTest {
 
     @BeforeEach
     public void setUp() {
-        roleFacade = new RoleFacade(storeManagerRepository, storeOwnerRepository, managerNominatorRepository, ownerNominatorRepository);
+        roleFacade = new RoleFacade(storeManagerRepository, storeOwnerRepository);
     }
 
     @AfterEach

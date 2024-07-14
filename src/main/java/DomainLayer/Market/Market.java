@@ -757,7 +757,7 @@ public class Market {
         try {
             timeoutHandle = scheduler.schedule(() -> {
                 timeoutExpired.set(true);
-            }, 5L, TimeUnit.MINUTES);
+            }, 5L, TimeUnit.SECONDS);
 
             boolean userReadyToPay;
             for(userReadyToPay = false; !userReadyToPay && !timeoutExpired.get(); userReadyToPay = this.getUserConfirmationPurchase(userDTO.getUserId())) {

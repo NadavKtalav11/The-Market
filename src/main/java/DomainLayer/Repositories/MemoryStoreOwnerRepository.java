@@ -20,7 +20,24 @@ public class MemoryStoreOwnerRepository implements StoreOwnerRepository {
 
 
     @Override
-    public StoreOwner get(String storeId, String memberID) {
+    public StoreOwner get(String storeId, String memberId) {
+        synchronized (storeOwnerLock) {
+            List<StoreOwner> userOwner = memberId_storeOwnersMap.get(memberId);
+            if (userOwner==null){
+                return null;
+            }
+            for (int i = 0; i < userOwner.size(); i++) {
+                StoreOwner found = userOwner.get(i);
+                if (found.getStore_ID().equals(storeId)) {
+                    return found;
+                }
+            }
+        }
+        return null;
+    }
+
+    @Override
+    public StoreOwner getStoreOwner(String storeId, String memberID) {
         synchronized (storeOwnerLock) {
             List<StoreOwner> userOwner = memberId_storeOwnersMap.get(memberID);
             if (userOwner==null){
@@ -28,7 +45,24 @@ public class MemoryStoreOwnerRepository implements StoreOwnerRepository {
             }
             for (int i = 0; i < userOwner.size(); i++) {
                 StoreOwner found = userOwner.get(i);
-                if (found.getStore_ID().equals(storeId)) {
+                if (found.getStore_ID().equals(storeId) && !found.isInProposal()) {
+                    return found;
+                }
+            }
+        }
+        return null;
+    }
+
+    @Override
+    public StoreOwner getStoreOwnerNominator(String storeId, String memberId) {
+        synchronized (storeOwnerLock) {
+            List<StoreOwner> userOwner = memberId_storeOwnersMap.get(memberId);
+            if (userOwner==null){
+                return null;
+            }
+            for (int i = 0; i < userOwner.size(); i++) {
+                StoreOwner found = userOwner.get(i);
+                if (found.getStore_ID().equals(storeId) && found.isInProposal()) {
                     return found;
                 }
             }
@@ -71,7 +105,28 @@ public class MemoryStoreOwnerRepository implements StoreOwnerRepository {
     @Override
     public List<StoreOwner> getAllMemberIdOwners(String memberId) {
         synchronized (storeOwnerLock) {
-            return memberId_storeOwnersMap.get(memberId);
+            List<StoreOwner> userOwner = memberId_storeOwnersMap.get(memberId);
+            List<StoreOwner> userOwnerActual = new ArrayList<>();
+            for (StoreOwner user : userOwner) {
+                if (!user.isInProposal()){
+                    userOwnerActual.add(user);
+                }
+            }
+            return userOwnerActual;
+        }
+    }
+
+    @Override
+    public List<StoreOwner> getAllMemberIdNominatorsOwners(String memberId) {
+        synchronized (storeOwnerLock) {
+            List<StoreOwner> userOwner = memberId_storeOwnersMap.get(memberId);
+            List<StoreOwner> userOwnerActual = new ArrayList<>();
+            for (StoreOwner user : userOwner) {
+                if (user.isInProposal()){
+                    userOwnerActual.add(user);
+                }
+            }
+            return userOwnerActual;
         }
     }
 

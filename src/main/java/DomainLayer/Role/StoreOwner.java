@@ -16,10 +16,14 @@ public class StoreOwner implements Role {
     @Column(name = "nominatorId")
     private String nominatorId;
 
-    public StoreOwner(String member_ID, String store_ID, boolean founder, String nominatorId) {
+    @Column(name = "inProposal")
+    private boolean inProposal;
+
+    public StoreOwner(String member_ID, String store_ID, boolean founder, String nominatorId, boolean inProposal) {
         this.id = new StoreOwnerId(member_ID, store_ID);
         this.founder = founder;
         this.nominatorId = nominatorId;
+        this.inProposal = inProposal;
     }
 
     public StoreOwner() {
@@ -58,4 +62,9 @@ public class StoreOwner implements Role {
     public void setId(StoreOwnerId id) {
         this.id = id;
     }
+
+    public boolean isInProposal() {return inProposal;}
+
+    public void setInProposal(boolean inProposal) {this.inProposal = inProposal;}
+
 }
