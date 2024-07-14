@@ -701,7 +701,7 @@ public class Market {
 
 
 
-    public void removeExternalPaymentService(String licensedDealerNumber, String systemMangerUserId) throws Exception {
+    public void removeExternalPaymentService(String url, String systemMangerUserId) throws Exception {
         String memberId = verifyToken(systemMangerUserId);
         verifyMemberExist(memberId);
         synchronized (managersLock) {
@@ -709,7 +709,8 @@ public class Market {
                 throw new Exception(ExceptionsEnum.SystemManagerPaymentAuthorizationRemove.toString());
             }
         }
-        paymentServicesFacade.removeExternalService(licensedDealerNumber);
+
+        paymentServicesFacade.removeExternalService(url);
     }
 
     public void addExternalSupplyService(String SupplyURL, String systemManagerUserId) throws Exception {
@@ -724,7 +725,9 @@ public class Market {
             throw new IllegalArgumentException(ExceptionsEnum.InvalidSupplyServiceParameters.toString());
         }
 
-        supplyServicesFacade.addExternalService(SupplyURL);
+        if (!supplyServicesFacade.addExternalService(SupplyURL)){
+            throw new Exception(ExceptionsEnum.InvalidSupplyServiceParameters.toString());
+        };
 
     }
 
@@ -872,7 +875,7 @@ public class Market {
 //            userInputFuture.get();
 
             // Proceed with payment if user input is received
-            //payWithExternalPaymentService(cartDTO, paymentDTO, userDTO.getUserId());
+            payWithExternalPaymentService(cartDTO, paymentDTO, userDTO.getUserId());
         } catch (Exception e) {
             if (cartDTO != null) {
                 returnCartToStock(cartDTO.getStoreToProducts());
@@ -1936,5 +1939,20 @@ public class Market {
         }
 
         return firstUserID; // Return the generated user ID
+    }
+
+    public RoleFacade getRoleFacade() {
+        return roleFacade;
+    }
+
+    public StoreFacade getStoreFacade() {
+        return storeFacade;
+    }
+
+    public PaymentServicesFacade getPaymentServiceFacade(){
+        return paymentServicesFacade;
+    }
+    public AuthenticationAndSecurityFacade getAuthenticationAndSecurityFacade(){
+        return authenticationAndSecurityFacade;
     }
 }

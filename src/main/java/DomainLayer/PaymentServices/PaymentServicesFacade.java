@@ -66,16 +66,18 @@ public class PaymentServicesFacade {
         return paymentServicesFacadeInstance;
     }
 
-    public void removeExternalService(String paymentId) throws Exception {
+    public void removeExternalService(String url) throws Exception {
         if (getAllPaymentServices().size() <= 1) {
             throw new Exception(ExceptionsEnum.OnlyPaymentService.toString());
         }
-        externalPaymentRepository.deleteById(paymentId);
+        if (externalPaymentRepository.findById(url).orElse(null)==null){
+            throw new Exception("this url doesnt exist in the system");
+        }
+        externalPaymentRepository.deleteById(url);
     }
 
     public boolean checkHandShake(ExternalPaymentService externalPaymentService) throws Exception {
         return externalPaymentService.checkHandShake();
-
     }
 
 //    public boolean addExternalService(String licensedDealerNumber, String paymentServiceName, String url){
@@ -146,6 +148,10 @@ public class PaymentServicesFacade {
 
     }
 
+    public Acquisition getAcquisitionById(String acquisitionId){
+        return acquisitionRepository.findById(acquisitionId).orElse(null);
+    }
+
 
     public boolean cancelPayment(String acquisitionId) throws Exception {
         Acquisition acquisition = acquisitionRepository.findById(acquisitionId).orElse(null);
@@ -193,6 +199,7 @@ public class PaymentServicesFacade {
         String id = "acquisition-"+uuid.toString() ;
         return id;
     }
+
 
     public Map<String, ExternalPaymentService> getAllPaymentServices(){
         List<ExternalPaymentService> externalPaymentServices = externalPaymentRepository.findAll();
@@ -339,6 +346,10 @@ public class PaymentServicesFacade {
             productList.put(productDetailReceipt.getId().getProductName(), priceAndQuantity);
         }
         return productList;
+    }
+
+    public void addPaymentForTests(String url) throws Exception {
+        externalPaymentRepository.save(new ExternalPaymentService(url));
     }
 
 

@@ -48,7 +48,7 @@ public class PaymentServicesFacadeTest {
     public void testAddExternalService() throws Exception {
         String licensedDealerNumber = "1";
         String paymentServiceName = "TestService";
-        String url = "http://testservice.com";
+        String url = "https://damp-lynna-wsep-1984852e.koyeb.app/";
 
         boolean isAdded = paymentServicesFacade.addExternalService(url);
         assertTrue(isAdded);
