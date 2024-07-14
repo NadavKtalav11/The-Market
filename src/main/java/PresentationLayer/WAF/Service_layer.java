@@ -108,10 +108,10 @@ public class Service_layer {
 //    }
 
 
-    public Response<String> addExternalPaymentService(String paymentURL , String managerId) throws Exception {
+    public Response<String> addExternalPaymentService(String paymentURL , String systemMangerUserId) throws Exception {
         logger.info("Trying to add a new external payment service");
         try {
-            market.addExternalPaymentService(paymentURL ,managerId );
+            market.addExternalPaymentService(paymentURL ,systemMangerUserId);
             logger.info("Adding new external payment service have been done successfully.");
             return new Response<>("Successful adding", "Adding new external payment service have been done successfully.");
 
@@ -135,10 +135,10 @@ public class Service_layer {
 
     }
 
-    public Response<String> addExternalSupplyService(String supplyURL, String systemManagerId) throws Exception {
+    public Response<String> addExternalSupplyService(String supplyURL, String systemMangerUserId) throws Exception {
         logger.info("Trying to add a new external supply service");
         try {
-            market.addExternalSupplyService(supplyURL, systemManagerId);
+            market.addExternalSupplyService(supplyURL, systemMangerUserId);
             logger.info("Adding new external supply service has been done successfully.");
             return new Response<>("Successful adding", "Adding new external supply service has been done successfully.");
         } catch (Exception e) {
