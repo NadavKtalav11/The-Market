@@ -24,12 +24,13 @@ public class UserFacade {
     private static UserFacade userFacadeInstance;
     UserRepository userRepository;
     MemberRepository members;
-
+    Map<String, Cart> guestCarts;
 
     @Autowired
     public UserFacade(UserRepository userRepository, MemberRepository members) throws Exception {
         this.userRepository = userRepository;
         this.members = members;
+        guestCarts = new HashMap<>();
         //test();
     }
 
@@ -38,11 +39,11 @@ public class UserFacade {
     @Transactional
     public void test() throws Exception {
         String newUserId = addUser();
-        String newUserId2 = addUser();
+        //String newUserId2 = addUser();
         UserDTO userDTO = new UserDTO(newUserId, "testUser", "01/01/2000", "Test Country", "Test City", "123 Test St", "Test Name");
         register(newUserId, userDTO, "testPass");
-        Login(newUserId, "testUser", "testPass");
-        Login(newUserId2, "testUser", "testPass");
+        //Login(newUserId, "testUser", "testPass");
+        //Login(newUserId2, "testUser", "testPass");
 
         addItemsToBasket("product1", 1, "store83afa8b9-2e7c-48a3-ad9f-498c8ad18eb9", newUserId, 100);
         addItemsToBasket("product2", 3, "store83afa8b9-2e7c-48a3-ad9f-498c8ad18eb", newUserId, 50);
@@ -56,6 +57,7 @@ public class UserFacade {
     {
         userRepository = new UserMemoryRepository();
         members = new MemberMemoryRepository();
+        guestCarts = new HashMap<>();
     }
 
     public void reset(){
@@ -91,7 +93,6 @@ public class UserFacade {
         return uniqueId;
     }
 
-    //@Transactional
     public User getUserByID(String userID){
         Optional<User> user = userRepository.findById(userID);
         User userToReturn = user.orElse(null);
@@ -104,6 +105,11 @@ public class UserFacade {
                 members.save(memberToUpdate);
                 userToReturn.setState(memberToUpdate);
                 userRepository.save(userToReturn);
+            }
+            else if(userToReturn.getIsGuest()) //if user is guest cart is not saved in DB
+            {
+                if(guestCarts.containsKey(userID))
+                    userToReturn.setCart(guestCarts.get(userID));
             }
         }
         return userToReturn;
@@ -195,6 +201,9 @@ public class UserFacade {
         //save cart if user state is member
         if(user.isMember())
             members.save((Member) user.getState());
+        else
+            guestCarts.put(userId, user.getCart());
+
         userRepository.save(user);
     }
 
@@ -207,6 +216,8 @@ public class UserFacade {
         //save cart if user state is member
         if (user.isMember())
             members.save((Member) user.getState());
+        else
+            guestCarts.put(userId, user.getCart());
         userRepository.save(user);
     }
 
@@ -226,6 +237,8 @@ public class UserFacade {
         //save cart if user state is member
         if (user.isMember())
             members.saveAndFlush((Member) user.getState());
+        else
+            guestCarts.put(userId, user.getCart());
     }
 
 
@@ -340,6 +353,11 @@ public class UserFacade {
         }*/
         loginMember.validatePassword(password);
         User user = getUserByID(userID);
+
+        //remove guest cart from GuestCarts
+        if(user.getIsGuest())
+            guestCarts.remove(userID);
+
         user.Login(loginMember);
         this.userRepository.save(user);
         return loginMember.getMemberID();
@@ -364,6 +382,7 @@ public class UserFacade {
     public List<String> getCartStoresByUser(String user_ID)
     {
         User user = getUserByID(user_ID);
+
         if(user != null)
             return user.getCartStores();
         else
@@ -373,6 +392,7 @@ public class UserFacade {
     public Map<String, List<Integer>> getCartProductsByStoreAndUser(String store_ID, String user_ID)
     {
         User user = getUserByID(user_ID);
+
         if(user != null)
             return user.getCartProductsByStore(store_ID);
         else
@@ -418,6 +438,7 @@ public class UserFacade {
 
     public void removeUser(String userId){
         userRepository.deleteById(userId);
+        guestCarts.remove(userId);
     }
 
     public CartDTO getCartDTO(String userId){
