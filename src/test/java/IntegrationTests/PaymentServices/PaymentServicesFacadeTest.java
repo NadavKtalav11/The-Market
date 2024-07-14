@@ -44,7 +44,7 @@ public class PaymentServicesFacadeTest {
     }
 
     @Test
-    public void testAddExternalServiceWithParams() {
+    public void testAddExternalServiceWithParams() throws Exception {
         boolean added = paymentServicesFacade.addExternalService(  "http://test.com");
         assertTrue(added);
         ExternalPaymentService service = paymentServicesFacade.getPaymentServiceByURL("http://test.com");
@@ -56,7 +56,7 @@ public class PaymentServicesFacadeTest {
     }
 
     @Test
-    public void testAddExternalServiceWithDTO() {
+    public void testAddExternalServiceWithDTO()throws Exception  {
       //  PaymentServiceDTO paymentServiceDTO = new PaymentServiceDTO("123", "TestService", "http://test.com");
 
         boolean added = paymentServicesFacade.addExternalService( "http://test.com");
@@ -92,7 +92,7 @@ public class PaymentServicesFacadeTest {
     }
 
     @Test
-    public void testGetAllPaymentServices() {
+    public void testGetAllPaymentServices() throws Exception {
         paymentServicesFacade.addExternalService( "http://test.com");
 
         Map<String, ExternalPaymentService> allServices = paymentServicesFacade.getAllPaymentServices();
@@ -101,7 +101,7 @@ public class PaymentServicesFacadeTest {
     }
 
     @Test
-    public void testGetPaymentServiceDTOById() {
+    public void testGetPaymentServiceDTOById() throws Exception {
         paymentServicesFacade.addExternalService( "http://test.com");
 
 //        PaymentServiceDTO dto = paymentServicesFacade.getPaymentServiceDTOById("123");
@@ -110,7 +110,7 @@ public class PaymentServicesFacadeTest {
     }
 
     @Test
-    public void testGetStorePurchaseInfo() {
+    public void testGetStorePurchaseInfo() throws Exception {
         paymentServicesFacade.addExternalService("http://test.com");
 
         Map<String, Map<String, List<Integer>>> productList = new HashMap<>();
@@ -132,7 +132,7 @@ public class PaymentServicesFacadeTest {
     }
 
     @Test
-    public void testGetStoreReceiptsAndTotalAmount() {
+    public void testGetStoreReceiptsAndTotalAmount() throws Exception {
         paymentServicesFacade.addExternalService( "http://test.com");
 
         Map<String, Map<String, List<Integer>>> productList = new HashMap<>();
@@ -152,7 +152,7 @@ public class PaymentServicesFacadeTest {
     }
 
     @Test
-    public void testClearPaymentServices() {
+    public void testClearPaymentServices() throws Exception {
         paymentServicesFacade.addExternalService( "http://test.com");
         paymentServicesFacade.clearPaymentServices();
 

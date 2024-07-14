@@ -82,7 +82,7 @@ public class SupplyServicesFacade {
 
 
 
-    public boolean checkHandShake(ExternalSupplyService externalSupplyService){
+    public boolean checkHandShake(ExternalSupplyService externalSupplyService) throws Exception {
         return externalSupplyService.checkHandShake();
 
     }
@@ -97,7 +97,7 @@ public class SupplyServicesFacade {
 //        }
 //    }
 
-    public boolean addExternalService(String supplyURL) {
+    public boolean addExternalService(String supplyURL) throws Exception {
         List<ExternalSupplyService> externalSupplyServices = externalSupplyRepository.findAll();
         int size_before = externalSupplyServices.size();
         ExternalSupplyService externalSupplyService = new ExternalSupplyService(supplyURL);

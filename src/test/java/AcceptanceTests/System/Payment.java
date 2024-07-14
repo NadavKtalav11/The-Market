@@ -84,7 +84,7 @@ public class Payment {
 
         ExternalPaymentService externalPaymentService = paymentServicesFacade.getAllPaymentServices().get(url);
 
-        int result = externalPaymentService.getIdAndAcquisition().size();
+        int result = paymentServicesFacade.getIdAndAcquisition().size();
         assertEquals(0, result);
 
 
@@ -95,7 +95,7 @@ public class Payment {
         int res1 = Integer.valueOf(res);
         assertTrue(res1>=10000);
         assertTrue(res1<=100000);
-        int result1 = externalPaymentService.getIdAndAcquisition().size();
+        int result1 = paymentServicesFacade.getIdAndAcquisition().size();
         assertEquals(2, result1);
 
     }
@@ -117,7 +117,7 @@ public class Payment {
 
 
         ExternalPaymentService externalPaymentService = paymentServicesFacade.getAllPaymentServices().get(url);
-        int result = externalPaymentService.getIdAndAcquisition().size();
+        int result = paymentServicesFacade.getIdAndAcquisition().size();
         assertEquals(0, result);
         Map<String, Map<String, List<Integer>>> productList = new HashMap<>();
 //
@@ -126,7 +126,7 @@ public class Payment {
         Exception exception = assertThrows(Exception.class, () -> {
             market.payWithExternalPaymentService(new CartDTO(userID,price,productList), new PaymentDTO("d",holderID,"USD", cardNumber, cvv, month, year), userID);
         });
-        int result1 = externalPaymentService.getIdAndAcquisition().size();
+        int result1 = paymentServicesFacade.getIdAndAcquisition().size();
         assertEquals(0, result1);
         assertEquals( ExceptionsEnum.InvalidCreditCardParameters.toString(), exception.getMessage());
 
@@ -187,7 +187,7 @@ public class Payment {
         paymentServicesFacade.addExternalService(url);
         ExternalPaymentService externalPaymentService = paymentServicesFacade.getAllPaymentServices().get(url);
 
-        int result = externalPaymentService.getIdAndAcquisition().size();
+        int result = paymentServicesFacade.getIdAndAcquisition().size();
         assertEquals(0, result);
 
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () ->
