@@ -1209,7 +1209,7 @@ public class Market {
         roleFacade.updateStoreManagerPermissions(nominatedMemberID, storeId, inventoryPermissions, purchasePermissions, nominatorMemberID);
     }
 
-    public List<ProductDTO> getStoreProducts(String storeId){
+    public List<ProductDTO> getStoreProducts(String storeId) throws Exception {
         return storeFacade.getStoreProductsDTO(storeId);
     }
 

@@ -8,6 +8,8 @@ import Util.*;
 import DomainLayer.Store.PoliciesRulesLogicalConditions.Rule;
 import DomainLayer.Store.PoliciesRulesLogicalConditions.SimpleRule;
 //import jakarta.transaction.Transactional;
+import jakarta.transaction.Transactional;
+import org.apache.tomcat.util.digester.Rules;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -35,21 +37,59 @@ public class StoreFacade {
 
     // Added for testing purposes
     @Autowired
-    public StoreFacade(StoreRepository storeRepository){// throws Exception {
+    public StoreFacade(StoreRepository storeRepository) throws Exception {// throws Exception {
         this.allStores = storeRepository;
         //setAllStores();
     }
 
-    /*
+
     // Added for testing purposes
     @Transactional
     public void setAllStores() throws Exception {
-        //storeRepository.deleteAll();
-        allStores.save(new Store("store22222", "store1", "store1"));
-        Store store = getStoreByID("store22222");
-        addProductToStore(store.getStoreID(),new ProductDTO("COCA", 10, 100, "COCA", "FOOD"));
+//        String id = openStore("store1", "store1");
+//        addProductToStore(id, new ProductDTO("Fries", 10, 10, "good", "FOOD"));
+
+//        List<TestRuleDTO> testRules1 = new ArrayList<>();
+//        testRules1.add(new TestRuleDTO("Age", "Above", null, null, "User must be above 18 to buy", true, 18, null, null, null, null));
+//        addPurchaseRuleToStore(testRules1, new ArrayList<>(), id);
+//
+//        List<TestRuleDTO> testRules2 = new ArrayList<>();
+//        testRules2.add(new TestRuleDTO("Age", "Above", null, null, "User must be above 18 to buy", true, 18, null, null, null, null));
+//        testRules2.add(new TestRuleDTO("Age", "Below", null, null, "User must be below 30 to buy", true, 30, null, null, null, null));
+//        List<String> operators = new ArrayList<>();
+//        operators.add("AND");
+//        addPurchaseRuleToStore(testRules2, operators, id);
+
+//        List<DiscountValueDTO> discDetails1 = new ArrayList<>();
+//        discDetails1.add(new DiscountValueDTO(10, "FOOD", false, null));
+//        List<String> numericalOperators1 = new ArrayList<>();
+//        addDiscountSimpleRuleToStore(discDetails1, numericalOperators1, id);
+//
+//        List<DiscountValueDTO> discDetails2 = new ArrayList<>();
+//        discDetails2.add(new DiscountValueDTO(20, "ELECTRONICS", false, null));
+//        discDetails2.add(new DiscountValueDTO(30, "FOOD", false, null));
+//        List<String> numericalOperators2 = new ArrayList<>();
+//        numericalOperators2.add("MAX");
+//        addDiscountSimpleRuleToStore(discDetails2, numericalOperators2, id);
+//
+//        List<TestRuleDTO> testRules3 = new ArrayList<>();
+//        testRules3.add(new TestRuleDTO("Age", "Above", null, null, "User must be above 18 to buy", true, 18, null, null, null, null));
+//        List<DiscountValueDTO> discDetails3 = new ArrayList<>();
+//        discDetails3.add(new DiscountValueDTO(20, "DAIRY", false, null));
+//        List<String> numericalOperators3 = new ArrayList<>();
+//        addDiscountCondRuleToStore(testRules3, new ArrayList<>(), discDetails3, numericalOperators3, id);
+//
+//        UserDTO user = new UserDTO("1", "Tomer", "12/12/1998", "israel", "Bash", "Bash", "Tomer");
+//
+//        checkPurchasePolicy(user, new ArrayList<>(), id);
+//
+//        removeProductFromStore(id, "Fries");
+//
+//        removeDiscountRuleFromStore(0, id);
+//
+//        composeCurrentPurchaseRules(0, 1, "OR", id);
     }
-*/
+
 
     public StoreFacade newForTest(){
         storeFacadeInstance= new StoreFacade();
@@ -65,12 +105,12 @@ public class StoreFacade {
     }
 
 
-    public String getStoreName(String storeId){
-        return allStores.getById(storeId).getStoreName();
+    public String getStoreName(String storeId) throws Exception {
+        return getStoreByID(storeId).getStoreName();
     }
 
     public String getStoreId(String storeName){
-        List<Store> stores = allStores.findAll();
+        List<Store> stores = getAllStores();
         for (Store store : stores) {
             if(store.getStoreName().equals(storeName)){
                 return store.getStore_ID();
@@ -86,14 +126,17 @@ public class StoreFacade {
 
     public Store getStoreByID(String storeID) throws Exception {
         try {
-            return allStores.getById(storeID);
+            Optional<Store> store = allStores.findById(storeID);
+            return store.orElse(null);
         } catch (Exception e) {
             throw new Exception(ExceptionsEnum.DatabaseIsNotConnected.toString());
         }
 
         //return allStores.getById(storeID);
-        //Optional<Store> store = allStores.findById(storeID);
-        //return store.orElse(null);
+    }
+
+    public List<Store> getAllStores() {
+        return allStores.findAll();
     }
 
     public StoreDTO getStoreDTOFromStore(Store store){
@@ -102,7 +145,7 @@ public class StoreFacade {
 
     public List<StoreDTO> getAllDTOs(){
         List<StoreDTO> storesDTOList= new ArrayList<>();
-        List<Store> allStoresList = allStores.findAll();
+        List<Store> allStoresList = getAllStores();
         for (Store store : allStoresList){
             storesDTOList.add(getStoreDTOFromStore(store));
         }
@@ -110,9 +153,9 @@ public class StoreFacade {
     }
 
 
-    public List<ProductDTO> getStoreProductsDTO(String storeId){
+    public List<ProductDTO> getStoreProductsDTO(String storeId) throws Exception {
         //Store store = getStoreByID(storeId);
-        Store store = allStores.getById(storeId);
+        Store store = getStoreByID(storeId);
         return  store.getProductsDTO();
     }
 
@@ -212,13 +255,15 @@ public class StoreFacade {
         return store.calcPriceInStore(productName, quantity, userId);
     }
 
-   // @Transactional
+    @Transactional
     public void addProductToStore(String storeId, ProductDTO product) throws Exception {
 
         checkProductPrice(product);
         if (!checkProductExistInStore(product.getName(), storeId)) {
             if (product.getQuantity() >= 0) {
-                allStores.getById(storeId).addProduct(product);
+                Store store = getStoreByID(storeId);
+                store.addProduct(product);
+                allStores.save(store);
                // allStores.addProductToStore(storeId, product.getName(), product.getPrice(), product.getQuantity(), product.getCategoryStr(), product.getDescription());
                 //getStoreByID(storeId).addProduct(product);
             } else {
@@ -237,8 +282,9 @@ public class StoreFacade {
 
     public void removeProductFromStore(String storeId, String productName) throws Exception {
         if (checkProductExistInStore(productName, storeId)) {
-           // getStoreByID(storeId).removeProduct(productName);
-            allStores.getById(storeId).removeProduct(productName);
+            Store store = getStoreByID(storeId);
+            store.removeProduct(productName);
+            allStores.save(store);
         } else {
             throw new Exception(ExceptionsEnum.productNotExistInStore.toString());
         }
@@ -250,8 +296,9 @@ public class StoreFacade {
         checkProductPrice(product);
         if (checkProductExistInStore(product.getName(), storeId)) {
             if (product.getQuantity() >= 0) {
-                allStores.getById(storeId).updateProduct(product);
-                //getStoreByID(storeId).updateProduct(product);
+                Store store = getStoreByID(storeId);
+                store.updateProduct(product);
+                allStores.save(store);
             } else {
                 throw new Exception(ExceptionsEnum.productQuantityIsNegative.toString());
             }
@@ -271,22 +318,25 @@ public class StoreFacade {
 
     public void closeStore(String store_ID) throws Exception
     {
-        Store storeToClose = this.getStoreByID(store_ID);
+        Store storeToClose = getStoreByID(store_ID);
         if (!storeToClose.getIsOpened()){
             throw new Exception(ExceptionsEnum.storeNotExist.toString());
         }
         storeToClose.closeStore();
+        allStores.save(storeToClose);
     }
 
     public void reopenStore(String store_ID) throws Exception
     {
-        this.getStoreByID(store_ID).reopenStore();
+        Store storeToReOpen = getStoreByID(store_ID);
+        storeToReOpen.reopenStore();
+        allStores.save(storeToReOpen);
     }
 
     public List<String> getInformationAboutOpenStores()
     {
         List<String> openStoreInformation = new ArrayList<>();
-        for (Store store : allStores.findAll()) {
+        for (Store store : getAllStores()) {
             //int storeId = entry.getKey();
             //Store store = entry.getValue();
             if (store.getIsOpened())
@@ -297,7 +347,7 @@ public class StoreFacade {
 
     public List<String> getInformationAboutClosedStores() {
         List<String> closedStoreInformation = new ArrayList<>();
-        for (Store store : allStores.findAll()) {
+        for (Store store : getAllStores()) {
             //int storeId = entry.getKey();
             //Store store = entry.getValue();
             if (!store.getIsOpened()) {
@@ -356,28 +406,30 @@ public class StoreFacade {
         }
     }
 
-    public void addReceiptToStore(String storeId, String  receiptId, String userId)
-    {
-        allStores.getById(storeId).addReceipt(receiptId, userId);
-       // getStoreByID(storeId).addReceipt(receiptId, userId);
+    public void addReceiptToStore(String storeId, String  receiptId, String userId) throws Exception {
+        Store store = getStoreByID(storeId);
+        store.addReceipt(receiptId, userId);
+        allStores.save(store);
     }
 
-    public void addPurchaseRuleToStore(List<TestRuleDTO> testRules, List<String> operators, String storeId) {
+    public void addPurchaseRuleToStore(List<TestRuleDTO> testRules, List<String> operators, String storeId) throws Exception {
         List<Rule> rules = new ArrayList<>();
         for (TestRuleDTO testRule : testRules) {
             rules.add(new SimpleRule(testRule));
         }
-        allStores.getById(storeId).addPurchaseRule(rules, operators);
-        //getStoreByID(storeId).addPurchaseRule(rules, operators);
+        Store store = getStoreByID(storeId);
+        store.addPurchaseRule(rules, operators);
+        allStores.save(store);
     }
 
     //implement removeRuleFromStore
-    public void removePurchaseRuleFromStore(int ruleNum, String storeId) {
-        //getStoreByID(storeId).removePurchaseRule(ruleNum);
-        allStores.getById(storeId).removePurchaseRule(ruleNum);
+    public void removePurchaseRuleFromStore(int ruleNum, String storeId) throws Exception {
+        Store store = getStoreByID(storeId);
+        store.removePurchaseRule(ruleNum);
+        allStores.save(store);
     }
 
-    public void addDiscountCondRuleToStore(List<TestRuleDTO> testRules, List<String> operators, List<DiscountValueDTO> discDetails, List<String> numericalOperators, String storeId) {
+    public void addDiscountCondRuleToStore(List<TestRuleDTO> testRules, List<String> operators, List<DiscountValueDTO> discDetails, List<String> numericalOperators, String storeId) throws Exception {
 
         List<DiscountValue> discountValue = getDiscountValuesList(discDetails);
 
@@ -385,20 +437,22 @@ public class StoreFacade {
         for (TestRuleDTO testRule : testRules) {
             rules.add(new SimpleRule(testRule));
         }
-        allStores.getById(storeId).addDiscountCondRule(rules, operators, discountValue, numericalOperators);
-       // getStoreByID(storeId).addDiscountCondRule(rules, operators, discountValue, numericalOperators);
+        Store store = getStoreByID(storeId);
+        store.addDiscountCondRule(rules, operators, discountValue, numericalOperators);
+        allStores.save(store);
     }
 
-    public void addDiscountSimpleRuleToStore(List<DiscountValueDTO> discDetails, List<String> numericalOperators, String storeId) {
+    public void addDiscountSimpleRuleToStore(List<DiscountValueDTO> discDetails, List<String> numericalOperators, String storeId) throws Exception {
         List<DiscountValue> discountValue = getDiscountValuesList(discDetails);
-        allStores.getById(storeId).addDiscountSimple(discountValue, numericalOperators);
-
-        //getStoreByID(storeId).addDiscountSimple(discountValue, numericalOperators);
+        Store store = getStoreByID(storeId);
+        store.addDiscountSimple(discountValue, numericalOperators);
+        allStores.save(store);
     }
 
-    public void removeDiscountRuleFromStore(int ruleNum, String storeId) {
-       // getStoreByID(storeId).removeDiscountRule(ruleNum);
-        allStores.getById(storeId).removeDiscountRule(ruleNum);
+    public void removeDiscountRuleFromStore(int ruleNum, String storeId) throws Exception {
+        Store store = getStoreByID(storeId);
+        store.removeDiscountRule(ruleNum);
+        allStores.save(store);
     }
 
     public List<DiscountValue> getDiscountValuesList(List<DiscountValueDTO> discDetails) {
@@ -410,38 +464,42 @@ public class StoreFacade {
         return discountValue;
     }
 
-    public List<String> getStoreCurrentPurchaseRules(String storeId) {
+    public List<String> getStoreCurrentPurchaseRules(String storeId) throws Exception {
         //return getStoreByID(storeId).getStoreCurrentPurchaseRules();
-        return allStores.getById(storeId).getStoreCurrentPurchaseRules();
+        return getStoreByID(storeId).getStoreCurrentPurchaseRules();
     }
 
-    public List<String> getStoreCurrentDiscountRules(String storeId) {
+    public List<String> getStoreCurrentDiscountRules(String storeId) throws Exception {
         //return getStoreByID(storeId).getStoreCurrentDiscountRules();
-        return allStores.getById(storeId).getStoreCurrentDiscountRules();
+        return getStoreByID(storeId).getStoreCurrentDiscountRules();
     }
 
-    public void composeCurrentPurchaseRules(int ruleIndex1, int ruleIndex2, String operator, String storeId) {
-        //getStoreByID(storeId).composeCurrentPurchaseRules(ruleIndex1, ruleIndex2, operator);
-        allStores.getById(storeId).composeCurrentPurchaseRules(ruleIndex1, ruleIndex2, operator);
+    public void composeCurrentPurchaseRules(int ruleIndex1, int ruleIndex2, String operator, String storeId) throws Exception {
+        Store store = getStoreByID(storeId);
+        store.composeCurrentPurchaseRules(ruleIndex1, ruleIndex2, operator);
+        allStores.save(store);
     }
 
-    public void composeCurrentSimpleDiscountRules(int ruleIndex1, int ruleIndex2, String numericalOperator, String storeId) {
-        //getStoreByID(storeId).composeCurrentSimpleDiscountRules(ruleIndex1, ruleIndex2, numericalOperator);
-        allStores.getById(storeId).composeCurrentSimpleDiscountRules(ruleIndex1, ruleIndex2, numericalOperator);
+    public void composeCurrentSimpleDiscountRules(int ruleIndex1, int ruleIndex2, String numericalOperator, String storeId) throws Exception {
+        Store store = getStoreByID(storeId);
+        store.composeCurrentSimpleDiscountRules(ruleIndex1, ruleIndex2, numericalOperator);
+        allStores.save(store);
     }
 
-    public void composeCurrentCondDiscountRules(int ruleIndex1, int ruleIndex2, String logicalOperator, String numericalOperator, String storeId) {
-        //getStoreByID(storeId).composeCurrentCondDiscountRules(ruleIndex1, ruleIndex2, logicalOperator, numericalOperator);
-        allStores.getById(storeId).composeCurrentCondDiscountRules(ruleIndex1, ruleIndex2, logicalOperator, numericalOperator);    }
+    public void composeCurrentCondDiscountRules(int ruleIndex1, int ruleIndex2, String logicalOperator, String numericalOperator, String storeId) throws Exception {
+        Store store = getStoreByID(storeId);
+        store.composeCurrentCondDiscountRules(ruleIndex1, ruleIndex2, logicalOperator, numericalOperator);
+        allStores.save(store);
+    }
 
-    public List<String> getStoreCurrentSimpleDiscountRules(String storeId) {
+    public List<String> getStoreCurrentSimpleDiscountRules(String storeId) throws Exception {
        // return getStoreByID(storeId).getStoreCurrentSimpleDiscountRules();
-        return allStores.getById(storeId).getStoreCurrentSimpleDiscountRules();
+        return getStoreByID(storeId).getStoreCurrentSimpleDiscountRules();
     }
 
-    public List<String> getStoreCurrentCondDiscountRules(String storeId) {
+    public List<String> getStoreCurrentCondDiscountRules(String storeId) throws Exception {
     //    return getStoreByID(storeId).getStoreCurrentCondDiscountRules();
-        return allStores.getById(storeId).getStoreCurrentCondDiscountRules();
+        return getStoreByID(storeId).getStoreCurrentCondDiscountRules();
     }
 }
 

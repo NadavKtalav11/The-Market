@@ -2,13 +2,21 @@ package DomainLayer.Store.PoliciesRulesLogicalConditions;
 
 import Util.ProductDTO;
 import Util.UserDTO;
+import jakarta.persistence.*;
 
 import java.util.List;
 
+@Entity
+@DiscriminatorValue("AndRule")
 public class AndRule extends CompositeRule {
 
     public AndRule(Rule rule1, Rule rule2) {
         super(rule1, rule2);
+        setDescription(" (" + rule1.getDescription() + " and " + rule2.getDescription() + ") ");
+    }
+
+    public AndRule() {
+        super(null, null);
     }
 
     @Override
@@ -16,8 +24,4 @@ public class AndRule extends CompositeRule {
         return getRule1().checkRule(user, products) && getRule2().checkRule(user, products);
     }
 
-    @Override
-    public String getDescription() {
-        return " (" + getRule1().getDescription() + " and " + getRule2().getDescription() + ") ";
-    }
 }

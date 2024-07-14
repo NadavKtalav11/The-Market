@@ -2,13 +2,21 @@ package DomainLayer.Store.PoliciesRulesLogicalConditions;
 
 import Util.ProductDTO;
 import Util.UserDTO;
+import jakarta.persistence.*;
 
 import java.util.List;
 
+@Entity
+@DiscriminatorValue("CondRule")
 public class CondRule extends CompositeRule {
 
     public CondRule(Rule rule1, Rule rule2) {
         super(rule1, rule2);
+        setDescription(" (" + rule1.getDescription() + " only if " + rule2.getDescription() + ") ");
+    }
+
+    public CondRule() {
+        super(null, null);
     }
 
     @Override
@@ -19,8 +27,4 @@ public class CondRule extends CompositeRule {
         return true;
     }
 
-    @Override
-    public String getDescription() {
-        return " (" + getRule1().getDescription() + " only if " + getRule2().getDescription() + ") ";
-    }
 }
