@@ -174,7 +174,8 @@ public class UserFacade {
             return getMemberByUsername(username).getMemberID();
         }
         else {
-            throw new Exception("User is not a member");
+            return null;
+            //throw new Exception("User is not a member");
         }
     }
 
@@ -456,36 +457,36 @@ public class UserFacade {
         return userRepository;
     }
 
-    public void addAcquisitionToUser(String userId, String acquisitionId) {
-        User user = getUserByID(userId);
-        user.addAcquisition(acquisitionId);
+//    public void addAcquisitionToUser(String userId, String acquisitionId) {
+//        User user = getUserByID(userId);
+//        user.addAcquisition(acquisitionId);
+//
+//        //TODO: check if correct
+//        //save acquisition only if member
+//        if(user.isMember())
+//            members.save((Member) user.getState());
+//        userRepository.save(user);
+//    }
 
-        //TODO: check if correct
-        //save acquisition only if member
-        if(user.isMember())
-            members.save((Member) user.getState());
-        userRepository.save(user);
-    }
+//    public List<String> getUserAcquisitionsHistory(String userId) {
+//        return getUserByID(userId).getAcquisitionIds();
+//    }
 
-    public List<String> getUserAcquisitionsHistory(String userId) {
-        return getUserByID(userId).getAcquisitionIds();
-    }
+//    public int cancelPaynmet(String userId, String acquisitionId){
+//        User user = getUserByID(userId);
+//        int result = user.cancelAcquisition(acquisitionId);
+//
+//        //todo check if correct
+//        //save acquisition only if member
+//        if(user.isMember())
+//            members.save((Member) user.getState());
+//        userRepository.save(user);
+//
+//        return result;
+//    }
 
-    public int cancelPaynmet(String userId, String acquisitionId){
-        User user = getUserByID(userId);
-        int result = user.cancelAcquisition(acquisitionId);
-
-        //todo check if correct
-        //save acquisition only if member
-        if(user.isMember())
-            members.save((Member) user.getState());
-        userRepository.save(user);
-
-        return result;
-    }
-
-    public void checkIfUserHasAcquisition(String userId, String acquisitionId) {
-        if(!getUserByID(userId).getAcquisitionIds().contains(acquisitionId))
-            throw new IllegalArgumentException(ExceptionsEnum.AcquisitionNotExist.toString());
-    }
+//    public void checkIfUserHasAcquisition(String userId, String acquisitionId) {
+//        if(!getUserByID(userId).getAcquisitionIds().contains(acquisitionId))
+//            throw new IllegalArgumentException(ExceptionsEnum.AcquisitionNotExist.toString());
+//    }
 }
