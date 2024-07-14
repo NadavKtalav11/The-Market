@@ -89,9 +89,9 @@ public class Payment {
 
 
         // Act and Assert
-        assertDoesNotThrow(() -> {paymentServicesFacade.pay(cartDTO.getCartPrice(), new PaymentDTO(holderID,"nadav", "USD",cardNumber, cvv, month, year), cartDTO.getUserID(),cartDTO.getStoreToProducts());
+        assertDoesNotThrow(() -> {paymentServicesFacade.pay(cartDTO.getCartPrice(), new PaymentDTO(holderID,"nadav", "USD",cardNumber, cvv, month, year), cartDTO.getUserID(),null, cartDTO.getStoreToProducts());
         });
-        String res =paymentServicesFacade.pay(cartDTO.getCartPrice(), new PaymentDTO(holderID,"nadav" ,"USD",cardNumber, cvv, month, year), cartDTO.getUserID(),cartDTO.getStoreToProducts());
+        String res =paymentServicesFacade.pay(cartDTO.getCartPrice(), new PaymentDTO(holderID,"nadav" ,"USD",cardNumber, cvv, month, year), cartDTO.getUserID(),null, cartDTO.getStoreToProducts());
         int res1 = Integer.valueOf(res);
         assertTrue(res1>=10000);
         assertTrue(res1<=100000);
@@ -191,7 +191,7 @@ public class Payment {
         assertEquals(0, result);
 
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () ->
-                paymentServicesFacade.pay(cartDTO.getCartPrice(), new PaymentDTO(holderID,"name", "USD", cardNumber, cvv, month, year), cartDTO.getUserID(),cartDTO.getStoreToProducts()));
+                paymentServicesFacade.pay(cartDTO.getCartPrice(), new PaymentDTO(holderID,"name", "USD", cardNumber, cvv, month, year), cartDTO.getUserID(),null, cartDTO.getStoreToProducts()));
 
         assertEquals(ExceptionsEnum.ExternalPaymentFailed.toString(), exception.getMessage());
     }

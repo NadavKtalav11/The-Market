@@ -84,7 +84,7 @@ public abstract class State {
     protected abstract void Login() throws Exception;
     public abstract boolean isMember();
     public abstract String getUsername();
-    public abstract void addAcquisition(String acquisitionId);
-    public abstract List<String> getAcquisitionIds();
-    public abstract int removeAcquisition(String acquisitionId) ;
+//    public abstract void addAcquisition(String acquisitionId);
+//    public abstract List<String> getAcquisitionIds();
+//    public abstract int removeAcquisition(String acquisitionId) ;
 }

@@ -356,11 +356,11 @@ public class StoreFacade {
         }
     }
 
-    public void addReceiptToStore(String storeId, String  receiptId, String userId)
-    {
-        allStores.getById(storeId).addReceipt(receiptId, userId);
-       // getStoreByID(storeId).addReceipt(receiptId, userId);
-    }
+//    public void addReceiptToStore(String storeId, String  receiptId, String userId)
+//    {
+//        allStores.getById(storeId).addReceipt(receiptId, userId);
+//       // getStoreByID(storeId).addReceipt(receiptId, userId);
+//    }
 
     public void addPurchaseRuleToStore(List<TestRuleDTO> testRules, List<String> operators, String storeId) {
         List<Rule> rules = new ArrayList<>();

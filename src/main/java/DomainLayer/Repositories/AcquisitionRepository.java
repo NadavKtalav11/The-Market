@@ -22,4 +22,23 @@ public interface AcquisitionRepository extends JpaRepository<Acquisition,String>
     @Query("SELECT SUM(p.price) FROM ProductDetailReceipt p WHERE p.productDetailReceiptId.receiptId = :receiptId AND p.productDetailReceiptId.storeId = :storeId AND p.acquisition.acquisitionId = :acquisitionId")
     int findTotalPriceByStoreAndReceiptAndAcquisition(@Param("storeId") String storeId, @Param("receiptId") String receiptId, @Param("acquisitionId") String acquisitionId);
 
+    @Query("SELECT a FROM Acquisition a JOIN a.productDetailReceipts p WHERE p.productDetailReceiptId.storeId = :storeId")
+    List<Acquisition> findByStoreId(String storeId);
+
+    @Query("SELECT a FROM Acquisition a WHERE a.userId = :userID")
+    List<Acquisition> findByUserId(String userID);
+
+    @Query("SELECT a FROM Acquisition a WHERE a.memberId = :memberId")
+    List<Acquisition> findByMemberId(String memberId);
+
+//    @Query("SELECT new Util.ProductFromReceiptDTO(p.productDetailReceiptId.receiptId, p.productDetailReceiptId.storeId, a.userId, p.productDetailReceiptId.productName, p.amount, p.price) " +
+//            "FROM Acquisition a JOIN a.productDetailReceipts p " +
+//            "WHERE a.acquisitionId = :acquisitionId")
+//    List<ProductFromReceiptDTO> getReceiptsByAcquisitionId(@Param("acquisitionId") String acquisitionId);
+
+    @Query("SELECT p.productDetailReceiptId.receiptId FROM ProductDetailReceipt p WHERE p.acquisition.acquisitionId = :AcquisitionId")
+    List<String> getReceiptIdsByAcquisitionId(String AcquisitionId);
+
+
+
 }

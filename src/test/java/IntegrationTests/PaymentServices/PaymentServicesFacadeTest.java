@@ -6,11 +6,15 @@ import DomainLayer.PaymentServices.PaymentServicesFacade;
 import DomainLayer.Repositories.AcquisitionRepository;
 import DomainLayer.Repositories.ExternalPaymentRepository;
 import PresentationLayer.Application;
+import Util.ExceptionsEnum;
 import Util.PaymentDTO;
 import Util.PaymentServiceDTO;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
+import static org.mockito.Mockito.when;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
@@ -40,53 +44,40 @@ public class PaymentServicesFacadeTest {
     public void setUp() throws Exception {
         paymentServicesFacade = new PaymentServicesFacade(externalPaymentRepository, acquisitionRepository);
         paymentDTO = new PaymentDTO("130", "david", "USD","98767576576", 986, 6,2030);
-
     }
 
     @Test
     public void testAddExternalServiceWithParams() throws Exception {
-        boolean added = paymentServicesFacade.addExternalService(  "http://test.com");
+
+        boolean added = paymentServicesFacade.addExternalService("https://damp-lynna-wsep-1984852e.koyeb.app/");
         assertTrue(added);
-        ExternalPaymentService service = paymentServicesFacade.getPaymentServiceByURL("http://test.com");
+        ExternalPaymentService service = paymentServicesFacade.getPaymentServiceByURL("https://damp-lynna-wsep-1984852e.koyeb.app/");
         assertNotNull(service);
-        ExternalPaymentService service2 = paymentServicesFacade.getPaymentServiceByURL(service.getUrl());
-        assertNotNull(service2);
-        assertEquals("http://test.com", service.getUrl());
-        assertEquals("http://test.com", service2.getUrl());
-    }
-
-    @Test
-    public void testAddExternalServiceWithDTO()throws Exception  {
-      //  PaymentServiceDTO paymentServiceDTO = new PaymentServiceDTO("123", "TestService", "http://test.com");
-
-        boolean added = paymentServicesFacade.addExternalService( "http://test.com");
-        assertTrue(added);
-
-        ExternalPaymentService service = paymentServicesFacade.getPaymentServiceByURL("http://test.com");
-        assertNotNull(service);
-        assertEquals("http://test.com", service.getUrl());
+        assertEquals("https://damp-lynna-wsep-1984852e.koyeb.app/", service.getUrl());
     }
 
     @Test
     public void testRemoveExternalService() throws Exception {
-        String url = "http://test.com";
-        paymentServicesFacade.addExternalService( url);
-        paymentServicesFacade.removeExternalService(url);
-
+        String url = "https://damp-lynna-wsep-1984852e.koyeb.app/";
+        paymentServicesFacade.addExternalService(url);
         ExternalPaymentService service = paymentServicesFacade.getPaymentServiceByURL(url);
-        assertNull(service);
+        assertNotNull(service);
+        //paymentServicesFacade.removeExternalService(url);
+
+        Exception exception = assertThrows(Exception.class, () -> paymentServicesFacade.removeExternalService(url));
+        assertEquals("There must remain at least one external payment service in the system", exception.getMessage());
     }
 
     @Test
     public void testPaySuccess() throws Exception {
-        paymentServicesFacade.addExternalService("http://test.com");
+        paymentServicesFacade.addExternalService("https://damp-lynna-wsep-1984852e.koyeb.app/");
 
         Map<String, Map<String, List<Integer>>> productList = new HashMap<>();
         Map<String, List<Integer>> storeProducts = new HashMap<>();
         storeProducts.put("product1", Arrays.asList(2, 100));
         productList.put("store1", storeProducts);
 
-        String result = paymentServicesFacade.pay(100,  paymentDTO, "userId", productList);
+        String result = paymentServicesFacade.pay(100,  paymentDTO, "userId", null,productList);
 
         assertNotNull(result);
     }
@@ -119,7 +110,7 @@ public class PaymentServicesFacadeTest {
         productList.put("store1", storeProducts);
 
         try {
-            paymentServicesFacade.pay(100, paymentDTO, "userId", productList);
+            paymentServicesFacade.pay(100, paymentDTO, "userId", null,productList);
         } catch (Exception e) {
             fail("Payment failed");
         }
@@ -141,7 +132,7 @@ public class PaymentServicesFacadeTest {
         productList.put("store1", storeProducts);
 
         try {
-            paymentServicesFacade.pay(100,paymentDTO, "userId", productList);
+            paymentServicesFacade.pay(100,paymentDTO, "userId", null,productList);
         } catch (Exception e) {
             fail("Payment failed");
         }
