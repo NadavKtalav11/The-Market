@@ -840,7 +840,7 @@ public class Market {
 
 
     @Transactional
-    protected void sendMessagesToOwnersAndManagers(String storeId , String message) throws Exception { // Inject VaadinUserService and NotificationService
+    public void sendMessagesToOwnersAndManagers(String storeId , String message) throws Exception { // Inject VaadinUserService and NotificationService
 
 
         List<String> storeOwnerIds = roleFacade.getAllStoreOwners(storeId);
@@ -859,7 +859,7 @@ public class Market {
 
 
     @Transactional
-    protected void sendMessagesOnPurchaseToStoreOwners(CartDTO cartDTO) throws Exception { // Inject VaadinUserService and NotificationService
+    public void sendMessagesOnPurchaseToStoreOwners(CartDTO cartDTO) throws Exception { // Inject VaadinUserService and NotificationService
         for (String storeId : cartDTO.getStoreToProducts().keySet()) {
             List<String> storeOwnerIds = roleFacade.getAllStoreOwners(storeId);
             String storeName = storeFacade.getStoreName(storeId);
@@ -1184,7 +1184,7 @@ public class Market {
 
     @Transactional
     public void declineStoreManagerInvitation(String userId,  String storeId) throws Exception {
-        String memberId = userFacade.getMemberIdByUserId(userId);
+        String memberId = verifyToken(userId);
         verifyMemberExist(memberId);
 
         storeFacade.errorIfStoreNotExist(storeId);
@@ -1196,7 +1196,7 @@ public class Market {
 
     @Transactional
     public void approveStoreManagerInvitation(String userId,  String storeId) throws Exception {
-        String memberId = userFacade.getMemberIdByUserId(userId);
+        String memberId = verifyToken(userId);
         verifyMemberExist(memberId);
         storeFacade.errorIfStoreNotExist(storeId);
         String proposerMemberId = roleFacade.approveInvitationStoreManager(memberId, storeId);

@@ -132,7 +132,6 @@ public class RoleFacade {
         if (verifyStoreOwner(storeId, memberId)) {
             throw new Exception(ExceptionsEnum.memberIsAlreadyStoreOwner.toString());
         }
-
         StoreOwner newStoreOwner = storeOwnerRepository.getStoreOwnerNominator(storeId, memberId);
         if (newStoreOwner==null){
             throw new IllegalArgumentException("the invitation no longer exist");
@@ -262,7 +261,7 @@ public class RoleFacade {
     }
 
     private void addNewStoreOwnerNominatorToTheMarket(StoreOwner storeOwner) {
-        storeOwnerRepository.save(storeOwner);
+        storeOwnerRepository.insertStoreOwner(storeOwner.getMember_ID(), storeOwner.getStore_ID(), storeOwner.getFounder(), storeOwner.getNominatorId(),storeOwner.isInProposal());
     }
 
     private void addNewStoreOwnerToTheMarket(StoreOwner storeOwner) {
@@ -357,8 +356,8 @@ public class RoleFacade {
 
     public void addManagerNominator(String memberId, String storeId,
                                     boolean inventoryPermissions, boolean purchasePermissions, String nominatorMemberId) throws Exception {
-        StoreManager storeManager = storeManagerRepository.getStoreManagerNominator(memberId,storeId);
-        StoreOwner storeOwner = storeOwnerRepository.getStoreOwnerNominator(memberId,storeId);
+        StoreManager storeManager = storeManagerRepository.getStoreManagerNominator(storeId,memberId);
+        StoreOwner storeOwner = storeOwnerRepository.getStoreOwnerNominator(storeId,memberId);
         if (storeManager!=null || storeOwner!=null ){
             throw new IllegalArgumentException("this member already nominated to be store manager in this store");
         }
@@ -386,7 +385,7 @@ public class RoleFacade {
 
 
     public void addOwnerNominator(String memberId, String storeId, boolean founder, String nominatorMemberId) throws Exception {
-        StoreOwner storeOwner = storeOwnerRepository.getStoreOwnerNominator(memberId,storeId);
+        StoreOwner storeOwner = storeOwnerRepository.getStoreOwnerNominator(storeId,memberId);
         StoreManager storeManager = storeManagerRepository.getStoreManagerNominator(memberId,storeId);
         if (storeOwner!=null || storeManager!=null) {
             throw new IllegalArgumentException("this member already nominated to be store owner in this store");

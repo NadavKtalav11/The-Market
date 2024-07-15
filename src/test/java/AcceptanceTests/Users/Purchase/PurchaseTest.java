@@ -88,6 +88,7 @@ public class PurchaseTest {
     }
 
     @Test
+    @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
     public void successfulPurchaseTest() throws JsonProcessingException {
         impl.setUserConfirmationPurchase(userID2);
         int price = impl.checkingCartValidationBeforePurchase(userID2, userDTO.getUserName(), userDTO.getBirthday(),
@@ -98,11 +99,14 @@ public class PurchaseTest {
         Response<String> result = impl.purchase(userID2, userDTO.getCountry(), userDTO.getCity(), userDTO.getAddress(),
                 paymentDTO.getCreditCardNumber(), paymentDTO.getCurrency(), paymentDTO.getHolderName(), paymentDTO.getCvv(), paymentDTO.getMonth(), paymentDTO.getYear(),
                 paymentDTO.getHolderId(), cartDTO.getCartPrice(), cartDTO.getStoreToProducts());
-
+        System.out.println(result.getData());
+        System.out.println(result.getDescription());
+        System.out.println(result.getResult());
         assertTrue(result.isSuccess());
     }
 
     @Test
+    @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
     public void purchaseWithTimeoutTest() {
         // This simulates the user not responding within the 5-minute limit
         int price = impl.checkingCartValidationBeforePurchase(userID2, userDTO.getUserName(), userDTO.getBirthday(),
@@ -129,6 +133,7 @@ public class PurchaseTest {
     }
 
     @Test
+    @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
     public void productQuantityUnavailableTest() {
         impl.updateProductInStore(userID1, storeID, "Cheese", 20, 1, "Cheddar", "Dairy");
         impl.setUserConfirmationPurchase(userID2);
@@ -140,6 +145,7 @@ public class PurchaseTest {
     }
 
     @Test
+    @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
     public void productNotExistTest() {
         impl.removeProductFromStore(userID1, storeID, "Milk");
         impl.setUserConfirmationPurchase(userID2);
@@ -153,6 +159,7 @@ public class PurchaseTest {
     }
 
     @Test
+    @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
     public void purchasePolicyInvalidTest() {
         TestRuleDTO rule = new TestRuleDTO("Amount", "Above", null, "corn", "Basket must contain at least 2 corns", true, null, 2, null, null, null);
         impl.addPurchaseRuleToStore(new ArrayList<>(Arrays.asList(rule)), new ArrayList<>(), userID1, storeID);
