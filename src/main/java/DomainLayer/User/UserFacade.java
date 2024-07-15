@@ -173,10 +173,13 @@ public class UserFacade {
             String username = getUserByID(userID).getState().getUsername();
             return getMemberByUsername(username).getMemberID();
         }
-        else {
-            return null;
-            //throw new Exception("User is not a member");
+        else{
+            return getUserByID(userID).getMember_ID();
         }
+        //else {
+       //     return null;
+            //throw new Exception("User is not a member");
+        //}
     }
 
     public void exitMarketSystem(String userID){
@@ -257,6 +260,7 @@ public class UserFacade {
             members.save(newMember);
             User userToUpdate = getUserByID(userID);
             userToUpdate.addInfo(user);
+            userToUpdate.setMember_ID(memberId);
             this.userRepository.save(userToUpdate);
             //todo pass the user to login page.
             return memberId;

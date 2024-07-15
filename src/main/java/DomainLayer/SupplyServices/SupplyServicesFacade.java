@@ -8,6 +8,7 @@ import DomainLayer.Repositories.MemberMemoryRepository;
 import DomainLayer.Repositories.UserMemoryRepository;
 import DomainLayer.Role.RoleFacade;
 import Util.ExceptionsEnum;
+import Util.ShippingDTO;
 import Util.SupplyServiceDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -18,7 +19,7 @@ import java.util.*;
 public class SupplyServicesFacade {
     private static SupplyServicesFacade supplyServicesFacade;
     private ExternalSupplyRepository externalSupplyRepository;
-    //private Map<String, ExternalSupplyService>  externalSupplyService; moved to memoryRepo
+    private Map<String, List<ShippingDTO>>  usersShippingHistory;
    // private Map<Integer, Receipt> IdAndReceipt = new HashMap<>();
 
     //db constructor
@@ -153,8 +154,14 @@ public class SupplyServicesFacade {
     }
 
 
+    public List<ShippingDTO> getUserHistory(String userId){
+        return new ArrayList<>();
+    }
+
+
    public boolean createShiftingDetails(String externalSupplyServiceUrl,String userName,String country,String city,String address, String acquisitionId) throws Exception {
         ExternalSupplyService externalSupplyService = getExternalSupplyServiceByURL(externalSupplyServiceUrl);
+        //todo add loop over all supply service until succeed!
         int res = externalSupplyService.createSupply(userName,country ,city, address, acquisitionId);
         if(res>= 10000 & res<= 100000){
             return true;

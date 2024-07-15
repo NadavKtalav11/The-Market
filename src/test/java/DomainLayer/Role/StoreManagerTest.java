@@ -16,7 +16,7 @@ public class StoreManagerTest {
     @BeforeEach
     public void setUp() {
         // Initialize StoreManager with mock data
-        storeManager = new StoreManager("member-1", "store-1", true, false, "nominator-1");
+        storeManager = new StoreManager("member-1", "store-1", true, false, "nominator-1", false);
     }
 
     @Test

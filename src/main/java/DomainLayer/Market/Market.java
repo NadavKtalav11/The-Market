@@ -757,7 +757,7 @@ public class Market {
         try {
             timeoutHandle = scheduler.schedule(() -> {
                 timeoutExpired.set(true);
-            }, 5L, TimeUnit.MINUTES);
+            }, 5L, TimeUnit.SECONDS);
 
             boolean userReadyToPay;
             for(userReadyToPay = false; !userReadyToPay && !timeoutExpired.get(); userReadyToPay = this.getUserConfirmationPurchase(userDTO.getUserId())) {
@@ -1065,6 +1065,11 @@ public class Market {
         }
     }
 
+
+    public List<ShippingDTO> getUserShippingDTOs(String userId){
+        return supplyServicesFacade.getUserHistory(userId);
+    }
+
     public void removeProductFromStore(String userId, String storeId, String productName) throws Exception {
         String memberId = verifyToken(userId);
         userFacade.errorIfUserNotExist(userId);
@@ -1201,7 +1206,9 @@ public class Market {
         roleFacade.verifyStoreOwnerError(storeId, nominatorMemberID);
         userFacade.errorIfUsernameNotFound(nominatedUsername);
         String nominatedMemberID = userFacade.getMemberByUsername(nominatedUsername).getMemberID();
-        roleFacade.verifyMangerNominatorError(nominatorMemberID, nominatedMemberID, storeId);
+        if (!roleFacade.verifyStoreOwner( storeId, nominatorMemberID)){
+            throw new Exception(ExceptionsEnum.userIsNotStoreOwner.toString());
+        };
         roleFacade.updateStoreManagerPermissions(nominatedMemberID, storeId, inventoryPermissions, purchasePermissions, nominatorMemberID);
     }
 

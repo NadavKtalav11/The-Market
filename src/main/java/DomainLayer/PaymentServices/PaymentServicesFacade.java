@@ -351,12 +351,12 @@ public class PaymentServicesFacade {
         return receipts;
     }
 
-    public ReceiptDTO getReceiptDTOFromReceipt(Receipt receipt){
-        return new ReceiptDTO(receipt.getReceiptId(),receipt.getStoreId(),receipt.getUserId(),convertToProductList(receipt.getProductList()));
+    public ReceiptDTO getReceiptDTOFromReceipt(Receipt receipt) {
+        return new ReceiptDTO(receipt.getReceiptId(), receipt.getStoreId(), receipt.getUserId(), convertToProductList(receipt.getProductList()));
+    }
 
-    public void addPaymentForTests(String url) throws Exception {
+    public void addPaymentForTests (String url) throws Exception {
         externalPaymentRepository.save(new ExternalPaymentService(url));
- version4
     }
 
 

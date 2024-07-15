@@ -227,6 +227,17 @@ public class Service_layer {
         }
     }
 
+    public Response<List<ShippingDTO>> getAllSupplyByUser(String userId){
+        try {
+            List<ShippingDTO> shippingDTOS = market.getUserShippingDTOs(userId);
+            return new Response<List<ShippingDTO>>(shippingDTOS, "user shipping details");
+        } catch (Exception e) {
+            logger.info("Error occurred while trying get shipping details {}", e.getMessage());
+            return new Response<>(null, e.getMessage());
+        }
+
+    }
+
 
 
 

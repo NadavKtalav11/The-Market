@@ -56,6 +56,7 @@ public class ReviewingStoresInfo {
     }
 
     @Test
+    @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
     public void successfulStoreOwnerViewTest() {
         impl.closeStore(userID1, storeID3);
 
@@ -74,6 +75,7 @@ public class ReviewingStoresInfo {
     }
 
     @Test
+    @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
     public void successfulMemberViewTest() {
         impl.closeStore(userID1, storeID3);
 
@@ -90,6 +92,7 @@ public class ReviewingStoresInfo {
         assertEquals(expectedStoresSet, actualStoresSet);    }
 
     @Test
+    @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
     public void successfulUserViewTest() {
         impl.closeStore(userID1, storeID3);
 

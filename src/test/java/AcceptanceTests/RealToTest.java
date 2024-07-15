@@ -246,4 +246,9 @@ public class RealToTest implements BridgeToTests {
         return service.composeCurrentCondDiscountRules(ruleIndex1, ruleIndex2, logicalOperator, numericalOperator, userId, storeId);
     }
 
+    @Override
+    public Response<String> answerJobProposal(String userId, String storeId, boolean managerProposal, boolean answer) {
+        return service.answerJobProposal(userId,storeId,managerProposal, answer);
+    }
+
 }
