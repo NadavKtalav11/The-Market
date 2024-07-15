@@ -36,6 +36,19 @@ public class MemoryStoreOwnerRepository implements StoreOwnerRepository {
         return null;
     }
 
+
+
+    public StoreOwner getStoreOwnerImpl(String memberId, String storeId){
+        if (memberId_storeOwnersMap.get(memberId)!=null){
+            for (StoreOwner storeOwner: memberId_storeOwnersMap.get(memberId)){
+                if (storeOwner.getStore_ID().equals(storeId)){
+                    return storeOwner;
+                }
+            }
+        }
+        return null;
+    }
+
     @Override
     public StoreOwner getStoreOwner(String storeId, String memberID) {
         synchronized (storeOwnerLock) {
@@ -54,7 +67,7 @@ public class MemoryStoreOwnerRepository implements StoreOwnerRepository {
     }
 
     @Override
-    public StoreOwner getStoreOwnerNominator(String memberId, String storeId) {
+    public StoreOwner getStoreOwnerNominator(String storeId, String memberId) {
         synchronized (storeOwnerLock) {
             List<StoreOwner> userOwner = memberId_storeOwnersMap.get(memberId);
             if (userOwner==null){
@@ -129,6 +142,16 @@ public class MemoryStoreOwnerRepository implements StoreOwnerRepository {
             return userOwnerActual;
         }
     }
+
+    @Override
+    public void insertStoreOwner(String memberId, String storeId, boolean founder, String nominatorId, boolean inProposal) {
+
+        if (memberId_storeOwnersMap.get(memberId)==null){
+            memberId_storeOwnersMap.put(memberId, new ArrayList<>());
+        }
+        memberId_storeOwnersMap.get(memberId).add(new StoreOwner(memberId,storeId,founder,nominatorId,inProposal));
+    }
+
 
     @Override
     public List<StoreOwner> findAllById(Iterable<String> strings) {

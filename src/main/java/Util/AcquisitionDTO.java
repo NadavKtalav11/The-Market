@@ -16,6 +16,25 @@ public class AcquisitionDTO {
         this.date = date;
     }
 
+    public AcquisitionDTO(){
+
+    }
+
+    public void setAcquisitionId(String acquisitionId) {
+        this.acquisitionId = acquisitionId;
+    }
+
+    public void setMemberId(String memberId) {
+        this.memberId = memberId;
+    }
+
+    public void setTotalPrice(int totalPrice) {
+        this.totalPrice = totalPrice;
+    }
+
+    public void setDate(Date date) {
+        this.date = date;
+    }
 
     public String getAcquisitionId() {
         return acquisitionId;

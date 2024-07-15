@@ -1,7 +1,6 @@
 package DomainLayer.Repositories;
 
 import DomainLayer.Role.StoreManager;
-import DomainLayer.Role.StoreOwner;
 import DomainLayer.Role.SystemManager;
 import org.springframework.context.annotation.Profile;
 import org.springframework.data.domain.Example;
@@ -18,9 +17,9 @@ import java.util.function.Function;
 @Profile("memory")
 public class MemoryStoreManagerRepository implements StoreManagerRepository {
 
-    private Map<String,List<StoreManager>> memberId_storeManagerMap= new HashMap<>();
+    private Map<String,List<StoreManager>> memberId_storeManagerMap = new HashMap<>();
     private final Object storeManagerLock= new Object();
-    private List<SystemManager> systemManagers= new ArrayList<>();
+    private Map<String, SystemManager> systemManagers = new HashMap<>();
     private final Object systemManagerLock = new Object();
 
 
@@ -80,8 +79,9 @@ public class MemoryStoreManagerRepository implements StoreManagerRepository {
         String memberId;
         synchronized (storeManagerLock) {
             memberId = entity.getMember_ID();
-            //if (memberId_storeManagerMap.get(memberId)==null){
-            memberId_storeManagerMap.put(memberId, new ArrayList<>());
+            if (memberId_storeManagerMap.get(memberId)==null) {
+                memberId_storeManagerMap.put(memberId, new ArrayList<>());
+            }
             memberId_storeManagerMap.get(memberId).add(entity);
         }
         return null;
@@ -141,28 +141,24 @@ public class MemoryStoreManagerRepository implements StoreManagerRepository {
     }
 
     @Override
-    public void addSystemManager(SystemManager systemManager) {
+    public void addSystemManager(String memberId) {
         synchronized (systemManagerLock){
-            systemManagers.add(systemManager);
+            systemManagers.put(memberId, new SystemManager(memberId));
         }
     }
 
     @Override
-    public SystemManager getSystemManager(String memberId) {
+    public String getSystemManager(String memberId) {
         synchronized (systemManagerLock){
-            for (SystemManager systemManager: systemManagers){
-                if (systemManager.getMember_ID().equals(memberId)){
-                    return systemManager;
-                }
-            }
+            systemManagers.get(memberId);
         }
         return null;
     }
 
     @Override
-    public List<SystemManager> getAllSystemManagers() {
-        synchronized (storeManagerLock) {
-            return systemManagers;
+    public List<String> getAllSystemManagers() {
+        synchronized (systemManagerLock) {
+            return systemManagers.keySet().stream().toList();
         }
     }
 
@@ -183,7 +179,6 @@ public class MemoryStoreManagerRepository implements StoreManagerRepository {
 
     @Override
     public void deleteAllInBatch(Iterable<StoreManager> entities) {
-
     }
 
     @Override

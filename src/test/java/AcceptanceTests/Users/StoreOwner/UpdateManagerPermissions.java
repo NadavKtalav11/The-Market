@@ -44,7 +44,7 @@ public class UpdateManagerPermissions {
         impl.register(ovadUserID,"ovad", "08/02/82", "Israel", "Jerusalem", "Yehuda halevi 11", "ovad", "Haviaaa4");
         raniUserID = impl.enterMarketSystem().getData();
         impl.register(raniUserID,"rani", "08/02/82", "Israel", "Jerusalem", "Yehuda halevi 12", "rani", "Zeliggg5");
-
+        impl.login(tomUserID, "tom", "Shlaifer2");
         impl.login(saarUserID, "saar", "Fadidaa1");
         storeIDsaar = impl.openStore(saarUserID, "alona", "shopping").getData();
         impl.appointStoreManager(saarUserID, "tom", storeIDsaar, true, false);
@@ -53,7 +53,7 @@ public class UpdateManagerPermissions {
         storeIDjalal = impl.openStore(jalalUserID, "alona2", "shopping2").getData();
 
         Response<String> response = impl.appointStoreManager(jalalUserID, "ovad", storeIDjalal, true, true);
-
+        impl.login(ovadUserID,"ovad", "Haviaaa4");
         impl.answerJobProposal(ovadUserID, storeIDjalal, true,true);
     }
 

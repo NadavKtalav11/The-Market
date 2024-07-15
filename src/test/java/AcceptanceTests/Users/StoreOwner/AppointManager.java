@@ -71,12 +71,12 @@ public class AppointManager {
         Response<String> response1 = impl.appointStoreManager(saarUserID, "tom",
                 storeId, true, false);
         assertFalse(response1.isSuccess());
-        assertEquals("member is already nominator to job in this store", response1.getDescription());
+        assertEquals("this member already nominated to be store manager in this store", response1.getDescription());
 
         Response<String> response2 = impl.appointStoreManager(saarUserID, "jalal",
                 storeId, true, false);
         assertFalse(response2.isSuccess());
-        assertEquals("member is already nominator to job in this store", response2.getDescription());
+        assertEquals("this member already nominated to be store manager in this store", response2.getDescription());
 
     }
 
