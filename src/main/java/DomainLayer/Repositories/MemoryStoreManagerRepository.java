@@ -106,37 +106,47 @@ public class MemoryStoreManagerRepository implements StoreManagerRepository {
 
     @Override
     public List<StoreManager> getAllMemberIdManagers(String memberId) {
+        List<StoreManager> userManagerActual = new ArrayList<>();
         synchronized (storeManagerLock) {
             List<StoreManager> userManager = memberId_storeManagerMap.get(memberId);
-            List<StoreManager> userManagerActual = new ArrayList<>();
-            for (StoreManager user : userManager) {
-                if (!user.isInProposal()){
-                    userManagerActual.add(user);
+            if (userManager!=null) {
+                for (StoreManager user : userManager) {
+                    if (!user.isInProposal()) {
+                        userManagerActual.add(user);
+                    }
+
                 }
+
             }
-            return userManagerActual;
         }
+        return userManagerActual;
     }
 
     @Override
     public List<StoreManager> getAllMemberIdNominatorsManagers(String memberId) {
+        List<StoreManager> userManagerActual = new ArrayList<>();
         synchronized (storeManagerLock) {
             List<StoreManager> userManager = memberId_storeManagerMap.get(memberId);
-            List<StoreManager> userManagerActual = new ArrayList<>();
-            for (StoreManager user : userManager) {
-                if (user.isInProposal()){
-                    userManagerActual.add(user);
+            if (userManager != null) {
+
+                for (StoreManager user : userManager) {
+                    if (user.isInProposal()) {
+                        userManagerActual.add(user);
+                    }
                 }
+
             }
-            return userManagerActual;
         }
+        return userManagerActual;
     }
 
 
     @Override
     public void updateStoreManagerPermissions(String memberId, String storeId, boolean inventoryPermissions, boolean purchasePermissions, String nominatorMemberID) {
         synchronized (storeManagerLock){
-            get(storeId,memberId).setPermissions(inventoryPermissions,purchasePermissions);
+            StoreManager storeManager = get(storeId,memberId);
+            storeManager.setPermissions(inventoryPermissions, purchasePermissions);
+
         }
     }
 

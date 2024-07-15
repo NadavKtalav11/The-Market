@@ -117,12 +117,14 @@ public class MemoryStoreOwnerRepository implements StoreOwnerRepository {
 
     @Override
     public List<StoreOwner> getAllMemberIdOwners(String memberId) {
+        List<StoreOwner> userOwnerActual = new ArrayList<>();
         synchronized (storeOwnerLock) {
             List<StoreOwner> userOwner = memberId_storeOwnersMap.get(memberId);
-            List<StoreOwner> userOwnerActual = new ArrayList<>();
-            for (StoreOwner user : userOwner) {
-                if (!user.isInProposal()){
-                    userOwnerActual.add(user);
+            if (userOwner!=null) {
+                for (StoreOwner user : userOwner) {
+                    if (!user.isInProposal()) {
+                        userOwnerActual.add(user);
+                    }
                 }
             }
             return userOwnerActual;
@@ -131,12 +133,14 @@ public class MemoryStoreOwnerRepository implements StoreOwnerRepository {
 
     @Override
     public List<StoreOwner> getAllMemberIdNominatorsOwners(String memberId) {
+        List<StoreOwner> userOwnerActual = new ArrayList<>();
         synchronized (storeOwnerLock) {
             List<StoreOwner> userOwner = memberId_storeOwnersMap.get(memberId);
-            List<StoreOwner> userOwnerActual = new ArrayList<>();
-            for (StoreOwner user : userOwner) {
-                if (user.isInProposal()){
-                    userOwnerActual.add(user);
+            if (userOwner!=null) {
+                for (StoreOwner user : userOwner) {
+                    if (user.isInProposal()) {
+                        userOwnerActual.add(user);
+                    }
                 }
             }
             return userOwnerActual;

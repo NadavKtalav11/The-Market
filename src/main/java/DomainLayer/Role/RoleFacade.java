@@ -423,11 +423,13 @@ public class RoleFacade {
     public List<StoreManagerDTO> getAllManagerProposal(String memberId){
         List <StoreManagerDTO> dtos= new ArrayList<>();
         List<StoreManager> storeManagerList = storeManagerRepository.getAllMemberIdNominatorsManagers(memberId);
-        for (StoreManager storeManager: storeManagerList){
-            dtos.add(new StoreManagerDTO(storeManager.getMember_ID(), storeManager.getStore_ID()
-                    , storeManager.hasInventoryPermissions(), storeManager.hasPurchasePermissions(),
-                    storeManager.getNominatorMemberId()));
+        if (storeManagerList!= null) {
+            for (StoreManager storeManager : storeManagerList) {
+                dtos.add(new StoreManagerDTO(storeManager.getMember_ID(), storeManager.getStore_ID()
+                        , storeManager.hasInventoryPermissions(), storeManager.hasPurchasePermissions(),
+                        storeManager.getNominatorMemberId()));
 
+            }
         }
         return dtos;
     }
@@ -436,9 +438,11 @@ public class RoleFacade {
     public List<StoreOwnerDTO> getAllOwnersProposal(String memberId){
         List <StoreOwnerDTO> dtos= new ArrayList<>();
         List<StoreOwner> storeOwnerList = storeOwnerRepository.getAllMemberIdNominatorsOwners(memberId);
-        for (StoreOwner storeOwner: storeOwnerList){
-            dtos.add(new StoreOwnerDTO(storeOwner.getMember_ID(), storeOwner.getStore_ID(),
-                    storeOwner.getFounder(), storeOwner.getNominatorId()));
+        if (storeOwnerList!=null) {
+            for (StoreOwner storeOwner : storeOwnerList) {
+                dtos.add(new StoreOwnerDTO(storeOwner.getMember_ID(), storeOwner.getStore_ID(),
+                        storeOwner.getFounder(), storeOwner.getNominatorId()));
+            }
         }
         return dtos;
     }

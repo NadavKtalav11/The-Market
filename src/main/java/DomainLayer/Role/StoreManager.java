@@ -78,4 +78,8 @@ public class StoreManager implements Role {
     public boolean isInProposal() {return inProposal;}
 
     public void setInProposal(boolean inProposal) {this.inProposal = inProposal;}
+
+    public StoreManagerId getId() {
+        return id;
+    }
 }
