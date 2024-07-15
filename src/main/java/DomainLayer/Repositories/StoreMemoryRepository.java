@@ -136,7 +136,9 @@ public class StoreMemoryRepository implements StoreRepository{
 
     @Override
     public Optional<Store> findById(String s) {
-        return Optional.empty();
+        synchronized (storesLock) {
+            return Optional.ofNullable(allStores.get(s));
+        }
     }
 
     @Override
