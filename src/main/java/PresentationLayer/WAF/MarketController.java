@@ -482,11 +482,11 @@ public class MarketController {
         }
     }
 
-    @GetMapping("/getAllAcquisitions/{userId}")
-    public ResponseEntity<APIResponse<List<String>>> getAllAcquisitions(@PathVariable String userId) {
+    @GetMapping("/getAllAcquisitions/{systemManagerUserId}")
+    public ResponseEntity<APIResponse<List<String>>> getAllAcquisitions(@PathVariable String systemManagerUserId) {
         try {
             ObjectMapper objectMapper= new ObjectMapper();
-            Response<List<AcquisitionDTO>> response = serviceLayer.getAllAcquisitions(userId);
+            Response<List<AcquisitionDTO>> response = serviceLayer.getAllAcquisitions(systemManagerUserId);
             HttpHeaders headers = new HttpHeaders();
             headers.add("accept", "*/*");
             List<String> dtosRes = new ArrayList<>();
@@ -759,6 +759,57 @@ public class MarketController {
                 headers.add("accept", "*/*");
                 for (UserDTO userDTO : response.getResult() ) {
                     dtosRes.add(objectMapper.writeValueAsString(userDTO));
+                }
+                return ResponseEntity.status(HttpStatus.OK).headers(headers)
+                        .body(new APIResponse<List<String>>(dtosRes, null));
+            } else {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                        .body(new APIResponse<>(null, response.getDescription()));
+            }
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new APIResponse<>(null, e.getMessage()));
+
+        }
+    }
+
+    @GetMapping("/getSupplySystemHistory/{systemManagerUserId}")
+    public ResponseEntity<APIResponse<List<String>>> getSupplySystemHistory(@PathVariable String systemManagerUserId) {
+        try {
+            Response<List<ShippingDTO>> response = serviceLayer.getSupplySystemHistory( systemManagerUserId);
+            List<String> dtosRes = new ArrayList<>();
+            if (response.isSuccess()) {
+                List<ShippingDTO> result = response.getResult();
+                HttpHeaders headers = new HttpHeaders();
+                headers.add("accept", "*/*");
+                for (ShippingDTO shippingDTO : response.getResult() ) {
+                    dtosRes.add(objectMapper.writeValueAsString(shippingDTO));
+                }
+                return ResponseEntity.status(HttpStatus.OK).headers(headers)
+                        .body(new APIResponse<List<String>>(dtosRes, null));
+            } else {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                        .body(new APIResponse<>(null, response.getDescription()));
+            }
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new APIResponse<>(null, e.getMessage()));
+
+        }
+    }
+
+
+    @GetMapping("/getAllSupplyByUser/{userId}")
+    public ResponseEntity<APIResponse<List<String>>> getAllSupplyByUser(@PathVariable String userId) {
+        try {
+            Response<List<ShippingDTO>> response = serviceLayer.getAllSupplyByUser( userId);
+            List<String> dtosRes = new ArrayList<>();
+            if (response.isSuccess()) {
+                List<ShippingDTO> result = response.getResult();
+                HttpHeaders headers = new HttpHeaders();
+                headers.add("accept", "*/*");
+                for (ShippingDTO shippingDTO : response.getResult() ) {
+                    dtosRes.add(objectMapper.writeValueAsString(shippingDTO));
                 }
                 return ResponseEntity.status(HttpStatus.OK).headers(headers)
                         .body(new APIResponse<List<String>>(dtosRes, null));

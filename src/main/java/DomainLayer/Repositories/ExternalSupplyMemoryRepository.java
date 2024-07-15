@@ -1,6 +1,7 @@
 package DomainLayer.Repositories;
 
 import DomainLayer.SupplyServices.ExternalSupplyService;
+import Util.ShippingDTO;
 import org.springframework.context.annotation.Profile;
 import org.springframework.data.domain.Example;
 import org.springframework.data.domain.Page;
@@ -18,11 +19,16 @@ public class ExternalSupplyMemoryRepository implements ExternalSupplyRepository 
 
     private Map<String, ExternalSupplyService> externalSupplyService;
     private final Object externalSupplyServiceLock;
+    private final Object usersShippingHistoryLock;
+    private Map<String, List<ShippingDTO>>  usersShippingHistory; //<userName,List<ShippindDTO>>
 
     public ExternalSupplyMemoryRepository() {
         this.externalSupplyService = new HashMap<>();
         this.externalSupplyServiceLock = new Object();
+        this.usersShippingHistory = new HashMap<>();
+        this.usersShippingHistoryLock = new Object();
     }
+
 
     @Override
     public void flush() {
@@ -186,5 +192,34 @@ public class ExternalSupplyMemoryRepository implements ExternalSupplyRepository 
     @Override
     public Page<ExternalSupplyService> findAll(Pageable pageable) {
         return null;
+    }
+
+
+    @Override
+    public List<ShippingDTO> getUserHistory(String userName) {
+        synchronized (usersShippingHistoryLock){
+            return usersShippingHistory.get(userName);
+        }
+    }
+
+    @Override
+    public List<ShippingDTO> getSystemHistory() {
+        List<ShippingDTO> shippingDTOS= new ArrayList<>();
+        synchronized (usersShippingHistoryLock){
+            for (List<ShippingDTO> shippingDTO: usersShippingHistory.values()){
+                shippingDTOS.addAll(shippingDTO);
+            }
+        }
+        return shippingDTOS;
+    }
+
+    @Override
+    public void addShippingDTO(ShippingDTO shippingDTO) {
+        synchronized (usersShippingHistoryLock){
+            if (getUserHistory(shippingDTO.getMemberId())==null){
+                usersShippingHistory.put(shippingDTO.getMemberId(), new ArrayList<>());
+            }
+            usersShippingHistory.get(shippingDTO.getMemberId()).add(shippingDTO);
+        }
     }
 }

@@ -45,7 +45,7 @@ public class RemoveExternalPaymentServices {
         String userId = market.enterMarketSystem();
         market.register(userId, new UserDTO("nadav", "nadavKt","10/10/2002","nad","vv "," vv","nasav " ), "nadavVV1");
         String memberId= market.Login(userId, "nadavKt", "nadavVV1");
-        market.getSystemManagerIds().add(memberId);
+        market.addSystemManagerForTest(memberId);
 
         // Act and Assert
         assertDoesNotThrow(() -> {
@@ -60,7 +60,7 @@ public class RemoveExternalPaymentServices {
         String userId = market.enterMarketSystem();
         market.register(userId, new UserDTO("nadav", "nadavKt","10/10/2002","nad","vv "," vv","nasav " ), "nadavVV1");
         String memberId= market.Login(userId, "nadavKt", "nadavVV1");
-        market.getSystemManagerIds().add(memberId);
+        market.addSystemManagerForTest(memberId);
         market.addExternalPaymentService("https://damp-lynna-wsep-1984852e.koyeb.app/",userId);
 
 
@@ -82,7 +82,7 @@ public class RemoveExternalPaymentServices {
         String userId = market.enterMarketSystem();
         market.register(userId, new UserDTO("nadav", "nadavKt","10/10/2002","nad","vv "," vv","nasav " ), "nadavVV1");
         String memberId= market.Login(userId, "nadavKt", "nadavVV1");
-        market.getSystemManagerIds().add(memberId);
+        market.addSystemManagerForTest(memberId);
         market.addExternalPaymentService("https://damp-lynna-wsep-1984852e.koyeb.app/",userId);
 
         // Act and Assert

@@ -9,8 +9,8 @@ public class ShippingDTO {
     @Id
     @Column(name = "shipping_id")
     private String shipping_id;
-    @Column(name = "user_name", nullable = false)
-    private String userName;
+    @Column(name = "memberId", nullable = false)
+    private String memberId;
     @Column(name = "country", nullable = false)
     private String country;
     @Column(name = "city", nullable = false)
@@ -29,10 +29,10 @@ public class ShippingDTO {
 
 
     // Constructor
-    public ShippingDTO(String shipping_id , int transactionId , String userName, String country, String city,
+    public ShippingDTO(String shipping_id , int transactionId , String memberId, String country, String city,
                        String address , String acquisitionId ) {
         this.shipping_id = shipping_id;
-        this.userName = userName;
+        this.memberId = memberId;
         this.country = country;
         this.city = city;
         this.address = address;
@@ -52,8 +52,8 @@ public class ShippingDTO {
 
 
     // Getters
-    public String getUserName() {
-        return userName;
+    public String getMemberId() {
+        return memberId;
     }
 
     public String getCountry() {

@@ -23,8 +23,8 @@ public class ExternalSupplyService {
     @Transient
     private HttpRequestController httpReqCtrl;
 
-    @Transient
-    private Map<String, ShippingDTO> shippingAndDetails = new HashMap<>();
+    //@Transient
+    //private Map<String, ShippingDTO> shippingAndDetails = new HashMap<>();
 //    private final Object countriesLock;
 //    private final Object citiesLock;
     @Transient
@@ -113,11 +113,6 @@ public class ExternalSupplyService {
 //    }
 
 
-    public String getCurrentShippingID (){
-        UUID uuid = UUID.randomUUID();
-        return "shipping-" + uuid;
-
-    }
 
 
 //    public void createShiftingDetails(String userName, String country,String city,String address, String acquisitionId){
@@ -129,11 +124,11 @@ public class ExternalSupplyService {
 //            shiftIdAndDetails.put(shippingId, shiftingDetails);
 //        }
 //    }
-    public Map<String, ShippingDTO> getShippingAndDetails(){
-        synchronized (shippingLock) {
-            return this.shippingAndDetails;
-        }
-    }
+//    public Map<String, ShippingDTO> getShippingAndDetails(){
+//        synchronized (shippingLock) {
+//            return this.shippingAndDetails;
+//        }
+//    }
 
     public boolean checkHandShake() throws Exception {
         this.httpReqCtrl = new HttpRequestController(supplyURL);
@@ -164,10 +159,7 @@ public class ExternalSupplyService {
             }
             try {
                 int transactionId = Integer.parseInt(response);
-                String shippingId = getCurrentShippingID();
                 if (isValidTransactionID(transactionId)) {
-                    ShippingDTO shippingDTO = new ShippingDTO(shippingId, transactionId, userName, country, city, address, acquisitionId);
-                    shippingAndDetails.put(shippingId, shippingDTO);
                     return transactionId;
                 }
                 return  -1;
@@ -182,8 +174,8 @@ public class ExternalSupplyService {
         }
     }
 
-        public int cancelSupply(String shippingId)  throws Exception{
-            int transactionID = getTransactionId(shippingId);
+        public int cancelSupply(int transactionID, String shippingId)  throws Exception{
+            //int transactionID = getTransactionId(shippingId);
             if(httpReqCtrl == null) //If constructor failed
             {
                 throw new Exception("No connection established");
@@ -214,9 +206,9 @@ public class ExternalSupplyService {
             {
                 throw new Exception(ExceptionsEnum.cancelFailed.toString());
             }
-            synchronized (shippingAndDetails) {
-                this.shippingAndDetails.remove(shippingId);
-            }
+//            synchronized (shippingAndDetails) {
+//                this.shippingAndDetails.remove(shippingId);
+//            }
             return cancelRes;
         }
 
@@ -224,29 +216,29 @@ public class ExternalSupplyService {
             return transactionID >= 10000 && transactionID <= 100000;
         }
 
-        public boolean hasShipment(String shippingID){
-            return shippingAndDetails.containsKey(shippingID);
-        }
+//        public boolean hasShipment(String shippingID){
+//            return shippingAndDetails.containsKey(shippingID);
+//        }
+//
+//        public String getShippingId(String acquisitionId){
+//            for (ShippingDTO shippingDTO : shippingAndDetails.values()){
+//                if (shippingDTO.getAcquisitionId().equals(acquisitionId)){
+//                    return shippingDTO.getShipping_id();
+//                }
+//            }
+//            return null;
+//        }
 
-        public String getShippingId(String acquisitionId){
-            for (ShippingDTO shippingDTO : shippingAndDetails.values()){
-                if (shippingDTO.getAcquisitionId().equals(acquisitionId)){
-                    return shippingDTO.getShipping_id();
-                }
-            }
-            return null;
-        }
-
-        public int getTransactionId(String shippingId){
-            synchronized (shippingLock){
-                ShippingDTO shippingDTO=  shippingAndDetails.get(shippingId);
-                if (shippingDTO!=null){
-                    return shippingDTO.getTransactionId();
-                }
-
-            }
-            return -1;
-        }
+//        public int getTransactionId(String shippingId){
+//            synchronized (shippingLock){
+//                ShippingDTO shippingDTO=  shippingAndDetails.get(shippingId);
+//                if (shippingDTO!=null){
+//                    return shippingDTO.getTransactionId();
+//                }
+//
+//            }
+//            return -1;
+//        }
 
 
 
