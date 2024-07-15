@@ -19,6 +19,26 @@ public class ReceiptDTO {
         this. productList = productList;
     }
 
+    public ReceiptDTO(){
+
+    }
+
+    public void setReceiptId(String receiptId) {
+        this.receiptId = receiptId;
+    }
+
+    public void setStoreId(String storeId) {
+        this.storeId = storeId;
+    }
+
+    public void setMemberId(String memberId) {
+        this.memberId = memberId;
+    }
+
+    public void setProductList(Map<String, List<Integer>> productList) {
+        this.productList = productList;
+    }
+
     public String getReceiptId() {
         return receiptId;
     }
