@@ -38,7 +38,7 @@ import static org.mockito.Mockito.*;
 @ContextConfiguration(classes = {Application.class, RealToTest.class})
 @SpringBootTest
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
+//@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
 public class Provision {
 
     @Inject
@@ -69,28 +69,19 @@ public class Provision {
         this.paymentServicesFacade = market.getPaymentServiceFacade();
         this.supplyServicesFacade = market.getSupplyServicesFacade();
         this.authenticationAndSecurityFacade = market.getAuthenticationAndSecurityFacade();
+        paymentServicesFacade.clearPaymentServices();
 
         this.userFacade = market.getUserFacade();
         //market = new Market(paymentServicesFacade, supplyServicesFacade,authenticationAndSecurityFacade);
       //  resetSingletons();
 
     }
-    private  void resetSingletons() {
-        // Clear the state in Market singleton
-        market.getSystemManagerIds().clear();
 
-        // Clear the state in PaymentServicesFacade singleton
-        paymentServicesFacade.clearPaymentServices();
-
-        //supplyServicesFacade.clearPaymentServices();
-
-        // Add any other necessary resets for singletons here
-    }
 
     @Test
     @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
     public void notExitingSupplyServiceTest() throws Exception {
-        PaymentDTO paymentDTO = new PaymentDTO("130", "david", "USD","9868986898689868", 982, 6,2030);
+        PaymentDTO paymentDTO = new PaymentDTO("13022303", "david", "USD","9868986898689868", 100, 6,2030);
         UserDTO userDTO = new UserDTO("testUser", "birth", "israel", "bash", "bash", "David", "testUser");
         // Mock the necessary methods
         UserFacade userFacade = Mockito.mock(UserFacade.class);

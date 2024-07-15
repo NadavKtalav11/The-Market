@@ -42,6 +42,7 @@ public class RemoveStoreProduct {
         impl.login(tomUserID, "tom", "Shlaifer2");
         storeID = impl.openStore(saarUserID, "alona", "shopping").getData();
         impl.appointStoreManager(saarUserID, "tom", storeID, true, false);
+        impl.answerJobProposal(tomUserID,storeID,true, true);
         impl.addProductToStore(saarUserID, storeID, "weddingDress", 10, 5, "pink", "CLOTHING");
     }
 

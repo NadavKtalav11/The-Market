@@ -8,6 +8,7 @@ import ServiceLayer.Response;
 import Util.ExceptionsEnum;
 import Util.UserDTO;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,7 +42,7 @@ public class AppointOwner {
     private static final String SECOND_OWNER_PASSWORD = "SecondOwner1";
 
 
-    @BeforeAll
+    @BeforeEach
     public void setUp() {
         saarUserID = impl.enterMarketSystem().getData();
         impl.register(saarUserID,"saar", "10/04/84", "Israel", "Jerusalem", "Yehuda halevi 18", "saar", "Fadidaa1");
@@ -50,8 +51,12 @@ public class AppointOwner {
         jalalUserID = impl.enterMarketSystem().getData();
         impl.register(jalalUserID,"jalal", "08/02/82", "Israel", "Jerusalem", "Yehuda halevi 13", "jalal", "Kasoomm3");
         impl.login(saarUserID, "saar", "Fadidaa1");
+        impl.login(tomUserID, "tom", "Shlaifer2");
+
+
         storeID = impl.openStore(saarUserID, "alona", "shopping").getData();
         impl.appointStoreOwner(saarUserID, "tom", storeID);
+        impl.answerJobProposal(tomUserID, storeID,false, true);
         samiUserID = impl.enterMarketSystem().getData();
         impl.register(samiUserID,"sami", "08/02/82", "Israel", "Jerusalem", "Yehuda halevi 13", "sami", "Ka939kkmm3");
         secondOwnerID = impl.enterMarketSystem().getData();
@@ -61,11 +66,13 @@ public class AppointOwner {
     }
 
     @Test
+    @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
     public void successfulAppointedTest() {
         assertTrue(impl.appointStoreOwner(saarUserID, "sami",storeID).isSuccess());
     }
 
     @Test
+    @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
     public void alreadyStoreOwnerTest() {
         Response<String> response = impl.appointStoreOwner(saarUserID, "tom",storeID);
         assertFalse(response.isSuccess());
@@ -73,6 +80,7 @@ public class AppointOwner {
     }
 
     @Test
+    @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
     public void concurrentAppointOwnerTest() throws InterruptedException {
         // Create a latch to synchronize the start of both threads
         CountDownLatch latch = new CountDownLatch(1);

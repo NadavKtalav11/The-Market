@@ -2,9 +2,8 @@ package DomainLayer.SupplyServices;
 
 import DomainLayer.HttpRequestController;
 import Util.ExceptionsEnum;
+import Util.ShippingDTO;
 import jakarta.persistence.Entity;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.MapKeyColumn;
 import jakarta.persistence.*;
 
 import java.util.*;
@@ -74,6 +73,7 @@ public class ExternalSupplyService {
     }
 
     public boolean checkAreaAvailability(String country, String city){
+
 //        synchronized (countriesLock) {
 //            if (!countries.contains(country)) {
 //                return false;

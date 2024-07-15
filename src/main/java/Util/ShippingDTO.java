@@ -1,4 +1,4 @@
-package DomainLayer.SupplyServices;
+package Util;
 
 import java.util.Date;
 import jakarta.persistence.*;

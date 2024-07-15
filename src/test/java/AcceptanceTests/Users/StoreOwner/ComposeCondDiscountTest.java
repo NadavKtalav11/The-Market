@@ -8,6 +8,7 @@ import Util.DiscountValueDTO;
 import Util.ExceptionsEnum;
 import Util.TestRuleDTO;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,7 +33,7 @@ public class ComposeCondDiscountTest {
     static String saarUserID;
     static String storeId;
 
-    @BeforeAll
+    @BeforeEach
     public void setUp() {
         saarUserID = impl.enterMarketSystem().getData();
         impl.register(saarUserID,"saar", "10/04/84", "Israel", "Jerusalem", "Yehuda halevi 18", "saar", "Fadidaa1");
@@ -73,6 +74,7 @@ public class ComposeCondDiscountTest {
     }
 
     @Test
+    @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
     public void successfulComposeTest() {
         assertTrue(impl.composeCurrentCondDiscountRules(0, 1, "OR", "ADD", saarUserID, storeId).isSuccess());
 
@@ -80,18 +82,21 @@ public class ComposeCondDiscountTest {
 
 
     @Test
+    @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
     public void logicalOperatorDontExist() {
         assertFalse(impl.composeCurrentCondDiscountRules(0, 1, "NOR", "ADD", saarUserID, storeId).isSuccess());
         assertEquals(impl.composeCurrentCondDiscountRules(0, 1, "NOR", "ADD", saarUserID, storeId).getDescription(), ExceptionsEnum.InvalidOperator.toString());
     }
 
     @Test
+    @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
     public void numericalOperatorDontExist() {
         assertFalse(impl.composeCurrentCondDiscountRules(0, 1, "OR", "MIN", saarUserID, storeId).isSuccess());
         assertEquals(impl.composeCurrentCondDiscountRules(0, 1, "OR", "MIN", saarUserID, storeId).getDescription(), ExceptionsEnum.InvalidOperator.toString());
     }
 
     @Test
+    @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
     public void ruleNumDontExist() {
         assertFalse(impl.composeCurrentCondDiscountRules(2, 1, "OR", "ADD", saarUserID, storeId).isSuccess());
         assertEquals(impl.composeCurrentCondDiscountRules(2, 1, "OR", "ADD", saarUserID, storeId).getDescription(), ExceptionsEnum.InvalidRuleIndex.toString());

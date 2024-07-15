@@ -71,12 +71,12 @@ public class PurhcaseHistoryInfo {
         MockitoAnnotations.openMocks(this);
 
         // Mocking the payWithExternalPaymentService method in the Market class
-        when(market.payWithExternalPaymentService(any(CartDTO.class), any(PaymentDTO.class), anyString()))
-                .thenReturn("mockAcquisitionId");
+        //when(market.payWithExternalPaymentService(any(CartDTO.class), any(PaymentDTO.class), anyString()))
+          //      .thenReturn("mockAcquisitionId");
 
         // Initializing market with mocked dependencies
-        market = new Market(userFacade, storeFacade, supplyServicesFacade,
-                paymentServicesFacade, roleFacade, initializedRepository);
+        //market = new Market(userFacade, storeFacade, supplyServicesFacade,
+        //        paymentServicesFacade, roleFacade, initializedRepository);
 
         HashSet<String> countries = new HashSet<>();
         countries.add("Israel");

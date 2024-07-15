@@ -333,4 +333,14 @@ public class ProxyToTest implements BridgeToTests {
         else
             return new Response<>(null, "Not Implemented yet");
     }
+
+    @Override
+    public Response<String> answerJobProposal(String userId, String storeId, boolean managerProposal, boolean answer) {
+        if (realServiceAdaptor != null) {
+            return realServiceAdaptor.answerJobProposal(userId, storeId, managerProposal, answer);
+        }
+        else {
+            return new Response<>(null, "Not Implemented yet");
+        }
+    }
 }

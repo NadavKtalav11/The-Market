@@ -20,7 +20,7 @@ public interface StoreManagerRepository extends JpaRepository<StoreManager, Stri
     StoreManager getStoreManager(String storeId, String memberId);
 
     //מועמד
-    @Query("SELECT so FROM StoreManager so WHERE so.id.store_ID = :storeId AND so.id.member_ID = :memberId AND so.inProposal = true ")
+    @Query("SELECT so FROM StoreManager so WHERE so.id.store_ID = :storeId AND so.id.member_ID = :memberId AND so.inProposal = true")
     StoreManager getStoreManagerNominator(String storeId, String memberId);
 
     @Query("SELECT so.id.member_ID FROM StoreManager so")
