@@ -115,7 +115,7 @@ public class RoleFacade {
     }
 
     public void createStoreManagerWithoutAsk(String memberId, String storeId,
-                                   boolean inventoryPermissions, boolean purchasePermissions, String nominatorMemberId) throws Exception {
+                                             boolean inventoryPermissions, boolean purchasePermissions, String nominatorMemberId) throws Exception {
         if (!verifyStoreOwner(storeId, memberId) && !verifyStoreManager(storeId, memberId)) {
             StoreManager newStoreManager = new StoreManager(memberId, storeId, inventoryPermissions, purchasePermissions, nominatorMemberId, false);
             addNewStoreManagerToTheMarket(newStoreManager);
@@ -333,7 +333,7 @@ public class RoleFacade {
 
 
     public List<String> getStoresByOwner(List<String> stores, String member_ID) {
-        /*this function gets list of stores id and member id, and return only stores id in which the member is owner*/
+        //this function gets list of stores id and member id, and return only stores id in which the member is owner/
 
         List<String> storesOwned = new ArrayList<>();
 
@@ -388,7 +388,7 @@ public class RoleFacade {
             throw new IllegalArgumentException("this member already nominated to be store owner in this store");
         }
         if (verifyStoreOwner(storeId, memberId))
-                throw new Exception(ExceptionsEnum.memberIsAlreadyStoreOwner.toString());
+            throw new Exception(ExceptionsEnum.memberIsAlreadyStoreOwner.toString());
 
         StoreOwner newStoreOwner = new StoreOwner(memberId, storeId, founder, nominatorMemberId, true);
         addNewStoreOwnerNominatorToTheMarket(newStoreOwner);
@@ -488,4 +488,3 @@ public class RoleFacade {
         storeManagerRepository.delete(storeManager);
     }
 }
-
