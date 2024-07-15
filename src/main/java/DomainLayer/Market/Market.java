@@ -842,6 +842,7 @@ public class Market {
     @Transactional
     protected void sendMessagesToOwnersAndManagers(String storeId , String message) throws Exception { // Inject VaadinUserService and NotificationService
 
+
         List<String> storeOwnerIds = roleFacade.getAllStoreOwners(storeId);
         //String storeName = storeFacade.getStoreName(storeId);
 
@@ -2099,6 +2100,11 @@ public class Market {
         return authenticationAndSecurityFacade;
     }
 
+
+    public MyWebSocketHandler getMyWebSocketHandler() {
+        return myWebSocketHandler;
+    }
+
     public void resetAllTables() {
         storeFacade.reset();
         userFacade.reset();
@@ -2106,5 +2112,6 @@ public class Market {
         paymentServicesFacade.reset();
         supplyServicesFacade.reset();
        // initializedRepository.deleteAll();
+
     }
 }
