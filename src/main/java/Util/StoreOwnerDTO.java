@@ -24,21 +24,32 @@ public class StoreOwnerDTO {
         return nominatorId;
     }
 
-    public boolean getFounder() {
+    public void setNominatorId(String nominatorId) {
+        this.nominatorId = nominatorId;
+    }
+
+    public boolean isFounder() {
         return founder;
     }
 
+    public void setFounder(boolean founder) {
+        this.founder = founder;
+    }
 
-    public boolean verifyStoreOwnerIsFounder()
-    {
-        return founder;
+    public String getMemberId() {
+        return memberId;
+    }
+
+    public void setMemberId(String memberId) {
+        this.memberId = memberId;
     }
 
     public String getStoreId() {
         return storeId;
     }
 
-    public String getMemberId() {
-        return memberId;
+    public void setStoreId(String storeId) {
+        this.storeId = storeId;
     }
+
 }

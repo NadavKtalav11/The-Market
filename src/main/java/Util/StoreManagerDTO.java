@@ -7,8 +7,8 @@ import java.util.List;
 public class StoreManagerDTO {
 
     private String storeId;
-    private String memberId;
 
+    private String memberId;
 
     private boolean inventoryPermissions;
 
@@ -35,32 +35,44 @@ public class StoreManagerDTO {
         this.purchasePermissions = purchasePermissions;
     }
 
-    public String getNominatorMemberId()
-    {
-        return this.nominatorMemberId;
+    public String getStoreId() {
+        return storeId;
     }
 
-    public String getStore_ID()
-    {
-        return this.storeId;
+    public void setStoreId(String storeId) {
+        this.storeId = storeId;
     }
 
-    public String getMember_ID()
-    {
-        return this.memberId;
+    public String getMemberId() {
+        return memberId;
     }
 
-    public String getNominatorId() {
-        return this.nominatorMemberId;
+    public void setMemberId(String memberId) {
+        this.memberId = memberId;
     }
 
-
-    public boolean hasInventoryPermissions(){
-        return this.inventoryPermissions;
+    public boolean isInventoryPermissions() {
+        return inventoryPermissions;
     }
 
-    public boolean hasPurchasePermissions(){
-        return this.purchasePermissions;
+    public void setInventoryPermissions(boolean inventoryPermissions) {
+        this.inventoryPermissions = inventoryPermissions;
+    }
+
+    public boolean isPurchasePermissions() {
+        return purchasePermissions;
+    }
+
+    public void setPurchasePermissions(boolean purchasePermissions) {
+        this.purchasePermissions = purchasePermissions;
+    }
+
+    public void setNominatorMemberId(String nominatorMemberId) {
+        this.nominatorMemberId = nominatorMemberId;
+    }
+
+    public String getNominatorMemberId() {
+        return nominatorMemberId;
     }
 }
 
