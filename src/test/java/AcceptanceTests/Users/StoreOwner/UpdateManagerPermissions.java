@@ -7,10 +7,7 @@ import PresentationLayer.Application;
 import ServiceLayer.Response;
 import Util.ExceptionsEnum;
 import Util.UserDTO;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
@@ -58,6 +55,11 @@ public class UpdateManagerPermissions {
         Response<String> response = impl.appointStoreManager(jalalUserID, "ovad", storeIDjalal, true, true);
 
         impl.answerJobProposal(ovadUserID, storeIDjalal, true,true);
+    }
+
+    @AfterEach
+    public void tearDown() {
+        impl.resetAllTables();
     }
 
     @Test

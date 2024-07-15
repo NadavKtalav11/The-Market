@@ -7,6 +7,7 @@ import DomainLayer.Market.Market;
 import PresentationLayer.Application;
 import Util.SupplyServiceDTO;
 import Util.UserDTO;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import Util.ExceptionsEnum;
@@ -32,6 +33,11 @@ public class AddingExternalSupplyServices {
 
     @BeforeEach
     public void setUp() {
+    }
+
+    @AfterEach
+    public void tearDown() {
+        market.resetAllTables();
     }
 
     @Test

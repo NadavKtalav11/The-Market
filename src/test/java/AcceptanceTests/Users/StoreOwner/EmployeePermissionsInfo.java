@@ -7,9 +7,7 @@ import PresentationLayer.Application;
 import ServiceLayer.Response;
 import Util.ExceptionsEnum;
 import Util.UserDTO;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
@@ -41,7 +39,7 @@ public class EmployeePermissionsInfo {
     private static String memberID3;
     private static String memberID4;
 
-    @BeforeAll
+    @BeforeEach
     public void setUp() {
         userID1 = impl.enterMarketSystem().getData();
         userID2 = impl.enterMarketSystem().getData();
@@ -53,6 +51,11 @@ public class EmployeePermissionsInfo {
         memberID4 = impl.register(userID4,"ovad", "08/02/82", "Israel", "Jerusalem", "Yehuda halevi 11", "ovad", "Haviaaa4").getData();
         impl.login(userID1, "saar", "Fadidaa1");
         impl.login(userID2, "tom", "Shlaifer2");
+    }
+
+    @AfterEach
+    public void tearDown() {
+        impl.resetAllTables();
     }
 
     @Test

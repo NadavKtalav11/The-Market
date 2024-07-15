@@ -9,6 +9,7 @@ import Util.ExceptionsEnum;
 import Util.SupplyServiceDTO;
 import Util.UserDTO;
 import jakarta.inject.Inject;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
@@ -43,6 +44,12 @@ public class RemoveExternalSupplyServices {
         market.addSystemManagerForTest(memberId);
 
     }
+
+    @AfterEach
+    public void tearDown() {
+        market.resetAllTables();
+    }
+
     @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
     @Test
     public void testRemoveExternalPaymentServiceSuccess() throws Exception {

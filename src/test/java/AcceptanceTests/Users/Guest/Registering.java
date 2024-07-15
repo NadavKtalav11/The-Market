@@ -34,6 +34,11 @@ public class Registering {
         userID3 = impl.enterMarketSystem().getData();
     }
 
+    @AfterEach
+    public void tearDown() {
+        impl.resetAllTables();
+    }
+
     @Test
     public void successfulRegistrationTest() {
         assertTrue(impl.register(userID1, "newUser1", "12/12/2000", "Israel", "BeerSheva", "bialik", "noa", "Password123").isSuccess());

@@ -64,7 +64,10 @@ public class RoleFacade {
         return roleFacadeInstance;
     }
 
-
+    public void reset(){
+        storeManagerRepository.deleteAll();
+        storeOwnerRepository.deleteAll();
+    }
 
 
     public boolean verifyStoreOwner(String storeID, String memberID) {
@@ -229,10 +232,11 @@ public class RoleFacade {
         if (verifyStoreManager(storeId, memberId)) {
             StoreManager storeManager =getStoreManager(storeId, memberId);
             if (storeManager!=null && storeManager.getNominatorMemberId().equals(nominatorMemberID)) {
-//                StoreManager storeManager = getStoreManager(storeId, memberId);
-//                storeManager.setPermissions(inventoryPermissions, purchasePermissions);
-//                storeManager = getStoreManager(storeId, memberId);
-                storeManagerRepository.updateStoreManagerPermissions(memberId,storeId,inventoryPermissions,purchasePermissions,nominatorMemberID);
+                //StoreManager storeManager = getStoreManager(storeId, memberId);
+                storeManager.setPermissions(inventoryPermissions, purchasePermissions);
+                //storeManager = getStoreManager(storeId, memberId);
+                //storeManagerRepository.updateStoreManagerPermissions(memberId,storeId,inventoryPermissions,purchasePermissions,nominatorMemberID);
+                storeManagerRepository.save(storeManager);
             } else {
                 throw new Exception(ExceptionsEnum.notNominatorOfThisEmployee.toString());
             }

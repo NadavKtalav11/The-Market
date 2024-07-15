@@ -59,6 +59,7 @@ public class UserFacadeTest {
     public void tearDown() {
         // Reset the UserFacade singleton for each test
         userFacade.getUserRepository().deleteAll();
+        memberRepository.deleteAll();
     }
 
     @Test
