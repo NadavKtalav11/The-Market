@@ -7,10 +7,7 @@ import PresentationLayer.Application;
 import ServiceLayer.Response;
 import Util.ExceptionsEnum;
 import Util.UserDTO;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
@@ -63,6 +60,11 @@ public class AppointOwner {
         impl.register(secondOwnerID, SECOND_OWNER_USERNAME, "15/05/83", "Israel", "Jerusalem", "Yehuda halevi 12", SECOND_OWNER_USERNAME, SECOND_OWNER_PASSWORD);
         jalalUserID = impl.enterMarketSystem().getData();
         impl.register(jalalUserID, JALAL_USERNAME, "08/02/82", "Israel", "Jerusalem", "Yehuda halevi 13", JALAL_USERNAME, JALAL_PASSWORD);
+    }
+
+    @AfterEach
+    public void tearDown() {
+        impl.resetAllTables();
     }
 
     @Test
@@ -140,4 +142,3 @@ public class AppointOwner {
         }
     }
 }
-

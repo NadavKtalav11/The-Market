@@ -6,9 +6,7 @@ import AcceptanceTests.RealToTest;
 import PresentationLayer.Application;
 import Util.DiscountValueDTO;
 import Util.ExceptionsEnum;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
@@ -30,7 +28,7 @@ public class RemoveDiscountRuleTest {
     static String saarUserID;
     static String storeId;
 
-    @BeforeAll
+    @BeforeEach
     public void setUp() {
         saarUserID = impl.enterMarketSystem().getData();
         impl.register(saarUserID,"saar", "10/04/84", "Israel", "Jerusalem", "Yehuda halevi 18", "saar", "Fadidaa1");
@@ -49,6 +47,11 @@ public class RemoveDiscountRuleTest {
         discountDetails2.add(new DiscountValueDTO(10, "ELECTRONICS", false, null));
         List<String> numericalOperators2 = new ArrayList<>();
         impl.addDiscountSimpleRuleToStore(discountDetails2, numericalOperators2, saarUserID, storeId);
+    }
+
+    @AfterEach
+    public void tearDown() {
+        impl.resetAllTables();
     }
 
     @Test

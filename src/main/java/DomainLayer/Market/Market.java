@@ -296,6 +296,7 @@ public class Market {
 
     }
 
+
     public PaymentServicesFacade getPaymentServicesFacade(){
         return this.paymentServicesFacade;
     }
@@ -304,7 +305,7 @@ public class Market {
         return this.supplyServicesFacade;
     }
 
-
+    @Transactional
     public synchronized Market newForTests(){
         MarketInstance = new Market();
         StoreFacade storeFacade1 =  storeFacade.newForTest();
@@ -331,6 +332,7 @@ public class Market {
 
     }
 
+    @Transactional
     public Map<String, Object> loadAdminConfiguration(String configFilePath) throws Exception {
         try (InputStream inputStream = new FileInputStream(configFilePath)) {
             Yaml yaml = new Yaml();
@@ -426,6 +428,7 @@ public class Market {
             return firstUserID; // Return the generated user ID
         }
 
+    @Transactional
     public void validateAdminPassword1(String adminPassword) throws Exception {
         if (adminPassword == null || adminPassword.isEmpty()) {
             throw new Exception(ExceptionsEnum.emptyField.toString());
@@ -436,7 +439,8 @@ public class Market {
         }
     }
 
-    private void registerUsersInitState(List<String> usersToRegister, Map<String, Object> usersData) throws Exception {
+    @Transactional
+    protected void registerUsersInitState(List<String> usersToRegister, Map<String, Object> usersData) throws Exception {
         for (Map.Entry<String, Object> entry : usersData.entrySet()) {
             String username = entry.getKey();
             if (usersToRegister.contains(username)) {
@@ -479,7 +483,8 @@ public class Market {
 //
 //    }
 
-    private Map<String, String> loginUsersInitState(List<String> userToLogin, Map<String, Object> users) throws Exception {
+    @Transactional
+    protected Map<String, String> loginUsersInitState(List<String> userToLogin, Map<String, Object> users) throws Exception {
         Map<String, String> usernameToUserIdMap = new HashMap<>();
         for (String username : userToLogin) {
             logger.info("try login user");
@@ -495,7 +500,8 @@ public class Market {
         return usernameToUserIdMap;
     }
 
-    private void openStoresInitState( Map<String, Object> stores, Map<String, String> usernameToUserIdMap ) throws Exception {
+    @Transactional
+    protected void openStoresInitState( Map<String, Object> stores, Map<String, String> usernameToUserIdMap ) throws Exception {
 
         for (Map.Entry<String, Object> entry : stores.entrySet()) {
             logger.info(" try open new store");
@@ -511,7 +517,8 @@ public class Market {
         }
     }
 
-    private void appointManagerToStoreInitState( Map<String, Object> actionData, Map<String, String> usernameToUserIdMap) throws Exception {
+    @Transactional
+    protected void appointManagerToStoreInitState( Map<String, Object> actionData, Map<String, String> usernameToUserIdMap) throws Exception {
         String storeName=  (String) actionData.get("store");
         String storeId=  storeFacade.getStoreId(storeName);
         String userNameNominator=  (String) actionData.get("nominatorUser");
@@ -526,15 +533,17 @@ public class Market {
         }
     }
 
-
+    @Transactional
     public List<String> getAllExternalSupplyServices(){
         return supplyServicesFacade.getAllSupplyServicesUrl();
     }
 
+    @Transactional
     public List<String> getAllExternalPaymentServices(){
         return paymentServicesFacade.getAllPaymentServicesUrl();
     }
 
+    @Transactional
     public List<StoreManagerDTO> getManagerJobProposal(String userId) throws Exception {
         String memberId = verifyToken(userId);
         if (memberId== null){
@@ -543,6 +552,7 @@ public class Market {
         return roleFacade.getAllManagerProposal(memberId);
     }
 
+    @Transactional
     public void answerJobProposal(String userId, String storeId, boolean managerProposal, boolean answer) throws Exception {
         if (answer){
             if (managerProposal) {
@@ -565,6 +575,7 @@ public class Market {
     }
 
 
+    @Transactional
     public List<StoreOwnerDTO> getOwnerJobProposal(String userId) throws Exception {
         String memberId = verifyToken(userId);
         if (memberId== null){
@@ -573,7 +584,8 @@ public class Market {
         return roleFacade.getAllOwnersProposal(memberId);
     }
 
-    private void appointOwnerToStoreInitState( Map<String, Object> actionData, Map<String, String> usernameToUserIdMap) throws Exception {
+    @Transactional
+    protected void appointOwnerToStoreInitState(Map<String, Object> actionData, Map<String, String> usernameToUserIdMap) throws Exception {
         String storeName=  (String) actionData.get("store");
         String storeId=  storeFacade.getStoreId(storeName);
         String userNameNominator=  (String) actionData.get("nominatorUser");
@@ -587,8 +599,8 @@ public class Market {
     }
 
 
-
-    private void addProductToStoreInitState(Map<String, Object> products, Map<String, Object> actionData, Map<String, String> usernameToUserIdMap) throws Exception {
+    @Transactional
+    protected void addProductToStoreInitState(Map<String, Object> products, Map<String, Object> actionData, Map<String, String> usernameToUserIdMap) throws Exception {
 
 
         List<String> productToAdd = (List<String>) actionData.get("productName");
@@ -617,7 +629,8 @@ public class Market {
         }
     }
 
-    private void logOutInitState(List<String> usersToLogout, Map<String, String> usernameToUserIdMap) throws Exception {
+    @Transactional
+    protected void logOutInitState(List<String> usersToLogout, Map<String, String> usernameToUserIdMap) throws Exception {
         for (String username : usersToLogout) {
             logger.info(" try log out user");
             String userId = usernameToUserIdMap.get(username);
@@ -626,6 +639,7 @@ public class Market {
         }
     }
 
+    @Transactional
         public void startStateInitialization() throws Exception {
         String configFilePath = "src/main/resources/stateAfterInit.yaml";
         Map<String, String> usernameToUserIdMap = new HashMap<>();
@@ -669,6 +683,7 @@ public class Market {
         }
     }
 
+    @Transactional
     public List<ReceiptDTO> getStoreReceipts(String userId, String storeId) throws Exception {
         String memberId =  verifyToken(userId);
         verifyMemberExist(memberId);
@@ -682,10 +697,12 @@ public class Market {
     }
 
 
+    @Transactional
     public boolean checkInitializedMarket(){
         return Objects.requireNonNull(initializedRepository.findById("market").orElse(null)).isInitialized();
     }
 
+    @Transactional
     public void addExternalPaymentService( String paymentURL, String systemMangerUserId) throws Exception {
         String memberId = verifyToken(systemMangerUserId);
         verifyMemberExist(memberId);
@@ -702,7 +719,7 @@ public class Market {
         };
     }
 
-
+    @Transactional
     public List<AcquisitionDTO> getAllSystemAcquisitions(String systemManagerUserId) throws Exception {
         String memberId = verifyToken(systemManagerUserId);
         verifyMemberExist(memberId);
@@ -713,7 +730,7 @@ public class Market {
     }
 
 
-
+    @Transactional
     public void removeExternalPaymentService(String url, String systemMangerUserId) throws Exception {
         String memberId = verifyToken(systemMangerUserId);
         verifyMemberExist(memberId);
@@ -726,6 +743,7 @@ public class Market {
         paymentServicesFacade.removeExternalService(url);
     }
 
+    @Transactional
     public void addExternalSupplyService(String SupplyURL, String systemManagerUserId) throws Exception {
         String memberId = verifyToken(systemManagerUserId);
         verifyMemberExist(memberId);
@@ -744,6 +762,7 @@ public class Market {
 
     }
 
+    @Transactional
     public void removeExternalSupplyService(String supplyURL, String systemManagerUserId) throws Exception {
         String memberId = verifyToken(systemManagerUserId);
         verifyMemberExist(memberId);
@@ -756,12 +775,14 @@ public class Market {
 
     }
 
+    @Transactional
     public List<String> getSystemManagerIds(){
         synchronized (managersLock) {
             return roleFacade.getSystemManagers();
         }
     }
 
+    @Transactional
     public String purchase(PaymentDTO paymentDTO, UserDTO userDTO, CartDTO cartDTO) throws Exception {
         verifyToken(userDTO.getUserId());
         ScheduledFuture<?> timeoutHandle = null;
@@ -818,8 +839,9 @@ public class Market {
     }
 
 
+    @Transactional
+    protected void sendMessagesToOwnersAndManagers(String storeId , String message) throws Exception { // Inject VaadinUserService and NotificationService
 
-    public void sendMessagesToOwnersAndManagers(String storeId , String message) throws Exception { // Inject VaadinUserService and NotificationService
 
         List<String> storeOwnerIds = roleFacade.getAllStoreOwners(storeId);
         //String storeName = storeFacade.getStoreName(storeId);
@@ -836,8 +858,8 @@ public class Market {
 
 
 
-
-    public void sendMessagesOnPurchaseToStoreOwners(CartDTO cartDTO) throws Exception { // Inject VaadinUserService and NotificationService
+    @Transactional
+    protected void sendMessagesOnPurchaseToStoreOwners(CartDTO cartDTO) throws Exception { // Inject VaadinUserService and NotificationService
         for (String storeId : cartDTO.getStoreToProducts().keySet()) {
             List<String> storeOwnerIds = roleFacade.getAllStoreOwners(storeId);
             String storeName = storeFacade.getStoreName(storeId);
@@ -849,23 +871,24 @@ public class Market {
         }
     }
 
-
+    @Transactional
     public List<String> getUserNotifications(String memberId){
         return myWebSocketHandler.getUserNotifications(memberId);
     }
 
-
+    @Transactional
     public void setUserConfirmationPurchase(String userID) throws Exception {
         verifyToken(userID);
         this.userFacade.setUserConfirmationPurchase(userID);
     }
 
-
+    @Transactional
     public boolean getUserConfirmationPurchase(String userID) throws Exception {
         verifyToken(userID);
         return this.userFacade.getUserByID(userID).isReadyToPay();
     }
 
+    @Transactional
     public void purchaseForTest(PaymentDTO paymentDTO, UserDTO userDTO) throws Exception {
         CartDTO cartDTO = null;
         ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
@@ -905,7 +928,7 @@ public class Market {
         }
     }
 
-
+    @Transactional
     public CartDTO checkingCartValidationBeforePurchase1(String user_ID,UserDTO userDTO) throws Exception {
         if (userFacade.isMember(user_ID)) {
             String memberId = userFacade.getMemberIdByUserId(user_ID);
@@ -946,7 +969,7 @@ public class Market {
     }
 
 
-
+    @Transactional
     public String payWithExternalPaymentService(CartDTO cartDTO,PaymentDTO payment, String userId) throws Exception{
         verifyToken(userId);
         Calendar c = Calendar.getInstance();
@@ -978,24 +1001,26 @@ public class Market {
 //        returnCartToStock(cartDTO.getStoreToProducts());
 //    }
 
+    @Transactional
     //Map<StoreID, Map<ProductName, quantity>>
-    private void returnCartToStock(Map<String, Map<String, List<Integer>>> products) throws Exception {
+    protected void returnCartToStock(Map<String, Map<String, List<Integer>>> products) throws Exception {
         for (String storeId: products.keySet()){
             storeFacade.returnProductToStore(products.get(storeId), storeId);
         }
     }
 
+    @Transactional
     public void logout(String userId) {
         userFacade.logout(userId);
         authenticationAndSecurityFacade.removeToken(userId);
     }
 
-
+    @Transactional
     public void exitMarketSystem(String userId){
         userFacade.exitMarketSystem(userId);
     }
 
-
+    @Transactional
     public String enterMarketSystem(){
         return userFacade.addUser();
     }
@@ -1014,6 +1039,7 @@ public class Market {
         return memberId;
     }
 
+    @Transactional
     public boolean checkPasswordValidation(String password){
         String PASSWORD_PATTERN =
                 "^(?=.*[0-9])" +           // at least one digit
@@ -1024,6 +1050,7 @@ public class Market {
 
     }
 
+    @Transactional
     public String Login(String userId,String username, String password) throws Exception {
         String encryptedPassword = authenticationAndSecurityFacade.encodePassword(password);
         String memberId = userFacade.Login(userId, username,encryptedPassword);
@@ -1031,6 +1058,7 @@ public class Market {
         return memberId;
     }
 
+    @Transactional
     public void addProductToBasket(String productName, int quantity, String storeId, String userId) throws Exception {
         verifyToken(userId);
         storeFacade.checkQuantityAndPrice(productName, quantity, storeId);
@@ -1045,6 +1073,7 @@ public class Market {
 
     }
 
+    @Transactional
     public void removeProductFromBasket(String productName, String storeId, String userId)throws Exception
     {
         verifyToken(userId);
@@ -1052,7 +1081,7 @@ public class Market {
         userFacade.removeItemFromUserCart(productName, storeId, userId);
     }
 
-
+    @Transactional
     public String openStore(String user_ID, String name, String description)throws Exception {
         String memberId = verifyToken(user_ID);
         userFacade.isUserLoggedInError(user_ID);
@@ -1066,6 +1095,7 @@ public class Market {
         return store_ID;
     }
 
+    @Transactional
     public void addProductToStore(String userId, String storeId, ProductDTO product) throws Exception {
 
         userFacade.errorIfUserNotExist(userId);
@@ -1082,13 +1112,14 @@ public class Market {
         }
     }
 
-
+    @Transactional
     public List<ShippingDTO> getUserShippingDTOs(String userId) throws Exception {
         String memberId = verifyToken(userId);
         verifyMemberExist(memberId);
         return supplyServicesFacade.getUserHistory(memberId);
     }
 
+    @Transactional
     public List<ShippingDTO> getSystemsupplyHistory(String systemManagerUserId) throws Exception {
         String memberId = verifyToken(systemManagerUserId);
         verifyMemberExist(memberId);
@@ -1098,6 +1129,7 @@ public class Market {
         return supplyServicesFacade.getSystemHistory();
     }
 
+    @Transactional
     public void removeProductFromStore(String userId, String storeId, String productName) throws Exception {
         String memberId = verifyToken(userId);
         userFacade.errorIfUserNotExist(userId);
@@ -1114,6 +1146,7 @@ public class Market {
         }
     }
 
+    @Transactional
     public void updateProductInStore(String userId, String storeId, ProductDTO product) throws Exception {
         String memberId = verifyToken(userId);
         verifyMemberExist(memberId);
@@ -1128,7 +1161,7 @@ public class Market {
         }
     }
 
-
+    @Transactional
     public void approveStoreOwnerInvitation(String userId,  String storeId) throws Exception {
         String memberId = verifyToken(userId);
         verifyMemberExist(memberId);
@@ -1138,7 +1171,7 @@ public class Market {
                 userFacade.getMemberName(memberId)  + " approved your offer to be store Manager in store " + storeFacade.getStoreName(storeId));
     }
 
-
+    @Transactional
     public void declineStoreOwnerInvitation(String userId,  String storeId) throws Exception {
         String memberId = verifyToken(userId);
         verifyMemberExist(memberId);
@@ -1149,6 +1182,7 @@ public class Market {
 
     }
 
+    @Transactional
     public void declineStoreManagerInvitation(String userId,  String storeId) throws Exception {
         String memberId = userFacade.getMemberIdByUserId(userId);
         verifyMemberExist(memberId);
@@ -1160,6 +1194,7 @@ public class Market {
 
     }
 
+    @Transactional
     public void approveStoreManagerInvitation(String userId,  String storeId) throws Exception {
         String memberId = userFacade.getMemberIdByUserId(userId);
         verifyMemberExist(memberId);
@@ -1169,8 +1204,7 @@ public class Market {
                 userFacade.getMemberName(memberId)  + " approved your offer to be store Manager in store " + storeFacade.getStoreName(storeId));
     }
 
-
-
+    @Transactional
     public void appointStoreOwner(String nominatorUserId, String nominatedUsername, String storeId) throws Exception {
         userFacade.errorIfUserNotExist(nominatorUserId);
         String nominatorMemberID = userFacade.getMemberIdByUserId(nominatorUserId);
@@ -1184,6 +1218,7 @@ public class Market {
                 "you have new job proposal from " +userFacade.getMemberName(nominatorMemberID)+  " to be store owner in store " + storeFacade.getStoreName(storeId) + " please accept or decline the proposal in the jobs page");
     }
 
+    @Transactional
     public void fireStoreOwner(String nominatorUserId, String nominatedUsername, String storeId) throws Exception {
         userFacade.errorIfUserNotExist(nominatorUserId);
         String nominatorMemberID = userFacade.getMemberIdByUserId(nominatorUserId);
@@ -1198,6 +1233,7 @@ public class Market {
         myWebSocketHandler.handleStringMessage(nominatedMemberID , "you fired as store owner of store -by " + userFacade.getMemberName(nominatorMemberID));
     }
 
+    @Transactional
     public void appointStoreManager(String nominatorUserId, String nominatedUsername, String storeId,
                                     boolean inventoryPermissions, boolean purchasePermissions) throws Exception {
         userFacade.errorIfUserNotExist(nominatorUserId);
@@ -1212,6 +1248,7 @@ public class Market {
                 "you have new job proposal from " +userFacade.getMemberName(nominatorMemberID)+  " to be store manager in store " + storeFacade.getStoreName(storeId) + " please accept or decline the proposal in the jobs page");
     }
 
+    @Transactional
     public void fireStoreManager(String nominatorUserId, String nominatedUsername, String storeId) throws Exception {
         userFacade.errorIfUserNotExist(nominatorUserId);
         String nominatorMemberID = verifyToken(nominatorUserId);
@@ -1225,6 +1262,7 @@ public class Market {
         myWebSocketHandler.handleStringMessage(nominatedMemberID , "you fired as store owner of store -by " + userFacade.getMemberName(nominatorMemberID));
     }
 
+    @Transactional
     public void updateStoreManagerPermissions(String nominatorUserId, String nominatedUsername, String storeId,
                                     boolean inventoryPermissions, boolean purchasePermissions) throws Exception {
         userFacade.errorIfUserNotExist(nominatorUserId);
@@ -1240,10 +1278,12 @@ public class Market {
         roleFacade.updateStoreManagerPermissions(nominatedMemberID, storeId, inventoryPermissions, purchasePermissions, nominatorMemberID);
     }
 
+    @Transactional
     public List<ProductDTO> getStoreProducts(String storeId) throws Exception {
         return storeFacade.getStoreProductsDTO(storeId);
     }
 
+    @Transactional
     public List<UserDTO> getStoreWorkers(String storeId){
         List<UserDTO> workers = new ArrayList<>();
         List<String> managersIdList = roleFacade.getAllStoreManagers(storeId);
@@ -1254,6 +1294,7 @@ public class Market {
 
     }
 
+    @Transactional
     public List<UserDTO> getStoreManagersDTO(String storeId){
         List<UserDTO> managers = new ArrayList<>();
         List<String> managersIdList = roleFacade.getAllStoreManagers(storeId);
@@ -1263,6 +1304,7 @@ public class Market {
 
     }
 
+    @Transactional
     public List<UserDTO> getStoreOwnersDTO(String storeId){
         List<UserDTO> owners = new ArrayList<>();
         List<String> ownersIdList = roleFacade.getAllStoreOwners(storeId);
@@ -1271,18 +1313,20 @@ public class Market {
 
     }
 
+    @Transactional
     public List<String> getStoreManagers(String storeId){
 
         return roleFacade.getAllStoreManagers(storeId);
-
-
     }
+
+    @Transactional
     public List<String> getStoreOwners(String storeId){
 
         return roleFacade.getAllStoreOwners(storeId);
 
     }
 
+    @Transactional
     public void closeStore(String user_ID, String store_ID) throws Exception
     {
         String memberId = verifyToken(user_ID);
@@ -1311,6 +1355,7 @@ public class Market {
 
     }
 
+    @Transactional
     public void reopenStore(String user_ID, String store_ID) throws Exception
     {
         String memberId = verifyToken(user_ID);
@@ -1327,7 +1372,7 @@ public class Market {
     }
 
 
-
+    @Transactional
     public Map<String, String> getInformationAboutRolesInStore(String user_ID, String store_ID) throws Exception {
         String memberId = verifyToken(user_ID);
         verifyMemberExist(memberId);
@@ -1341,7 +1386,7 @@ public class Market {
         return information;
     }
 
-
+    @Transactional
     public Map<String, List<Integer>> getAuthorizationsOfManagersInStore(String user_ID, String store_ID) throws Exception {
 
         String memberId = verifyToken(user_ID);
@@ -1359,6 +1404,7 @@ public class Market {
         return managersAuthorizations;
     }
 
+    @Transactional
     public Map<String, Map<String, List<Integer>>> getPurchaseList(String userId)throws Exception{
         verifyToken(userId);
         Map<String, Map<String, List<Integer>>> purchaseList = new HashMap<>();
@@ -1375,6 +1421,7 @@ public class Market {
         return purchaseList;
     }
 
+    @Transactional
     public List<String> getInformationAboutStores(String user_ID) throws Exception {
         verifyToken(user_ID);
         List<String> openedStores = storeFacade.getInformationAboutOpenStores(); // open stores available for everyone
@@ -1397,10 +1444,12 @@ public class Market {
         return allAvailableStores;
     }
 
+    @Transactional
     public List<String> getStoreCategories(){
         return storeFacade.getStoreCategories();
     }
 
+    @Transactional
     public void modifyShoppingCart(String productName, int quantity, String storeId, String userId)throws Exception
     {
         verifyToken(userId);
@@ -1420,6 +1469,7 @@ public class Market {
         }
     }
 
+    @Transactional
     public Map<String, Integer> marketManagerAskInfo(String user_ID)throws Exception
     {
         String memberId = verifyToken(user_ID);
@@ -1432,7 +1482,7 @@ public class Market {
     }
 
 
-
+    @Transactional
     public Map<String, Integer> storeOwnerGetInfoAboutStore(String user_ID, String store_ID) throws Exception //return receiptId and total amount in the receipt for the specific store
     {
         String memberId = verifyToken(user_ID);
@@ -1486,6 +1536,7 @@ public class Market {
 //        return totalPrice;
 //    }
 
+    @Transactional
     public CartDTO checkingCartValidationBeforePurchaseDTO(String user_ID, UserDTO userDTO) throws Exception {
         verifyToken(user_ID);
         int totalPrice = 0;
@@ -1518,6 +1569,7 @@ public class Market {
         return new CartDTO(user_ID, totalPrice, this.getPurchaseList(user_ID));
     }
 
+    @Transactional
     public String checkAvailableExternalSupplyService(String country, String city) throws Exception {
         String availibleExteranlSupplyService =this.supplyServicesFacade.checkAvailableExternalSupplyService(country,city);
         if("-1".equals(availibleExteranlSupplyService)) {
@@ -1529,6 +1581,7 @@ public class Market {
         return availibleExteranlSupplyService;
     }
 
+    @Transactional
     public void createShiftingDetails(String country, String city, String address, String user_ID, String acquisitionId) throws Exception
     {
         String memberId = this.userFacade.getMemberIdByUserId(user_ID);
@@ -1541,7 +1594,7 @@ public class Market {
         }
     }
 
-
+    @Transactional
     public void removeUserCartFromStock(String userId) throws Exception {
         verifyToken(userId);
         if (userFacade.getUserByID(userId) == null) {
@@ -1561,7 +1614,7 @@ public class Market {
         }
     }
 
-
+    @Transactional
     public List<String> inStoreProductSearch(String userId, String productName, String categoryStr, List<String> keywords, String storeId) throws Exception {
         verifyToken(userId);
         storeFacade.checkCategory(categoryStr);
@@ -1569,6 +1622,7 @@ public class Market {
         return storeFacade.inStoreProductSearch(productName, categoryStr, keywords, storeId);
     }
 
+    @Transactional
     public List<ProductDTO> inStoreProductSearchDTO(String userId, String productName, String categoryStr, List<String> keywords, String storeId) throws Exception {
         verifyToken(userId);
         storeFacade.checkCategory(categoryStr);
@@ -1576,6 +1630,7 @@ public class Market {
         return storeFacade.inStoreProductSearchDTO(productName, categoryStr, keywords, storeId);
     }
 
+    @Transactional
     public List<String> generalProductSearch(String userId, String productName, String categoryStr, List<String> keywords) throws Exception {
         verifyToken(userId);
 
@@ -1596,6 +1651,7 @@ public class Market {
         return filteredProductNames;
     }
 
+    @Transactional
     public Map<String, List<ProductDTO>> generalProductSearchDTO(String userId, String productName, String categoryStr, List<String> keywords) throws Exception {
         verifyToken(userId);
         storeFacade.checkCategory(categoryStr);
@@ -1616,6 +1672,7 @@ public class Market {
         return filteredProductNames;
     }
 
+    @Transactional
     public List<String> inStoreProductFilter(String userId, String categoryStr, List<String> keywords, Integer minPrice, Integer maxPrice, Double productMinRating, String storeId, List<String> productsFromSearch, Double storeMinRating)throws Exception {
         verifyToken(userId);
         checkPrice(minPrice, maxPrice);
@@ -1628,6 +1685,7 @@ public class Market {
         return filteredProductNames;
     }
 
+    @Transactional
     public List<String> generalProductFilter(String userId, String categoryStr, List<String> keywords, Integer minPrice, Integer maxPrice, Double productMinRating, List<String> productsFromSearch, Double storeMinRating) throws Exception {
         verifyToken(userId);
         checkPrice(minPrice, maxPrice);
@@ -1650,6 +1708,7 @@ public class Market {
         return filteredProductNames;
     }
 
+    @Transactional
     public boolean isInitialized() {
         synchronized (initializedLock) {
             return Objects.requireNonNull(initializedRepository.findById("market").orElse(null)).isInitialized();
@@ -1660,26 +1719,29 @@ public class Market {
 
 
 //
-
-    private void checkPrice(Integer minPrice, Integer maxPrice)
+    @Transactional
+    protected void checkPrice(Integer minPrice, Integer maxPrice)
     {
         if (!(minPrice == null || maxPrice == null) && !(minPrice != null && maxPrice != null && minPrice <= maxPrice))
             throw new IllegalArgumentException(ExceptionsEnum.priceRangeInvalid.toString());
     }
 
-    private void checkProductRating(Double productMinRating)
+    @Transactional
+    protected void checkProductRating(Double productMinRating)
     {
 
         if (productMinRating != null && (productMinRating < 0 || productMinRating > 5))
             throw new IllegalArgumentException(ExceptionsEnum.productRateInvalid.toString());
     }
 
-    private void checkStoreRating(Double storeMinRating)
+    @Transactional
+    protected void checkStoreRating(Double storeMinRating)
     {
         if (storeMinRating != null && (storeMinRating < 0 || storeMinRating > 5))
             throw new IllegalArgumentException(ExceptionsEnum.storeRateInvalid.toString());
     }
 
+    @Transactional
     public void addPurchaseRuleToStore(List<TestRuleDTO> testRules, List<String> operators, String userId, String storeId) throws Exception {
         verifyToken(userId);
         for (TestRuleDTO curr : testRules){
@@ -1696,6 +1758,7 @@ public class Market {
         storeFacade.addPurchaseRuleToStore(testRules, operators, storeId);
     }
 
+    @Transactional
     public void removePurchaseRuleFromStore(int ruleNum,  String userId, String storeId) throws Exception {
         String member_ID = verifyToken(userId);
         verifyMemberExist(member_ID);
@@ -1704,6 +1767,7 @@ public class Market {
         storeFacade.removePurchaseRuleFromStore(ruleNum, storeId);
     }
 
+    @Transactional
     public void addDiscountCondRuleToStore(List<TestRuleDTO> testRules, List<String> logicOperators, List<DiscountValueDTO> discDetails, List<String> numericalOperators, String userId ,String storeId) throws Exception {
         String memberId = verifyToken(userId);
         verifyMemberExist(memberId);
@@ -1716,7 +1780,7 @@ public class Market {
         storeFacade.addDiscountCondRuleToStore(testRules, logicOperators, discDetails, numericalOperators, storeId);
     }
 
-
+    @Transactional
     public void addDiscountSimpleRuleToStore(List<DiscountValueDTO> discDetails, List<String> numericalOperators, String userId ,String storeId) throws Exception {
         String member_ID = verifyToken(userId);
         verifyMemberExist(member_ID);
@@ -1728,6 +1792,7 @@ public class Market {
         storeFacade.addDiscountSimpleRuleToStore(discDetails, numericalOperators, storeId);
     }
 
+    @Transactional
     public void removeDiscountRuleFromStore(int ruleNum, String userId ,String storeId) throws Exception {
         String member_ID = verifyToken(userId);
         verifyMemberExist(member_ID);
@@ -1737,7 +1802,8 @@ public class Market {
         storeFacade.removeDiscountRuleFromStore(ruleNum, storeId);
     }
 
-    private void checkProductDiscountDetails(List<DiscountValueDTO> discDetails) {
+    @Transactional
+    protected void checkProductDiscountDetails(List<DiscountValueDTO> discDetails) {
         for (DiscountValueDTO discountValueDTO : discDetails) {
             if (discountValueDTO.getPercentage() < 0 || discountValueDTO.getPercentage() > 100) {
                 throw new IllegalArgumentException(ExceptionsEnum.InvalidDiscountValueParameters.toString());
@@ -1758,7 +1824,8 @@ public class Market {
         }
     }
 
-    private void checkLogicalRulesAndOperators(List<TestRuleDTO> ruleNums, List<String> operators) throws Exception {
+    @Transactional
+    protected void checkLogicalRulesAndOperators(List<TestRuleDTO> ruleNums, List<String> operators) throws Exception {
         if (ruleNums.size() != operators.size() + 1) {
             throw new IllegalArgumentException(ExceptionsEnum.rulesNotMatchOpeators.toString());
         }
@@ -1769,7 +1836,8 @@ public class Market {
         }
     }
 
-    private void checkNumericalRulesAndOperators(List<DiscountValueDTO> discDetails, List<String> numericalOperators) throws Exception {
+    @Transactional
+    protected void checkNumericalRulesAndOperators(List<DiscountValueDTO> discDetails, List<String> numericalOperators) throws Exception {
         if (discDetails.size() != numericalOperators.size() + 1) {
             throw new IllegalArgumentException(ExceptionsEnum.rulesNotMatchOpeators.toString());
         }
@@ -1780,6 +1848,7 @@ public class Market {
         }
     }
 
+    @Transactional
     public List<String> getStoreCurrentPurchaseRules(String userId, String storeId) throws Exception {
         String member_ID = verifyToken(userId);
         verifyMemberExist(member_ID);
@@ -1790,7 +1859,7 @@ public class Market {
     }
 
 
-
+    @Transactional
     public List<String> getStoreCurrentDiscountRules(String userId, String storeId) throws Exception {
         String member_ID = verifyToken(userId);
         verifyMemberExist(member_ID);
@@ -1800,7 +1869,7 @@ public class Market {
         return storeFacade.getStoreCurrentDiscountRules(storeId);
     }
 
-
+    @Transactional
     public List<AcquisitionDTO> getUserAcquisitionsHistory(String userId) throws Exception {
         verifyToken(userId);
         List<Acquisition> acquisitions;
@@ -1816,6 +1885,7 @@ public class Market {
         return paymentServicesFacade.getAcquisitionsDTO(acquisitions);
     }
 
+    @Transactional
     public Map<String, ReceiptDTO> getUserReceiptsByAcquisition(String userId, String acquisitionId) throws Exception {
         String memberId = verifyToken(userId);
         verifyMemberExist(memberId);
@@ -1830,7 +1900,7 @@ public class Market {
         return receiptDTOMap;
     }
 
-
+    @Transactional
     public void composeCurrentPurchaseRules(int ruleIndex1, int ruleIndex2, String operator, String userId, String storeId) throws Exception {
         String member_ID =verifyToken(userId);
 
@@ -1844,6 +1914,7 @@ public class Market {
         storeFacade.composeCurrentPurchaseRules(ruleIndex1, ruleIndex2, operator, storeId);
     }
 
+    @Transactional
     public void composeCurrentSimpleDiscountRules(int ruleIndex1, int ruleIndex2, String numericalOperator, String userId, String storeId) throws Exception {
         String member_ID = verifyToken(userId);
         if (!numericalOperator.equals("MAX") && !numericalOperator.equals("ADDITION")) {
@@ -1856,6 +1927,7 @@ public class Market {
         storeFacade.composeCurrentSimpleDiscountRules(ruleIndex1, ruleIndex2, numericalOperator, storeId);
     }
 
+    @Transactional
     public void composeCurrentCondDiscountRules(int ruleIndex1, int ruleIndex2, String logicalOperator, String numericalOperator, String userId, String storeId) throws Exception {
         String member_ID = verifyToken(userId);
 
@@ -1873,6 +1945,7 @@ public class Market {
         storeFacade.composeCurrentCondDiscountRules(ruleIndex1, ruleIndex2, logicalOperator, numericalOperator, storeId);
     }
 
+    @Transactional
     public List<String> getStoreCurrentSimpleDiscountRules(String userId, String storeId) throws Exception {
         String member_ID = verifyToken(userId);
         verifyMemberExist(member_ID);
@@ -1882,6 +1955,7 @@ public class Market {
         return storeFacade.getStoreCurrentSimpleDiscountRules(storeId);
     }
 
+    @Transactional
     public List<String> getStoreCurrentCondDiscountRules(String userId, String storeId) throws Exception {
         String member_ID =verifyToken(userId);
         verifyMemberExist(member_ID);
@@ -1891,13 +1965,15 @@ public class Market {
         return storeFacade.getStoreCurrentCondDiscountRules(storeId);
     }
 
+    @Transactional
     public void checkSystemInitialized() throws Exception {
         if (!isInitialized()){
             throw new Exception("system must initialized first");
         }
     }
 
-    private String verifyToken(String userId) throws Exception {
+    @Transactional
+    protected String verifyToken(String userId) throws Exception {
         String memberId= null;
         if (userFacade.isMember(userId)){
             memberId = userFacade.getMemberIdByUserId(userId);
@@ -1910,6 +1986,7 @@ public class Market {
         return memberId;
     }
 
+    @Transactional
     public void verifyMemberExist(String memberId ){
         if (memberId== null){
             throw new IllegalArgumentException(ExceptionsEnum.userIsNotMember.toString());
@@ -2003,6 +2080,7 @@ public class Market {
         return firstUserID; // Return the generated user ID
     }
 
+    @Transactional
     public void addSystemManagerForTest(String memberId){
         roleFacade.addSystemManager(memberId);
     }
@@ -2022,7 +2100,18 @@ public class Market {
         return authenticationAndSecurityFacade;
     }
 
+
     public MyWebSocketHandler getMyWebSocketHandler() {
         return myWebSocketHandler;
+    }
+
+    public void resetAllTables() {
+        storeFacade.reset();
+        userFacade.reset();
+        roleFacade.reset();
+        paymentServicesFacade.reset();
+        supplyServicesFacade.reset();
+       // initializedRepository.deleteAll();
+
     }
 }

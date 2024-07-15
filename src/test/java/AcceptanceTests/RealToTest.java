@@ -251,4 +251,9 @@ public class RealToTest implements BridgeToTests {
         return service.answerJobProposal(userId,storeId,managerProposal, answer);
     }
 
+    @Override
+    public void resetAllTables() {
+        service.resetAllTables();
+    }
+
 }

@@ -9,6 +9,7 @@ import Util.ExceptionsEnum;
 import Util.PaymentServiceDTO;
 import Util.UserDTO;
 import jakarta.inject.Inject;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
@@ -34,6 +35,11 @@ public class RemoveExternalPaymentServices {
     @BeforeEach
     public void setUp() {
 
+    }
+
+    @AfterEach
+    public void tearDown() {
+        market.resetAllTables();
     }
 
 

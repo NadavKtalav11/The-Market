@@ -29,6 +29,11 @@ public class PaymentServicesFacade {
         this.acquisitionRepository = acquisitionRepository;
     }
 
+    public void reset(){
+        externalPaymentRepository.deleteAll();
+        acquisitionRepository.deleteAll();
+    }
+
     //memory constructor
     public PaymentServicesFacade(){
         this.externalPaymentRepository = new ExternalPaymentMemoryRepository();

@@ -8,9 +8,7 @@ import ServiceLayer.Response;
 import Util.*;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
@@ -39,7 +37,7 @@ public class MarketPurchaseHistory {
 
 
 
-    @BeforeAll
+    @BeforeEach
     public void setUp() throws JsonProcessingException {
         HashSet<String> countries = new HashSet<>();
         countries.add("Israel");
@@ -90,6 +88,11 @@ public class MarketPurchaseHistory {
         impl.purchase(userID2,userDTO.getCountry(), userDTO.getCity(),userDTO.getAddress(),
                 paymentDTO.getCreditCardNumber(),paymentDTO.getCurrency(),paymentDTO.getHolderName(),paymentDTO.getCvv(),paymentDTO.getMonth(), paymentDTO.getYear(),paymentDTO.getHolderId(),
                 cartDTO.getCartPrice(), cartDTO.getStoreToProducts()).isSuccess();
+    }
+
+    @AfterEach
+    public void tearDown() {
+        impl.resetAllTables();
     }
 
 //    @Test

@@ -42,6 +42,10 @@ public class Service_layer {
 
     }
 
+    public void resetAllTables() {
+        market.resetAllTables();
+    }
+
     @Bean
     public RestTemplate restTemplate() {
         return new RestTemplate();

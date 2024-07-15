@@ -44,6 +44,7 @@ public class Login {
         impl.logout(userID1);
         impl.logout(userID2);
         impl.logout(userID3);
+        impl.resetAllTables();
     }
 
     @Test

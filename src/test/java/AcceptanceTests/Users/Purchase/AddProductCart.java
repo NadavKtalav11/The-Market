@@ -57,6 +57,11 @@ public class AddProductCart {
         impl.addProductToStore(userId0, storeId0, "Shoes", 4, 12, "Nike Shoes", "clothing");
     }
 
+    @AfterEach
+    public void tearDown() {
+        impl.resetAllTables();
+    }
+
 
     @Test
     public void successfulAdditionTest()

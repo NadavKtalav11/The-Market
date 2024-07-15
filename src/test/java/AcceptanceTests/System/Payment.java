@@ -53,11 +53,11 @@ public class Payment {
         this.paymentServicesFacade = market.getPaymentServiceFacade();
         this.userFacade = market.getUserFacade();
         //this.market = new Market(userFacade,paymentServicesFacade);
+    }
 
-
-
-
-
+    @AfterEach
+    public void tearDown() {
+        market.resetAllTables();
     }
 
 

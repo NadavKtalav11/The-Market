@@ -265,7 +265,15 @@ public class AcquisitionMemoryRepository implements AcquisitionRepository{
 
     @Override
     public List<ProductDetailReceipt> findProductDetailReceiptsByReceiptAndAcquisition(String receiptId, String acquisitionId) {
-        return List.of();
+        Acquisition acquisition = IdAndAcquisition.get(acquisitionId);
+        List<ProductDetailReceipt> productDetailReceipts = acquisition.getProductDetailReceipts();
+        List<ProductDetailReceipt> ans = new ArrayList<>();
+        for (ProductDetailReceipt productDetailReceipt : productDetailReceipts) {
+            if (productDetailReceipt.getId().getReceiptId().equals(receiptId)){
+                ans.add(productDetailReceipt);
+            }
+        }
+        return ans;
     }
 
     @Override

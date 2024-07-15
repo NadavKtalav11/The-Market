@@ -343,4 +343,10 @@ public class ProxyToTest implements BridgeToTests {
             return new Response<>(null, "Not Implemented yet");
         }
     }
+
+    @Override
+    public void resetAllTables() {
+        if (realServiceAdaptor != null)
+            realServiceAdaptor.resetAllTables();
+    }
 }
