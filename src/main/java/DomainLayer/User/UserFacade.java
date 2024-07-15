@@ -444,6 +444,14 @@ public class UserFacade {
         return new UserDTO(user);
     }
 
+
+    public void setUserConfirmationPurchase(String userId){
+        User user = getUserByID(userId);
+        user.setReadyToPay(true);
+        userRepository.save(user);
+    }
+
+
     public void removeUser(String userId){
         userRepository.deleteById(userId);
         guestCarts.remove(userId);
