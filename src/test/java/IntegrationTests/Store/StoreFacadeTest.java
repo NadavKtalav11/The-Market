@@ -31,7 +31,7 @@ public class StoreFacadeTest {
     private StoreFacade storeFacade;
 
     @BeforeEach
-    public void setUp() {
+    public void setUp() throws Exception {
         storeFacade = new StoreFacade(storeRepository);
     }
 
@@ -100,7 +100,7 @@ public class StoreFacadeTest {
     }
 
     @Test
-    public void testGetStoreProductsDTO() {
+    public void testGetStoreProductsDTO() throws Exception {
         String storeId = storeFacade.openStore("Test Store", "A store for testing");
         ProductDTO product = new ProductDTO("Product1", 10, 5, "A product", "TOYS");
         try {
