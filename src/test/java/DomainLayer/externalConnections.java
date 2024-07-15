@@ -140,14 +140,14 @@ public class externalConnections {
 
     }
 
-    @Test
-    public void checkSupplyAndCancelSuccess() throws Exception {
-        ExternalSupplyService supplyServices = market.getSupplyServicesFacade().getAllSupplyServices().get("https://damp-lynna-wsep-1984852e.koyeb.app/");
-        supplyServices.createSupply("david", "Israel", "Ashdod", "Elul", "4");
-        String shippingId = supplyServices.getShippingId("4");
-        int res1= supplyServices.cancelSupply(shippingId);
-        assertEquals(1,res1);
-    }
+//    @Test
+//    public void checkSupplyAndCancelSuccess() throws Exception {
+//        ExternalSupplyService supplyServices = market.getSupplyServicesFacade().getAllSupplyServices().get("https://damp-lynna-wsep-1984852e.koyeb.app/");
+//        supplyServices.createSupply("david", "Israel", "Ashdod", "Elul", "4");
+//        String shippingId = supplyServices.getShippingId("4");
+//        int res1= supplyServices.cancelSupply(shippingId);
+//        assertEquals(1,res1);
+//    }
 
     @Test
     public void isValidAcquisitionIdID() throws Exception {

@@ -12,10 +12,12 @@ import DomainLayer.Repositories.InitializedDBRepository;
 import DomainLayer.Repositories.InitializedRepository;
 import DomainLayer.Role.RoleFacade;
 
+import DomainLayer.Role.SystemManager;
 import DomainLayer.Store.Product;
 
 //import PresentationLayer.Vaadin.NotificationsEndPoint;
 //import PresentationLayer.WAF.NotificationService;
+import DomainLayer.SupplyServices.ExternalSupplyService;
 import PresentationLayer.Vaadin.MyWebSocketHandler;
 import PresentationLayer.WAF.Service_layer;
 import Util.ExceptionsEnum;
@@ -51,7 +53,7 @@ public class Market {
     private static Market MarketInstance;
     private PaymentServicesFacade paymentServicesFacade;
     private SupplyServicesFacade supplyServicesFacade;
-    private Set<String> systemManagerIds;
+    //private Set<String> systemManagerIds;
     private AuthenticationAndSecurityFacade authenticationAndSecurityFacade;
     private StoreFacade storeFacade;
     private UserFacade userFacade;
@@ -86,7 +88,7 @@ public class Market {
         paymentServicesFacade = paymentServicesFacade1;
         supplyServicesFacade = supplyServicesFacade1;
         initializedLock= new Object();
-        systemManagerIds = new HashSet<>();
+        //systemManagerIds = new HashSet<>();
         managersLock = new Object();
         validationLock = new Object();
         //lateNotificationFacade = new LateNotificationFacade();
@@ -108,7 +110,7 @@ public class Market {
         this.authenticationAndSecurityFacade = authenticationAndSecurityFacade;
         supplyServicesFacade= SupplyServicesFacade.getInstance();
         initializedLock= new Object();
-        this.systemManagerIds = new HashSet<>();
+        //this.systemManagerIds = new HashSet<>();
         managersLock = new Object();
         validationLock = new Object();
         //notificationService = new NotificationsEndPoint();
@@ -124,7 +126,7 @@ public class Market {
         this.authenticationAndSecurityFacade = AuthenticationAndSecurityFacade.getInstance();
         this.supplyServicesFacade= supplyServicesFacade;
         initializedLock= new Object();
-        this.systemManagerIds = new HashSet<>();
+        //this.systemManagerIds = new HashSet<>();
         managersLock = new Object();
         validationLock = new Object();
 
@@ -140,7 +142,7 @@ public class Market {
         this.authenticationAndSecurityFacade = authenticationAndSecurityFacade;
         this.supplyServicesFacade= supplyServicesFacade;
         initializedLock= new Object();
-        this.systemManagerIds = new HashSet<>();
+        //this.systemManagerIds = new HashSet<>();
         managersLock = new Object();
         validationLock = new Object();
 
@@ -157,7 +159,7 @@ public class Market {
         this.authenticationAndSecurityFacade = authenticationAndSecurityFacade;
         this.supplyServicesFacade= supplyServicesFacade;
         initializedLock= new Object();
-        this.systemManagerIds = new HashSet<>();
+        //this.systemManagerIds = new HashSet<>();
         managersLock = new Object();
         validationLock = new Object();
 
@@ -176,7 +178,7 @@ public class Market {
         this.authenticationAndSecurityFacade = AuthenticationAndSecurityFacade.getInstance();
         this.supplyServicesFacade= supplyServicesFacade;
         initializedLock= new Object();
-        this.systemManagerIds = new HashSet<>();
+        //this.systemManagerIds = new HashSet<>();
         managersLock = new Object();
         validationLock = new Object();
 
@@ -196,7 +198,7 @@ public class Market {
         this.authenticationAndSecurityFacade = AuthenticationAndSecurityFacade.getInstance();
         this.supplyServicesFacade = supplyServicesFacade;
         initializedLock = new Object();
-        this.systemManagerIds = new HashSet<>();
+        //this.systemManagerIds = new HashSet<>();
         managersLock = new Object();
         validationLock = new Object();
 
@@ -214,7 +216,7 @@ public class Market {
         this.authenticationAndSecurityFacade = AuthenticationAndSecurityFacade.getInstance();
         this.supplyServicesFacade= SupplyServicesFacade.getInstance();
         initializedLock= new Object();
-        this.systemManagerIds = new HashSet<>();
+        //this.systemManagerIds = new HashSet<>();
         managersLock = new Object();
         validationLock = new Object();
 
@@ -237,10 +239,10 @@ public class Market {
         this.supplyServicesFacade= supplyServicesFacade;
         this.initializedRepository = initializedRepository;
         initializedLock= new Object();
-        this.systemManagerIds = new HashSet<>();
+        //this.systemManagerIds = new HashSet<>();
         managersLock = new Object();
         validationLock = new Object();
-        systemManagerIds = new HashSet<>();
+       // systemManagerIds = new HashSet<>();
         try{
             Optional<InitializedStatus> initialized = initializedRepository.findById("market");
             InitializedStatus initializedStatus = initialized.orElse(null);
@@ -264,7 +266,7 @@ public class Market {
         this.authenticationAndSecurityFacade = AuthenticationAndSecurityFacade.getInstance();
         this.supplyServicesFacade= SupplyServicesFacade.getInstance();
         initializedLock= new Object();
-        this.systemManagerIds = new HashSet<>();
+        //this.systemManagerIds = new HashSet<>();
         managersLock = new Object();
         validationLock = new Object();
         initializedRepository = null;
@@ -283,7 +285,7 @@ public class Market {
         this.authenticationAndSecurityFacade = AuthenticationAndSecurityFacade.getInstance();
         this.supplyServicesFacade= SupplyServicesFacade.getInstance();
         initializedLock= new Object();
-        this.systemManagerIds = new HashSet<>();
+        //this.systemManagerIds = new HashSet<>();
         managersLock = new Object();
         validationLock = new Object();
         initializedRepository = null;
@@ -402,9 +404,9 @@ public class Market {
             UserDTO userDTO1 = new UserDTO(firstUserID, adminUsername, adminBirthday, adminCountry, adminCity, adminAddress, adminName);
             String systemManagerId = userFacade.register(firstUserID, userDTO1, encryptedPassword);
             roleFacade.addSystemManager(systemManagerId);
-            synchronized (managersLock) {
-                systemManagerIds.add(systemManagerId);
-            }
+//            synchronized (managersLock) {
+//                roleFacade.addSystemManager(systemManagerId);
+//            }
             if (!paymentServicesFacade.addExternalService(paymentURL)){
                 throw new Exception("problem while adding external payment service");
             };
@@ -676,7 +678,7 @@ public class Market {
         String memberId = verifyToken(systemMangerUserId);
         verifyMemberExist(memberId);
         synchronized (managersLock) {
-            if (!systemManagerIds.contains(memberId)) {
+            if (!roleFacade.verifyMemberIsSystemManager(memberId)) {
                 throw new Exception(ExceptionsEnum.SystemManagerPaymentAuthorization.toString());
             }
         }
@@ -689,8 +691,8 @@ public class Market {
     }
 
 
-    public List<AcquisitionDTO> getAllSystemAcquisitions(String userId) throws Exception {
-        String memberId = verifyToken(userId);
+    public List<AcquisitionDTO> getAllSystemAcquisitions(String systemManagerUserId) throws Exception {
+        String memberId = verifyToken(systemManagerUserId);
         verifyMemberExist(memberId);
         if (!getSystemManagerIds().contains(memberId)) {
             throw new Exception(ExceptionsEnum.notSystemManager.toString());
@@ -704,7 +706,7 @@ public class Market {
         String memberId = verifyToken(systemMangerUserId);
         verifyMemberExist(memberId);
         synchronized (managersLock) {
-            if (!systemManagerIds.contains(memberId)) {
+            if (!roleFacade.verifyMemberIsSystemManager(memberId)) {
                 throw new Exception(ExceptionsEnum.SystemManagerPaymentAuthorizationRemove.toString());
             }
         }
@@ -716,7 +718,7 @@ public class Market {
         String memberId = verifyToken(systemManagerUserId);
         verifyMemberExist(memberId);
         synchronized (managersLock) {
-            if (!systemManagerIds.contains(memberId)) {
+            if (!roleFacade.verifyMemberIsSystemManager(memberId)) {
                 throw new Exception(ExceptionsEnum.SystemManagerSupplyAuthorization.toString());
             }
         }
@@ -734,7 +736,7 @@ public class Market {
         String memberId = verifyToken(systemManagerUserId);
         verifyMemberExist(memberId);
         synchronized (managersLock) {
-            if (!systemManagerIds.contains(memberId)) {
+            if (!roleFacade.verifyMemberIsSystemManager(memberId)) {
                 throw new Exception(ExceptionsEnum.SystemManagerSupplyAuthorizationRemove.toString());
             }
         }
@@ -742,9 +744,9 @@ public class Market {
 
     }
 
-    public Set<String> getSystemManagerIds(){
+    public List<String> getSystemManagerIds(){
         synchronized (managersLock) {
-            return systemManagerIds;
+            return roleFacade.getSystemManagers();
         }
     }
 
@@ -767,17 +769,19 @@ public class Market {
                 throw new RuntimeException(ExceptionsEnum.TimeExpired.toString());
             }
 
-            //Todo: we call payWithExternalPaymentService twice, check if needed
             //this.payWithExternalPaymentService(cartDTO, paymentDTO, userDTO.getUserId());
 
-            String availableExternalSupplyService = this.checkAvailableExternalSupplyService(userDTO.getCountry(), userDTO.getCity());
+            //String availableExternalSupplyService = this.checkAvailableExternalSupplyService(userDTO.getCountry(), userDTO.getCity());
             String acquisitionId = this.payWithExternalPaymentService(cartDTO,paymentDTO, userDTO.getUserId());
 
             try {
-                this.createShiftingDetails(userDTO.getCountry(), userDTO.getCity(), availableExternalSupplyService, userDTO.getAddress(), userDTO.getUserId(), acquisitionId);
+                this.createShiftingDetails(userDTO.getCountry(), userDTO.getCity(), userDTO.getAddress(), userDTO.getUserId(), acquisitionId);
             }
             catch (Exception e ){
                 boolean succeed = paymentServicesFacade.cancelPayment(acquisitionId);
+                if (cartDTO != null) {
+                    this.returnCartToStock(cartDTO.getStoreToProducts());
+                }
                 if (succeed){
                     throw new Exception("purchase canceled");
                 }
@@ -1067,8 +1071,19 @@ public class Market {
     }
 
 
-    public List<ShippingDTO> getUserShippingDTOs(String userId){
-        return supplyServicesFacade.getUserHistory(userId);
+    public List<ShippingDTO> getUserShippingDTOs(String userId) throws Exception {
+        String memberId = verifyToken(userId);
+        verifyMemberExist(memberId);
+        return supplyServicesFacade.getUserHistory(memberId);
+    }
+
+    public List<ShippingDTO> getSystemsupplyHistory(String systemManagerUserId) throws Exception {
+        String memberId = verifyToken(systemManagerUserId);
+        verifyMemberExist(memberId);
+        if (!roleFacade.verifyMemberIsSystemManager(memberId)){
+            throw new IllegalArgumentException(ExceptionsEnum.notSystemManager.toString());
+        }
+        return supplyServicesFacade.getSystemHistory();
     }
 
     public void removeProductFromStore(String userId, String storeId, String productName) throws Exception {
@@ -1356,7 +1371,7 @@ public class Market {
 
         if(userFacade.isMember(user_ID)) {
             String member_ID = this.userFacade.getMemberIdByUserId(user_ID);
-            if (!this.roleFacade.verifyMemberIsSystemManager(user_ID))
+            if (!roleFacade.verifyMemberIsSystemManager(user_ID))
                 closedStoreAvailable = roleFacade.getStoresByOwner(closedStores, member_ID);
             else
                 closedStoreAvailable = closedStores; //all stores are available for system managers
@@ -1398,7 +1413,7 @@ public class Market {
         String memberId = verifyToken(user_ID);
         verifyMemberExist(memberId);
         //userFacade.isUserLoggedInError(user_ID);
-        if (!systemManagerIds.contains(memberId)) {
+        if (!roleFacade.verifyMemberIsSystemManager(memberId)) {
             throw new IllegalArgumentException(ExceptionsEnum.notSystemManager.toString());
         }
         return paymentServicesFacade.getStorePurchaseInfo();
@@ -1502,13 +1517,18 @@ public class Market {
         return availibleExteranlSupplyService;
     }
 
-    public void createShiftingDetails(String country, String city, String availableExternalSupplyService, String address, String user_ID, String acquisitionId) throws Exception
+    public void createShiftingDetails(String country, String city, String address, String user_ID, String acquisitionId) throws Exception
     {
-        String userName = this.userFacade.getUserByID(user_ID).getName();
-        if(!supplyServicesFacade.createShiftingDetails(availableExternalSupplyService, userName,country,city,address, acquisitionId)){
+        String memberId = this.userFacade.getMemberIdByUserId(user_ID);
+        if (memberId== null)
+        {
+            memberId = "unregister user";
+        }
+        if(!supplyServicesFacade.createShiftingDetails( memberId,country,city,address, acquisitionId)){
             throw new Exception(ExceptionsEnum.createShiftingError.toString());
         }
     }
+
 
     public void removeUserCartFromStock(String userId) throws Exception {
         verifyToken(userId);
@@ -1757,6 +1777,8 @@ public class Market {
         return storeFacade.getStoreCurrentPurchaseRules(storeId);
     }
 
+
+
     public List<String> getStoreCurrentDiscountRules(String userId, String storeId) throws Exception {
         String member_ID = verifyToken(userId);
         verifyMemberExist(member_ID);
@@ -1766,13 +1788,18 @@ public class Market {
         return storeFacade.getStoreCurrentDiscountRules(storeId);
     }
 
+
     public List<AcquisitionDTO> getUserAcquisitionsHistory(String userId) throws Exception {
         verifyToken(userId);
+        List<Acquisition> acquisitions;
         if (userFacade.isMember(userId)){
             String memberID = userFacade.getMemberIdByUserId(userId);
-            List<Acquisition> acquisitions = paymentServicesFacade.getMemberAcquisitionsHistory(memberID);
+            acquisitions = paymentServicesFacade.getMemberAcquisitionsHistory(memberID);
         }
-        List<Acquisition> acquisitions = paymentServicesFacade.getUserAcquisitionsHistory(userId);
+        else {
+            throw new IllegalArgumentException("only members can see there purchase  history");
+        }
+        //List<Acquisition> acquisitions = paymentServicesFacade.getUserAcquisitionsHistory(userId);
         //List<String> acquisitions = userFacade.getUserAcquisitionsHistory(userId);
         return paymentServicesFacade.getAcquisitionsDTO(acquisitions);
     }
@@ -1941,9 +1968,9 @@ public class Market {
         UserDTO userDTO1 = new UserDTO(firstUserID, adminUsername, adminBirthday, adminCountry, adminCity, adminAddress, adminName);
         String systemManagerId = userFacade.register(firstUserID, userDTO1, encryptedPassword);
         roleFacade.addSystemManager(systemManagerId);
-        synchronized (managersLock) {
-            systemManagerIds.add(systemManagerId);
-        }
+//        synchronized (managersLock) {
+//            systemManagerIds.add(systemManagerId);
+//        }
         if (!paymentServicesFacade.addExternalService(paymentURL)){
             throw new Exception("problem while adding external payment service");
         };
@@ -1961,6 +1988,10 @@ public class Market {
         }
 
         return firstUserID; // Return the generated user ID
+    }
+
+    public void addSystemManagerForTest(String memberId){
+        roleFacade.addSystemManager(memberId);
     }
 
     public RoleFacade getRoleFacade() {

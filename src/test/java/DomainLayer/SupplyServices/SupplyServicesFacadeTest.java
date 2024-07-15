@@ -17,7 +17,7 @@ public class SupplyServicesFacadeTest {
     @BeforeEach
     public void setUp() {
         supplyServicesFacade = SupplyServicesFacade.getInstance();
-        supplyServicesFacade.reset(); // Reset the state before each test
+        supplyServicesFacade.reset();// Reset the state before each test
 
     }
 
@@ -39,9 +39,6 @@ public class SupplyServicesFacadeTest {
 
         // Call method
         boolean result = supplyServicesFacadeSpy.addExternalService( url);
-
-        // Verify that externalSupplyService is called correctly
-//        verify(externalSupplyServiceMapMock).put(licensedDealerNumber, new ExternalSupplyService(licensedDealerNumber, supplyServiceName, countries, cities));
 
         // Check result
         assertTrue(result);
@@ -73,6 +70,19 @@ public class SupplyServicesFacadeTest {
 //        assertEquals("-2", result1);
 //
 
+    }
+
+    @Test
+    public void testCreateShiftingDetails() throws Exception {
+        // Ensure that the initial size of shiftIdAndDetails is zero
+        assertEquals(0, supplyServicesFacade.getSystemHistory().size());
+
+        SupplyServicesFacade supplyServicesFacadeSpy = spy(supplyServicesFacade);
+        supplyServicesFacadeSpy.addExternalService("https://damp-lynna-wsep-1984852e.koyeb.app/");
+        boolean res = supplyServicesFacade.createShiftingDetails("User1", "MockCountry", "MockCity", "MockAddress", "10");
+        assertTrue(res);
+        assertEquals(1, supplyServicesFacade.getSystemHistory().size());
+        assertNotNull(supplyServicesFacade.getAllSupplyServices().values());
     }
 
 

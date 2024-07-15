@@ -40,7 +40,7 @@ public class RemoveExternalSupplyServices {
         userId = market.enterMarketSystem();
         market.register(userId, new UserDTO("nadav", "nadavKt","10/10/2002","nad","vv "," vv","nasav " ), "nadavVV1");
         String memberId= market.Login(userId, "nadavKt", "nadavVV1");
-        market.getSystemManagerIds().add(memberId);
+        market.addSystemManagerForTest(memberId);
 
     }
     @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)

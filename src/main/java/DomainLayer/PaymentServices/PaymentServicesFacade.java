@@ -336,9 +336,9 @@ public class PaymentServicesFacade {
         return acquisitionRepository.findByMemberId(memberId);
     }
 
-    public List<Acquisition> getUserAcquisitionsHistory(String userId) {
-        return acquisitionRepository.findByUserId(userId);
-    }
+//    public List<Acquisition> getUserAcquisitionsHistory(String userId) {
+//        return acquisitionRepository.findByUserId(userId);
+//    }
 
     public  List<Receipt> getUserReceiptsByAcquisition(String acquisitionId, String userId) {
         List<Receipt> receipts = new LinkedList<>();

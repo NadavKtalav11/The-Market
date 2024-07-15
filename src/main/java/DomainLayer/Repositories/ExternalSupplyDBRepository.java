@@ -6,4 +6,5 @@ import org.springframework.stereotype.Repository;
 @Repository
 @Profile("db")
 public interface ExternalSupplyDBRepository extends ExternalSupplyRepository {
+
 }
