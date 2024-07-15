@@ -1,6 +1,8 @@
 package DomainLayer.Repositories;
 
 import DomainLayer.PaymentServices.Acquisition;
+import DomainLayer.PaymentServices.ProductDetailReceipt;
+import DomainLayer.PaymentServices.Receipt;
 import org.springframework.context.annotation.Profile;
 import org.springframework.data.domain.Example;
 import org.springframework.data.domain.Page;
@@ -180,5 +182,140 @@ public class AcquisitionMemoryRepository implements AcquisitionRepository{
     @Override
     public Page<Acquisition> findAll(Pageable pageable) {
         return null;
+    }
+
+//    @Override
+//    public int getTotalPriceOfStoreReceipt(String storeId, String receiptId, String acquisitionId) {
+//        Acquisition acquisition = IdAndAcquisition.get(acquisitionId);
+//        int price = acquisition.getReceiptMap().get(storeId).getTotalPriceOfStoreReceipt();
+//        return price;
+//    }
+//
+//    @Override
+//    public List<Object[]> getProductsAndPricesPerReceipt(String storeID, String receiptId, String acquisitionId) {
+//        List<Object[]> productsAndPricesPerReceipt = new ArrayList<>();
+//        Acquisition acquisition = IdAndAcquisition.get(acquisitionId);
+//        List<ProductDetailReceipt> products = acquisition.getReceiptMap().get(storeID).getProductList();
+//        for (ProductDetailReceipt productDetailReceipt : products) {
+//            Object[] productAndPrice = new Object[2];
+//            productAndPrice[0] = productDetailReceipt.getId().getProductName();
+//            productAndPrice[1] = productDetailReceipt.getPrice();
+//            productsAndPricesPerReceipt.add(productAndPrice);
+//        }
+//        return productsAndPricesPerReceipt;
+//    }
+//
+//
+////    @Override
+////    public Map<String, Integer> getProductsAndAmountPerReceipt(String storeID, String receiptId, String acquisitionId) {
+////        Map<String, Integer> productsAndAmountPerReceipt = new HashMap<>();
+////        Acquisition acquisition = IdAndAcquisition.get(acquisitionId);
+////        List<ProductDetailReceipt> products = acquisition.getReceiptMap().get(storeID).getProductList();
+////        for (ProductDetailReceipt productDetailReceipt : products) {
+////            productsAndAmountPerReceipt.put(productDetailReceipt.getId().getProductName(), productDetailReceipt.getAmount());
+////        }
+////        return productsAndAmountPerReceipt;
+////    }
+//
+////    @Override
+////    public List<ProductDetailReceipt> getProductDetailReceipt(String storeID, String receiptId, String acquisitionId) {
+////        Acquisition acquisition = IdAndAcquisition.get(acquisitionId);
+////        return acquisition.getReceiptMap().get(receiptId).getProductList();
+////    }
+//
+//    @Override
+//    public List<ProductDetailReceipt> getProductDetailReceipt(String receiptId, String acquisitionId) {
+//        return List.of();
+//    }
+//
+//    @Override
+//    public List<Object[]> getProductsAndAmountPerReceipt(String storeId, String receiptId, String acquisitionId) {
+//        List<ProductDetailReceipt> productDetailReceipts = getProductDetailReceipt(receiptId, acquisitionId);
+//        List<Object[]> productsAndAmounts = new ArrayList<>();
+//
+//        for (ProductDetailReceipt productDetailReceipt : productDetailReceipts) {
+//            Object[] productAndAmount = new Object[2];
+//            productAndAmount[0] = productDetailReceipt.getId().getProductName();
+//            productAndAmount[1] = productDetailReceipt.getAmount();
+//            productsAndAmounts.add(productAndAmount);
+//        }
+//
+//        return productsAndAmounts;
+//    }
+//
+//    @Override
+//    public List<Object[]> findProductsAndAmountsByStoreAndReceiptAndAcquisition(String storeId, String receiptId, String acquisitionId) {
+//        return List.of();
+//    }
+//
+//    @Override
+//    public List<ProductDetailReceipt> findProductDetailReceiptsByReceiptAndAcquisition(String receiptId, String acquisitionId) {
+//        return List.of();
+//    }
+//
+//    @Override
+//    public int findTotalPriceByStoreAndReceiptAndAcquisition(String storeId, String receiptId, String acquisitionId) {
+//        return 0;
+//    }
+
+    @Override
+    public List<Object[]> findProductsAndAmountsByStoreAndReceiptAndAcquisition(String storeId, String receiptId, String acquisitionId) {
+        return List.of();
+    }
+
+    @Override
+    public List<ProductDetailReceipt> findProductDetailReceiptsByReceiptAndAcquisition(String receiptId, String acquisitionId) {
+        return List.of();
+    }
+
+    @Override
+    public int findTotalPriceByStoreAndReceiptAndAcquisition(String storeId, String receiptId, String acquisitionId) {
+        return 0;
+    }
+
+    @Override
+    public List<Acquisition> findByStoreId(String storeId) {
+        List<Acquisition> acquisitions = new ArrayList<>();
+        for (Acquisition acquisition : IdAndAcquisition.values()) {
+            Collection<Receipt> receipts = acquisition.getReceiptMap().values();
+            for(Receipt receipt : receipts){
+                if (Objects.equals(receipt.getStoreId(), storeId)){
+                    acquisitions.add(acquisition);
+                }
+            }
+        }
+        return acquisitions;
+    }
+
+    @Override
+    public List<Acquisition> findByUserId(String userID) {
+        List<Acquisition> acquisitions = new ArrayList<>();
+        for (Acquisition acquisition : IdAndAcquisition.values()) {
+            if(Objects.equals(acquisition.getUserId(), userID)){
+                acquisitions.add(acquisition);
+            }
+        }
+        return acquisitions;
+    }
+
+    @Override
+    public List<Acquisition> findByMemberId(String memberId) {
+        List<Acquisition> acquisitions = new ArrayList<>();
+        for (Acquisition acquisition : IdAndAcquisition.values()) {
+            if(Objects.equals(acquisition.getMemberId(), memberId)){
+                acquisitions.add(acquisition);
+            }
+        }
+        return acquisitions;
+    }
+
+    @Override
+    public List<String> getReceiptIdsByAcquisitionId(String AcquisitionId) {
+        Acquisition acquisition = IdAndAcquisition.get(AcquisitionId);
+        List<String> receiptIds = new ArrayList<>();
+        for (Receipt receipt : acquisition.getReceiptMap().values()) {
+            receiptIds.add(receipt.getReceiptId());
+        }
+        return receiptIds;
     }
 }

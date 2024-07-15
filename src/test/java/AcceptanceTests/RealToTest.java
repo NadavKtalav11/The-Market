@@ -198,7 +198,7 @@ public class RealToTest implements BridgeToTests {
     @Override
     public Response<String> purchase(String user_ID, String country, String city, String address, String cardNumber,String currency, String holderName, int cvv, int month, int year, String holderID, int price, Map<String,Map<String, List<Integer>>> products) {
         return service.purchase(new UserDTO(user_ID,null, null, country, city, address, null) ,
-                new PaymentDTO(holderName, holderID,currency, cardNumber,  cvv, month, year), new CartDTO(user_ID,price, products), "card");
+                new PaymentDTO(holderName, holderID,currency, cardNumber,  cvv, month, year), new CartDTO(user_ID,price, products));
 
     }
 
@@ -244,6 +244,11 @@ public class RealToTest implements BridgeToTests {
     @Override
     public Response<String> composeCurrentCondDiscountRules(int ruleIndex1, int ruleIndex2, String logicalOperator, String numericalOperator, String userId, String storeId) {
         return service.composeCurrentCondDiscountRules(ruleIndex1, ruleIndex2, logicalOperator, numericalOperator, userId, storeId);
+    }
+
+    @Override
+    public Response<String> answerJobProposal(String userId, String storeId, boolean managerProposal, boolean answer) {
+        return service.answerJobProposal(userId,storeId,managerProposal, answer);
     }
 
 }

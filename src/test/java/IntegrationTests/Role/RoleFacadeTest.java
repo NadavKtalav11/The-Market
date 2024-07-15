@@ -5,6 +5,7 @@ import DomainLayer.Repositories.StoreManagerRepository;
 import DomainLayer.Repositories.StoreOwnerRepository;
 import DomainLayer.Role.RoleFacade;
 import DomainLayer.Role.StoreManager;
+import DomainLayer.Role.StoreOwner;
 import PresentationLayer.Application;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -33,7 +34,7 @@ public class RoleFacadeTest {
     @Autowired
     private StoreOwnerRepository storeOwnerRepository;
 
-    @Autowired
+     @Autowired
     private StoreManagerRepository managerNominatorRepository;
 
     @Autowired
@@ -44,7 +45,7 @@ public class RoleFacadeTest {
 
     @BeforeEach
     public void setUp() {
-        roleFacade = new RoleFacade(storeManagerRepository, storeOwnerRepository, managerNominatorRepository, ownerNominatorRepository);
+        roleFacade = new RoleFacade(storeManagerRepository, storeOwnerRepository);
     }
 
     @AfterEach
@@ -55,6 +56,7 @@ public class RoleFacadeTest {
     }
 
     @Test
+    @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
     void testVerifyStoreOwner() throws Exception {
         roleFacade.createStoreOwnerWithoutAsk("1", "1", true, "2");
         assertTrue(roleFacade.verifyStoreOwner("1", "1"));
@@ -62,6 +64,7 @@ public class RoleFacadeTest {
     }
 
     @Test
+    @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
     void testVerifyStoreManager() throws Exception {
         roleFacade.createStoreManagerWithoutAsk("1", "1", true, true, "2");
         assertTrue(roleFacade.verifyStoreManager("1", "1"));
@@ -69,6 +72,7 @@ public class RoleFacadeTest {
     }
 
     @Test
+    @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
     void testVerifyStoreOwnerIsFounder() throws Exception {
         roleFacade.createStoreOwnerWithoutAsk("1", "1", true, "2");
         assertTrue(roleFacade.verifyStoreOwnerIsFounder("1", "1"));
@@ -76,6 +80,7 @@ public class RoleFacadeTest {
     }
 
     @Test
+    @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
     void testManagerHasInventoryPermissions() throws Exception {
         roleFacade.createStoreManagerWithoutAsk("1", "1", true, false, "2");
         assertTrue(roleFacade.managerHasInventoryPermissions("1", "1"));
@@ -83,6 +88,7 @@ public class RoleFacadeTest {
     }
 
     @Test
+    @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
     void testManagerHasPurchasePermissions() throws Exception {
         roleFacade.createStoreManagerWithoutAsk("1", "1", false, true, "2");
         assertTrue(roleFacade.managerHasPurchasePermissions("1", "1"));
@@ -90,6 +96,7 @@ public class RoleFacadeTest {
     }
 
     @Test
+    @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
     void testUpdateStoreManagerPermissions() throws Exception {
         roleFacade.createStoreManagerWithoutAsk("1", "1", false, false, "2");
         roleFacade.updateStoreManagerPermissions("1", "1", true, true, "2");
@@ -99,6 +106,7 @@ public class RoleFacadeTest {
     }
 
     @Test
+    @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
     void testGetInformationAboutStoreRoles() throws Exception {
         roleFacade.createStoreOwnerWithoutAsk("1", "1", true, "2");
         roleFacade.createStoreManagerWithoutAsk("2", "1", true, true, "3");
@@ -110,6 +118,7 @@ public class RoleFacadeTest {
     }
 
     @Test
+    @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
     void testGetStoreManagersAuthorizations() throws Exception {
         roleFacade.createStoreManagerWithoutAsk("1", "1", true, false, "2");
         roleFacade.createStoreManagerWithoutAsk("2", "1", false, true, "3");
@@ -121,6 +130,7 @@ public class RoleFacadeTest {
     }
 
     @Test
+    @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
     void testGetAllStoreManagers() throws Exception {
         roleFacade.createStoreManagerWithoutAsk("1", "1", true, false, "2");
         roleFacade.createStoreManagerWithoutAsk("2", "1", false, true, "3");
@@ -132,6 +142,7 @@ public class RoleFacadeTest {
     }
 
     @Test
+    @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
     void testGetAllStoreOwners() throws Exception {
         roleFacade.createStoreOwnerWithoutAsk("1", "1", true, "2");
         roleFacade.createStoreOwnerWithoutAsk("2", "1", false, "3");
@@ -143,6 +154,7 @@ public class RoleFacadeTest {
     }
 
     @Test
+    @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
     void testGetStoresByOwner() throws Exception {
         List<String> stores = new ArrayList<>();
         stores.add("1");

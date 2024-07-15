@@ -25,13 +25,18 @@ public class StoreManager implements Role {
     @Column(name = "nominatorMemberId")
     private String nominatorMemberId;
 
+    @Column(name = "inProposal")
+    private boolean inProposal;
 
-    StoreManager(String member_ID, String store_ID, boolean inventoryPermissions, boolean purchasePermissions, String nominatorMemberId)
+
+    public StoreManager(String member_ID, String store_ID, boolean inventoryPermissions, boolean purchasePermissions,
+                 String nominatorMemberId, boolean inProposal)
     {
         this.id = new StoreManagerId(member_ID, store_ID);
         this.inventoryPermissions = inventoryPermissions;
         this.purchasePermissions = purchasePermissions;
         this.nominatorMemberId = nominatorMemberId;
+        this.inProposal = inProposal;
     }
 
     public StoreManager() {
@@ -58,10 +63,6 @@ public class StoreManager implements Role {
         return this.id.getMember_ID();
     }
 
-    public String getNominatorId() {
-        return this.nominatorMemberId;
-    }
-
     public List<Integer> getAuthorizations(){
         return this.authorizations;
     }
@@ -73,4 +74,8 @@ public class StoreManager implements Role {
     public boolean hasPurchasePermissions(){
         return this.purchasePermissions;
     }
+
+    public boolean isInProposal() {return inProposal;}
+
+    public void setInProposal(boolean inProposal) {this.inProposal = inProposal;}
 }

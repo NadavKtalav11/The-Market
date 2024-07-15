@@ -12,10 +12,11 @@ import jakarta.persistence.*;
 import java.util.List;
 
 @Entity
-@Table(name = "discounts")
+@Inheritance(strategy = InheritanceType.JOINED)
 public class Discount {
 
-    @Transient
+    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+    @JoinColumn(name = "discount_value_id")
     protected DiscountValue discountValue;
 
     @Transient

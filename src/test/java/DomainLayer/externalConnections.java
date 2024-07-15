@@ -1,4 +1,6 @@
 package DomainLayer;
+import AcceptanceTests.RealToTest;
+import PresentationLayer.Application;
 import PresentationLayer.WAF.*;
 
 
@@ -19,6 +21,7 @@ import Util.SupplyServiceDTO;
 import Util.CartDTO;
 
 import Util.UserDTO;
+import jakarta.inject.Inject;
 import org.aspectj.lang.annotation.Before;
 import org.junit.jupiter.api.*;
 
@@ -28,7 +31,11 @@ import Util.PaymentDTO;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Bean;
+import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.ContextConfiguration;
 
 import java.lang.reflect.Field;
 
@@ -36,50 +43,52 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.*;
 
-@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
+
+@ContextConfiguration(classes = {Application.class, RealToTest.class})
+@SpringBootTest
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
+@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
 public class externalConnections {
-    private static BridgeToTests impl;
+//    private static BridgeToTests impl;
     private static PaymentServicesFacade paymentServicesFacade;
     private static StoreFacade storeFacade;
-    private static Market market = new Market();
-    private UserFacade userFacade;
-    private static Service_layer serviceLayer;
+//    private static UserFacade userFacade;
+//    private static Service_layer serviceLayer;
 
+    @Inject
+    private Market market;
+
+    @Inject
+    private Service_layer serviceLayer;
 
     @BeforeAll()
-    public static void setUp() throws Exception {
-        paymentServicesFacade= PaymentServicesFacade.getInstance();
-        storeFacade= StoreFacade.getInstance();
-
-        market = new Market(paymentServicesFacade, storeFacade);
+    public void setUp() throws Exception {
         market.init();
-        serviceLayer = new Service_layer(market);
+        paymentServicesFacade= market.getPaymentServiceFacade();
+        storeFacade= market.getStoreFacade();
+       // userf
+        //market = new Market(paymentServicesFacade, storeFacade);
+        //market.init();
+        //serviceLayer = new Service_layer(market);
     }
 
 
-//    @Test
-//    @Order(1)
-//    public void checkHandShake() throws Exception {
-//
-//        //assertTrue(market.checkHandShake());
-//
-//    }
+
 
     @Test
-    @Order(2)
     public void checkPurchase() throws Exception {
-//        PaymentDTO paymentDTO = new PaymentDTO("20444444", "David David", "USD", "2222333344445555", 982, 6, 2030);
-//        UserDTO userDTO = new UserDTO(market.enterMarketSystem());
-//        Map<String, Map<String, List<Integer>>> productList = new HashMap<>();
-//        List<Integer> priceQuantity = new ArrayList<>();
-//        priceQuantity.add(20);
-//        priceQuantity.add(20);
-//        Map<String, List<Integer>> productNames = new HashMap<>();
-//        productNames.put("Bamba", priceQuantity);
-//        String storeId = storeFacade.getStoreId("s1");
-//        productList.put(storeId,productNames);
-//        CartDTO cartDTO = new CartDTO(userDTO.getUserId(),1000, productList );
-//        serviceLayer.purchase(userDTO,paymentDTO,cartDTO);
+        PaymentDTO paymentDTO = new PaymentDTO("20444444", "David David", "USD", "2222333344445555", 982, 6, 2030);
+        UserDTO userDTO = new UserDTO(market.enterMarketSystem());
+        Map<String, Map<String, List<Integer>>> productList = new HashMap<>();
+        List<Integer> priceQuantity = new ArrayList<>();
+        priceQuantity.add(20);
+        priceQuantity.add(20);
+        Map<String, List<Integer>> productNames = new HashMap<>();
+        productNames.put("Bamba", priceQuantity);
+        String storeId = storeFacade.getStoreId("s1");
+        productList.put(storeId,productNames);
+        CartDTO cartDTO = new CartDTO(userDTO.getUserId(),1000, productList );
+        serviceLayer.purchase(userDTO,paymentDTO,cartDTO);
     }
 
     @Test
@@ -94,7 +103,7 @@ public class externalConnections {
         ExternalPaymentService externalPaymentService = market.getPaymentServicesFacade().getPaymentServiceByURL("https://damp-lynna-wsep-1984852e.koyeb.app/");
         CartDTO cartDTO = new CartDTO("130", 5500, products);
         PaymentDTO paymentDTO = new PaymentDTO("20444444", "David David", "USD", "2222333344445555", 982, 6, 2030);
-        int res = externalPaymentService.payWithCard(1000, paymentDTO, "11", cartDTO.getStoreToProducts(), "4545");
+        int res = externalPaymentService.payWithCard(1000, paymentDTO);
         assertTrue(res>=10000);
         assertTrue(res<=100000);
 
@@ -102,7 +111,6 @@ public class externalConnections {
 
 
     @Test
-    @Order(4)
     public void checkPaymentAndCancelSuccess() throws Exception {
 
         Map<String, Map<String, List<Integer>>> products = new HashMap<>();
@@ -114,7 +122,7 @@ public class externalConnections {
         ExternalPaymentService externalPaymentService = market.getPaymentServicesFacade().getPaymentServiceByURL("https://damp-lynna-wsep-1984852e.koyeb.app/");
         CartDTO cartDTO = new CartDTO("130", 5500, products);
         PaymentDTO paymentDTO = new PaymentDTO("20444444", "David David", "USD", "2222333344445555", 982, 6, 2030);
-        int res = externalPaymentService.payWithCard(1000, paymentDTO, "11", cartDTO.getStoreToProducts(), "4545");
+        int res = externalPaymentService.payWithCard(1000, paymentDTO);
         System.out.println("transss is:" +  res);
         int res1= externalPaymentService.cancelPayment(res);
         assertEquals(1,res1);
@@ -123,7 +131,6 @@ public class externalConnections {
     }
 
     @Test
-    @Order(5)
     public void checkSupplySuccess() throws Exception {
 
         ExternalSupplyService supplyServices = market.getSupplyServicesFacade().getAllSupplyServices().get("https://damp-lynna-wsep-1984852e.koyeb.app/");
@@ -134,7 +141,6 @@ public class externalConnections {
     }
 
     @Test
-    @Order(6)
     public void checkSupplyAndCancelSuccess() throws Exception {
         ExternalSupplyService supplyServices = market.getSupplyServicesFacade().getAllSupplyServices().get("https://damp-lynna-wsep-1984852e.koyeb.app/");
         supplyServices.createSupply("david", "Israel", "Ashdod", "Elul", "4");
@@ -144,14 +150,13 @@ public class externalConnections {
     }
 
     @Test
-    @Order(7)
     public void isValidAcquisitionIdID() throws Exception {
-        assertTrue(paymentServicesFacade.isValidAcquisitionIdID("54656"));
-        assertTrue(paymentServicesFacade.isValidAcquisitionIdID("84656"));
-        assertTrue(paymentServicesFacade.isValidAcquisitionIdID("99656"));
-        assertFalse(paymentServicesFacade.isValidAcquisitionIdID("-1"));
-        assertFalse(paymentServicesFacade.isValidAcquisitionIdID("155"));
-        assertFalse(paymentServicesFacade.isValidAcquisitionIdID("564646644"));
+        assertTrue(paymentServicesFacade.isValidTransactionIdID(54656));
+        assertTrue(paymentServicesFacade.isValidTransactionIdID(84656));
+        assertTrue(paymentServicesFacade.isValidTransactionIdID(99656));
+        assertFalse(paymentServicesFacade.isValidTransactionIdID(-1));
+        assertFalse(paymentServicesFacade.isValidTransactionIdID(155));
+        assertFalse(paymentServicesFacade.isValidTransactionIdID(564646644));
 
 
 

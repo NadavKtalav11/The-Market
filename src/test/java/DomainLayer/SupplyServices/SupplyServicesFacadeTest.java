@@ -22,9 +22,9 @@ public class SupplyServicesFacadeTest {
     }
 
     @Test
-    public void testAddExternalService() {
+    public void testAddExternalService() throws Exception {
         // Create mocks for parameters
-        String url = "supply.com";
+        String url = "https://damp-lynna-wsep-1984852e.koyeb.app/";
         String supplyServiceName = "MockService";
         HashSet<String> countries =new HashSet<>();
         HashSet<String> cities =new HashSet<>();
@@ -48,7 +48,7 @@ public class SupplyServicesFacadeTest {
     }
 
     @Test
-    public void testCheckAvailableExternalSupplyService() {
+    public void testCheckAvailableExternalSupplyService() throws Exception {
         // Mock externalSupplyService
 
 
@@ -61,13 +61,13 @@ public class SupplyServicesFacadeTest {
         countries.add("Israel");
         cities.add("Bash");
 
-      supplyServicesFacadeSpy.addExternalService("supply.com");
+      supplyServicesFacadeSpy.addExternalService("https://damp-lynna-wsep-1984852e.koyeb.app/");
 
         //    doReturn(externalSupplyServiceMapMock).when(supplyServicesFacadeSpy).getExternalSupplyServiceMap();
 
         // Call method
         String result = supplyServicesFacadeSpy.checkAvailableExternalSupplyService("Israel", "Bash");
-        assertEquals("supply.com", result);
+        assertEquals("https://damp-lynna-wsep-1984852e.koyeb.app/", result);
 
 //        String result1 = supplyServicesFacadeSpy.checkAvailableExternalSupplyService("Israel", "Ashdod");
 //        assertEquals("-2", result1);

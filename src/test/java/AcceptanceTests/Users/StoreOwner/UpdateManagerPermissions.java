@@ -8,6 +8,7 @@ import ServiceLayer.Response;
 import Util.ExceptionsEnum;
 import Util.UserDTO;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,7 +35,7 @@ public class UpdateManagerPermissions {
     static String storeIDsaar;
     static String storeIDjalal;
 
-    @BeforeAll
+    @BeforeEach
     public void setUp() {
         saarUserID = impl.enterMarketSystem().getData();
         impl.register(saarUserID,"saar", "10/04/84", "Israel", "Jerusalem", "Yehuda halevi 18", "saar", "Fadidaa1");
@@ -50,12 +51,17 @@ public class UpdateManagerPermissions {
         impl.login(saarUserID, "saar", "Fadidaa1");
         storeIDsaar = impl.openStore(saarUserID, "alona", "shopping").getData();
         impl.appointStoreManager(saarUserID, "tom", storeIDsaar, true, false);
+        impl.answerJobProposal(tomUserID, storeIDsaar, true , true);
         impl.login(jalalUserID, "jalal", "Kasoomm3");
         storeIDjalal = impl.openStore(jalalUserID, "alona2", "shopping2").getData();
-        impl.appointStoreManager(jalalUserID, "ovad", storeIDjalal, true, true);
+
+        Response<String> response = impl.appointStoreManager(jalalUserID, "ovad", storeIDjalal, true, true);
+
+        impl.answerJobProposal(ovadUserID, storeIDjalal, true,true);
     }
 
     @Test
+    @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
     public void successfulUpdateTest() {
         assertTrue(impl.updateStoreManagerPermissions(saarUserID, "tom",storeIDsaar,
                 true, true).isSuccess());
@@ -64,6 +70,7 @@ public class UpdateManagerPermissions {
     }
 
     @Test
+    @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
     public void notManagerTest() {
         Response<String> response1 = impl.updateStoreManagerPermissions(saarUserID, "rani",storeIDsaar,
                 true, false);
@@ -72,14 +79,17 @@ public class UpdateManagerPermissions {
     }
 
     @Test
+    @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
     public void notNominatorTest() {
         impl.appointStoreOwner(jalalUserID, "saar",storeIDjalal);
+        impl.answerJobProposal(saarUserID, storeIDjalal, false, true);
         Response<String> response1 = impl.updateStoreManagerPermissions(saarUserID, "ovad",storeIDjalal,
                 true, false);
         assertFalse(response1.isSuccess());
         assertEquals(ExceptionsEnum.notNominatorOfThisEmployee.toString(), response1.getDescription());
 
         impl.appointStoreOwner(saarUserID, "jalal", storeIDsaar);
+        impl.answerJobProposal(jalalUserID, storeIDsaar, false, true);
         Response<String> response2 = impl.updateStoreManagerPermissions(jalalUserID ,"tom",storeIDsaar,
                 true, true);
         assertFalse(response2.isSuccess());

@@ -3,18 +3,31 @@ package DomainLayer.Store.StoreDiscountPolicy;
 import DomainLayer.Store.PoliciesRulesLogicalConditions.*;
 import Util.ProductDTO;
 import Util.UserDTO;
+import jakarta.persistence.*;
 
 import java.util.ArrayList;
 import java.util.List;
 
+
+@Entity
+@Table(name = "cond_discounts")
 public class CondDiscount extends Discount{
+
+    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @JoinColumn(name = "discount_rule_id")
     private Rule discountRule;
+
+    @Transient
     private final Object discountRuleLock;
 
     public CondDiscount(List<DiscountValue> discountValue, List<String> discountValueOperators, List<Rule> discountRule, List<String> discountRuleOperators) {
         super(discountValue, discountValueOperators);
         discountRuleLock = new Object();
         this.setDiscountRule(discountRule, discountRuleOperators);
+    }
+
+    public CondDiscount() {
+        discountRuleLock = new Object();
     }
 
     public void setDiscountRule(List<Rule> rules, List<String> operators)

@@ -24,17 +24,11 @@ public class Store {
   //  @Column(name = "store_id")
     private String store_ID;
 
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @JoinTable(
-            name = "store_products",
-            joinColumns = @JoinColumn(name = "store_id"),
-            inverseJoinColumns = @JoinColumn(name = "product_id")
-    )
-    @MapKeyColumn(name = "product_name")
 
-    //OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    //@MapKey(name = "productName")
-    //@JoinColumn(name = "store_id")
+
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+    @MapKey(name = "productName")
+    @JoinColumn(name = "store_id")
     private Map<String, Product> storeProducts = new HashMap<String, Product>();
 
     @Column(nullable = false)
@@ -42,10 +36,12 @@ public class Store {
 
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "discount_policy_id")
+//    @Transient
     private DiscountPolicy discountPolicy;
 
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "purchase_policy_id")
+//    @Transient
     private PurchasePolicy purchasePolicy;
 
     @Column(name = "rating")
@@ -54,12 +50,12 @@ public class Store {
     @Column(name = "num_of_ratings")
     private int numOfRatings;
 
-    @ElementCollection
-    @CollectionTable(name = "receipts", joinColumns = @JoinColumn(name = "store_id"))
-    @MapKeyColumn(name = "receipt_id")
-    @Column(name = "user_id")
-    //@Transient
-    private Map<String, String> receiptsIdsUserIds; //<receiptId, userId>
+//    @ElementCollection
+//    @CollectionTable(name = "receipts", joinColumns = @JoinColumn(name = "store_id"))
+//    @MapKeyColumn(name = "receipt_id")
+//    @Column(name = "user_id")
+//    @Transient
+//    private Map<String, String> receiptsIdsUserIds; //<receiptId, userId>
 
     @Column(name = "store_name")
     private String storeName;
@@ -88,7 +84,7 @@ public class Store {
         purchasePolicy = new PurchasePolicy();
         storeProductLock= new Object();
         isOpenedLock = new Object();
-        this.receiptsIdsUserIds = new HashMap<>();
+//        this.receiptsIdsUserIds = new HashMap<>();
         this.rating = 0;
         this.numOfRatings = 0;
         this.storeName = storeName;
@@ -324,12 +320,12 @@ public class Store {
 
     }
 
-    public void addReceipt(String receiptId, String userId)
-    {
-        synchronized (receiptId) {
-            receiptsIdsUserIds.put(receiptId, userId);
-        }
-    }
+//    public void addReceipt(String receiptId, String userId)
+//    {
+//        synchronized (receiptId) {
+//            receiptsIdsUserIds.put(receiptId, userId);
+//        }
+//    }
 
 
     public String getStore_ID() {

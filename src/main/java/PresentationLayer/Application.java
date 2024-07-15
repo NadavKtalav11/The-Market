@@ -34,13 +34,11 @@ import org.springframework.stereotype.Component;
 
 
 @SpringBootApplication(scanBasePackages = {"PresentationLayer.Vaadin", "PresentationLayer.WAF", "DomainLayer"})
-
 @EnableJpaRepositories(basePackages = "DomainLayer.Repositories")
 @EntityScan("DomainLayer")
 @Theme(value = "webpush")
 @PWA(name = "Web Push", shortName = "Push")
 @EnableScheduling
-@Component
 public class Application implements AppShellConfigurator {
 
     public static void main(String[] args) {

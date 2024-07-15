@@ -15,10 +15,15 @@ public class ProductDetailReceipt {
     @Column(name = "price")
     private int price;
 
-    public ProductDetailReceipt(ProductDetailReceiptId id, int amount, int price) {
+    @ManyToOne
+    @JoinColumn(name = "acquisition_id", nullable = false)
+    private Acquisition acquisition;
+
+    public ProductDetailReceipt(ProductDetailReceiptId id, int amount, int price , Acquisition acquisition) {
         this.productDetailReceiptId = id;
         this.amount = amount;
         this.price = price;
+        this.acquisition = acquisition;
     }
 
     public ProductDetailReceipt() {
@@ -43,5 +48,17 @@ public class ProductDetailReceipt {
 
     public int getPrice() {
         return price;
+    }
+
+    public Acquisition getAcquisition() {
+        return acquisition;
+    }
+
+    public void setAcquisition(Acquisition acquisition) {
+        this.acquisition = acquisition;
+    }
+
+    public void setPrice(int price) {
+        this.price = price;
     }
 }

@@ -8,7 +8,9 @@ import jakarta.persistence.*;
 
 import Util.CartDTO;
 import Util.UserDTO;
+import jakarta.transaction.Transactional;
 import org.bouncycastle.crypto.generators.BaseKDFBytesGenerator;
+import org.hibernate.annotations.Cascade;
 
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -22,10 +24,8 @@ public class User   {
     @Id
     private String userID;
 
-    //TODO: CHANGE THE ANNOTATION
-    //@OneToOne(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
-    //@JoinColumn(name = "state_id")
     @Transient
+    @Cascade(org.hibernate.annotations.CascadeType.ALL)
     private State state;
 
     @Column(name = "birthday")
@@ -49,6 +49,9 @@ public class User   {
     @Column(name = "is_guest")
     private boolean isGuest;
 
+    @Column(name = "member_id")
+    private String member_ID;
+
     //@Transient
     //private Observer observer;
     // maps notification to a bool value: true - if was published to user, false - if wasn't
@@ -66,13 +69,13 @@ public class User   {
         this.name = null;
         this.readyToPay = false;
         this.isGuest = !state.isMember();
+        this.member_ID = null;
         //this.cart = new Cart();
 
     }
 
     public User() {
         this.state = new Guest();
-        this.isGuest = !state.isMember();
     }
 
     public void updateByDTO(UserDTO userDTO){
@@ -135,6 +138,7 @@ public class User   {
     public void setState(State state) {
         this.state = state;
         this.isGuest = !state.isMember();
+        member_ID = state.getMemberID();
     }
 
     public String getCountry(){
@@ -159,12 +163,14 @@ public class User   {
         state.Logout();
         state = new Guest();
         this.isGuest = !state.isMember();
+        this.member_ID = null;
     }
 
     public void exitMarketSystem() {
         //state.exitMarketSystem(this);
     }
 
+    //@Transactional
     public void addToCart(String productName, int quantity, String storeId, int totalPrice)
     {
         state.addItemsToCart(productName, quantity, storeId, totalPrice);
@@ -175,6 +181,7 @@ public class User   {
         state.modifyProductInCart(productName, quantity, storeId, totalPrice);
     }
 
+    @Transactional
     public void updateCartPrice()
     {
         state.calcCartTotal();
@@ -257,15 +264,27 @@ public class User   {
 
     }
 
-    public void addAcquisition(String acquisitionId) {
-        state.addAcquisition(acquisitionId);
+//    public void addAcquisition(String acquisitionId) {
+//        state.addAcquisition(acquisitionId);
+//    }
+
+//    public int cancelAcquisition(String acquisitionId){
+//        return state.removeAcquisition(acquisitionId);
+//    }
+
+//    public List<String> getAcquisitionIds() {
+//        return state.getAcquisitionIds();
+//    }
+
+    public boolean getIsGuest(){
+        return isGuest;
     }
 
-    public int cancelAcquisition(String acquisitionId){
-        return state.removeAcquisition(acquisitionId);
+    public void setMember_ID(String member_ID) {
+        this.member_ID = member_ID;
     }
 
-    public List<String> getAcquisitionIds() {
-        return state.getAcquisitionIds();
+    public String getMember_ID() {
+        return member_ID;
     }
 }

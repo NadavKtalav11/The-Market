@@ -6,29 +6,16 @@ import java.util.List;
 import java.util.Map;
 import java.util.HashMap;
 
-@Entity
-@Table(name = "receipt")
 public class Receipt {
 
-    @Id
-    @Column(name = "receipt_id")
     private String receiptId;
 
-    @Column(name = "store_id") // Specify the column name explicitly
     private String storeId;
 
-    @Column(name = "user_id")
     private String userId;
 
-//    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)
-//    @JoinColumns({
-//            @JoinColumn(name = "receipt_id", referencedColumnName = "receipt_id"),
-//            @JoinColumn(name = "store_id", referencedColumnName = "store_id")
-//    })
-    @Transient
     private List<ProductDetailReceipt> productList = new ArrayList<>();
 
-    @Transient
     private Object productListLock = new Object();
 
     public Receipt(String receiptId, String storeId, String userId, List<ProductDetailReceipt> productList) {

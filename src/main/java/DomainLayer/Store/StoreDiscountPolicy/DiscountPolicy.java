@@ -18,16 +18,17 @@ import static Util.ExceptionsEnum.InvalidRuleIndex;
 @Table(name = "discount_policies")
 public class DiscountPolicy {
 
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @Id
+    @Column(name = "discount_policy_id")
+    @GeneratedValue(strategy=GenerationType.IDENTITY)
+    private Long id;
+
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     @JoinColumn(name = "discount_policy_id")
     private List<Discount> discountRules;
     
     @Transient
     private final Object discountRulesLock;
-    
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
 
     public DiscountPolicy()
     {

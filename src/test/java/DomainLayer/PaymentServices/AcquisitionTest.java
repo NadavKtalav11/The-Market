@@ -37,7 +37,7 @@ public class AcquisitionTest {
         productList.get("store1").put("Product2", Arrays.asList(1, 50));
 
         // Initialize Acquisition object
-        acquisition = new Acquisition(400000, "acq-1", "user-1", 150, mockPayment, productList);
+        acquisition = new Acquisition(400000, "acq-1", "user-1",null, 150,"www.com", mockPayment, productList);
     }
 
     @Test
@@ -52,7 +52,8 @@ public class AcquisitionTest {
 
     @Test
     public void testGetTotalPriceOfStoreInAcquisition() {
-        int totalPriceStore1 = acquisition.getTotalPriceOfStoreInAcquisition("store1");
+
+        int totalPriceStore1 = acquisition.getReceiptMap().get("store1").getTotalPriceOfStoreReceipt();
         assertEquals(150, totalPriceStore1); // Expected total: 2 * 100 + 1 * 50 = 250
     }
 

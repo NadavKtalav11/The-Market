@@ -11,7 +11,7 @@ public class StoreOwnerTest {
     @BeforeEach
     public void setUp() {
         // Initialize StoreOwner with mock data
-        storeOwner = new StoreOwner("member-1", "store-1", true, "nominator-1");
+        storeOwner = new StoreOwner("member-1", "store-1", true, "nominator-1", false);
     }
 
     @Test
@@ -36,7 +36,7 @@ public class StoreOwnerTest {
 
     @Test
     public void testVerifyStoreOwnerIsFounder_False() {
-        StoreOwner nonFounderOwner = new StoreOwner("member-2", "store-2", false, "nominator-2");
+        StoreOwner nonFounderOwner = new StoreOwner("member-2", "store-2", false, "nominator-2", false);
         assertFalse(nonFounderOwner.verifyStoreOwnerIsFounder());
     }
 }

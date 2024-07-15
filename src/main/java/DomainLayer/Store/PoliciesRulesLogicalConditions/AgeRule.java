@@ -4,6 +4,7 @@ import DomainLayer.Store.Category;
 import Util.ExceptionsEnum;
 import Util.ProductDTO;
 import Util.UserDTO;
+import jakarta.persistence.*;
 
 import java.time.Clock;
 import java.time.LocalDate;
@@ -12,14 +13,23 @@ import java.time.Period;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 
-
+@Entity
+@DiscriminatorValue("AgeRule")
 public class AgeRule extends TestRule {
+
     private int age;
+
+    @Transient
     protected final Object ageLock;
 
     public AgeRule(int age, String range, Category category, String productName, String description, Boolean contains){
         super(range, category, productName, description, contains);
         this.age = age;
+        this.ageLock = new Object();
+    }
+
+    public AgeRule() {
+        super();
         this.ageLock = new Object();
     }
 

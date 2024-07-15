@@ -3,6 +3,7 @@ package DomainLayer.User;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
 import jakarta.persistence.*;
+import jakarta.transaction.Transactional;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -16,13 +17,16 @@ public class Basket {
     @Column(name = "storeId")
     private String storeId;
 
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
-    private Map<String, ProductDetails> products;
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JoinColumn(name = "cart_id")
+    private Cart cart;
 
-    //private Map<String, List<Integer>> products; //key = product name, value = [quantity, products total price]
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+    @JoinColumn(name = "storeId")
+    private Map<String, ProductDetails> products; //key = product name, value = [quantity, products total price]
 
     @Column(name = "basket_price")
-    int basketPrice;
+    private int basketPrice;
 
     @Transient
     private final Object basketPriceLock;
@@ -83,10 +87,11 @@ public class Basket {
         }
     }
 
+    //@Transactional
     public synchronized void addProduct(String productName, int quantity, int totalPrice)
     {
         synchronized (productsLock) {
-            ProductDetails productDetails = new ProductDetails(quantity, totalPrice);
+            ProductDetails productDetails = new ProductDetails(quantity, totalPrice, productName);
             products.put(productName, productDetails);
         }
     }
@@ -142,5 +147,8 @@ public class Basket {
 
     }
 
+    public void setCart(Cart cart) {
+        this.cart = cart;
+    }
 
 }

@@ -4,21 +4,30 @@ import jakarta.persistence.*;
 import javax.persistence.Embeddable;
 
 @Entity
+@Table(name = "basket_products")
 public class ProductDetails {
 
+    @Column(name = "quantity")
     private int quantity;
+    @Column(name = "product_total_price")
     private int totalPrice;
+
     @Id
-    //@GeneratedValue(strategy = GenerationType.IDENTITY)
-    private String productName;
+    @Column(name = "product_name")
+    private String product_name;
+
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JoinColumn(name = "storeId")
+    private Basket basket;
 
     // Constructors, getters, and setters
     public ProductDetails() {
     }
 
-    public ProductDetails(int quantity, int totalPrice) {
+    public ProductDetails(int quantity, int totalPrice, String product_name){
         this.quantity = quantity;
         this.totalPrice = totalPrice;
+        this.product_name = product_name;
     }
 
     public int getQuantity() {
@@ -37,11 +46,11 @@ public class ProductDetails {
         this.totalPrice = totalPrice;
     }
 
-    //public void setId(Long id) {
-    //    this.id = id;
-    //}
+    public void setId(String product_name) {
+        this.product_name = product_name;
+    }
 
-    //public Long getId() {
-    //    return id;
-   // }
+    public String getProduct_name() {
+        return product_name;
+    }
 }

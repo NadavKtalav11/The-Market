@@ -39,9 +39,8 @@ public class Member extends State{
     private String address;
     @Column(name = "product_id_counter")
     private int productIdCounter;
-    @ElementCollection
-    private List<String> acquisitionIds;
-
+//    @ElementCollection
+//    private List<String> acquisitionIds;
 
     //private boolean isLogin;
 
@@ -71,13 +70,12 @@ public class Member extends State{
         this.address = address;
         this.name = name;
         this.productIdCounter = 0;
-        this.acquisitionIds = new ArrayList<>();
+//        this.acquisitionIds = new ArrayList<>();
     }
 
     public Member() {
 
     }
-
 
     public void Logout()
     {
@@ -129,6 +127,7 @@ public class Member extends State{
 
     //public Map<String, String> getReceiptIdsAndStoreId(){return receiptIdsAndStoreId;}
 
+    @Override
     public String getMemberID()
     {
         return this.member_ID;
@@ -140,14 +139,14 @@ public class Member extends State{
     }
 
 
-    public void addAcquisition(String acquisitionId){
-        acquisitionIds.add(acquisitionId);
-    }
+//    public void addAcquisition(String acquisitionId){
+//        acquisitionIds.add(acquisitionId);
+//    }
 
-    @Override
-    public List<String> getAcquisitionIds() {
-        return acquisitionIds;
-    }
+//    @Override
+//    public List<String> getAcquisitionIds() {
+//        return acquisitionIds;
+//    }
 
     public String getMember_ID() {
         return member_ID;
@@ -157,12 +156,16 @@ public class Member extends State{
         return userId;
     }
 
-    @Override
-    public int removeAcquisition(String acquisitionId) {
-        if (acquisitionIds.contains(acquisitionId)) {
-            acquisitionIds.remove(acquisitionId);
-            return 1;
-        }
-        return -1;
+    public void setUserId(String userId) {
+        this.userId = userId;
     }
+
+//    @Override
+//    public int removeAcquisition(String acquisitionId) {
+//        if (acquisitionIds.contains(acquisitionId)) {
+//            acquisitionIds.remove(acquisitionId);
+//            return 1;
+//        }
+//        return -1;
+//    }
 }

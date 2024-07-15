@@ -2,6 +2,7 @@ package DomainLayer.System;
 
 import AcceptanceTests.BridgeToTests;
 import AcceptanceTests.ProxyToTest;
+import AcceptanceTests.RealToTest;
 import DomainLayer.Market.Market;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -10,12 +11,12 @@ import DomainLayer.Role.RoleFacade;
 import DomainLayer.Store.StoreFacade;
 import DomainLayer.SupplyServices.SupplyServicesFacade;
 import DomainLayer.User.UserFacade;
+import PresentationLayer.Application;
 import Util.ExceptionsEnum;
 import Util.PaymentServiceDTO;
 import Util.SupplyServiceDTO;
 import Util.UserDTO;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 
 import java.util.Arrays;
 import java.util.HashSet;
@@ -24,6 +25,10 @@ import Util.PaymentDTO;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.ContextConfiguration;
 
 import java.lang.reflect.Field;
 import java.util.HashMap;
@@ -34,8 +39,14 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.*;
 
+@ContextConfiguration(classes = {Application.class, RealToTest.class})
+@SpringBootTest
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
+@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
 public class StateInit {
     private static BridgeToTests impl;
+
+    @Autowired
     private Market market;
     private UserFacade userFacade;
     private StoreFacade storeFacade;
@@ -48,19 +59,17 @@ public class StateInit {
     @BeforeEach
     public void setUp() {
         impl = new ProxyToTest("Real");
-        this.userFacade = UserFacade.getInstance();
-        this.storeFacade = StoreFacade.getInstance();
-        this.paymentServicesFacade = PaymentServicesFacade.getInstance();
-        this.supplyServicesFacade = SupplyServicesFacade.getInstance();
-        this.roleFacade = RoleFacade.getInstance();
-
-
-
-        this.market = new Market(userFacade, storeFacade, paymentServicesFacade, supplyServicesFacade,roleFacade);
+        this.userFacade = market.getUserFacade();
+        this.storeFacade = market.getStoreFacade();
+        this.paymentServicesFacade =market.getPaymentServiceFacade();
+        this.supplyServicesFacade = market.getSupplyServicesFacade();
+        this.roleFacade = market.getRoleFacade();
+        //market = new Market(userFacade, storeFacade, paymentServicesFacade, supplyServicesFacade,roleFacade);
 
     }
 
     @Test
+    @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
     public void successfulInitTest() throws Exception {
         assertFalse(market.isInitialized());
         assertEquals(0, market.getSystemManagerIds().size());
@@ -70,6 +79,7 @@ public class StateInit {
         assertEquals(0, supplyServicesFacade.getAllSupplyServices().size());
 
         market.init();
+        market.startStateInitialization();
 
         assertTrue(market.isInitialized());
         assertEquals(1, market.getSystemManagerIds().size());

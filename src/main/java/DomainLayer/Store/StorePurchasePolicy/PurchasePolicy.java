@@ -16,16 +16,17 @@ import static Util.ExceptionsEnum.*;
 @Table(name = "purchase_policies")
 public class PurchasePolicy {
 
+    @Id
+    @Column(name = "purchase_policy_id")
+    @GeneratedValue(strategy=GenerationType.IDENTITY)
+    private Long id;
+
     @Transient
     private final Object purchaseRulesLock;
 
-    @ElementCollection
-    @CollectionTable(name = "purchase_policy_rules")
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @JoinColumn(name = "purchase_policy_id")
     private List<Rule> purchaseRules;
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
 
     public PurchasePolicy()
     {

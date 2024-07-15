@@ -1,8 +1,10 @@
 package DomainLayer.Repositories;
 
 import DomainLayer.Market.InitializedStatus;
+import jakarta.inject.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
 import org.springframework.context.annotation.Profile;
 import org.springframework.data.domain.Example;
 import org.springframework.data.domain.Page;
