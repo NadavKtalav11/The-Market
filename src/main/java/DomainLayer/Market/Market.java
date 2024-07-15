@@ -819,7 +819,7 @@ public class Market {
 
 
 
-    private void sendMessagesToOwnersAndManagers(String storeId , String message) throws Exception { // Inject VaadinUserService and NotificationService
+    public void sendMessagesToOwnersAndManagers(String storeId , String message) throws Exception { // Inject VaadinUserService and NotificationService
 
         List<String> storeOwnerIds = roleFacade.getAllStoreOwners(storeId);
         //String storeName = storeFacade.getStoreName(storeId);
@@ -837,7 +837,7 @@ public class Market {
 
 
 
-    private void sendMessagesOnPurchaseToStoreOwners(CartDTO cartDTO) throws Exception { // Inject VaadinUserService and NotificationService
+    public void sendMessagesOnPurchaseToStoreOwners(CartDTO cartDTO) throws Exception { // Inject VaadinUserService and NotificationService
         for (String storeId : cartDTO.getStoreToProducts().keySet()) {
             List<String> storeOwnerIds = roleFacade.getAllStoreOwners(storeId);
             String storeName = storeFacade.getStoreName(storeId);
@@ -2020,5 +2020,9 @@ public class Market {
     }
     public AuthenticationAndSecurityFacade getAuthenticationAndSecurityFacade(){
         return authenticationAndSecurityFacade;
+    }
+
+    public MyWebSocketHandler getMyWebSocketHandler() {
+        return myWebSocketHandler;
     }
 }

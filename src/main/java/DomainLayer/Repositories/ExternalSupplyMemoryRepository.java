@@ -196,9 +196,9 @@ public class ExternalSupplyMemoryRepository implements ExternalSupplyRepository 
 
 
     @Override
-    public List<ShippingDTO> getUserHistory(String userName) {
+    public List<ShippingDTO> getUserHistory(String memberId) {
         synchronized (usersShippingHistoryLock){
-            return usersShippingHistory.get(userName);
+            return usersShippingHistory.get(memberId);
         }
     }
 

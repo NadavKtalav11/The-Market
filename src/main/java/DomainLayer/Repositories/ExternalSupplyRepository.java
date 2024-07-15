@@ -13,7 +13,7 @@ import java.util.List;
 
 @NoRepositoryBean
 public interface ExternalSupplyRepository extends JpaRepository<ExternalSupplyService,String> {
-    @Query("SELECT s FROM ShippingDTO s WHERE s.memberId = :memberId")
+    @Query(value = "SELECT s FROM ShippingDTO s WHERE s.memberId = :memberId", nativeQuery = true)
     public List<ShippingDTO> getUserHistory(String memberId);
 
     @Query("SELECT s FROM ShippingDTO s")
