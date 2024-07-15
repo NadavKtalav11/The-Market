@@ -60,14 +60,27 @@ public class MyWebSocketHandler extends TextWebSocketHandler {
 
 
 
-    public void handleStringMessage(String memberID, String message) {
+    public synchronized void handleStringMessage(String memberID, String message) {
         // Handle incoming messages
         LocalDateTime timestamp = LocalDateTime.now();
         String formattedMessage = message + " at " + formatTimestamp(timestamp);
 
 
         WebSocketSession session = sessionsByMember.get(memberID);
-        if (session==null){
+        String currMemberId= null;
+        try {
+            currMemberId = (String) session.getAttributes().get("memberID");
+        }
+        catch (Exception e){
+            lateNotificationFacade.sendLateMessage(memberID, formattedMessage);
+            return;
+        }
+        if (session==null ){
+            lateNotificationFacade.sendLateMessage(memberID, formattedMessage);
+            return;
+        }
+        else if (currMemberId==null || !currMemberId.equals(memberID)){
+            sessionsByMember.remove(memberID);
             lateNotificationFacade.sendLateMessage(memberID, formattedMessage);
             return;
         }
@@ -84,12 +97,16 @@ public class MyWebSocketHandler extends TextWebSocketHandler {
     }
 
     @Override
-    public void afterConnectionEstablished(WebSocketSession session){
+    public synchronized void  afterConnectionEstablished(WebSocketSession session){
         // add session to map
+
         String sessionId = (String) session.getAttributes().get("memberID");
         if (sessionId != null) {
             sessionsByMember.put(sessionId, session);
         }
+//        for (WebSocketSession socketSession: sessionsByMember.values()){
+//            if (session.)
+//        }
 //        Event event = new Event(new Object(), "connect message from server!!!",new HashSet<>(Arrays.asList(u)));
 //        Publisher publisher = (Publisher) SpringContext.getBean("Publisher");
 //        publisher.publish(event);
@@ -99,7 +116,7 @@ public class MyWebSocketHandler extends TextWebSocketHandler {
 
 
 
-    public void afterConnectionClosed(WebSocketSession session, CloseStatus status) throws Exception {
+    public synchronized void afterConnectionClosed(WebSocketSession session, CloseStatus status) throws Exception {
         String userName = (String) session.getAttributes().get("memberID");
         if (userName != null) {
             sessionsByMember.remove(userName);
