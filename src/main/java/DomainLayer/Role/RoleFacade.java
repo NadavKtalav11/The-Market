@@ -261,7 +261,7 @@ public class RoleFacade {
     }
 
     private void addNewStoreOwnerNominatorToTheMarket(StoreOwner storeOwner) {
-        storeOwnerRepository.insertStoreOwner(storeOwner.getMember_ID(), storeOwner.getStore_ID(), storeOwner.getFounder(), storeOwner.getNominatorId(),storeOwner.isInProposal());
+        storeOwnerRepository.save(storeOwner);
     }
 
     private void addNewStoreOwnerToTheMarket(StoreOwner storeOwner) {
