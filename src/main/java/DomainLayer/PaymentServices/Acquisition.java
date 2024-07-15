@@ -82,7 +82,7 @@ public class Acquisition {
             String receiptID = getNewReceiptId();
             storeIdAndReceiptID.put(storeId, receiptID);
             receiptMap.put(storeId,createNewReceipt(receiptID,storeId,productList.get(storeId)));
-            this.productDetailReceipts.addAll(convertToProductDetailReceipt(productList.get(storeId), storeId));
+            this.productDetailReceipts.addAll(convertToProductDetailReceipt(productList.get(storeId), storeId, receiptID));
         }
     }
 
@@ -91,19 +91,19 @@ public class Acquisition {
         Map<String, List<Integer>> productList = new HashMap<>();
         for (ProductDetailReceipt productDetailReceipt : productDetailReceipts) {
             List<Integer> priceAndQuantity = new ArrayList<>();
-            priceAndQuantity.add(productDetailReceipt.getPrice());
             priceAndQuantity.add(productDetailReceipt.getAmount());
+            priceAndQuantity.add(productDetailReceipt.getPrice());
             productList.put(productDetailReceipt.getId().getProductName(), priceAndQuantity);
         }
         return productList;
     }
 
     //convert product list from Map<String, List<Integer>> to List<ProductDetailReceipt>
-    public List<ProductDetailReceipt> convertToProductDetailReceipt(Map<String, List<Integer>> productDetailReceipts, String storeId){
+    public List<ProductDetailReceipt> convertToProductDetailReceipt(Map<String, List<Integer>> productDetailReceipts, String storeId, String receiptId){
         List<ProductDetailReceipt> productList = new ArrayList<>();
         for (String productName : productDetailReceipts.keySet()) {
             List<Integer> priceAndQuantity = productDetailReceipts.get(productName);
-            ProductDetailReceipt productDetailReceipt = new ProductDetailReceipt(new ProductDetailReceiptId(getNewReceiptId(),storeId,productName), priceAndQuantity.get(0), priceAndQuantity.get(1),this);
+            ProductDetailReceipt productDetailReceipt = new ProductDetailReceipt(new ProductDetailReceiptId(receiptId,storeId,productName), priceAndQuantity.get(0), priceAndQuantity.get(1),this);
             productList.add(productDetailReceipt);
         }
         return productList;
@@ -194,6 +194,10 @@ public class Acquisition {
             }
         }
         return receiptIdAndStoreIdMap;
+    }
+
+    public List<ProductDetailReceipt> getProductDetailReceipts() {
+        return productDetailReceipts;
     }
 
     public String getUrl() {
