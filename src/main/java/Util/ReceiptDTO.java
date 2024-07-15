@@ -8,14 +8,14 @@ public class ReceiptDTO {
 
     private String receiptId;
     private String storeId;
-    private String userId;
+    private String memberId;
     private Map<String, List<Integer>> productList = new HashMap<>(); //<productName, price>
 
-    public ReceiptDTO(String receiptId, String storeId, String userId, Map<String, List<Integer>> productList)
+    public ReceiptDTO(String receiptId, String storeId, String memberId, Map<String, List<Integer>> productList)
     {
         this.receiptId = receiptId;
         this.storeId = storeId;
-        this.userId = userId;
+        this.memberId = memberId;
         this. productList = productList;
     }
 
@@ -27,8 +27,8 @@ public class ReceiptDTO {
         return storeId;
     }
 
-    public String getUserId() {
-        return userId;
+    public String getMemberId() {
+        return memberId;
     }
 
     public Map<String, List<Integer>> getProductList() {

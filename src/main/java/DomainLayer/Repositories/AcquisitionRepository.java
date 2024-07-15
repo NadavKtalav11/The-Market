@@ -25,11 +25,15 @@ public interface AcquisitionRepository extends JpaRepository<Acquisition,String>
     @Query("SELECT a FROM Acquisition a JOIN a.productDetailReceipts p WHERE p.productDetailReceiptId.storeId = :storeId")
     List<Acquisition> findByStoreId(String storeId);
 
-    @Query("SELECT a FROM Acquisition a WHERE a.userId = :userID")
-    List<Acquisition> findByUserId(String userID);
+//    @Query("SELECT a FROM Acquisition a WHERE a.userId = :userID")
+//    List<Acquisition> findByUserId(String userID);
 
     @Query("SELECT a FROM Acquisition a WHERE a.memberId = :memberId")
     List<Acquisition> findByMemberId(String memberId);
+
+
+
+
 
 //    @Query("SELECT new Util.ProductFromReceiptDTO(p.productDetailReceiptId.receiptId, p.productDetailReceiptId.storeId, a.userId, p.productDetailReceiptId.productName, p.amount, p.price) " +
 //            "FROM Acquisition a JOIN a.productDetailReceipts p " +

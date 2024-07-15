@@ -195,6 +195,16 @@ public class Service_layer {
         }
     }
 
+    public Response<List<ReceiptDTO>> getAllStoreReceipts(String userId , String storeId){
+        try {
+            List<ReceiptDTO> res = market.getStoreReceipts(userId, storeId);
+            return new Response<List<ReceiptDTO>>(res, "returned all receipts successfully");
+        } catch (Exception e) {
+            logger.info("Error occurred while trying to get all store receipts services- {}", e.getMessage());
+            return new Response<>(null, e.getMessage());
+        }
+    }
+
     public Response<List<StoreOwnerDTO>> getOwnerJobProposal(String userId ){
         try {
 

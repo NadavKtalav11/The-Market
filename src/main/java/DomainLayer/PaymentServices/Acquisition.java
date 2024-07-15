@@ -118,7 +118,7 @@ public class Acquisition {
             ProductDetailReceipt productDetailReceipt = new ProductDetailReceipt(id,quantity,price, this);
             productDetailReceipts.add(productDetailReceipt);
         }
-        return new Receipt(receiptID, storeID, userId, productDetailReceipts);
+        return new Receipt(receiptID, storeID, memberId, productDetailReceipts);
     }
 
     public Acquisition() {

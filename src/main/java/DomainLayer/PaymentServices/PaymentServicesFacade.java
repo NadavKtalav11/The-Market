@@ -94,7 +94,7 @@ public class PaymentServicesFacade {
         List<Acquisition> acquisitions =acquisitionRepository.findAll();
         List<AcquisitionDTO> acquisitionDTOList = new ArrayList<>();
         for (Acquisition acquisition:acquisitions){
-            acquisitionDTOList.add(new AcquisitionDTO(acquisition.getAcquisitionId(), acquisition.getUserId(),acquisition.getTotalPrice(),acquisition.getDate()));
+            acquisitionDTOList.add(new AcquisitionDTO(acquisition.getAcquisitionId(), acquisition.getMemberId(),acquisition.getTotalPrice(),acquisition.getDate()));
         }
         return acquisitionDTOList;
     }
@@ -245,6 +245,19 @@ public class PaymentServicesFacade {
         return null;
     }
 
+    public List<ReceiptDTO> getStoreAcquisitions(String storeId){
+        List<ReceiptDTO> storeReceipts = new ArrayList<>();
+        List<Acquisition> acquisitionList = acquisitionRepository.findAll();
+        for (Acquisition acquisition : acquisitionList){
+            for (Receipt receipt: acquisition.getReceiptMap().values()){
+                if (receipt.getStoreId().equals(storeId)){
+                    storeReceipts.add(new ReceiptDTO(receipt.getReceiptId(), receipt.getStoreId(),receipt.getMemberId(), receipt.getProductListToMap()));
+                }
+            }
+        }
+        return storeReceipts;
+    }
+
 
     public Map<String, Integer> getStorePurchaseInfo()
     {
@@ -289,7 +302,7 @@ public class PaymentServicesFacade {
 //            Optional<Acquisition> acq = acquisitionRepository.findById(acqId);
 //            Acquisition acq1 = acq.orElse(null);
 //            if (acq1 != null) {
-                acquisitionsDTO.add(new AcquisitionDTO(acq.getAcquisitionId(), acq.getUserId(), acq.getTotalPrice(), acq.getDate()));
+                acquisitionsDTO.add(new AcquisitionDTO(acq.getAcquisitionId(), acq.getMemberId(), acq.getTotalPrice(), acq.getDate()));
 //            }
         }
 
@@ -306,7 +319,7 @@ public class PaymentServicesFacade {
             for (String storeId : storeReceipts.keySet()) {
                 String receiptId = storeReceipts.get(storeId);
                 receiptsDTO.put(receiptId,
-                        new ReceiptDTO(storeReceipts.get(storeId),storeId, acq1.getUserId(), convertToProductList(acquisitionRepository.findProductDetailReceiptsByReceiptAndAcquisition(receiptId,acquisitionId))));
+                        new ReceiptDTO(storeReceipts.get(storeId),storeId, acq1.getMemberId(), convertToProductList(acquisitionRepository.findProductDetailReceiptsByReceiptAndAcquisition(receiptId,acquisitionId))));
             }
         }
         return receiptsDTO;
@@ -336,23 +349,20 @@ public class PaymentServicesFacade {
         return acquisitionRepository.findByMemberId(memberId);
     }
 
-//    public List<Acquisition> getUserAcquisitionsHistory(String userId) {
-//        return acquisitionRepository.findByUserId(userId);
-//    }
 
-    public  List<Receipt> getUserReceiptsByAcquisition(String acquisitionId, String userId) {
+    public  List<Receipt> getUserReceiptsByAcquisition(String acquisitionId, String memberId) {
         List<Receipt> receipts = new LinkedList<>();
         List<String> receiptIds = acquisitionRepository.getReceiptIdsByAcquisitionId(acquisitionId);
         for (String receiptId : receiptIds) {
             List<ProductDetailReceipt> productDetailReceipts = acquisitionRepository.findProductDetailReceiptsByReceiptAndAcquisition(receiptId,acquisitionId);
             String storeId = productDetailReceipts.get(0).getId().getStoreId();
-            receipts.add(new Receipt(receiptId,storeId,userId,productDetailReceipts));
+            receipts.add(new Receipt(receiptId,storeId,memberId,productDetailReceipts));
         }
         return receipts;
     }
 
     public ReceiptDTO getReceiptDTOFromReceipt(Receipt receipt) {
-        return new ReceiptDTO(receipt.getReceiptId(), receipt.getStoreId(), receipt.getUserId(), convertToProductList(receipt.getProductList()));
+        return new ReceiptDTO(receipt.getReceiptId(), receipt.getStoreId(), receipt.getMemberId(), convertToProductList(receipt.getProductList()));
     }
 
     public void addPaymentForTests (String url) throws Exception {
