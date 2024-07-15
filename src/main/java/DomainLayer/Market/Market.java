@@ -841,8 +841,9 @@ public class Market {
 
     public void setUserConfirmationPurchase(String userID) throws Exception {
         verifyToken(userID);
-        this.userFacade.getUserByID(userID).setReadyToPay(true);
+        this.userFacade.setUserConfirmationPurchase(userID);
     }
+
 
     public boolean getUserConfirmationPurchase(String userID) throws Exception {
         verifyToken(userID);
