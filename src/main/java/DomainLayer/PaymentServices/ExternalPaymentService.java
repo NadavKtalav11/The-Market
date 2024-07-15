@@ -94,7 +94,7 @@ public  class ExternalPaymentService {
             //    return -1;
             //}
             HttpRequestController httpReqCtrl = new HttpRequestController(url);
-            if (httpReqCtrl.checkHandShake()) {
+            if (!httpReqCtrl.checkHandShake()) {
                 return -1;
             }
             Map<String,String> postContent = new HashMap<>();

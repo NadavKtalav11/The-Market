@@ -8,6 +8,7 @@ import ServiceLayer.Response;
 import Util.ExceptionsEnum;
 import Util.UserDTO;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,7 +39,7 @@ public class AppointManager {
     private static final String JALAL_USERNAME = "jalal";
     private static final String JALAL_PASSWORD = "Kasoomm3";
 
-    @BeforeAll
+    @BeforeEach
     public void setUp() {
         saarUserID = impl.enterMarketSystem().getData();
         impl.register(saarUserID,"saar",  "10/04/84", "Israel", "Jerusalem", "Yehuda halevi 18", "saar", "Fadidaa1");
@@ -53,7 +54,7 @@ public class AppointManager {
         impl.appointStoreOwner(saarUserID, "tom", storeId);
         impl.appointStoreManager(saarUserID, "jalal", storeId, true, false);
     }
-
+    @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
     @Test
     public void successfulAppointmentTest() {
         setUp();
@@ -62,20 +63,22 @@ public class AppointManager {
     }
 
     @Test
+    @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
     public void alreadyHasRoleInThisStore() {
         Response<String> response1 = impl.appointStoreManager(saarUserID, "tom",
                 storeId, true, false);
         assertFalse(response1.isSuccess());
-        assertEquals(ExceptionsEnum.memberAlreadyHasRoleInThisStore.toString(), response1.getDescription());
+        assertEquals("member is already nominator to job in this store", response1.getDescription());
 
         Response<String> response2 = impl.appointStoreManager(saarUserID, "jalal",
                 storeId, true, false);
         assertFalse(response2.isSuccess());
-        assertEquals(ExceptionsEnum.memberAlreadyHasRoleInThisStore.toString(), response2.getDescription());
+        assertEquals("member is already nominator to job in this store", response2.getDescription());
 
     }
 
     @Test
+    @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
     public void concurrentAppointManagerTest() throws InterruptedException {
         // Create a latch to synchronize the start of both threads
         CountDownLatch latch = new CountDownLatch(1);

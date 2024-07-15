@@ -52,18 +52,18 @@ public class MemberTest {
         assertTrue(member.isMember());
     }
 
-    @Test
-    public void testAddAquisition() {
-        String storeId = "1";
-        String productName = "Product1";
-        int quantity = 2;
-        int totalPrice = 100;
-
-        member.addAcquisition("1");
-
-        // Check if acquisition was added correctly
-        List<String> acquisitions = member.getAcquisitionIds();
-        assertTrue(acquisitions.contains(storeId));
-
-    }
+//    @Test
+//    public void testAddAquisition() {
+//        String storeId = "1";
+//        String productName = "Product1";
+//        int quantity = 2;
+//        int totalPrice = 100;
+//
+//        member.addAcquisition("1");
+//
+//        // Check if acquisition was added correctly
+//        List<String> acquisitions = member.getAcquisitionIds();
+//        assertTrue(acquisitions.contains(storeId));
+//
+//    }
 }

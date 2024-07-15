@@ -406,11 +406,13 @@ public class StoreFacade {
         }
     }
 
-    public void addReceiptToStore(String storeId, String  receiptId, String userId) throws Exception {
-        Store store = getStoreByID(storeId);
-        store.addReceipt(receiptId, userId);
-        allStores.save(store);
-    }
+
+//    public void addReceiptToStore(String storeId, String  receiptId, String userId)
+//    {
+//        allStores.getById(storeId).addReceipt(receiptId, userId);
+//       // getStoreByID(storeId).addReceipt(receiptId, userId);
+//    }
+
 
     public void addPurchaseRuleToStore(List<TestRuleDTO> testRules, List<String> operators, String storeId) throws Exception {
         List<Rule> rules = new ArrayList<>();

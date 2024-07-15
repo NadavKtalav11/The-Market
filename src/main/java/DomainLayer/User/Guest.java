@@ -45,19 +45,19 @@ public class Guest extends State{
     }
 
 
-    @Override
-    public void addAcquisition(String acquisitionId) {
-        return;
-    }
-
-    @Override
-    public List<String> getAcquisitionIds() {
-        return null;
-    }
-
-    @Override
-    public int removeAcquisition(String acquisitionId)  {
-        return -1;
-    }
+//    @Override
+//    public void addAcquisition(String acquisitionId) {
+//        return;
+//    }
+//
+//    @Override
+//    public List<String> getAcquisitionIds() {
+//        return null;
+//    }
+//
+//    @Override
+//    public int removeAcquisition(String acquisitionId)  {
+//        return -1;
+//    }
 
 }

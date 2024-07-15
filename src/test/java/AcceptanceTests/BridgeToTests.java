@@ -90,4 +90,6 @@ public interface BridgeToTests {
 
     Response<String> composeCurrentCondDiscountRules(int ruleIndex1, int ruleIndex2, String logicalOperator, String numericalOperator, String userId, String storeId);
 
+    Response<String> answerJobProposal(String userId, String storeId, boolean managerProposal, boolean answer);
+
 }
