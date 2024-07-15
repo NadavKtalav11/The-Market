@@ -18,11 +18,18 @@ class CondRuleTest {
     private Rule rule1;
     private Rule rule2;
     private CondRule condRule;
+    private String desc1;
+    private String desc2;
 
     @BeforeEach
     void setUp() {
         rule1 = mock(Rule.class);
         rule2 = mock(Rule.class);
+        desc1 = "Rule 1";
+        desc2 = "Rule 2";
+        when(rule1.getDescription()).thenReturn("Rule 1");
+        when(rule2.getDescription()).thenReturn("Rule 2");
+
         condRule = new CondRule(rule1, rule2);
     }
 
@@ -77,14 +84,10 @@ class CondRuleTest {
 
     @Test
     void getDescription_ReturnsCombinedDescription() {
-        // Arrange
-        when(rule1.getDescription()).thenReturn("Rule 1");
-        when(rule2.getDescription()).thenReturn("Rule 2");
-
         // Act
         String description = condRule.getDescription();
 
         // Assert
-        assertEquals(" (Rule 1 only if Rule 2) ", description);
+        assertEquals(" ("+desc1 +" only if "+ desc2+") ", description);
     }
 }

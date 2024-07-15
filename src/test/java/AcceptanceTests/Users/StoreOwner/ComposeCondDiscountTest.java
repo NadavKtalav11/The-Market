@@ -67,7 +67,7 @@ public class ComposeCondDiscountTest {
         discountDetails2.add(new DiscountValueDTO(10, "CLOTHING", false, null));
         discountDetails2.add(new DiscountValueDTO(20, "CLOTHING", false, null));
         List<String> numericalOperators2 = new ArrayList<>();
-        numericalOperators2.add("ADD");
+        numericalOperators2.add("ADDITION");
         impl.addDiscountCondRuleToStore(rules2, logicalOperators2, discountDetails2, numericalOperators2, saarUserID, storeId);
 
 
@@ -76,7 +76,7 @@ public class ComposeCondDiscountTest {
     @Test
     @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
     public void successfulComposeTest() {
-        assertTrue(impl.composeCurrentCondDiscountRules(0, 1, "OR", "ADD", saarUserID, storeId).isSuccess());
+        assertTrue(impl.composeCurrentCondDiscountRules(0, 1, "OR", "ADDITION", saarUserID, storeId).isSuccess());
 
     }
 
@@ -84,8 +84,8 @@ public class ComposeCondDiscountTest {
     @Test
     @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
     public void logicalOperatorDontExist() {
-        assertFalse(impl.composeCurrentCondDiscountRules(0, 1, "NOR", "ADD", saarUserID, storeId).isSuccess());
-        assertEquals(impl.composeCurrentCondDiscountRules(0, 1, "NOR", "ADD", saarUserID, storeId).getDescription(), ExceptionsEnum.InvalidOperator.toString());
+        assertFalse(impl.composeCurrentCondDiscountRules(0, 1, "NOR", "ADDITION", saarUserID, storeId).isSuccess());
+        assertEquals(impl.composeCurrentCondDiscountRules(0, 1, "NOR", "ADDITION", saarUserID, storeId).getDescription(), ExceptionsEnum.InvalidOperator.toString());
     }
 
     @Test
@@ -98,7 +98,7 @@ public class ComposeCondDiscountTest {
     @Test
     @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
     public void ruleNumDontExist() {
-        assertFalse(impl.composeCurrentCondDiscountRules(2, 1, "OR", "ADD", saarUserID, storeId).isSuccess());
-        assertEquals(impl.composeCurrentCondDiscountRules(2, 1, "OR", "ADD", saarUserID, storeId).getDescription(), ExceptionsEnum.InvalidRuleIndex.toString());
+        assertFalse(impl.composeCurrentCondDiscountRules(2, 1, "OR", "ADDITION", saarUserID, storeId).isSuccess());
+        assertEquals(impl.composeCurrentCondDiscountRules(2, 1, "OR", "ADDITION", saarUserID, storeId).getDescription(), ExceptionsEnum.InvalidRuleIndex.toString());
     }
 }

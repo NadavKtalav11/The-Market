@@ -18,11 +18,18 @@ class AndRulesTest {
     private Rule rule1;
     private Rule rule2;
     private AndRule andRule;
+    private String desc1;
+    private String desc2;
 
     @BeforeEach
     void setUp() {
         rule1 = mock(Rule.class);
         rule2 = mock(Rule.class);
+        desc1 = "Rule 1";
+        desc2 = "Rule 2";
+
+        when(rule1.getDescription()).thenReturn(desc1);
+        when(rule2.getDescription()).thenReturn(desc2);
         andRule = new AndRule(rule1, rule2);
     }
 
@@ -92,14 +99,10 @@ class AndRulesTest {
 
     @Test
     void getDescription_ReturnsCombinedDescription() {
-        // Arrange
-        when(rule1.getDescription()).thenReturn("Rule 1");
-        when(rule2.getDescription()).thenReturn("Rule 2");
-
         // Act
         String description = andRule.getDescription();
 
         // Assert
-        assertEquals(" (Rule 1 and Rule 2) ", description);
+        assertEquals(" ("+desc1+" and "+desc2+") ", description);
     }
 }
