@@ -90,6 +90,9 @@ public class StoreFacade {
 //        composeCurrentPurchaseRules(0, 1, "OR", id);
     }
 
+    public void reset() {
+        allStores.deleteAll();
+    }
 
     public StoreFacade newForTest(){
         storeFacadeInstance= new StoreFacade();
@@ -121,7 +124,9 @@ public class StoreFacade {
 
 
     public void returnProductToStore(Map<String, List<Integer>> products , String storeId) throws Exception {
-        getStoreByID(storeId).returnProductToStore(products);
+        Store store = getStoreByID(storeId);
+        store.returnProductToStore(products);
+        allStores.save(store);
     }
 
     public Store getStoreByID(String storeID) throws Exception {

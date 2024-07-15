@@ -8,9 +8,7 @@ import ServiceLayer.Response;
 import Util.ExceptionsEnum;
 import Util.ProductDTO;
 import Util.UserDTO;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
@@ -30,13 +28,18 @@ public class AddStoreProduct {
     static String saarUserID;
     static String storeId;
 
-    @BeforeAll
+    @BeforeEach
     public void setUp() {
         saarUserID = impl.enterMarketSystem().getData();
         impl.register(saarUserID,"saar", "10/04/84", "Israel", "Jerusalem", "Yehuda halevi 18", "saar", "Fadidaa1");
         impl.login(saarUserID, "saar", "Fadidaa1");
         storeId = impl.openStore(saarUserID, "alona", "shopping").getData();
         impl.addProductToStore(saarUserID, storeId,"weddingDress", 10, 5, "pink", "CLOTHING");
+    }
+
+    @AfterEach
+    public void tearDown() {
+        impl.resetAllTables();
     }
 
     @Test

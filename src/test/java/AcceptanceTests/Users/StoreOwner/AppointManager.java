@@ -7,10 +7,7 @@ import PresentationLayer.Application;
 import ServiceLayer.Response;
 import Util.ExceptionsEnum;
 import Util.UserDTO;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
@@ -54,6 +51,12 @@ public class AppointManager {
         impl.appointStoreOwner(saarUserID, "tom", storeId);
         impl.appointStoreManager(saarUserID, "jalal", storeId, true, false);
     }
+
+    @AfterEach
+    public void tearDown() {
+        impl.resetAllTables();
+    }
+
     @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
     @Test
     public void successfulAppointmentTest() {

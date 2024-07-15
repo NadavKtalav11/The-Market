@@ -9,6 +9,7 @@ import Util.PaymentServiceDTO;
 import Util.ExceptionsEnum;
 import Util.UserDTO;
 import jakarta.inject.Inject;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
@@ -35,6 +36,12 @@ public class AddingExternalPaymentServices {
     public void setUp() throws Exception {
 
     }
+
+    @AfterEach
+    public void tearDown() {
+        market.resetAllTables();
+    }
+
     @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
     @Test
     public void testAddExternalPaymentServiceSuccess() throws Exception {

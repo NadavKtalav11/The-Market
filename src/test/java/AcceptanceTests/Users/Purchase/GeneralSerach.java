@@ -8,10 +8,7 @@ import ServiceLayer.Response;
 import Util.ExceptionsEnum;
 import Util.ProductDTO;
 import Util.UserDTO;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
@@ -40,7 +37,7 @@ public class GeneralSerach {
     
 
 
-    @BeforeAll
+    @BeforeEach
     public void setUp() {
         userId0= impl.enterMarketSystem().getData();
         impl.register(userId0,"user1", "12/12/00", "Israel", "Beer Sheva", "Mesada", "Toy", "fSijsd281");
@@ -52,6 +49,11 @@ public class GeneralSerach {
         impl.addProductToStore(userId0, storeId1,"Yogurt", 4, 12, "Yogurt 20%", "food");
         impl.addProductToStore(userId0, storeId1,"Shoes", 4, 12, "Nike Shoes", "clothing");
 
+    }
+
+    @AfterEach
+    public void tearDown() {
+        impl.resetAllTables();
     }
 
     @Test

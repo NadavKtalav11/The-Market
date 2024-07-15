@@ -8,10 +8,7 @@ import ServiceLayer.Response;
 import Util.ExceptionsEnum;
 import Util.ProductDTO;
 import Util.UserDTO;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
@@ -48,6 +45,11 @@ public class InStoreSearch {
         impl.addProductToStore(userID1, storeID1,"Cheese", 15, 8, "Cheese 22%", "food");
         impl.addProductToStore(userID1, storeID1,"Yogurt", 4, 12, "Yogurt 20%", "food");
         impl.addProductToStore(userID1, storeID1,"Shoes", 4, 12, "Nike Shoes", "clothing");
+    }
+
+    @AfterEach
+    public void tearDown() {
+        impl.resetAllTables();
     }
 
     @Test

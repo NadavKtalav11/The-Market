@@ -40,17 +40,18 @@ public interface StoreManagerRepository extends JpaRepository<StoreManager, Stri
                                        @Param("inventoryPermissions") boolean inventoryPermissions,
                                        @Param("purchasePermissions") boolean purchasePermissions,
                                        @Param("nominatorMemberID") String nominatorMemberID);
+
     @Modifying
     @Transactional
     @Query(value = "INSERT INTO system_manager (systemManager) VALUES (:systemManager)", nativeQuery = true)
     void addSystemManager(SystemManager systemManager);
 
 
-    @Query(value = "SELECT sm FROM system_manager sm WHERE sm.member_ID = :memberId", nativeQuery = true )
+    @Query(value = "SELECT sm FROM system_manager sm WHERE sm.member_ID = :memberId", nativeQuery = true)
     SystemManager getSystemManager(String memberId);
 
-    @Query(value = "SELECT sm FROM system_manager sm ", nativeQuery = true )
+    @Query(value = "SELECT * FROM system_manager", nativeQuery = true)
     List<SystemManager> getAllSystemManagers();
-}
 
+}
 

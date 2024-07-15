@@ -15,10 +15,7 @@ import Util.PaymentServiceDTO;
 import Util.SupplyServiceDTO;
 import Util.UserDTO;
 import jakarta.inject.Inject;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.api.*;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.junit.MockitoJUnitRunner;
@@ -46,7 +43,7 @@ public class  SystemStartup {
 
 
 
-    @BeforeAll
+    @BeforeEach
     public void setUp() throws Exception {
         //this.userFacade = userFacade.getInstance();
         this.paymentServicesFacade = PaymentServicesFacade.getInstance();
@@ -54,6 +51,12 @@ public class  SystemStartup {
         //this.market = new Market(userFacade, paymentServicesFacade, supplyServicesFacade);
        // market = new Market();
     }
+
+    @AfterEach
+    public void tearDown() {
+        market.resetAllTables();
+    }
+
     @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
     @Test
     public void successfulInitTest() throws Exception {

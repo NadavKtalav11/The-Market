@@ -77,6 +77,11 @@ public class Provision {
 
     }
 
+    @AfterEach
+    public void tearDown() {
+        market.resetAllTables();
+    }
+
 
     @Test
     @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)

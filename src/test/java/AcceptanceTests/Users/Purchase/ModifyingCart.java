@@ -9,9 +9,7 @@ import Util.ExceptionsEnum;
 import Util.ProductDTO;
 import Util.TestRuleDTO;
 import Util.UserDTO;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
@@ -35,7 +33,7 @@ public class ModifyingCart {
     private static String storeID1;
 
 
-    @BeforeAll
+    @BeforeEach
     public void setUp() {
         userID1 = impl.enterMarketSystem().getData();
         impl.register(userID1,"user1", "12/12/00", "Israel", "Beer Sheva", "Mesada", "Toy", "fSijsd281");
@@ -49,6 +47,11 @@ public class ModifyingCart {
         impl.addProductToBasket("Milk", 2, storeID1, userID1);
         impl.addProductToBasket("Cheese", 4, storeID1, userID1);
         impl.addProductToBasket("Yogurt", 5, storeID1, userID1);
+    }
+
+    @AfterEach
+    public void tearDown() {
+        impl.resetAllTables();
     }
 
     @Test

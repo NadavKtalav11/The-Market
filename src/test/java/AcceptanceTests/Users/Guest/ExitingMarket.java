@@ -5,9 +5,7 @@ import AcceptanceTests.ProxyToTest;
 import AcceptanceTests.ProxyToTest;
 import AcceptanceTests.RealToTest;
 import PresentationLayer.Application;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
@@ -24,9 +22,14 @@ public class ExitingMarket {
     @Autowired
     private BridgeToTests impl;
 
-    @BeforeAll
-    public static void setUp() {
+    @BeforeEach
+    public void setUp() {
+        impl.resetAllTables();
+    }
 
+    @AfterEach
+    public void tearDown() {
+        impl.resetAllTables();
     }
 
     @Test

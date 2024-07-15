@@ -11,9 +11,8 @@ import DomainLayer.SupplyServices.SupplyServicesFacade;
 import DomainLayer.User.UserFacade;
 import PresentationLayer.Application;
 import Util.*;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.api.*;
+
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
@@ -66,7 +65,7 @@ public class PurhcaseHistoryInfo {
     private static UserDTO userDTO;
     private static Map<String, Map<String, List<Integer>>> products;
 
-    @BeforeAll
+    @BeforeEach
     public void setUp() throws Exception {
         MockitoAnnotations.openMocks(this);
 
@@ -125,6 +124,11 @@ public class PurhcaseHistoryInfo {
         System.out.println(impl.purchase(userID2, userDTO.getCountry(), userDTO.getCity(), userDTO.getAddress(),
                 paymentDTO.getCreditCardNumber(), paymentDTO.getCurrency(), paymentDTO.getHolderName(), paymentDTO.getCvv(), paymentDTO.getMonth(), paymentDTO.getYear(), paymentDTO.getHolderId(),
                 cartDTO.getCartPrice(), cartDTO.getStoreToProducts()).isSuccess());
+    }
+
+    @AfterEach
+    public void tearDown() {
+        impl.resetAllTables();
     }
 
     @Test

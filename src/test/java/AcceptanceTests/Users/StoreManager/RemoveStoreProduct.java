@@ -8,9 +8,7 @@ import ServiceLayer.Response;
 import Util.ExceptionsEnum;
 import Util.ProductDTO;
 import Util.UserDTO;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
@@ -32,7 +30,7 @@ public class RemoveStoreProduct {
     static String tomUserID;
     static String storeID;
 
-    @BeforeAll
+    @BeforeEach
     public void setUp() {
         saarUserID = impl.enterMarketSystem().getData();
         tomUserID = impl.enterMarketSystem().getData();
@@ -44,6 +42,11 @@ public class RemoveStoreProduct {
         impl.appointStoreManager(saarUserID, "tom", storeID, true, false);
         impl.answerJobProposal(tomUserID,storeID,true, true);
         impl.addProductToStore(saarUserID, storeID, "weddingDress", 10, 5, "pink", "CLOTHING");
+    }
+
+    @AfterEach
+    public void tearDown() {
+        impl.resetAllTables();
     }
 
     @Test
