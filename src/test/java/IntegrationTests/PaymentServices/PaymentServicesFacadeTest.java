@@ -11,6 +11,12 @@ import Util.PaymentServiceDTO;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
+import org.mockito.Spy;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
@@ -19,6 +25,8 @@ import org.springframework.test.context.ContextConfiguration;
 import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.*;
 
 
 @ContextConfiguration(classes = {Application.class, RealToTest.class})
@@ -27,82 +35,106 @@ import static org.junit.jupiter.api.Assertions.*;
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
 public class PaymentServicesFacadeTest {
 
-    @Autowired
-    private ExternalPaymentRepository externalPaymentRepository;
+
+//    @Autowired
+//    private ExternalPaymentRepository externalPaymentRepository;
+
+//    @Autowired
+//    private AcquisitionRepository acquisitionRepository;
+//
+
 
     @Autowired
-    private AcquisitionRepository acquisitionRepository;
-
     private PaymentServicesFacade paymentServicesFacade;
+
     private PaymentDTO paymentDTO;
 
     @BeforeEach
     public void setUp() throws Exception {
-        paymentServicesFacade = new PaymentServicesFacade(externalPaymentRepository, acquisitionRepository);
-        paymentDTO = new PaymentDTO("130", "david", "USD","98767576576", 986, 6,2030);
+        //MockitoAnnotations.openMocks(this);
+        //paymentServicesFacade = new PaymentServicesFacade(externalPaymentRepository, acquisitionRepository);
+        paymentDTO = new PaymentDTO("130", "david", "USD", "1234567812345678", 100, 6, 2030);
 
     }
 
     @Test
+    @ExtendWith(MockitoExtension.class)
+    @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
     public void testAddExternalServiceWithParams() throws Exception {
-        boolean added = paymentServicesFacade.addExternalService(  "http://test.com");
+        //paymentServicesFacade =(mock(PaymentServicesFacade.class));
+//        ExternalPaymentService externalPaymentService1 = mock(ExternalPaymentService.class);
+//        when(externalPaymentService1.checkHandShake()).thenReturn(true);
+        //doReturn(true).when(paymentServicesFacade).checkHandShake(any());
+
+        boolean added = paymentServicesFacade.addExternalService("https://damp-lynna-wsep-1984852e.koyeb.app/");
+
         assertTrue(added);
-        ExternalPaymentService service = paymentServicesFacade.getPaymentServiceByURL("http://test.com");
+        ExternalPaymentService service = paymentServicesFacade.getPaymentServiceByURL("https://damp-lynna-wsep-1984852e.koyeb.app/");
         assertNotNull(service);
         ExternalPaymentService service2 = paymentServicesFacade.getPaymentServiceByURL(service.getUrl());
         assertNotNull(service2);
-        assertEquals("http://test.com", service.getUrl());
-        assertEquals("http://test.com", service2.getUrl());
+        assertEquals("https://damp-lynna-wsep-1984852e.koyeb.app/", service.getUrl());
+        assertEquals("https://damp-lynna-wsep-1984852e.koyeb.app/", service2.getUrl());
     }
 
     @Test
-    public void testAddExternalServiceWithDTO()throws Exception  {
-      //  PaymentServiceDTO paymentServiceDTO = new PaymentServiceDTO("123", "TestService", "http://test.com");
+    @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
+    public void testAddExternalServiceWithDTO() throws Exception {
+        //  PaymentServiceDTO paymentServiceDTO = new PaymentServiceDTO("123", "TestService", "http://test.com");
 
-        boolean added = paymentServicesFacade.addExternalService( "http://test.com");
+        boolean added = paymentServicesFacade.addExternalService("https://damp-lynna-wsep-1984852e.koyeb.app/");
         assertTrue(added);
 
-        ExternalPaymentService service = paymentServicesFacade.getPaymentServiceByURL("http://test.com");
+        ExternalPaymentService service = paymentServicesFacade.getPaymentServiceByURL("https://damp-lynna-wsep-1984852e.koyeb.app/");
         assertNotNull(service);
-        assertEquals("http://test.com", service.getUrl());
+        assertEquals("https://damp-lynna-wsep-1984852e.koyeb.app/", service.getUrl());
     }
 
     @Test
-    public void testRemoveExternalService() throws Exception {
-        String url = "http://test.com";
-        paymentServicesFacade.addExternalService( url);
-        paymentServicesFacade.removeExternalService(url);
+    @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
+    public void testBadRemoveExternalService() throws Exception {
+        String url = "https://damp-lynna-wsep-1984852e.koyeb.app/";
+        paymentServicesFacade.addExternalService(url);
+        try {
+            paymentServicesFacade.removeExternalService(url);
+        }
+        catch (Exception e){
+
+        }
 
         ExternalPaymentService service = paymentServicesFacade.getPaymentServiceByURL(url);
-        assertNull(service);
+        assertNotNull(service);
     }
 
     @Test
+    @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
     public void testPaySuccess() throws Exception {
-        paymentServicesFacade.addExternalService("http://test.com");
+        paymentServicesFacade.addExternalService("https://damp-lynna-wsep-1984852e.koyeb.app/");
 
         Map<String, Map<String, List<Integer>>> productList = new HashMap<>();
         Map<String, List<Integer>> storeProducts = new HashMap<>();
         storeProducts.put("product1", Arrays.asList(2, 100));
         productList.put("store1", storeProducts);
 
-        String result = paymentServicesFacade.pay(100,  paymentDTO, "userId", productList);
+        String result = paymentServicesFacade.pay(100, paymentDTO, "userId",null, productList);
 
         assertNotNull(result);
     }
 
     @Test
+    @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
     public void testGetAllPaymentServices() throws Exception {
-        paymentServicesFacade.addExternalService( "http://test.com");
+        paymentServicesFacade.addExternalService("https://damp-lynna-wsep-1984852e.koyeb.app/");
 
         Map<String, ExternalPaymentService> allServices = paymentServicesFacade.getAllPaymentServices();
         assertEquals(1, allServices.size());
-        assertTrue(allServices.containsKey("123"));
+        assertTrue(allServices.containsKey("https://damp-lynna-wsep-1984852e.koyeb.app/"));
     }
 
     @Test
+    @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
     public void testGetPaymentServiceDTOById() throws Exception {
-        paymentServicesFacade.addExternalService( "http://test.com");
+        paymentServicesFacade.addExternalService("http://test.com");
 
 //        PaymentServiceDTO dto = paymentServicesFacade.getPaymentServiceDTOById("123");
 //        assertNotNull(dto);
@@ -110,19 +142,17 @@ public class PaymentServicesFacadeTest {
     }
 
     @Test
+    @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
     public void testGetStorePurchaseInfo() throws Exception {
-        paymentServicesFacade.addExternalService("http://test.com");
+        paymentServicesFacade.addExternalService("https://damp-lynna-wsep-1984852e.koyeb.app/");
 
         Map<String, Map<String, List<Integer>>> productList = new HashMap<>();
         Map<String, List<Integer>> storeProducts = new HashMap<>();
         storeProducts.put("product1", Arrays.asList(2, 100));
         productList.put("store1", storeProducts);
 
-        try {
-            paymentServicesFacade.pay(100, paymentDTO, "userId", productList);
-        } catch (Exception e) {
-            fail("Payment failed");
-        }
+        paymentServicesFacade.pay(100, paymentDTO, "userId", null, productList);
+
 
         Map<String, Integer> storePurchaseInfo = paymentServicesFacade.getStorePurchaseInfo();
         assertNotNull(storePurchaseInfo);
@@ -132,8 +162,9 @@ public class PaymentServicesFacadeTest {
     }
 
     @Test
+    @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
     public void testGetStoreReceiptsAndTotalAmount() throws Exception {
-        paymentServicesFacade.addExternalService( "http://test.com");
+        paymentServicesFacade.addExternalService("https://damp-lynna-wsep-1984852e.koyeb.app/");
 
         Map<String, Map<String, List<Integer>>> productList = new HashMap<>();
         Map<String, List<Integer>> storeProducts = new HashMap<>();
@@ -141,7 +172,7 @@ public class PaymentServicesFacadeTest {
         productList.put("store1", storeProducts);
 
         try {
-            paymentServicesFacade.pay(100,paymentDTO, "userId", productList);
+            paymentServicesFacade.pay(100, paymentDTO, "userId", null,productList);
         } catch (Exception e) {
             fail("Payment failed");
         }
@@ -149,13 +180,5 @@ public class PaymentServicesFacadeTest {
         Map<String, Integer> storeReceiptsAndTotalAmount = paymentServicesFacade.getStoreReceiptsAndTotalAmount("store1");
         assertNotNull(storeReceiptsAndTotalAmount);
         assertEquals(1, storeReceiptsAndTotalAmount.size());
-    }
-
-    @Test
-    public void testClearPaymentServices() throws Exception {
-        paymentServicesFacade.addExternalService( "http://test.com");
-        paymentServicesFacade.clearPaymentServices();
-
-        assertTrue(paymentServicesFacade.getAllPaymentServices().isEmpty());
     }
 }

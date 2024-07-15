@@ -9,6 +9,7 @@ import Util.ExceptionsEnum;
 import Util.ProductDTO;
 import Util.UserDTO;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,7 +33,7 @@ public class UpdateStoreProduct {
     static String tomUserID;
     static String storeId;
 
-    @BeforeAll
+    @BeforeEach
     public void setUp() {
         saarUserID = impl.enterMarketSystem().getData();
         impl.register(saarUserID,"saar", "10/04/84", "Israel", "Jerusalem", "Yehuda halevi 18", "saar", "Fadidaa1");
@@ -42,16 +43,19 @@ public class UpdateStoreProduct {
         impl.login(tomUserID, "tom", "Shlaifer2");
         storeId = impl.openStore(saarUserID, "alona", "shopping").getData();
         impl.appointStoreManager(saarUserID, "tom", storeId, true, false);
+        impl.answerJobProposal(tomUserID, storeId, true, true);
         impl.addProductToStore(saarUserID, storeId,"weddingDress", 10, 5, "pink", "CLOTHING");
     }
 
     @Test
+    @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
     public void successfulUpdateTest() {
         assertTrue(impl.updateProductInStore(tomUserID,storeId,"weddingDress", 11, 4,
                                                             "pink", "CLOTHING").isSuccess());
     }
 
     @Test
+    @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
     public void productNotExistTest() {
         Response<String> response = impl.updateProductInStore(tomUserID,storeId,"heels", 1, 41,
                 "black", "CLOTHING");
@@ -60,6 +64,7 @@ public class UpdateStoreProduct {
     }
 
     @Test
+    @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
     public void negQuantityTest() {
         Response<String> response = impl.updateProductInStore(tomUserID,storeId,"weddingDress", 11, -4,
                 "pink", "CLOTHING");
@@ -68,6 +73,7 @@ public class UpdateStoreProduct {
     }
 
     @Test
+    @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
     public void noPermissionTest() {
         impl.updateStoreManagerPermissions(saarUserID,"tom",storeId,false,false);
         Response<String> response = impl.updateProductInStore(tomUserID,storeId,"heels", 14, 46,

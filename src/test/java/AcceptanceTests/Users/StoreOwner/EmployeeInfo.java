@@ -8,6 +8,7 @@ import ServiceLayer.Response;
 import Util.ExceptionsEnum;
 import Util.UserDTO;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,7 +25,7 @@ import static org.junit.jupiter.api.Assertions.*;
 @ContextConfiguration(classes = {Application.class, RealToTest.class})
 @SpringBootTest
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
+//@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
 public class EmployeeInfo {
 
     @Autowired
@@ -40,7 +41,7 @@ public class EmployeeInfo {
     private static String memberID3;
 
 
-    @BeforeAll
+    @BeforeEach
     public void setUp() {
         userID1 = impl.enterMarketSystem().getData();
         userID2 = impl.enterMarketSystem().getData();
@@ -56,13 +57,15 @@ public class EmployeeInfo {
 
         storeID = impl.openStore(userID1, "Zara", "clothing store").getData();
         impl.appointStoreOwner(userID1, "tom", storeID);
+        impl.answerJobProposal(userID2, storeID, false, true);
         impl.appointStoreManager(userID1, "jalal", storeID, true, false);
+        impl.answerJobProposal(userID3, storeID, true, true);
 
     }
 
     @Test
+    @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
     public void successfulRequestTest() {
-
         assertTrue(impl.getInformationAboutRolesInStore(userID1, storeID).isSuccess());
         Map<String, String > employees = new HashMap<>();
         employees.put(memberID1, "owner");
@@ -73,6 +76,7 @@ public class EmployeeInfo {
     }
 
     @Test
+    @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
     public void storeNotExistTest() {
         Response<Map<String,String>> response = impl.getInformationAboutRolesInStore(userID3, "not existing store id");
         assertFalse(response.isSuccess());
@@ -81,6 +85,7 @@ public class EmployeeInfo {
     }
 
     @Test
+    @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
     public void userIsNotStoreOwnerTest() {
         Response<Map<String,String>> response = impl.getInformationAboutRolesInStore(userID3, storeID);
         assertFalse(response.isSuccess());

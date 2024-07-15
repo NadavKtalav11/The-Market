@@ -27,22 +27,6 @@ public class PaymentServicesFacade {
     public PaymentServicesFacade(ExternalPaymentRepository externalPaymentRepository, AcquisitionRepository acquisitionRepository) throws Exception {
         this.externalPaymentRepository = externalPaymentRepository;
         this.acquisitionRepository = acquisitionRepository;
-
-    /*
-//        //TEST
-        Map<String, Map<String, List<Integer>>> productList = new HashMap<>();
-        List<Integer> priceQuantity = new ArrayList<>();
-        priceQuantity.add(12);
-        priceQuantity.add(12);
-        Map<String, List<Integer>> productNames = new HashMap<>();
-        productNames.put("candle", priceQuantity);
-        productList.put("candleStore", productNames);
-        addExternalService("https://damp-lynna-wsep-1984852e.koyeb.app/");
-        pay(99 , new PaymentDTO("123", "noa", "curr", "123456789", 123,11,
-                26),"userID", productList);
-//        Acquisition acquisition = new Acquisition(12,"12", "usrt", 88, new PaymentDTO("1", "2","3", "4", 5,6,9), productList);
-//        acquisitionRepository.save(acquisition);
-*/
     }
 
     //memory constructor
@@ -66,16 +50,18 @@ public class PaymentServicesFacade {
         return paymentServicesFacadeInstance;
     }
 
-    public void removeExternalService(String paymentId) throws Exception {
+    public void removeExternalService(String url) throws Exception {
         if (getAllPaymentServices().size() <= 1) {
             throw new Exception(ExceptionsEnum.OnlyPaymentService.toString());
         }
-        externalPaymentRepository.deleteById(paymentId);
+        if (externalPaymentRepository.findById(url).orElse(null)==null){
+            throw new Exception("this url doesnt exist in the system");
+        }
+        externalPaymentRepository.deleteById(url);
     }
 
     public boolean checkHandShake(ExternalPaymentService externalPaymentService) throws Exception {
         return externalPaymentService.checkHandShake();
-
     }
 
 //    public boolean addExternalService(String licensedDealerNumber, String paymentServiceName, String url){
@@ -128,7 +114,7 @@ public class PaymentServicesFacade {
 
 
     @Transactional
-    public String pay(int price, PaymentDTO payment, String userId, Map<String, Map<String, List<Integer>>> productList) throws Exception{
+    public String pay(int price, PaymentDTO payment, String userId,String memberId, Map<String, Map<String, List<Integer>>> productList) throws Exception{
         String acquisitionId  = getNewAcquisitionId();
         ExternalPaymentService externalPaymentService = getAvailablePaymentService();
         if (externalPaymentService== null){
@@ -139,11 +125,15 @@ public class PaymentServicesFacade {
         if (!isValidTransactionIdID(transactionId)){
             throw new IllegalArgumentException(ExceptionsEnum.ExternalPaymentFailed.toString());
         }
-        Acquisition acquisition = new Acquisition(transactionId,acquisitionId, userId, price,url, payment, productList);
+        Acquisition acquisition = new Acquisition(transactionId,acquisitionId, userId, memberId, price,url, payment, productList);
         acquisitionRepository.save(acquisition);
         //externalPaymentService.addAcquisition(acquisitionId, acquisition);
         return acquisition.getAcquisitionId();
 
+    }
+
+    public Acquisition getAcquisitionById(String acquisitionId){
+        return acquisitionRepository.findById(acquisitionId).orElse(null);
     }
 
 
@@ -193,6 +183,7 @@ public class PaymentServicesFacade {
         String id = "acquisition-"+uuid.toString() ;
         return id;
     }
+
 
     public Map<String, ExternalPaymentService> getAllPaymentServices(){
         List<ExternalPaymentService> externalPaymentServices = externalPaymentRepository.findAll();
@@ -292,14 +283,14 @@ public class PaymentServicesFacade {
         return acquisitionMap;
     }
 
-    public List<AcquisitionDTO> getAcquisitionsDTO(List<String> acquisitions) {
+    public List<AcquisitionDTO> getAcquisitionsDTO(List<Acquisition> acquisitions) {
         List<AcquisitionDTO> acquisitionsDTO = new LinkedList<>();
-        for (String acqId : acquisitions) {
-            Optional<Acquisition> acq = acquisitionRepository.findById(acqId);
-            Acquisition acq1 = acq.orElse(null);
-            if (acq1 != null) {
-                acquisitionsDTO.add(new AcquisitionDTO(acq1.getAcquisitionId(), acq1.getUserId(), acq1.getTotalPrice(), acq1.getDate()));
-            }
+        for (Acquisition acq : acquisitions) {
+//            Optional<Acquisition> acq = acquisitionRepository.findById(acqId);
+//            Acquisition acq1 = acq.orElse(null);
+//            if (acq1 != null) {
+                acquisitionsDTO.add(new AcquisitionDTO(acq.getAcquisitionId(), acq.getUserId(), acq.getTotalPrice(), acq.getDate()));
+//            }
         }
 
         return acquisitionsDTO;
@@ -339,6 +330,33 @@ public class PaymentServicesFacade {
             productList.put(productDetailReceipt.getId().getProductName(), priceAndQuantity);
         }
         return productList;
+    }
+
+    public List<Acquisition> getMemberAcquisitionsHistory(String memberId) {
+        return acquisitionRepository.findByMemberId(memberId);
+    }
+
+    public List<Acquisition> getUserAcquisitionsHistory(String userId) {
+        return acquisitionRepository.findByUserId(userId);
+    }
+
+    public  List<Receipt> getUserReceiptsByAcquisition(String acquisitionId, String userId) {
+        List<Receipt> receipts = new LinkedList<>();
+        List<String> receiptIds = acquisitionRepository.getReceiptIdsByAcquisitionId(acquisitionId);
+        for (String receiptId : receiptIds) {
+            List<ProductDetailReceipt> productDetailReceipts = acquisitionRepository.findProductDetailReceiptsByReceiptAndAcquisition(receiptId,acquisitionId);
+            String storeId = productDetailReceipts.get(0).getId().getStoreId();
+            receipts.add(new Receipt(receiptId,storeId,userId,productDetailReceipts));
+        }
+        return receipts;
+    }
+
+    public ReceiptDTO getReceiptDTOFromReceipt(Receipt receipt) {
+        return new ReceiptDTO(receipt.getReceiptId(), receipt.getStoreId(), receipt.getUserId(), convertToProductList(receipt.getProductList()));
+    }
+
+    public void addPaymentForTests (String url) throws Exception {
+        externalPaymentRepository.save(new ExternalPaymentService(url));
     }
 
 

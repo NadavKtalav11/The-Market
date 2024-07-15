@@ -5,7 +5,9 @@ import DomainLayer.AuthenticationAndSecurity.AuthenticationAndSecurityFacade;
 //import DomainLayer.Notifications.Notification;
 import DomainLayer.Notifications.LateNotificationFacade;
 //import DomainLayer.Notifications.StoreNotification;
+import DomainLayer.PaymentServices.Acquisition;
 import DomainLayer.PaymentServices.PaymentServicesFacade;
+import DomainLayer.PaymentServices.Receipt;
 import DomainLayer.Repositories.InitializedDBRepository;
 import DomainLayer.Repositories.InitializedRepository;
 import DomainLayer.Role.RoleFacade;
@@ -23,13 +25,10 @@ import DomainLayer.User.UserFacade;
 import DomainLayer.SupplyServices.SupplyServicesFacade;
 import Util.*;
 
-import jakarta.inject.Qualifier;
 import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Profile;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.yaml.snakeyaml.Yaml;
 import java.io.FileInputStream;
@@ -701,7 +700,7 @@ public class Market {
 
 
 
-    public void removeExternalPaymentService(String licensedDealerNumber, String systemMangerUserId) throws Exception {
+    public void removeExternalPaymentService(String url, String systemMangerUserId) throws Exception {
         String memberId = verifyToken(systemMangerUserId);
         verifyMemberExist(memberId);
         synchronized (managersLock) {
@@ -709,7 +708,8 @@ public class Market {
                 throw new Exception(ExceptionsEnum.SystemManagerPaymentAuthorizationRemove.toString());
             }
         }
-        paymentServicesFacade.removeExternalService(licensedDealerNumber);
+
+        paymentServicesFacade.removeExternalService(url);
     }
 
     public void addExternalSupplyService(String SupplyURL, String systemManagerUserId) throws Exception {
@@ -724,7 +724,9 @@ public class Market {
             throw new IllegalArgumentException(ExceptionsEnum.InvalidSupplyServiceParameters.toString());
         }
 
-        supplyServicesFacade.addExternalService(SupplyURL);
+        if (!supplyServicesFacade.addExternalService(SupplyURL)){
+            throw new Exception(ExceptionsEnum.InvalidSupplyServiceParameters.toString());
+        };
 
     }
 
@@ -872,7 +874,7 @@ public class Market {
 //            userInputFuture.get();
 
             // Proceed with payment if user input is received
-            //payWithExternalPaymentService(cartDTO, paymentDTO, userDTO.getUserId());
+            payWithExternalPaymentService(cartDTO, paymentDTO, userDTO.getUserId());
         } catch (Exception e) {
             if (cartDTO != null) {
                 returnCartToStock(cartDTO.getStoreToProducts());
@@ -940,17 +942,18 @@ public class Market {
         if(paymentServicesFacade.getAllPaymentServices().isEmpty()){
             throw new Exception(ExceptionsEnum.noAvailableExternalPaymentService.toString());
         }
-        String acquisitionId = paymentServicesFacade.pay(cartDTO.getCartPrice(), payment, userId, cartDTO.getStoreToProducts());
+        String memberId = userFacade.getMemberIdByUserId(userId);
+        String acquisitionId = paymentServicesFacade.pay(cartDTO.getCartPrice(), payment, userId,memberId, cartDTO.getStoreToProducts());
         Map<String,String> receiptIdStoreId = paymentServicesFacade.getAcquisitionReceipts(acquisitionId); //<receiptId, storeId>
         //print when implement notifications (purchase successes)
 
         //add acquisitionId to user
-        userFacade.addAcquisitionToUser(userId,acquisitionId);
+        //userFacade.addAcquisitionToUser(userId,acquisitionId);
 
         //Add the receiptId and userId to the store receipts map
-        for (String receiptId : receiptIdStoreId.keySet()) {
-            storeFacade.addReceiptToStore(receiptIdStoreId.get(receiptId), receiptId, userId);
-        }
+//        for (String receiptId : receiptIdStoreId.keySet()) {
+//            storeFacade.addReceiptToStore(receiptIdStoreId.get(receiptId), receiptId, userId);
+//        }
         return acquisitionId;
     }
 
@@ -1060,6 +1063,11 @@ public class Market {
         } else {
             throw new Exception(ExceptionsEnum.noInventoryPermissions.toString());
         }
+    }
+
+
+    public List<ShippingDTO> getUserShippingDTOs(String userId){
+        return supplyServicesFacade.getUserHistory(userId);
     }
 
     public void removeProductFromStore(String userId, String storeId, String productName) throws Exception {
@@ -1198,7 +1206,9 @@ public class Market {
         roleFacade.verifyStoreOwnerError(storeId, nominatorMemberID);
         userFacade.errorIfUsernameNotFound(nominatedUsername);
         String nominatedMemberID = userFacade.getMemberByUsername(nominatedUsername).getMemberID();
-        roleFacade.verifyMangerNominatorError(nominatorMemberID, nominatedMemberID, storeId);
+        if (!roleFacade.verifyStoreOwner( storeId, nominatorMemberID)){
+            throw new Exception(ExceptionsEnum.userIsNotStoreOwner.toString());
+        };
         roleFacade.updateStoreManagerPermissions(nominatedMemberID, storeId, inventoryPermissions, purchasePermissions, nominatorMemberID);
     }
 
@@ -1754,15 +1764,26 @@ public class Market {
 
     public List<AcquisitionDTO> getUserAcquisitionsHistory(String userId) throws Exception {
         verifyToken(userId);
-        List<String> acquisitions = userFacade.getUserAcquisitionsHistory(userId);
+        if (userFacade.isMember(userId)){
+            String memberID = userFacade.getMemberIdByUserId(userId);
+            List<Acquisition> acquisitions = paymentServicesFacade.getMemberAcquisitionsHistory(memberID);
+        }
+        List<Acquisition> acquisitions = paymentServicesFacade.getUserAcquisitionsHistory(userId);
+        //List<String> acquisitions = userFacade.getUserAcquisitionsHistory(userId);
         return paymentServicesFacade.getAcquisitionsDTO(acquisitions);
     }
 
     public Map<String, ReceiptDTO> getUserReceiptsByAcquisition(String userId, String acquisitionId) throws Exception {
         verifyToken(userId);
         //check if user has the acquisition
-        userFacade.checkIfUserHasAcquisition(userId, acquisitionId);
-        return paymentServicesFacade.getReceiptsDTOByAcquisition(acquisitionId);
+        //userFacade.checkIfUserHasAcquisition(userId, acquisitionId);
+        //return paymentServicesFacade.getReceiptsDTOByAcquisition(acquisitionId);
+        Map<String,ReceiptDTO> receiptDTOMap = new HashMap<>();
+        List<Receipt> receipts = paymentServicesFacade.getUserReceiptsByAcquisition(acquisitionId,userId);
+        for (Receipt receipt : receipts) {
+            receiptDTOMap.put(receipt.getReceiptId(),paymentServicesFacade.getReceiptDTOFromReceipt(receipt));
+        }
+        return receiptDTOMap;
     }
 
 
@@ -1936,5 +1957,20 @@ public class Market {
         }
 
         return firstUserID; // Return the generated user ID
+    }
+
+    public RoleFacade getRoleFacade() {
+        return roleFacade;
+    }
+
+    public StoreFacade getStoreFacade() {
+        return storeFacade;
+    }
+
+    public PaymentServicesFacade getPaymentServiceFacade(){
+        return paymentServicesFacade;
+    }
+    public AuthenticationAndSecurityFacade getAuthenticationAndSecurityFacade(){
+        return authenticationAndSecurityFacade;
     }
 }

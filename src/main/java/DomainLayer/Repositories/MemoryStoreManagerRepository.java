@@ -1,6 +1,7 @@
 package DomainLayer.Repositories;
 
 import DomainLayer.Role.StoreManager;
+import DomainLayer.Role.StoreOwner;
 import org.springframework.context.annotation.Profile;
 import org.springframework.data.domain.Example;
 import org.springframework.data.domain.Page;
@@ -30,6 +31,40 @@ public class MemoryStoreManagerRepository implements StoreManagerRepository {
             for (int i = 0; i < userManager.size(); i++) {
                 StoreManager found = userManager.get(i);
                 if (found.getStore_ID().equals(storeId)) {
+                    return found;
+                }
+            }
+        }
+        return null;
+    }
+
+    @Override
+    public StoreManager getStoreManager(String storeId, String memberId) {
+        synchronized (storeManagerLock) {
+            List<StoreManager> userManager = memberId_storeManagerMap.get(memberId);
+            if (userManager==null){
+                return null;
+            }
+            for (int i = 0; i < userManager.size(); i++) {
+                StoreManager found = userManager.get(i);
+                if (found.getStore_ID().equals(storeId) && !found.isInProposal()) {
+                    return found;
+                }
+            }
+        }
+        return null;
+    }
+
+    @Override
+    public StoreManager getStoreManagerNominator(String storeId, String memberId) {
+        synchronized (storeManagerLock) {
+            List<StoreManager> userManager = memberId_storeManagerMap.get(memberId);
+            if (userManager==null){
+                return null;
+            }
+            for (int i = 0; i < userManager.size(); i++) {
+                StoreManager found = userManager.get(i);
+                if (found.getStore_ID().equals(storeId) && found.isInProposal()) {
                     return found;
                 }
             }
@@ -69,10 +104,30 @@ public class MemoryStoreManagerRepository implements StoreManagerRepository {
     @Override
     public List<StoreManager> getAllMemberIdManagers(String memberId) {
         synchronized (storeManagerLock) {
-            return memberId_storeManagerMap.get(memberId);
+            List<StoreManager> userManager = memberId_storeManagerMap.get(memberId);
+            List<StoreManager> userManagerActual = new ArrayList<>();
+            for (StoreManager user : userManager) {
+                if (!user.isInProposal()){
+                    userManagerActual.add(user);
+                }
+            }
+            return userManagerActual;
         }
     }
 
+    @Override
+    public List<StoreManager> getAllMemberIdNominatorsManagers(String memberId) {
+        synchronized (storeManagerLock) {
+            List<StoreManager> userManager = memberId_storeManagerMap.get(memberId);
+            List<StoreManager> userManagerActual = new ArrayList<>();
+            for (StoreManager user : userManager) {
+                if (user.isInProposal()){
+                    userManagerActual.add(user);
+                }
+            }
+            return userManagerActual;
+        }
+    }
 
 
     @Override

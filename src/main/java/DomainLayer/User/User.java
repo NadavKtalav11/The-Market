@@ -264,17 +264,17 @@ public class User   {
 
     }
 
-    public void addAcquisition(String acquisitionId) {
-        state.addAcquisition(acquisitionId);
-    }
+//    public void addAcquisition(String acquisitionId) {
+//        state.addAcquisition(acquisitionId);
+//    }
 
-    public int cancelAcquisition(String acquisitionId){
-        return state.removeAcquisition(acquisitionId);
-    }
+//    public int cancelAcquisition(String acquisitionId){
+//        return state.removeAcquisition(acquisitionId);
+//    }
 
-    public List<String> getAcquisitionIds() {
-        return state.getAcquisitionIds();
-    }
+//    public List<String> getAcquisitionIds() {
+//        return state.getAcquisitionIds();
+//    }
 
     public boolean getIsGuest(){
         return isGuest;

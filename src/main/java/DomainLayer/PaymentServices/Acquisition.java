@@ -21,6 +21,9 @@ public class Acquisition {
     @Column(name = "user_id")
     private String userId;
 
+    @Column(name = "memberId")
+    private String memberId;
+
     @Column(name = "total_price")
     private int totalPrice;
 
@@ -58,10 +61,11 @@ public class Acquisition {
     @Transient
     private final Object storeReceiptLock;
 
-    public Acquisition(int transactionId , String acquisitionId, String userId, int totalPrice,String url,  PaymentDTO payment, Map<String, Map<String, List<Integer>>> productList) {
+    public Acquisition(int transactionId , String acquisitionId, String userId, String memberId, int totalPrice,String url,  PaymentDTO payment, Map<String, Map<String, List<Integer>>> productList) {
         this.transactionId = transactionId;
         this.acquisitionId = acquisitionId;
         this.userId = userId;
+        this.memberId = memberId;
         this.totalPrice = totalPrice;
         this.holderId = payment.getHolderId();
         this.url = url;
@@ -133,6 +137,10 @@ public class Acquisition {
     public void setUserId(String userId) {
         this.userId = userId;
     }
+
+    public String getMemberId() {return memberId;}
+
+    public void setMemberId(String memberId) {this.memberId = memberId;}
 
     public int getTotalPrice() {
         return totalPrice;

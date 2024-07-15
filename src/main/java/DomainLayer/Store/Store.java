@@ -50,12 +50,12 @@ public class Store {
     @Column(name = "num_of_ratings")
     private int numOfRatings;
 
-    @ElementCollection
-    @CollectionTable(name = "receipts", joinColumns = @JoinColumn(name = "store_id"))
-    @MapKeyColumn(name = "receipt_id")
-    @Column(name = "user_id")
-    //@Transient
-    private Map<String, String> receiptsIdsUserIds; //<receiptId, userId>
+//    @ElementCollection
+//    @CollectionTable(name = "receipts", joinColumns = @JoinColumn(name = "store_id"))
+//    @MapKeyColumn(name = "receipt_id")
+//    @Column(name = "user_id")
+//    @Transient
+//    private Map<String, String> receiptsIdsUserIds; //<receiptId, userId>
 
     @Column(name = "store_name")
     private String storeName;
@@ -84,7 +84,7 @@ public class Store {
         purchasePolicy = new PurchasePolicy();
         storeProductLock= new Object();
         isOpenedLock = new Object();
-        this.receiptsIdsUserIds = new HashMap<>();
+//        this.receiptsIdsUserIds = new HashMap<>();
         this.rating = 0;
         this.numOfRatings = 0;
         this.storeName = storeName;
@@ -320,12 +320,12 @@ public class Store {
 
     }
 
-    public void addReceipt(String receiptId, String userId)
-    {
-        synchronized (receiptId) {
-            receiptsIdsUserIds.put(receiptId, userId);
-        }
-    }
+//    public void addReceipt(String receiptId, String userId)
+//    {
+//        synchronized (receiptId) {
+//            receiptsIdsUserIds.put(receiptId, userId);
+//        }
+//    }
 
 
     public String getStore_ID() {

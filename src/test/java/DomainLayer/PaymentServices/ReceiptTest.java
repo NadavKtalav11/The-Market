@@ -19,7 +19,7 @@ public class ReceiptTest {
     private final int transactionId = 67899;
     private final PaymentDTO paymentDTO = new PaymentDTO();
     private final Map<String, Map<String, List<Integer>>> products = new HashMap<>();
-    private final Acquisition acquisition = new Acquisition(transactionId,acquisitionID,userId,250, "www.paypal",paymentDTO,products);
+    private final Acquisition acquisition = new Acquisition(transactionId,acquisitionID,userId,null,250, "www.paypal",paymentDTO,products);
 
     @BeforeEach
     public void setUp() {

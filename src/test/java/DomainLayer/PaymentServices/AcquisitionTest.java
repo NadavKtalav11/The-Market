@@ -37,7 +37,7 @@ public class AcquisitionTest {
         productList.get("store1").put("Product2", Arrays.asList(1, 50));
 
         // Initialize Acquisition object
-        acquisition = new Acquisition(400000, "acq-1", "user-1", 150,"www.com", mockPayment, productList);
+        acquisition = new Acquisition(400000, "acq-1", "user-1",null, 150,"www.com", mockPayment, productList);
     }
 
     @Test
