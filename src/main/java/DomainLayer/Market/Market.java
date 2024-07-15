@@ -839,6 +839,7 @@ public class Market {
     }
 
 
+
     @Transactional
     public void sendMessagesToOwnersAndManagers(String storeId , String message) throws Exception { // Inject VaadinUserService and NotificationService
 
@@ -855,6 +856,7 @@ public class Market {
             myWebSocketHandler.handleStringMessage(memberId, message); // Send real-time notification via WebSocket
         }
     }
+
 
 
 
