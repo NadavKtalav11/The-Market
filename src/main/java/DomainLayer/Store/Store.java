@@ -24,17 +24,11 @@ public class Store {
   //  @Column(name = "store_id")
     private String store_ID;
 
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @JoinTable(
-            name = "store_products",
-            joinColumns = @JoinColumn(name = "store_id"),
-            inverseJoinColumns = @JoinColumn(name = "product_id")
-    )
-    @MapKeyColumn(name = "product_name")
 
-    //OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    //@MapKey(name = "productName")
-    //@JoinColumn(name = "store_id")
+
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+    @MapKey(name = "productName")
+    @JoinColumn(name = "store_id")
     private Map<String, Product> storeProducts = new HashMap<String, Product>();
 
     @Column(nullable = false)
@@ -42,10 +36,12 @@ public class Store {
 
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "discount_policy_id")
+//    @Transient
     private DiscountPolicy discountPolicy;
 
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "purchase_policy_id")
+//    @Transient
     private PurchasePolicy purchasePolicy;
 
     @Column(name = "rating")

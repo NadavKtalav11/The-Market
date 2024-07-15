@@ -4,6 +4,7 @@ import DomainLayer.Store.Category;
 import Util.ExceptionsEnum;
 import Util.ProductDTO;
 import Util.UserDTO;
+import jakarta.persistence.*;
 
 import java.time.Clock;
 import java.time.LocalDate;
@@ -12,13 +13,22 @@ import java.time.Period;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 
+@Entity
+@DiscriminatorValue("TimeRule")
 public class TimeRule extends TestRule {
     private LocalTime time;
+
+    @Transient
     protected final Object timeLock;
 
     public TimeRule(LocalTime time, String range, Category category, String productName, String description, Boolean contains) {
         super(range, category, productName, description, contains);
         this.time = time;
+        this.timeLock = new Object();
+    }
+
+    public TimeRule() {
+        super();
         this.timeLock = new Object();
     }
 

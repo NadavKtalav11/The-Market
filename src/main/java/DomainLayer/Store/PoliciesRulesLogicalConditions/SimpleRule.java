@@ -5,15 +5,24 @@ import Util.ExceptionsEnum;
 import Util.ProductDTO;
 import Util.TestRuleDTO;
 import Util.UserDTO;
+import jakarta.persistence.*;
+
 
 import java.util.List;
 
-public class SimpleRule implements Rule {
+@Entity
+public class SimpleRule extends Rule {
+
+    @ManyToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "simple_rule_id")
     private TestRule rule;
+
+    @Transient
     protected final Object ruleLock;
 
     public SimpleRule(TestRuleDTO rule) {
         ruleLock = new Object();
+        setDescription(rule.getDescription());
         switch (rule.getType()) {
             case "Time":
                 this.rule = new TimeRule(rule.getTime(), rule.getRange(), Category.fromString(rule.getCategory()), rule.getProductName(), rule.getDescription(), rule.isContains());
@@ -33,6 +42,10 @@ public class SimpleRule implements Rule {
             default:
                 throw new IllegalArgumentException(ExceptionsEnum.InvalidRuleType.toString());
         }
+    }
+
+    public SimpleRule() {
+        ruleLock = new Object();
     }
 
     public String getDescription() {

@@ -36,6 +36,10 @@ public class Product {
     @Column(name = "description")
     private String description;
 
+//    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+//    @JoinColumn(name = "store_id")
+//    private Store store;
+
     public Product() {
     }
 
@@ -55,7 +59,7 @@ public class Product {
         this.quantity = quantity;
     }
 
-    public Product(ProductDTO product, Category category){
+    public Product(ProductDTO product, Category category) {
         this.productName = product.getName();
         this.price = product.getPrice();
         this.quantity = product.getQuantity();
@@ -63,6 +67,7 @@ public class Product {
         this.numOfRatings = 0;
         this.description = product.getDescription();
         this.category = category;
+        //this.store = store;
     }
 
     public int getQuantity()

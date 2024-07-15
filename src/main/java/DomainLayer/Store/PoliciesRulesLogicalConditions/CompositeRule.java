@@ -2,13 +2,18 @@ package DomainLayer.Store.PoliciesRulesLogicalConditions;
 
 import Util.ProductDTO;
 import Util.UserDTO;
+import jakarta.persistence.*;
 
+import javax.persistence.Entity;
 import java.util.List;
 
-public abstract class CompositeRule implements Rule {
-    protected Rule rule1;
-    protected Rule rule2;
+
+public abstract class CompositeRule extends Rule {
+
+    @Transient
     protected final Object rule1Lock;
+
+    @Transient
     protected final Object rule2Lock;
 
     public CompositeRule(Rule rule1, Rule rule2) {
@@ -29,8 +34,6 @@ public abstract class CompositeRule implements Rule {
             return rule2;
         }
     }
-
-    public abstract String getDescription();
 
     public abstract boolean checkRule(UserDTO user, List<ProductDTO> products);
 }

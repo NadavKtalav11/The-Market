@@ -3,11 +3,13 @@ package DomainLayer.Store.StoreDiscountPolicy;
 import DomainLayer.Store.Category;
 import Util.ProductDTO;
 import Util.UserDTO;
+import jakarta.persistence.Entity;
 
 import java.util.List;
 import java.util.function.Predicate;
 
-public class SimpleDiscountValue implements DiscountValue {
+@Entity
+public class SimpleDiscountValue extends DiscountValue {
 
     private final int percentage;
     private final Category category;
@@ -16,10 +18,15 @@ public class SimpleDiscountValue implements DiscountValue {
 
 
     public SimpleDiscountValue(int percentage, Category category, boolean isStoreDiscount, List<String> productsNames) {
+        super(generateDescription(percentage, category, isStoreDiscount, productsNames));
         this.percentage = percentage;
         this.category = category;
         this.isStoreDiscount = isStoreDiscount;
         this.productsNames = productsNames;
+    }
+
+    public SimpleDiscountValue() {
+        this(0, null, false, null);
     }
 
     public int calcDiscount(List<ProductDTO> basketProducts) {
@@ -47,14 +54,13 @@ public class SimpleDiscountValue implements DiscountValue {
         return totalPrice * percentage / 100;
     }
 
-    @Override
-    public String getDescription() {
-        if (isCategoryDiscount()) {
-            return "Discount of " + getPercentage() + "% on " + getCategory().toString();
-        } else if (isProductsDiscount()) {
-            return "Discount of " + getPercentage() + "% on " + getProductsNames().toString();
+    private static String generateDescription(int percentage, Category category, boolean isStoreDiscount, List<String> productsNames) {
+        if (category != null) {
+            return "Discount of " + percentage + "% on " + category.toString();
+        } else if (productsNames != null) {
+            return "Discount of " + percentage + "% on " + productsNames.toString();
         } else {
-            return "Discount of " + getPercentage() + "% on all store";
+            return "Discount of " + percentage + "% on all store";
         }
     }
 

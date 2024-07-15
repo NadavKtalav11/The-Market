@@ -4,12 +4,25 @@ import DomainLayer.Store.Category;
 import Util.ExceptionsEnum;
 import Util.ProductDTO;
 import Util.UserDTO;
+import jakarta.persistence.*;
 
 import java.time.Clock;
 import java.util.List;
 
+@Entity
+@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
+@DiscriminatorColumn(name = "rule_type", discriminatorType = DiscriminatorType.STRING)
+@Table(name = "test_rule")
 public abstract class TestRule {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "test_rule_id")
+    private Long id;
+
+    @Column(name = "rangee")
     protected final String range;
+
     protected final Category category;
     protected final String productName;
     protected final String description;
@@ -22,6 +35,14 @@ public abstract class TestRule {
         this.productName = productName;
         this.description = description;
         this.contains = contains;
+    }
+
+    public TestRule() {
+        this.range = null;
+        this.category = null;
+        this.productName = null;
+        this.description = null;
+        this.contains = null;
     }
 
     public abstract boolean test(UserDTO user, List<ProductDTO> products);
@@ -84,5 +105,13 @@ public abstract class TestRule {
 
     protected Boolean getContains() {
         return contains;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public Long getId() {
+        return id;
     }
 }
