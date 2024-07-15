@@ -669,6 +669,18 @@ public class Market {
         }
     }
 
+    public List<ReceiptDTO> getStoreReceipts(String userId, String storeId) throws Exception {
+        String memberId =  verifyToken(userId);
+        verifyMemberExist(memberId);
+        if (!roleFacade.verifyStoreOwner(storeId,memberId)){
+            throw new IllegalArgumentException(ExceptionsEnum.userIsNotStoreOwner.toString());
+        }
+        if (!storeFacade.verifyStoreExist(storeId)){
+            throw new IllegalArgumentException(ExceptionsEnum.storeNotExist.toString());
+        }
+        return paymentServicesFacade.getStoreAcquisitions(storeId);
+    }
+
 
     public boolean checkInitializedMarket(){
         return Objects.requireNonNull(initializedRepository.findById("market").orElse(null)).isInitialized();
@@ -1801,12 +1813,13 @@ public class Market {
     }
 
     public Map<String, ReceiptDTO> getUserReceiptsByAcquisition(String userId, String acquisitionId) throws Exception {
-        verifyToken(userId);
+        String memberId = verifyToken(userId);
+        verifyMemberExist(memberId);
         //check if user has the acquisition
         //userFacade.checkIfUserHasAcquisition(userId, acquisitionId);
         //return paymentServicesFacade.getReceiptsDTOByAcquisition(acquisitionId);
         Map<String,ReceiptDTO> receiptDTOMap = new HashMap<>();
-        List<Receipt> receipts = paymentServicesFacade.getUserReceiptsByAcquisition(acquisitionId,userId);
+        List<Receipt> receipts = paymentServicesFacade.getUserReceiptsByAcquisition(acquisitionId,memberId);
         for (Receipt receipt : receipts) {
             receiptDTOMap.put(receipt.getReceiptId(),paymentServicesFacade.getReceiptDTOFromReceipt(receipt));
         }

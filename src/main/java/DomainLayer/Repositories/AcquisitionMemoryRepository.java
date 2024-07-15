@@ -287,16 +287,16 @@ public class AcquisitionMemoryRepository implements AcquisitionRepository{
         return acquisitions;
     }
 
-    @Override
-    public List<Acquisition> findByUserId(String userID) {
-        List<Acquisition> acquisitions = new ArrayList<>();
-        for (Acquisition acquisition : IdAndAcquisition.values()) {
-            if(Objects.equals(acquisition.getUserId(), userID)){
-                acquisitions.add(acquisition);
-            }
-        }
-        return acquisitions;
-    }
+//    @Override
+//    public List<Acquisition> findByUserId(String userID) {
+//        List<Acquisition> acquisitions = new ArrayList<>();
+//        for (Acquisition acquisition : IdAndAcquisition.values()) {
+//            if(Objects.equals(acquisition.getUserId(), userID)){
+//                acquisitions.add(acquisition);
+//            }
+//        }
+//        return acquisitions;
+//    }
 
     @Override
     public List<Acquisition> findByMemberId(String memberId) {

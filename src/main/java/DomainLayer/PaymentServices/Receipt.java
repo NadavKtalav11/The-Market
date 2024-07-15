@@ -12,16 +12,16 @@ public class Receipt {
 
     private String storeId;
 
-    private String userId;
+    private String memberId;
 
     private List<ProductDetailReceipt> productList = new ArrayList<>();
 
     private Object productListLock = new Object();
 
-    public Receipt(String receiptId, String storeId, String userId, List<ProductDetailReceipt> productList) {
+    public Receipt(String receiptId, String storeId, String memberId, List<ProductDetailReceipt> productList) {
         this.receiptId = receiptId;
         this.storeId = storeId;
-        this.userId = userId;
+        this.memberId = memberId;
         this.productList = productList;
     }
 
@@ -47,8 +47,8 @@ public class Receipt {
         return receiptId;
     }
 
-    public String getUserId() {
-        return userId;
+    public String getMemberId() {
+        return memberId;
     }
 
     public List<ProductDetailReceipt> getProductList() {

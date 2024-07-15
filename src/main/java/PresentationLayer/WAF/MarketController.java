@@ -1,5 +1,6 @@
 package PresentationLayer.WAF;
 
+import DomainLayer.PaymentServices.Receipt;
 import ServiceLayer.Response;
 import Util.*;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -1421,6 +1422,33 @@ public class MarketController {
 
         }
     }
+
+
+    @GetMapping("/getAllStoreReceipts/{userId}/{storeId}")
+    public ResponseEntity<APIResponse<List<String>>> getAllStoreReceipts(@PathVariable String userId,@PathVariable String storeId) {
+        try {
+            Response<List<ReceiptDTO>> response = serviceLayer.getAllStoreReceipts(userId, storeId);
+            if (response.isSuccess()) {
+                List<String> stringDTOs = new ArrayList<>();
+                for (ReceiptDTO receiptDTO: response.getResult()) {
+                    stringDTOs.add(objectMapper.writeValueAsString(receiptDTO));
+                }
+                HttpHeaders headers = new HttpHeaders();
+                headers.add("accept", "*/*");
+
+                return ResponseEntity.status(HttpStatus.OK).headers(headers)
+                        .body(new APIResponse<List<String>>(stringDTOs, null));
+            } else {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                        .body(new APIResponse<>(null, response.getDescription()));
+            }
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new APIResponse<>(null, e.getMessage()));
+
+        }
+    }
+
 
     @GetMapping("/getUserReceiptsByAcquisition/{userId}/{acquisitionId}")
     public ResponseEntity<APIResponse<Map<String,String>>> getUserReceiptsByAcquisition(@PathVariable String userId,@PathVariable String acquisitionId) {
