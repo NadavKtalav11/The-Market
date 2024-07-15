@@ -8,6 +8,7 @@ import DomainLayer.Repositories.ExternalPaymentRepository;
 import PresentationLayer.Application;
 import Util.PaymentDTO;
 import Util.PaymentServiceDTO;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
@@ -36,15 +37,13 @@ import static org.mockito.Mockito.*;
 public class PaymentServicesFacadeTest {
 
 
-//    @Autowired
-//    private ExternalPaymentRepository externalPaymentRepository;
-
-//    @Autowired
-//    private AcquisitionRepository acquisitionRepository;
-//
-
+    @Autowired
+    private ExternalPaymentRepository externalPaymentRepository;
 
     @Autowired
+    private AcquisitionRepository acquisitionRepository;
+
+
     private PaymentServicesFacade paymentServicesFacade;
 
     private PaymentDTO paymentDTO;
@@ -52,10 +51,18 @@ public class PaymentServicesFacadeTest {
     @BeforeEach
     public void setUp() throws Exception {
         //MockitoAnnotations.openMocks(this);
-        //paymentServicesFacade = new PaymentServicesFacade(externalPaymentRepository, acquisitionRepository);
+        paymentServicesFacade = new PaymentServicesFacade(externalPaymentRepository, acquisitionRepository);
         paymentDTO = new PaymentDTO("130", "david", "USD", "1234567812345678", 100, 6, 2030);
 
     }
+
+    @AfterEach
+    public void tearDown() {
+        externalPaymentRepository.deleteAll();
+        acquisitionRepository.deleteAll();
+    }
+
+
 
     @Test
     @ExtendWith(MockitoExtension.class)
