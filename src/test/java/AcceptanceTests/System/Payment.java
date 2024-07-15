@@ -186,7 +186,7 @@ public class Payment {
 
         String systemMangerId = "77";
 
-        market.getSystemManagerIds().add(systemMangerId);
+        market.addSystemManagerForTest(systemMangerId);
         String url = "https://damp-lynna-wsep-1984852e.koyeb.app/";
         HttpClient mockHttpClient = Mockito.mock(HttpClient.class);
         Mockito.when(mockHttpClient.checkCreditCard(Mockito.eq(url), Mockito.any(PaymentDTO.class))).thenReturn(false);

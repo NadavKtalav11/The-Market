@@ -238,6 +238,17 @@ public class Service_layer {
 
     }
 
+    public Response<List<ShippingDTO>> getSupplySystemHistory(String managerUserId){
+        try {
+            List<ShippingDTO> shippingDTOS = market.getSystemsupplyHistory(managerUserId);
+            return new Response<List<ShippingDTO>>(shippingDTOS, "user shipping details");
+        } catch (Exception e) {
+            logger.info("Error occurred while trying get shipping details {}", e.getMessage());
+            return new Response<>(null, e.getMessage());
+        }
+
+    }
+
 
 
 
@@ -317,10 +328,10 @@ public class Service_layer {
         }
     }
 
-    public Response<List<AcquisitionDTO>> getAllAcquisitions(String userID) {
+    public Response<List<AcquisitionDTO>> getAllAcquisitions(String systemManagerUserId) {
         logger.info("get all system acquisitions");
         try {
-            List<AcquisitionDTO> acquisitionDTOList = market.getAllSystemAcquisitions(userID);
+            List<AcquisitionDTO> acquisitionDTOList = market.getAllSystemAcquisitions(systemManagerUserId);
 
             return new Response<>(acquisitionDTOList, "successfully getter");
 
@@ -973,6 +984,18 @@ public class Service_layer {
             return new Response<>(null, e.getMessage());
         }
     }
+
+//    public Response<List<ShippingDTO>> getUserShippingHistory(String userId) {
+//        logger.info("Getting all acquisitions of user: {}", userId);
+//        try {
+//            List<ShippingDTO> acquisitions = market.getUserShippingDTOs(userId);
+//            return new Response<>(acquisitions, "Acquisitions retrieved successfully.");
+//        } catch (Exception e) {
+//            logger.info("Error occurred during getting acquisitions of user: {}", userId, e);
+//            return new Response<>(null, e.getMessage());
+//        }
+//    }
+
 
     public Response<List<AcquisitionDTO>> getUserAcquisitionsHistory(String userId) {
         logger.info("Getting all acquisitions of user: {}", userId);

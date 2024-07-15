@@ -69,19 +69,24 @@ public class SupplyServicesFacade {
         externalSupplyRepository.deleteById(supplyServiceUrl);
     }
 
-    public int cancelSupply(String shippingId) throws Exception {
-        //Optional<ExternalSupplyService> externalSupplyService1 = externalSupplyRepository.findById("https://damp-lynna-wsep-1984852e.koyeb.app/");
-        List<ExternalSupplyService> externalSupplyServiceList = externalSupplyRepository.findAll();
-        for (ExternalSupplyService externalSupplyService: externalSupplyServiceList ) {
-            if (externalSupplyService.hasShipment(shippingId)) {
-                return externalSupplyService.cancelSupply(shippingId);
-            }
-        }
-        return -1;
-    }
+//    public int cancelSupply(String shippingId) throws Exception {
+//        //Optional<ExternalSupplyService> externalSupplyService1 = externalSupplyRepository.findById("https://damp-lynna-wsep-1984852e.koyeb.app/");
+//        List<ExternalSupplyService> externalSupplyServiceList = externalSupplyRepository.findAll();
+//        for (ExternalSupplyService externalSupplyService: externalSupplyServiceList ) {
+//            if (externalSupplyService.hasShipment(shippingId)) {
+//                return externalSupplyService.cancelSupply(shippingId);
+//            }
+//        }
+//        return -1;
+//    }
 
     public void clearSupplyServices() {
         externalSupplyRepository.deleteAll();
+    }
+
+
+    public List<ShippingDTO> getSystemHistory(){
+        return externalSupplyRepository.getSystemHistory();
     }
 
 
@@ -154,21 +159,45 @@ public class SupplyServicesFacade {
     }
 
 
-    public List<ShippingDTO> getUserHistory(String userId){
-        return new ArrayList<>();
+    public List<ShippingDTO> getUserHistory(String memberId){
+        return externalSupplyRepository.getUserHistory(memberId);
     }
 
 
-   public boolean createShiftingDetails(String externalSupplyServiceUrl,String userName,String country,String city,String address, String acquisitionId) throws Exception {
-        ExternalSupplyService externalSupplyService = getExternalSupplyServiceByURL(externalSupplyServiceUrl);
-        //todo add loop over all supply service until succeed!
-        int res = externalSupplyService.createSupply(userName,country ,city, address, acquisitionId);
-        if(res>= 10000 & res<= 100000){
-            return true;
+   public boolean createShiftingDetails(String memberId,String country,String city,String address, String acquisitionId) throws Exception {
+
+        for (ExternalSupplyService externalSupplyService: externalSupplyRepository.findAll()) {
+            //ExternalSupplyService externalSupplyService = getExternalSupplyServiceByURL(externalSupplyServiceUrl);
+            if (externalSupplyService.checkHandShake()) {
+                int res = externalSupplyService.createSupply(memberId, country, city, address, acquisitionId);
+                if (res >= 10000 & res <= 100000) {
+                    ShippingDTO shippingDTO = new ShippingDTO(getCurrentShippingID(), res, memberId, country, city, address, acquisitionId);
+                    addShippingToMapByUserName(shippingDTO);
+
+                    return true;
+                }
+            }
         }
         return false;
-        // Check if the product exists in the instance's map and if the amount is sufficient
     }
+
+//    public List<ShippingDTO> getuserHistory(String userName){
+//        return externalSupplyRepository.getUserHistory(userName);
+//    }
+
+
+
+    public void addShippingToMapByUserName(ShippingDTO shippingDTO){
+       externalSupplyRepository.addShippingDTO(shippingDTO);
+    }
+
+
+    public String getCurrentShippingID (){
+        UUID uuid = UUID.randomUUID();
+        return "shipping-" + uuid;
+
+    }
+
 
 
 

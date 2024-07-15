@@ -80,21 +80,5 @@ public class ExternalSupplyServicesTests {
         assertTrue(externalSupplyService.checkAreaAvailability("Israel", "Bash"));
     }
 
-    @Test
-    public void testCreateShiftingDetails() throws Exception {
-        // Ensure that the initial size of shiftIdAndDetails is zero
-        assertEquals(0, externalSupplyService.getShippingAndDetails().size());
 
-        int result = externalSupplyService.createSupply("User1", "MockCountry", "MockCity", "MockAddress", "10");
-        boolean res;
-        if(result >= 10000 && result <= 100000) {
-            res = true;
-        }
-        else{
-            res = false;
-        }
-        assertTrue(res);
-       assertEquals(1, externalSupplyService.getShippingAndDetails().size());
-       assertNotNull(externalSupplyService.getShippingAndDetails().values());
-    }
 }

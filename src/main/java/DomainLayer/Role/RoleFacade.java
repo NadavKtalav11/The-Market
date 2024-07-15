@@ -10,10 +10,7 @@ import Util.StoreOwnerDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Service
 public class RoleFacade {
@@ -21,20 +18,17 @@ public class RoleFacade {
     private static RoleFacade roleFacadeInstance;
 
 
-    private List<SystemManager> systemManagers;
+    //private List<SystemManager> systemManagers;
     //private List<SystemManager> systemManagersNominators;
     private final Object systemManagerLock;
     //private final Object systemManagerNominatorsLock;
     StoreOwnerRepository storeOwnerRepository;
     StoreManagerRepository storeManagerRepository;
 
-//    StoreManagerRepository managerNominators;
-//    StoreOwnerRepository ownersNominators;
-
 
 
     public RoleFacade() {
-        systemManagers = new ArrayList<>();
+        //systemManagers = new ArrayList<>();
         //systemManagersNominators= new ArrayList<>();
         //systemManagerNominatorsLock = new Object();
 //        managerNominators = new MemoryStoreManagerRepository() ;
@@ -48,7 +42,7 @@ public class RoleFacade {
 
     @Autowired
     public RoleFacade(StoreManagerRepository storeManagerRepository, StoreOwnerRepository storeOwnerRepository) {
-        systemManagers = new ArrayList<>();
+        //systemManagers = new ArrayList<>();
         //systemManagersNominators= new ArrayList<>();
 //        this.managerNominators = managerNominators;
 //        this.ownersNominators = ownersNominators;
@@ -226,18 +220,8 @@ public class RoleFacade {
 //    }
 
 
-    public void addSystemManager(String memberId) {
-        //SystemManager systemManager = getSystemManagerNominator(memberId);
-//        if (systemManager ==null){
-//            throw new IllegalArgumentException("this proposal no longer exist");
-//        }
-//        synchronized (systemManagerNominatorsLock){
-//            systemManagersNominators.remove(systemManager);
-//        }
-        synchronized (systemManagers) {
-            systemManagers.add(new SystemManager(memberId));
-            storeManagerRepository.addSystemManager(memberId);
-        }
+    public void addSystemManager(String systemManagerMemberId) {
+        storeManagerRepository.addSystemManager(new SystemManager(systemManagerMemberId));
     }
 
     public void updateStoreManagerPermissions(String memberId, String storeId,
@@ -410,14 +394,23 @@ public class RoleFacade {
         addNewStoreOwnerNominatorToTheMarket(newStoreOwner);
     }
 
+    public List<String> getSystemManagers(){
+        List<String> systemManagersList = new ArrayList<>();
+        for (SystemManager systemManager :storeManagerRepository.getAllSystemManagers())
+        {
+            systemManagersList.add(systemManager.getMember_ID());
+        }
+        return systemManagersList;
+    }
+
     public boolean verifyMemberIsSystemManager(String member_ID) {
-        synchronized (systemManagerLock) {
-            for (SystemManager systemManager : systemManagers) {
-                if (systemManager.getMember_ID().equals(member_ID))
-                    return true;
+        for (SystemManager systemManager :storeManagerRepository.getAllSystemManagers()){
+            if (systemManager.getMember_ID().equals(member_ID)){
+                return true;
             }
         }
         return false;
+        //return false;
     }
 
     public void verifyMemberIsSystemManagerError(String member_ID) throws Exception {

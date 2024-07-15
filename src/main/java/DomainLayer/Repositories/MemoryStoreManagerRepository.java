@@ -2,6 +2,7 @@ package DomainLayer.Repositories;
 
 import DomainLayer.Role.StoreManager;
 import DomainLayer.Role.StoreOwner;
+import DomainLayer.Role.SystemManager;
 import org.springframework.context.annotation.Profile;
 import org.springframework.data.domain.Example;
 import org.springframework.data.domain.Page;
@@ -19,6 +20,8 @@ public class MemoryStoreManagerRepository implements StoreManagerRepository {
 
     private Map<String,List<StoreManager>> memberId_storeManagerMap= new HashMap<>();
     private final Object storeManagerLock= new Object();
+    private List<SystemManager> systemManagers= new ArrayList<>();
+    private final Object systemManagerLock = new Object();
 
 
     @Override
@@ -138,8 +141,29 @@ public class MemoryStoreManagerRepository implements StoreManagerRepository {
     }
 
     @Override
-    public void addSystemManager(String memberId) {
+    public void addSystemManager(SystemManager systemManager) {
+        synchronized (systemManagerLock){
+            systemManagers.add(systemManager);
+        }
+    }
 
+    @Override
+    public SystemManager getSystemManager(String memberId) {
+        synchronized (systemManagerLock){
+            for (SystemManager systemManager: systemManagers){
+                if (systemManager.getMember_ID().equals(memberId)){
+                    return systemManager;
+                }
+            }
+        }
+        return null;
+    }
+
+    @Override
+    public List<SystemManager> getAllSystemManagers() {
+        synchronized (storeManagerLock) {
+            return systemManagers;
+        }
     }
 
     @Override

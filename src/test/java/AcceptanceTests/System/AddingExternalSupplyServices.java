@@ -43,7 +43,7 @@ public class AddingExternalSupplyServices {
         String memberId= market.Login(userId, "nadavKt", "nadavVV1");
         String url = "https://damp-lynna-wsep-1984852e.koyeb.app/";
         //String systemManagerId = ;
-        market.getSystemManagerIds().add(memberId);
+        market.addSystemManagerForTest(memberId);
         HashSet<String> countries = new HashSet<>();
         HashSet<String> cities = new HashSet<>();
         countries.add("Israel");
@@ -91,7 +91,7 @@ public class AddingExternalSupplyServices {
         market.register(userId, new UserDTO("nadav", "nadavKt","10/10/2002","nad","vv "," vv","nasav " ), "nadavVV1");
         String memberId= market.Login(userId, "nadavKt", "nadavVV1");
         //market.getSystemManagerIds().add(systemManagerId);
-        market.getSystemManagerIds().add(memberId);
+        market.addSystemManagerForTest(memberId);
         HashSet<String> countries = new HashSet<>();
         HashSet<String> cities = new HashSet<>();
         countries.add("Israel");

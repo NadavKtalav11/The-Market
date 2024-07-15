@@ -54,7 +54,7 @@ public class MemoryStoreOwnerRepository implements StoreOwnerRepository {
     }
 
     @Override
-    public StoreOwner getStoreOwnerNominator(String storeId, String memberId) {
+    public StoreOwner getStoreOwnerNominator(String memberId, String storeId) {
         synchronized (storeOwnerLock) {
             List<StoreOwner> userOwner = memberId_storeOwnersMap.get(memberId);
             if (userOwner==null){
@@ -278,5 +278,5 @@ public class MemoryStoreOwnerRepository implements StoreOwnerRepository {
     @Override
     public Page<StoreOwner> findAll(Pageable pageable) {
         return null;
-    }
+}
 }

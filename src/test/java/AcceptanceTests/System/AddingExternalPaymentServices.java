@@ -45,7 +45,7 @@ public class AddingExternalPaymentServices {
         String userId = market.enterMarketSystem();
         market.register(userId, new UserDTO("nadav", "nadavKt","10/10/2002","nad","vv "," vv","nasav " ), "nadavVV1");
         String memberId= market.Login(userId, "nadavKt", "nadavVV1");
-        market.getSystemManagerIds().add(memberId);
+        market.addSystemManagerForTest(memberId);
         // Act and Assert
         assertDoesNotThrow(() -> {
             market.addExternalPaymentService(url, userId);
@@ -59,7 +59,7 @@ public class AddingExternalPaymentServices {
         market.init();
         String systemManagerId = "USER1";
         String nonManagerId = "user2";
-        market.getSystemManagerIds().add(systemManagerId);
+        market.addSystemManagerForTest(systemManagerId);
 
         String url = "https://damp-lynna-wsep-1984852e.koy111eb.app/";
         String userId = market.enterMarketSystem();
@@ -83,7 +83,7 @@ public class AddingExternalPaymentServices {
         // Arrange
         market.init();
         String systemManagerId = "user1";
-        market.getSystemManagerIds().add(systemManagerId);
+        market.addSystemManagerForTest(systemManagerId);
       //  String licensedDealerNumber = "-1"; // Invalid dealer number
        // String paymentServiceName = null; // Invalid payment service name
         String url = "httpds://damp/"; // Invalid URL

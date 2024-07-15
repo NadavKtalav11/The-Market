@@ -230,7 +230,7 @@ public class StoreFacade {
 
     public void checkIfProductQuantityIsPositive(int quantity)
     {
-        if (quantity < 0)
+        if (quantity <= 0)
         {
             throw new IllegalArgumentException(ExceptionsEnum.productQuantityIsNegative.toString());
         }
