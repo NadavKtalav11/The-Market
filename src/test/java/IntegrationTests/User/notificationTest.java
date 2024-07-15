@@ -68,13 +68,14 @@ public class notificationTest {
     public void testSendMessagesToOwnersAndManagers() throws Exception {
         String storeId = "store1";
         String message = "Test Message";
+
         // Call the method under test
         market.sendMessagesToOwnersAndManagers(storeId, message);
 
         // Verify WebSocketHandler messages
-        List<String> owner1Messages = myWebSocketHandler.getUserNotifications("owner12");
-        List<String> owner2Messages = myWebSocketHandler.getUserNotifications("owner22");
-        List<String> manager1Messages = myWebSocketHandler.getUserNotifications("manager12");
+        List<String> owner1Messages = myWebSocketHandler.getUserNotifications("owner1");
+        List<String> owner2Messages = myWebSocketHandler.getUserNotifications("owner2");
+        List<String> manager1Messages = myWebSocketHandler.getUserNotifications("manager1");
 
         assertTrue(owner1Messages.get(0).contains(message));
         assertTrue(owner2Messages.get(0).contains(message));

@@ -1,7 +1,9 @@
 package DomainLayer.Repositories;
 
 import DomainLayer.Role.StoreOwner;
+import jakarta.transaction.Transactional;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.NoRepositoryBean;
 
@@ -27,6 +29,15 @@ public interface StoreOwnerRepository extends JpaRepository<StoreOwner, String> 
 
     @Query("SELECT so FROM StoreOwner so WHERE so.id.member_ID = :memberId AND so.inProposal = true")
     List<StoreOwner> getAllMemberIdNominatorsOwners(String memberId);
+
+    @Transactional
+    @Modifying
+    @Query(value = "INSERT INTO StoreOwner (memberId, storeId, founder, nominatorId, inProposal) " +
+            "VALUES (:memberId, :storeId, :founder, :nominatorId, :inProposal)",
+            nativeQuery = true)
+    void insertStoreOwner(String memberId, String storeId, boolean founder, String nominatorId, boolean inProposal);
+
+
 
 
 }

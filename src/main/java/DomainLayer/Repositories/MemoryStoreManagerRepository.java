@@ -80,8 +80,9 @@ public class MemoryStoreManagerRepository implements StoreManagerRepository {
         String memberId;
         synchronized (storeManagerLock) {
             memberId = entity.getMember_ID();
-            //if (memberId_storeManagerMap.get(memberId)==null){
-            memberId_storeManagerMap.put(memberId, new ArrayList<>());
+            if (memberId_storeManagerMap.get(memberId)==null) {
+                memberId_storeManagerMap.put(memberId, new ArrayList<>());
+            }
             memberId_storeManagerMap.get(memberId).add(entity);
         }
         return null;
