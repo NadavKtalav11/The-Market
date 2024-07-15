@@ -1484,6 +1484,9 @@ public class Market {
             storeTotalPrice = storeTotalPriceBeforeDiscount - priceToReduce;
         }
 
+        if(totalPrice < 0)
+            totalPrice = 0;
+
         this.removeUserCartFromStock(user_ID);
         return new CartDTO(user_ID, totalPrice, this.getPurchaseList(user_ID));
     }
