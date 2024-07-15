@@ -223,7 +223,7 @@ public class RoleFacade {
 
 
     public void addSystemManager(String systemManagerMemberId) {
-        storeManagerRepository.addSystemManager(new SystemManager(systemManagerMemberId));
+        storeManagerRepository.addSystemManager(systemManagerMemberId);
     }
 
     public void updateStoreManagerPermissions(String memberId, String storeId,
@@ -399,21 +399,20 @@ public class RoleFacade {
 
     public List<String> getSystemManagers(){
         List<String> systemManagersList = new ArrayList<>();
-        for (SystemManager systemManager :storeManagerRepository.getAllSystemManagers())
+        for (String systemManager :storeManagerRepository.getAllSystemManagers())
         {
-            systemManagersList.add(systemManager.getMember_ID());
+            systemManagersList.add(systemManager);
         }
         return systemManagersList;
     }
 
     public boolean verifyMemberIsSystemManager(String member_ID) {
-        for (SystemManager systemManager :storeManagerRepository.getAllSystemManagers()){
-            if (systemManager.getMember_ID().equals(member_ID)){
+        for (String systemManagerID :storeManagerRepository.getAllSystemManagers()){
+            if (systemManagerID.equals(member_ID)){
                 return true;
             }
         }
         return false;
-        //return false;
     }
 
     public void verifyMemberIsSystemManagerError(String member_ID) throws Exception {

@@ -16,7 +16,7 @@ public class SystemManager {
 //    @Column(name = "nominated_member_Id", nullable = false, unique = true)
 //    private String nominated_member_Id;
 
-    SystemManager(String member_ID)
+    public SystemManager(String member_ID)
     {
         this.member_ID = member_ID;
 
