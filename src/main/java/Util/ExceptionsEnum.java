@@ -43,7 +43,7 @@ package Util;
             public String toString() {return "The quantity you entered isn't available in the store";}
         },
         productQuantityIsNegative{
-            public String toString() {return "The quantity you entered is negative";}
+            public String toString() {return "The quantity you entered is negative or zero";}
         },
         productNotExistInCart{
             public String toString() {
