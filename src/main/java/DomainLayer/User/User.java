@@ -215,6 +215,10 @@ public class User   {
         state.setCart(cart);
     }
 
+    public void emptyCart(){
+        getCart().emptyCart();
+    }
+
     public Cart getCart() {
         return state.getCart();
     }
