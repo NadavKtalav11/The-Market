@@ -1,10 +1,3 @@
-database:
-  host: localhost
-  port: 3306
-  name: TheMarket-DB
-  username: admin
-  password: secretpassword
-
 
 admin:
     username: u1
