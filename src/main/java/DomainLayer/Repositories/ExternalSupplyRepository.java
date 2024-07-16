@@ -15,11 +15,11 @@ import java.util.List;
 
 @NoRepositoryBean
 public interface ExternalSupplyRepository extends JpaRepository<ExternalSupplyService,String> {
-    @Query(value = "SELECT s FROM ShippingDTO s WHERE s.memberId = :memberId", nativeQuery = true)
-    public List<ShippingDTO> getUserHistory(String memberId);
+    @Query("SELECT s FROM ShippingDTO s WHERE s.memberId = :memberId")
+    List<ShippingDTO> getUserHistory(@Param("memberId") String memberId);
 
-    @Query("SELECT s FROM ShippingDTO s")
-    public List<ShippingDTO> getSystemHistory();
+    @Query(value = "SELECT * FROM shipping_dto", nativeQuery = true)
+    List<ShippingDTO> getSystemHistory();
 
     @Modifying
     @Transactional
