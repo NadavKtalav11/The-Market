@@ -7,11 +7,11 @@ Use-Cases docs sheet - https://docs.google.com/document/d/1lFxkYdhTieLjeW3Bd95Cn
 Glossary - https://docs.google.com/document/d/1cLOtKh-OQUaAp9FVlCy0EocshTjExcrV7qxI3wZly34/edit
 
 # The program initialization:
-The program initialization is an automatic process that runs when the program is opned for the first time. 
+The program initialization is an automatic process that runs when the program is opened for the first time. 
 
 The automatic process runs the commands in the Configuration and stateAfterInit files.
 
-The system state after running it should be according to this files.
+The system state after running it should be according to these files.
 
 # How the Configuration file should be written
   First, it should be a yaml file called "ConfigurationFile".
