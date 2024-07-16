@@ -16,6 +16,7 @@ import Util.ExceptionsEnum;
 import Util.PaymentServiceDTO;
 import Util.SupplyServiceDTO;
 import Util.UserDTO;
+import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.*;
 
 import java.util.Arrays;
@@ -39,6 +40,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.*;
 
+@Transactional
 @ContextConfiguration(classes = {Application.class, RealToTest.class})
 @SpringBootTest
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)

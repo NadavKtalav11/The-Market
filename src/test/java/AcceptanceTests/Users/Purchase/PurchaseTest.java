@@ -169,6 +169,10 @@ public class PurchaseTest {
         //impl.setUserConfirmationPurchase(userID2);
         Response<Integer> response = impl.checkingCartValidationBeforePurchase(userID2, userDTO.getUserName(), userDTO.getBirthday(),
                 userDTO.getName(), userDTO.getCountry(), userDTO.getCity(), userDTO.getAddress());
+        System.out.println("data : " + response.getData());
+        System.out.println("description : " + response.getDescription());
+        System.out.println("result : " + response.getResult());
+
         assertFalse(response.isSuccess());
 
         assertEquals(ExceptionsEnum.purchasePolicyIsNotMet.toString(), response.getDescription());

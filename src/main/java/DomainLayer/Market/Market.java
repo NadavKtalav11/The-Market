@@ -46,7 +46,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.regex.Pattern;
 import java.util.concurrent.*;
 
-
 @Service
 public class Market {
     private static final Logger logger = LoggerFactory.getLogger(Service_layer.class);

@@ -15,6 +15,7 @@ import Util.PaymentServiceDTO;
 import Util.SupplyServiceDTO;
 import Util.UserDTO;
 import jakarta.inject.Inject;
+import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.*;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -27,6 +28,7 @@ import org.springframework.test.context.ContextConfiguration;
 import java.util.Arrays;
 import java.util.HashSet;
 
+@Transactional
 @ContextConfiguration(classes = {Application.class, RealToTest.class})
 @SpringBootTest
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
