@@ -8,6 +8,7 @@ import ServiceLayer.Response;
 import Util.*;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.*;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
@@ -88,14 +89,15 @@ public class PurchaseTest {
     }
 
     @Test
+    @Transactional
     @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
     public void successfulPurchaseTest() throws JsonProcessingException {
-        impl.setUserConfirmationPurchase(userID2);
         int price = impl.checkingCartValidationBeforePurchase(userID2, userDTO.getUserName(), userDTO.getBirthday(),
                 userDTO.getName(), userDTO.getCountry(), userDTO.getCity(), userDTO.getAddress()).getResult();
         CartDTO cartDTO = new CartDTO(userID2, price, products);
         paymentDTO.setCvv(100);
 
+        impl.setUserConfirmationPurchase(userID2);
         Response<String> result = impl.purchase(userID2, userDTO.getCountry(), userDTO.getCity(), userDTO.getAddress(),
                 paymentDTO.getCreditCardNumber(), paymentDTO.getCurrency(), paymentDTO.getHolderName(), paymentDTO.getCvv(), paymentDTO.getMonth(), paymentDTO.getYear(),
                 paymentDTO.getHolderId(), cartDTO.getCartPrice(), cartDTO.getStoreToProducts());
@@ -164,7 +166,7 @@ public class PurchaseTest {
         TestRuleDTO rule = new TestRuleDTO("Amount", "Above", null, "corn", "Basket must contain at least 2 corns", true, null, 2, null, null, null);
         impl.addPurchaseRuleToStore(new ArrayList<>(Arrays.asList(rule)), new ArrayList<>(), userID1, storeID);
         impl.setUserConfirmationPurchase(userID2);
-        impl.setUserConfirmationPurchase(userID2);
+        //impl.setUserConfirmationPurchase(userID2);
         Response<Integer> response = impl.checkingCartValidationBeforePurchase(userID2, userDTO.getUserName(), userDTO.getBirthday(),
                 userDTO.getName(), userDTO.getCountry(), userDTO.getCity(), userDTO.getAddress());
         assertFalse(response.isSuccess());

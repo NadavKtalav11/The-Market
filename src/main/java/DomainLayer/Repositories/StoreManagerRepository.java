@@ -2,6 +2,7 @@ package DomainLayer.Repositories;
 
 import DomainLayer.Role.StoreManager;
 import DomainLayer.Role.SystemManager;
+import jakarta.transaction.Transactional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -50,6 +51,11 @@ public interface StoreManagerRepository extends JpaRepository<StoreManager, Stri
 
     @Query(value = "SELECT sm.member_id FROM system_manager sm", nativeQuery = true)
     List<String> getAllSystemManagers();
+
+    @Modifying
+    @Transactional
+    @Query(value = "DELETE FROM system_manager", nativeQuery = true)
+    void deleteAllSystemManager();
 
 }
 

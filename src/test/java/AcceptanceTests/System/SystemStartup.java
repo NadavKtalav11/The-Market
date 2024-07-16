@@ -35,19 +35,14 @@ public class  SystemStartup {
     @Inject
     private Market market;
 
-
-    //private Market market;
     private UserFacade userFacade;
-    private PaymentServicesFacade  paymentServicesFacade;
-    private SupplyServicesFacade supplyServicesFacade;
-
 
 
     @BeforeEach
     public void setUp() throws Exception {
         //this.userFacade = userFacade.getInstance();
-        this.paymentServicesFacade = PaymentServicesFacade.getInstance();
-        this.supplyServicesFacade = SupplyServicesFacade.getInstance();
+        PaymentServicesFacade paymentServicesFacade = PaymentServicesFacade.getInstance();
+        SupplyServicesFacade supplyServicesFacade = SupplyServicesFacade.getInstance();
         //this.market = new Market(userFacade, paymentServicesFacade, supplyServicesFacade);
        // market = new Market();
     }
@@ -60,13 +55,10 @@ public class  SystemStartup {
     @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
     @Test
     public void successfulInitTest() throws Exception {
-
         assertFalse(market.isInitialized());
         assertEquals(0, market.getSystemManagerIds().size());
         assertEquals(0, market.getPaymentServicesFacade().getAllPaymentServices().size());
         assertEquals(0, market.getSupplyServicesFacade().getAllSupplyServices().size());
-
-
 
 //        String licensedDealerNumber = "12345";
 //        String paymentServiceName = "PayPal";

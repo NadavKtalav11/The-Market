@@ -30,11 +30,12 @@ import com.vaadin.flow.theme.Theme;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.stereotype.Component;
-
+import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 
 @SpringBootApplication(scanBasePackages = {"PresentationLayer.Vaadin", "PresentationLayer.WAF", "DomainLayer"})
 @EnableJpaRepositories(basePackages = "DomainLayer.Repositories")
+@EnableTransactionManagement
 @EntityScan(basePackages = {"DomainLayer", "Util"})
 @Theme(value = "webpush")
 @PWA(name = "Web Push", shortName = "Push")
