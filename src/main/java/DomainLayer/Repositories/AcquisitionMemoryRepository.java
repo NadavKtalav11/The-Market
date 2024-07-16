@@ -277,8 +277,17 @@ public class AcquisitionMemoryRepository implements AcquisitionRepository{
     }
 
     @Override
-    public int findTotalPriceByStoreAndReceiptAndAcquisition(String storeId, String receiptId, String acquisitionId) {
-        return 0;
+    public int findTotalPriceByReceipt(String receiptId) {
+        int sum = 0;
+        for (Acquisition acquisition : IdAndAcquisition.values()) {
+            List<ProductDetailReceipt> productDetailReceipts = acquisition.getProductDetailReceipts();
+            for (ProductDetailReceipt productDetailReceipt : productDetailReceipts) {
+                if (productDetailReceipt.getId().getReceiptId().equals(receiptId)){
+                    sum += productDetailReceipt.getPrice();
+                }
+            }
+        }
+        return sum;
     }
 
     @Override
@@ -293,6 +302,21 @@ public class AcquisitionMemoryRepository implements AcquisitionRepository{
             }
         }
         return acquisitions;
+    }
+
+    @Override
+    public List<String> getAllReceiptsByStoreId(String storeId) {
+        List<Acquisition> acquisitions = IdAndAcquisition.values().stream().toList();
+        List<String> receipts = new ArrayList<>();
+        for (Acquisition acquisition : acquisitions) {
+            List<ProductDetailReceipt> productDetailReceipts = acquisition.getProductDetailReceipts();
+            for (ProductDetailReceipt productDetailReceipt : productDetailReceipts) {
+                if (!receipts.contains(productDetailReceipt.getId().getReceiptId())){
+                    receipts.add(productDetailReceipt.getId().getReceiptId());
+                }
+            }
+        }
+        return receipts;
     }
 
 //    @Override
