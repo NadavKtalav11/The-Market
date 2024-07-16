@@ -152,6 +152,15 @@ public class UserFacade {
         return null;
     }
 
+    @Transactional
+    public void emptyCart(String userId){
+        //Long cartId = getUserByID(userId).getCart().getCartId();
+        //userRepository.deleteBasketsByCartId(cartId);
+        //userRepository.updateCartPriceToZero(cartId);
+        getUserByID(userId).emptyCart();
+    }
+
+
 
     public boolean isMember(String userId){
         if(getUserByID(userId) == null){

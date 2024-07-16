@@ -819,6 +819,7 @@ public class Market {
                 }
                 throw new Exception("system Error - please contact us!");
             }
+            userFacade.emptyCart(cartDTO.getUserID());
             sendMessagesOnPurchaseToStoreOwners(cartDTO);
             return acquisitionId;
         } catch (Exception exception) {

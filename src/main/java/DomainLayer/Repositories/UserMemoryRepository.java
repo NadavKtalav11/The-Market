@@ -198,4 +198,14 @@ public class UserMemoryRepository implements UserRepository{
     public boolean getReadyToPay(String userId) {
         return allUsers.get(userId).isReadyToPay();
     }
+
+    @Override
+    public void updateCartPriceToZero(Long cartId) {
+
+    }
+
+    @Override
+    public void deleteBasketsByCartId(Long cartId) {
+        //(userId).emptyCart();
+    }
 }

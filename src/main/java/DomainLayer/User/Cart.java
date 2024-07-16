@@ -78,6 +78,15 @@ public class Cart {
 
     }
 
+
+    public void emptyCart(){
+        synchronized (basketsLock) {
+            this.baskets = new HashMap<>();
+        }
+        setCartPrice(0);
+
+    }
+
     public void modifyProductInCart(String productName, int quantity, String storeId, int totalPrice)
     {
         synchronized (basketsLock) {
