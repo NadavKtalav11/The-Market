@@ -8,7 +8,9 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.NoRepositoryBean;
+import org.springframework.data.repository.query.Param;
 
+import java.util.Date;
 import java.util.List;
 
 @NoRepositoryBean
@@ -21,6 +23,14 @@ public interface ExternalSupplyRepository extends JpaRepository<ExternalSupplySe
 
     @Modifying
     @Transactional
-    @Query(value = "INSERT INTO ShippingDTO (shippingDTO) VALUES (:shippingDTO)", nativeQuery = true)
-    public void addShippingDTO(ShippingDTO shippingDTO);
+    @Query(value = "INSERT INTO shipping_dto (shipping_id, member_id, country, city, address, zip, date, acquisition_id, transaction_id) VALUES (:shippingId, :memberId, :country, :city, :address, :zip, :date, :acquisitionId, :transactionId)", nativeQuery = true)
+    void addShipping(@Param("shippingId") String shippingId,
+                     @Param("memberId") String memberId,
+                     @Param("country") String country,
+                     @Param("city") String city,
+                     @Param("address") String address,
+                     @Param("zip") String zip,
+                     @Param("date") Date date,
+                     @Param("acquisitionId") String acquisitionId,
+                     @Param("transactionId") int transactionId);
 }

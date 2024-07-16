@@ -70,7 +70,8 @@ public class EmployeePermissionsInfo {
 
     @Test
     public void storeNotExistTest() {
-        Response<Map<String, List<Integer>>> response = impl.getAuthorizationsOfManagersInStore(userID1, storeID);
+        String storeIdNotExist = "storeIdNotExist";
+        Response<Map<String, List<Integer>>> response = impl.getAuthorizationsOfManagersInStore(userID1, storeIdNotExist);
         assertFalse(response.isSuccess());
 
         assertEquals(ExceptionsEnum.storeNotExist.toString(), response.getDescription());

@@ -55,7 +55,7 @@ public class Acquisition {
     @Transient
     private Map<String, Receipt> receiptMap = new HashMap<>();
 
-    @OneToMany(mappedBy = "acquisition", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "acquisition", cascade = CascadeType.ALL, orphanRemoval = true)
     private final List<ProductDetailReceipt> productDetailReceipts = new ArrayList<>();
 
     @Transient

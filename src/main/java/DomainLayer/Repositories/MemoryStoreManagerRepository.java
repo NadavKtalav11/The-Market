@@ -173,6 +173,13 @@ public class MemoryStoreManagerRepository implements StoreManagerRepository {
     }
 
     @Override
+    public void deleteAllSystemManager() {
+        synchronized (systemManagerLock) {
+            systemManagers.clear();
+        }
+    }
+
+    @Override
     public void flush() {
 
     }

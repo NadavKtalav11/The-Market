@@ -188,7 +188,8 @@ public class SupplyServicesFacade {
 
 
     public void addShippingToMapByUserName(ShippingDTO shippingDTO){
-       externalSupplyRepository.addShippingDTO(shippingDTO);
+       externalSupplyRepository.addShipping(shippingDTO.getShipping_id(), shippingDTO.getMemberId(), shippingDTO.getCountry(),
+               shippingDTO.getCity(),shippingDTO.getAddress(),shippingDTO.getZip(),shippingDTO.getDate(),shippingDTO.getAcquisitionId(),shippingDTO.getTransactionId());
     }
 
 

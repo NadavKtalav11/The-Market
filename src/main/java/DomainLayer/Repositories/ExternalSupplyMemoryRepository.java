@@ -214,7 +214,8 @@ public class ExternalSupplyMemoryRepository implements ExternalSupplyRepository 
     }
 
     @Override
-    public void addShippingDTO(ShippingDTO shippingDTO) {
+    public void addShipping(String shippingId, String memberId, String country, String city, String address, String zip, Date date, String acquisitionId, int transactionId) {
+        ShippingDTO shippingDTO = new ShippingDTO(shippingId,transactionId,memberId,country,city,address,acquisitionId);
         synchronized (usersShippingHistoryLock){
             if (getUserHistory(shippingDTO.getMemberId())==null){
                 usersShippingHistory.put(shippingDTO.getMemberId(), new ArrayList<>());

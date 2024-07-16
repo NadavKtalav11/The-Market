@@ -193,4 +193,9 @@ public class UserMemoryRepository implements UserRepository{
     public Page<User> findAll(Pageable pageable) {
         return null;
     }
+
+    @Override
+    public boolean getReadyToPay(String userId) {
+        return allUsers.get(userId).isReadyToPay();
+    }
 }

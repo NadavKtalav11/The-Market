@@ -66,6 +66,7 @@ public class RoleFacade {
 
     public void reset(){
         storeManagerRepository.deleteAll();
+        storeManagerRepository.deleteAllSystemManager();
         storeOwnerRepository.deleteAll();
     }
 

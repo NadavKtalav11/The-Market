@@ -264,16 +264,28 @@ public class PaymentServicesFacade {
     }
 
 
-    public Map<String, Integer> getStorePurchaseInfo()
-    {
+    //return storeId and number of receipts
+    @Transactional
+    public Map<String, Integer> getStorePurchaseInfo() {
         Map<String, Integer> storePurchaseStats = new HashMap<>();
         List<Acquisition> acquisitions = acquisitionRepository.findAll();
-            for (Acquisition acquisition : acquisitions) {
-                Map<String, String> acqReceipts = acquisition.getStoreIdAndReceiptID();
-                for (String storeId : acqReceipts.keySet()) {
-                    storePurchaseStats.put(storeId, storePurchaseStats.getOrDefault(storeId, 0) + 1);
+        Map<String, List<String>> receiptIds = new HashMap<>(); //<storeId, List<receiptId>>
+        for (Acquisition acquisition : acquisitions) {
+            List<ProductDetailReceipt> productDetailReceipts = acquisition.getProductDetailReceipts();
+            for (ProductDetailReceipt productDetailReceipt : productDetailReceipts) {
+                String storeId = productDetailReceipt.getId().getStoreId();
+                String receiptId = productDetailReceipt.getId().getReceiptId();
+                List<String> receiptIdList = receiptIds.get(storeId);
+                if (receiptIdList == null) {
+                    receiptIdList = new ArrayList<>();
                 }
+                receiptIdList.add(receiptId);
+                receiptIds.put(storeId, receiptIdList);
             }
+        }
+        for (String storeId : receiptIds.keySet()) {
+            storePurchaseStats.put(storeId, receiptIds.get(storeId).size());
+        }
         return storePurchaseStats;
     }
 
@@ -281,14 +293,18 @@ public class PaymentServicesFacade {
     public Map<String, Integer> getStoreReceiptsAndTotalAmount(String storeId)
     {
         Map<String, Integer> receiptAndTotalPrice = new HashMap<>();
-        List<Acquisition> acquisitions = acquisitionRepository.findAll();
-            for (Acquisition acquisition : acquisitions) {
-                if (acquisition.getStoreIdAndReceiptID().containsKey(storeId)) {
-                    receiptAndTotalPrice.put(acquisition.getReceiptIdByStoreId(storeId), acquisitionRepository.findTotalPriceByStoreAndReceiptAndAcquisition(storeId,acquisition.getReceiptIdByStoreId(storeId),acquisition.getAcquisitionId()));
-                }
-            }
-
-
+        //List<Acquisition> acquisitions = acquisitionRepository.findAll();
+        List<String> receipts = acquisitionRepository.getAllReceiptsByStoreId(storeId);
+        for (String receipt : receipts){
+            int receiptPrice = acquisitionRepository.findTotalPriceByReceipt(receipt);
+            receiptAndTotalPrice.put(receipt, receiptPrice);
+        }
+//            for (Acquisition acquisition : acquisitions) {
+//                acquisitionRepository.findByStoreId(storeId);
+//                if (acquisition.getProductDetailReceipts().containsKey(storeId)) {
+//                    receiptAndTotalPrice.put(acquisition.getReceiptIdByStoreId(storeId), acquisitionRepository.findTotalPriceByStoreAndReceiptAndAcquisition(storeId,acquisition.getReceiptIdByStoreId(storeId),acquisition.getAcquisitionId()));
+//                }
+//            }
         return receiptAndTotalPrice;
     }
 

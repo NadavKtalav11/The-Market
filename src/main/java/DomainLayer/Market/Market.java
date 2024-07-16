@@ -46,7 +46,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.regex.Pattern;
 import java.util.concurrent.*;
 
-
 @Service
 public class Market {
     private static final Logger logger = LoggerFactory.getLogger(Service_layer.class);
@@ -792,7 +791,7 @@ public class Market {
         try {
             timeoutHandle = scheduler.schedule(() -> {
                 timeoutExpired.set(true);
-            }, 5L, TimeUnit.SECONDS);
+            }, 15L, TimeUnit.SECONDS);
 
             boolean userReadyToPay;
             for(userReadyToPay = false; !userReadyToPay && !timeoutExpired.get(); userReadyToPay = this.getUserConfirmationPurchase(userDTO.getUserId())) {
@@ -887,7 +886,7 @@ public class Market {
     @Transactional
     public boolean getUserConfirmationPurchase(String userID) throws Exception {
         verifyToken(userID);
-        return this.userFacade.getUserByID(userID).isReadyToPay();
+        return userFacade.getUserConfirmationPurchase(userID);
     }
 
     @Transactional
@@ -2107,13 +2106,14 @@ public class Market {
         return myWebSocketHandler;
     }
 
+    @Transactional
     public void resetAllTables() {
         storeFacade.reset();
         userFacade.reset();
         roleFacade.reset();
         paymentServicesFacade.reset();
         supplyServicesFacade.reset();
-       // initializedRepository.deleteAll();
+        initializedRepository.deleteAll();
 
     }
 }

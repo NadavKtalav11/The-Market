@@ -451,6 +451,11 @@ public class UserFacade {
         userRepository.save(user);
     }
 
+    public boolean getUserConfirmationPurchase(String userID){
+        User user = getUserByID(userID);
+        return userRepository.getReadyToPay(userID);
+    }
+
 
     public void removeUser(String userId){
         userRepository.deleteById(userId);
