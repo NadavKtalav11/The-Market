@@ -50,4 +50,14 @@ The system state after running it should be according to these files.
 
       Each action has to be a referance to a function and has to be supported with the right arguments.
 
+# How to connect the DataBase:
+System database - 
+You can open remote/local database an mySQL as you wish - 
+you can change the file applicatiom.properties : 
 
+* spring.datasource.url= your database connection (it can be local/remote)
+* spring.datasource.username= your username
+* spring.datasource.password= your password
+
+Tests database - 
+This database is local and will be download authomaticlly when you clone the project.
